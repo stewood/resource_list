@@ -5,8 +5,14 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.core.exceptions import PermissionDenied
 
 from .models import Resource, TaxonomyCategory, ResourceVersion, AuditLog
+from .permissions import (
+    user_is_editor, user_is_reviewer, user_is_admin,
+    user_can_publish, user_can_verify, user_can_hard_delete,
+    user_can_manage_taxonomies, user_can_manage_users
+)
 
 
 @admin.register(TaxonomyCategory)
@@ -23,6 +29,18 @@ class TaxonomyCategoryAdmin(admin.ModelAdmin):
         """Display the number of resources in this category."""
         return obj.resources.count()
     resource_count.short_description = 'Resources'
+    
+    def has_add_permission(self, request):
+        """Only Reviewers and Admins can add categories."""
+        return user_can_manage_taxonomies(request.user)
+    
+    def has_change_permission(self, request, obj=None):
+        """Only Reviewers and Admins can change categories."""
+        return user_can_manage_taxonomies(request.user)
+    
+    def has_delete_permission(self, request, obj=None):
+        """Only Admins can delete categories."""
+        return user_is_admin(request.user)
 
 
 class ResourceVersionInline(admin.TabularInline):
@@ -84,6 +102,7 @@ class ResourceAdmin(admin.ModelAdmin):
         }),
     )
     inlines = [ResourceVersionInline]
+    actions = ['submit_for_review', 'publish_resource', 'unpublish_resource']
     
     def needs_verification_display(self, obj):
         """Display verification status with color coding."""
@@ -107,6 +126,60 @@ class ResourceAdmin(admin.ModelAdmin):
         """Filter out deleted resources by default."""
         qs = super().get_queryset(request)
         return qs.filter(is_deleted=False)
+    
+    def has_delete_permission(self, request, obj=None):
+        """Only Admins can hard delete resources."""
+        return user_can_hard_delete(request.user)
+    
+    def has_add_permission(self, request):
+        """All authenticated users can add resources."""
+        return request.user.is_authenticated
+    
+    def has_change_permission(self, request, obj=None):
+        """All authenticated users can change resources."""
+        return request.user.is_authenticated
+    
+    def submit_for_review(self, request, queryset):
+        """Submit selected resources for review."""
+        if not user_can_submit_for_review(request.user):
+            raise PermissionDenied("You don't have permission to submit resources for review.")
+        
+        updated = queryset.update(status='needs_review')
+        self.message_user(
+            request, 
+            f'Successfully submitted {updated} resource(s) for review.'
+        )
+    submit_for_review.short_description = "Submit selected resources for review"
+    
+    def publish_resource(self, request, queryset):
+        """Publish selected resources."""
+        if not user_can_publish(request.user):
+            raise PermissionDenied("You don't have permission to publish resources.")
+        
+        # Update verification info
+        from django.utils import timezone
+        updated = queryset.update(
+            status='published',
+            last_verified_at=timezone.now(),
+            last_verified_by=request.user
+        )
+        self.message_user(
+            request, 
+            f'Successfully published {updated} resource(s).'
+        )
+    publish_resource.short_description = "Publish selected resources"
+    
+    def unpublish_resource(self, request, queryset):
+        """Unpublish selected resources."""
+        if not user_can_publish(request.user):
+            raise PermissionDenied("You don't have permission to unpublish resources.")
+        
+        updated = queryset.update(status='needs_review')
+        self.message_user(
+            request, 
+            f'Successfully unpublished {updated} resource(s).'
+        )
+    unpublish_resource.short_description = "Unpublish selected resources"
 
 
 @admin.register(ResourceVersion)
@@ -138,12 +211,15 @@ class ResourceVersionAdmin(admin.ModelAdmin):
     resource_name.short_description = 'Resource'
     
     def has_add_permission(self, request):
+        """Versions are created automatically, not manually."""
         return False
     
     def has_change_permission(self, request, obj=None):
+        """Versions are immutable."""
         return False
     
     def has_delete_permission(self, request, obj=None):
+        """Versions cannot be deleted."""
         return False
 
 
@@ -166,10 +242,13 @@ class AuditLogAdmin(admin.ModelAdmin):
     ]
     
     def has_add_permission(self, request):
+        """Audit logs are created automatically, not manually."""
         return False
     
     def has_change_permission(self, request, obj=None):
+        """Audit logs are immutable."""
         return False
     
     def has_delete_permission(self, request, obj=None):
+        """Audit logs cannot be deleted."""
         return False

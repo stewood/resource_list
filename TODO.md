@@ -6,9 +6,9 @@ Build a small, internal-first web app to curate and maintain a high-quality dire
 ---
 
 ## 📊 Progress Overview
-- **Completed**: 4/15 (27%)
+- **Completed**: 6/15 (40%)
 - **In Progress**: 0/15 (0%)
-- **Not Started**: 11/15 (73%)
+- **Not Started**: 9/15 (60%)
 
 ---
 
@@ -45,9 +45,9 @@ Build a small, internal-first web app to curate and maintain a high-quality dire
 
 ## 🔄 Phase 2: Core Functionality (In Progress)
 
-### 🔄 2.1 User Authentication & Roles
-- [ ] **Priority: HIGH** - Implement Django groups for Editor/Reviewer/Admin
-- [ ] **Priority: HIGH** - Create permission matrix
+### ✅ 2.1 User Authentication & Roles
+- [x] **Priority: HIGH** - Implement Django groups for Editor/Reviewer/Admin
+- [x] **Priority: HIGH** - Create permission matrix
 - [ ] **Priority: MEDIUM** - Add role-based views and forms
 - [ ] **Priority: LOW** - User profile management
 
