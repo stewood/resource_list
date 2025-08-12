@@ -6,9 +6,9 @@ Build a small, internal-first web app to curate and maintain a high-quality dire
 ---
 
 ## 📊 Progress Overview
-- **Completed**: 6/15 (40%)
+- **Completed**: 8/15 (53%)
 - **In Progress**: 0/15 (0%)
-- **Not Started**: 9/15 (60%)
+- **Not Started**: 7/15 (47%)
 
 ---
 
@@ -56,12 +56,12 @@ Build a small, internal-first web app to curate and maintain a high-quality dire
 - Permissions restrict actions based on role
 - Admin can manage users and roles
 
-### 🔄 2.2 Resource Workflow Views
-- [ ] **Priority: HIGH** - Create resource list view with HTMX
-- [ ] **Priority: HIGH** - Create resource detail/edit form
-- [ ] **Priority: HIGH** - Implement status transition buttons
-- [ ] **Priority: MEDIUM** - Add inline validation feedback
-- [ ] **Priority: LOW** - Add confirmation dialogs for status changes
+### ✅ 2.2 Resource Workflow Views
+- [x] **Priority: HIGH** - Create resource list view with HTMX
+- [x] **Priority: HIGH** - Create resource detail/edit form
+- [x] **Priority: HIGH** - Implement status transition buttons
+- [x] **Priority: MEDIUM** - Add inline validation feedback
+- [x] **Priority: LOW** - Add confirmation dialogs for status changes
 
 **Acceptance Criteria:**
 - Users can view filtered list of resources

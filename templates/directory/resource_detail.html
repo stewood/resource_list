@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ resource.name }} - Resource Directory{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>{{ resource.name }}</h1>
+            <div class="btn-group">
+                <a href="{% url 'directory:resource_update' resource.pk %}" class="btn btn-outline-primary">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <a href="{% url 'directory:resource_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Resources
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Resource Details -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Resource Details</h5>
+                    {% if resource.status == 'draft' %}
+                        <span class="badge bg-secondary">Draft</span>
+                    {% elif resource.status == 'needs_review' %}
+                        <span class="badge bg-warning">Needs Review</span>
+                    {% elif resource.status == 'published' %}
+                        <span class="badge bg-success">Published</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Category:</strong>
+                        {% if resource.category %}
+                            <span class="badge bg-info">{{ resource.category.name }}</span>
+                        {% else %}
+                            <span class="text-muted">No category assigned</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <strong>Source:</strong>
+                        {% if resource.source %}
+                            {{ resource.source }}
+                        {% else %}
+                            <span class="text-muted">No source specified</span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if resource.description %}
+                    <div class="col-12 mb-3">
+                        <strong>Description:</strong>
+                        <p class="mt-2">{{ resource.description|linebreaks }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Information -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-phone"></i> Contact Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% if resource.phone %}
+                    <div class="col-md-4 mb-3">
+                        <strong>Phone:</strong><br>
+                        <a href="tel:{{ resource.phone }}">{{ resource.phone }}</a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if resource.email %}
+                    <div class="col-md-4 mb-3">
+                        <strong>Email:</strong><br>
+                        <a href="mailto:{{ resource.email }}">{{ resource.email }}</a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if resource.website %}
+                    <div class="col-md-4 mb-3">
+                        <strong>Website:</strong><br>
+                        <a href="{{ resource.website }}" target="_blank">{{ resource.website }}</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Location -->
+        {% if resource.address1 or resource.city or resource.state %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-map-marker-alt"></i> Location
+                </h5>
+            </div>
+            <div class="card-body">
+                <address class="mb-0">
+                    {% if resource.address1 %}{{ resource.address1 }}<br>{% endif %}
+                    {% if resource.address2 %}{{ resource.address2 }}<br>{% endif %}
+                    {% if resource.city and resource.state %}
+                        {{ resource.city }}, {{ resource.state }}
+                        {% if resource.postal_code %} {{ resource.postal_code }}{% endif %}
+                    {% elif resource.city %}
+                        {{ resource.city }}
+                        {% if resource.postal_code %} {{ resource.postal_code }}{% endif %}
+                    {% elif resource.state %}
+                        {{ resource.state }}
+                        {% if resource.postal_code %} {{ resource.postal_code }}{% endif %}
+                    {% endif %}
+                </address>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Verification Information -->
+        {% if resource.last_verified_at or resource.last_verified_by %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-check-circle"></i> Verification Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% if resource.last_verified_at %}
+                    <div class="col-md-6 mb-3">
+                        <strong>Last Verified:</strong><br>
+                        {{ resource.last_verified_at|date:"F j, Y" }}
+                        {% if resource.needs_verification %}
+                            <span class="badge bg-danger ms-2">Needs Verification</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    {% if resource.last_verified_by %}
+                    <div class="col-md-6 mb-3">
+                        <strong>Verified By:</strong><br>
+                        {{ resource.last_verified_by.get_full_name|default:resource.last_verified_by.username }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Status Actions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Status Actions</h5>
+            </div>
+            <div class="card-body">
+                {% if resource.status == 'draft' and user_can_submit_review %}
+                    <button class="btn btn-warning w-100 mb-2" 
+                            hx-post="{% url 'directory:submit_for_review' resource.pk %}"
+                            hx-confirm="Submit this resource for review?"
+                            hx-target="#status-message">
+                        <i class="fas fa-clock"></i> Submit for Review
+                    </button>
+                {% endif %}
+                
+                {% if resource.status == 'needs_review' and user_can_publish %}
+                    <button class="btn btn-success w-100 mb-2"
+                            hx-post="{% url 'directory:publish_resource' resource.pk %}"
+                            hx-confirm="Publish this resource?"
+                            hx-target="#status-message">
+                        <i class="fas fa-check-circle"></i> Publish Resource
+                    </button>
+                {% endif %}
+                
+                {% if resource.status == 'published' and user_can_publish %}
+                    <button class="btn btn-warning w-100 mb-2"
+                            hx-post="{% url 'directory:unpublish_resource' resource.pk %}"
+                            hx-confirm="Unpublish this resource?"
+                            hx-target="#status-message">
+                        <i class="fas fa-undo"></i> Unpublish Resource
+                    </button>
+                {% endif %}
+                
+                <div id="status-message"></div>
+            </div>
+        </div>
+        
+        <!-- Metadata -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Metadata</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Created:</strong><br>
+                    <small class="text-muted">
+                        {{ resource.created_at|date:"F j, Y" }} by {{ resource.created_by.get_full_name|default:resource.created_by.username }}
+                    </small>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>Last Updated:</strong><br>
+                    <small class="text-muted">
+                        {{ resource.updated_at|date:"F j, Y" }} by {{ resource.updated_by.get_full_name|default:resource.updated_by.username }}
+                    </small>
+                </div>
+                
+                {% if resource.versions.exists %}
+                <div class="mb-3">
+                    <strong>Version History:</strong><br>
+                    <small class="text-muted">
+                        {{ resource.versions.count }} version{{ resource.versions.count|pluralize }}
+                    </small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Quick Links -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Links</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'directory:resource_update' resource.pk %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-edit"></i> Edit Resource
+                    </a>
+                    <a href="{% url 'directory:resource_list' %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-list"></i> View All Resources
+                    </a>
+                    <a href="{% url 'directory:resource_create' %}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-plus"></i> Add New Resource
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Version History -->
+{% if versions %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-history"></i> Version History
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Version</th>
+                                <th>Change Type</th>
+                                <th>Changed By</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for version in versions %}
+                            <tr>
+                                <td>v{{ version.version_number }}</td>
+                                <td>
+                                    {% if version.change_type == 'create' %}
+                                        <span class="badge bg-success">Created</span>
+                                    {% elif version.change_type == 'update' %}
+                                        <span class="badge bg-primary">Updated</span>
+                                    {% elif version.change_type == 'status_change' %}
+                                        <span class="badge bg-warning">Status Changed</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ version.changed_by.get_full_name|default:version.changed_by.username }}</td>
+                                <td>{{ version.changed_at|date:"M j, Y H:i" }}</td>
+                                <td>
+                                    <button class="btn btn-outline-info btn-sm" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#versionModal{{ version.id }}">
+                                        View Changes
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Handle HTMX responses
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.xhr.status === 200) {
+            // Show success message
+            const messageDiv = document.getElementById('status-message');
+            messageDiv.innerHTML = '<div class="alert alert-success">' + evt.detail.xhr.responseText + '</div>';
+            
+            // Reload page after a short delay to show updated status
+            setTimeout(function() {
+                window.location.reload();
+            }, 1500);
+        } else {
+            // Show error message
+            const messageDiv = document.getElementById('status-message');
+            messageDiv.innerHTML = '<div class="alert alert-danger">' + evt.detail.xhr.responseText + '</div>';
+        }
+    });
+</script>
+{% endblock %}

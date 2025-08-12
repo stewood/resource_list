@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% block title %}Resources - Resource Directory{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Resources</h1>
+            <a href="{% url 'directory:resource_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Resource
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Search & Filters</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" hx-get="{% url 'directory:resource_list' %}" hx-target="#resource-list" hx-push-url="true">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="q" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="q" name="q" 
+                                   value="{{ current_filters.q }}" placeholder="Search resources...">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="">All Statuses</option>
+                                {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if current_filters.status == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-control" id="category" name="category">
+                                <option value="">All Categories</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}" {% if current_filters.category == category.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ category.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" name="city" 
+                                   value="{{ current_filters.city }}" placeholder="Filter by city">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="state" class="form-label">State</label>
+                            <input type="text" class="form-control" id="state" name="state" 
+                                   value="{{ current_filters.state }}" placeholder="Filter by state">
+                        </div>
+                        <div class="col-md-1 mb-3">
+                            <label for="sort" class="form-label">Sort</label>
+                            <select class="form-control" id="sort" name="sort">
+                                <option value="-updated_at" {% if current_filters.sort == '-updated_at' %}selected{% endif %}>Recent</option>
+                                <option value="name" {% if current_filters.sort == 'name' %}selected{% endif %}>Name A-Z</option>
+                                <option value="-name" {% if current_filters.sort == '-name' %}selected{% endif %}>Name Z-A</option>
+                                <option value="city" {% if current_filters.sort == 'city' %}selected{% endif %}>City A-Z</option>
+                                <option value="-city" {% if current_filters.sort == '-city' %}selected{% endif %}>City Z-A</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                            <a href="{% url 'directory:resource_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Clear
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resource List -->
+<div id="resource-list">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            Resources 
+                            {% if page_obj %}
+                                <span class="badge bg-secondary">{{ page_obj.paginator.count }} total</span>
+                            {% endif %}
+                        </h5>
+                        <div>
+                            <small class="text-muted">
+                                Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if resources %}
+                        <div class="row">
+                            {% for resource in resources %}
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card resource-card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="card-title mb-0">
+                                                <a href="{% url 'directory:resource_detail' resource.pk %}" class="text-decoration-none">
+                                                    {{ resource.name }}
+                                                </a>
+                                            </h6>
+                                            {% if resource.status == 'draft' %}
+                                                <span class="badge bg-secondary status-badge">Draft</span>
+                                            {% elif resource.status == 'needs_review' %}
+                                                <span class="badge bg-warning status-badge">Review</span>
+                                            {% elif resource.status == 'published' %}
+                                                <span class="badge bg-success status-badge">Published</span>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        {% if resource.category %}
+                                            <p class="text-muted small mb-2">
+                                                <i class="fas fa-tag"></i> {{ resource.category.name }}
+                                            </p>
+                                        {% endif %}
+                                        
+                                        {% if resource.description %}
+                                            <p class="card-text small text-muted mb-2">
+                                                {{ resource.description|truncatewords:20 }}
+                                            </p>
+                                        {% endif %}
+                                        
+                                        {% if resource.city and resource.state %}
+                                            <p class="text-muted small mb-2">
+                                                <i class="fas fa-map-marker-alt"></i> {{ resource.city }}, {{ resource.state }}
+                                            </p>
+                                        {% endif %}
+                                        
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">
+                                                Updated {{ resource.updated_at|timesince }} ago
+                                            </small>
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'directory:resource_detail' resource.pk %}" 
+                                                   class="btn btn-outline-primary btn-sm">
+                                                    View
+                                                </a>
+                                                <a href="{% url 'directory:resource_update' resource.pk %}" 
+                                                   class="btn btn-outline-secondary btn-sm">
+                                                    Edit
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Pagination -->
+                        {% if page_obj.has_other_pages %}
+                        <nav aria-label="Resource pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                            <i class="fas fa-angle-double-left"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                            <i class="fas fa-angle-left"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ num }}</span>
+                                        </li>
+                                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                                {{ num }}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                            <i class="fas fa-angle-right"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                                            <i class="fas fa-angle-double-right"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No resources found</h5>
+                            <p class="text-muted">Try adjusting your search criteria or add a new resource.</p>
+                            <a href="{% url 'directory:resource_create' %}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Resource
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-submit form on filter changes
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterInputs = document.querySelectorAll('#status, #category, #sort');
+        filterInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                this.closest('form').submit();
+            });
+        });
+    });
+</script>
+{% endblock %}

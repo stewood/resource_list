@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Resource Directory{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Dashboard</h1>
+    </div>
+</div>
+
+<!-- Resource Counts -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ draft_count }}</h4>
+                        <p class="card-text">Draft Resources</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-edit fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ review_count }}</h4>
+                        <p class="card-text">Needs Review</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ published_count }}</h4>
+                        <p class="card-text">Published</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-white {% if needs_verification > 0 %}bg-danger{% else %}bg-secondary{% endif %}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ needs_verification }}</h4>
+                        <p class="card-text">Need Verification</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'directory:resource_create' %}" class="btn btn-primary w-100">
+                            <i class="fas fa-plus"></i> Add New Resource
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'directory:resource_list' %}?status=needs_review" class="btn btn-warning w-100">
+                            <i class="fas fa-clock"></i> Review Resources
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'directory:resource_list' %}" class="btn btn-info w-100">
+                            <i class="fas fa-list"></i> View All Resources
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'admin:index' %}" class="btn btn-secondary w-100">
+                            <i class="fas fa-cog"></i> Admin Panel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_resources %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Resource</th>
+                                    <th>Status</th>
+                                    <th>Location</th>
+                                    <th>Updated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for resource in recent_resources %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'directory:resource_detail' resource.pk %}">
+                                            {{ resource.name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if resource.status == 'draft' %}
+                                            <span class="badge bg-secondary">Draft</span>
+                                        {% elif resource.status == 'needs_review' %}
+                                            <span class="badge bg-warning">Review</span>
+                                        {% elif resource.status == 'published' %}
+                                            <span class="badge bg-success">Published</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if resource.city and resource.state %}
+                                            {{ resource.city }}, {{ resource.state }}
+                                        {% else %}
+                                            <span class="text-muted">No location</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ resource.updated_at|timesince }} ago
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'directory:resource_detail' resource.pk %}" 
+                                               class="btn btn-outline-primary btn-sm">
+                                                View
+                                            </a>
+                                            <a href="{% url 'directory:resource_update' resource.pk %}" 
+                                               class="btn btn-outline-secondary btn-sm">
+                                                Edit
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No recent activity.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
