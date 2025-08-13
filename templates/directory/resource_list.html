@@ -96,6 +96,14 @@
                             </select>
                         </div>
                         <div class="col-md-2 mb-3">
+                            <label for="archive" class="form-label">Archive Status</label>
+                            <select class="form-control" id="archive" name="archive">
+                                <option value="">Active Only</option>
+                                <option value="archived" {% if current_filters.archive == 'archived' %}selected{% endif %}>Archived Only</option>
+                                <option value="active" {% if current_filters.archive == 'active' %}selected{% endif %}>Active Only</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
                             <label for="sort" class="form-label">Sort</label>
                             <select class="form-control" id="sort" name="sort">
                                 <option value="-updated_at" {% if current_filters.sort == '-updated_at' %}selected{% endif %}>Recent</option>

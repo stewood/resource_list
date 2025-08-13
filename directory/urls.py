@@ -56,4 +56,22 @@ urlpatterns = [
         views.version_comparison,
         name="version_comparison_two",
     ),
+    # Archive views
+    path("archives/", views.ArchiveListView.as_view(), name="archive_list"),
+    path(
+        "archives/<int:pk>/",
+        views.ArchiveDetailView.as_view(),
+        name="archive_detail",
+    ),
+    # Archive actions
+    path(
+        "resources/<int:pk>/archive/",
+        views.archive_resource,
+        name="archive_resource",
+    ),
+    path(
+        "resources/<int:pk>/unarchive/",
+        views.unarchive_resource,
+        name="unarchive_resource",
+    ),
 ]

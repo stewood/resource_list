@@ -362,10 +362,11 @@ class SearchTestCase(BaseTestCase):
                     address1, address2, county, postal_code, status, source,
                     hours_of_operation, is_emergency_service, is_24_hour_service,
                     eligibility_requirements, populations_served, insurance_accepted,
-                    cost_information, languages_available, capacity,
+                    cost_information, languages_available, capacity, notes,
                     last_verified_at, last_verified_by_id, created_by_id, updated_by_id,
-                    created_at, updated_at, is_deleted
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    created_at, updated_at, is_deleted, is_archived, archived_at, 
+                    archived_by_id, archive_reason
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, [
                 expired_resource.name, expired_resource.description,
                 expired_resource.city, expired_resource.state,
@@ -377,9 +378,11 @@ class SearchTestCase(BaseTestCase):
                 expired_resource.is_24_hour_service, expired_resource.eligibility_requirements,
                 expired_resource.populations_served, expired_resource.insurance_accepted,
                 expired_resource.cost_information, expired_resource.languages_available,
-                expired_resource.capacity, expired_resource.last_verified_at,
+                expired_resource.capacity, "",  # notes field
+                expired_resource.last_verified_at,
                 expired_resource.last_verified_by.id, expired_resource.created_by.id,
-                expired_resource.updated_by.id, timezone.now(), timezone.now(), False
+                expired_resource.updated_by.id, timezone.now(), timezone.now(), False,
+                False, None, None, ""  # archive fields
             ])
             expired_resource.id = cursor.lastrowid
         

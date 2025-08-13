@@ -11,6 +11,11 @@
                 <a href="{% url 'directory:resource_update' resource.pk %}" class="btn btn-outline-primary">
                     <i class="fas fa-edit"></i> Edit
                 </a>
+                {% if user.is_staff and not resource.is_archived %}
+                <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#archiveModal">
+                    <i class="fas fa-archive"></i> Archive
+                </button>
+                {% endif %}
                 <a href="{% url 'directory:resource_list' %}" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left"></i> Back to Resources
                 </a>
@@ -18,6 +23,9 @@
         </div>
     </div>
 </div>
+
+<!-- Status Messages -->
+<div id="status-message"></div>
 
 <div class="row">
     <!-- Resource Details -->
@@ -412,8 +420,38 @@
             </div>
         </div>
     </div>
-</div>
+    </div>
 {% endif %}
+
+<!-- Archive Confirmation Modal (inside content block) -->
+<div class="modal fade" id="archiveModal" tabindex="-1" aria-labelledby="archiveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="archiveModalLabel">Archive Resource</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to archive "{{ resource.name }}"?</p>
+                <p class="text-muted">Archived resources will not appear in regular searches or resource lists, but can be viewed in the archive.</p>
+                
+                <form id="archiveForm" method="post" action="{% url 'directory:archive_resource' resource.pk %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="archive_reason" class="form-label">Archive Reason <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="archive_reason" name="archive_reason" rows="3" required 
+                                  placeholder="Please provide a reason for archiving this resource..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-warning" form="archiveForm">Archive Resource</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_head %}
@@ -425,16 +463,10 @@
     // Handle HTMX responses
     document.body.addEventListener('htmx:afterRequest', function(evt) {
         if (evt.detail.xhr.status === 200) {
-            // Show success message
             const messageDiv = document.getElementById('status-message');
             messageDiv.innerHTML = '<div class="alert alert-success">' + evt.detail.xhr.responseText + '</div>';
-            
-            // Reload page after a short delay to show updated status
-            setTimeout(function() {
-                window.location.reload();
-            }, 1500);
+            setTimeout(function() { window.location.reload(); }, 1500);
         } else {
-            // Show error message
             const messageDiv = document.getElementById('status-message');
             messageDiv.innerHTML = '<div class="alert alert-danger">' + evt.detail.xhr.responseText + '</div>';
         }

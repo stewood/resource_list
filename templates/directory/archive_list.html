@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+
+{% block title %}Archived Resources - Resource Directory{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Archived Resources</h1>
+            <a href="{% url 'directory:resource_list' %}" class="btn btn-primary">
+                <i class="fas fa-list"></i> View Active Resources
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Archive Statistics -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Archive Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h3 class="text-muted">{{ total_archived }}</h3>
+                            <p class="text-muted">Total Archived</p>
+                        </div>
+                    </div>
+                    {% for category, count in archived_by_category.items %}
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h3 class="text-muted">{{ count }}</h3>
+                            <p class="text-muted">{{ category }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Search & Filters</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="q" class="form-label">Search</label>
+                        <input type="text" class="form-control" id="q" name="q" value="{{ request.GET.q }}" placeholder="Search archived resources...">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="service_type" class="form-label">Service Type</label>
+                        <select class="form-select" id="service_type" name="service_type">
+                            <option value="">All Service Types</option>
+                            {% for service_type in service_types %}
+                            <option value="{{ service_type.id }}" {% if request.GET.service_type == service_type.id|stringformat:"s" %}selected{% endif %}>
+                                {{ service_type.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="sort" class="form-label">Sort By</label>
+                        <select class="form-select" id="sort" name="sort">
+                            <option value="-archived_at" {% if request.GET.sort == '-archived_at' %}selected{% endif %}>Recently Archived</option>
+                            <option value="archived_at" {% if request.GET.sort == 'archived_at' %}selected{% endif %}>Oldest Archived</option>
+                            <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Name A-Z</option>
+                            <option value="-name" {% if request.GET.sort == '-name' %}selected{% endif %}>Name Z-A</option>
+                            <option value="city" {% if request.GET.sort == 'city' %}selected{% endif %}>City A-Z</option>
+                            <option value="-city" {% if request.GET.sort == '-city' %}selected{% endif %}>City Z-A</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                            <a href="{% url 'directory:archive_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Clear
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resource List -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Archived Resources ({{ page_obj.paginator.count }} total)</h5>
+            </div>
+            <div class="card-body">
+                {% if resources %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Resource Name</th>
+                                    <th>Category</th>
+                                    <th>Location</th>
+                                    <th>Archived By</th>
+                                    <th>Archived Date</th>
+                                    <th>Archive Reason</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for resource in resources %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ resource.name }}</strong>
+                                        {% if resource.is_emergency_service %}
+                                            <span class="badge bg-danger ms-1">Emergency</span>
+                                        {% endif %}
+                                        {% if resource.is_24_hour_service %}
+                                            <span class="badge bg-info ms-1">24/7</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if resource.category %}
+                                            {{ resource.category.name }}
+                                        {% else %}
+                                            <span class="text-muted">No category</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if resource.city and resource.state %}
+                                            {{ resource.city }}, {{ resource.state }}
+                                            {% if resource.county %}
+                                                <br><small class="text-muted">{{ resource.county }} County</small>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-muted">No location</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if resource.archived_by %}
+                                            {{ resource.archived_by.get_full_name|default:resource.archived_by.username }}
+                                        {% else %}
+                                            <span class="text-muted">Unknown</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if resource.archived_at %}
+                                            <small class="text-muted">
+                                                {{ resource.archived_at|date:"M j, Y" }}
+                                                <br>{{ resource.archived_at|date:"g:i A" }}
+                                            </small>
+                                        {% else %}
+                                            <span class="text-muted">Unknown</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if resource.archive_reason %}
+                                            <small>{{ resource.archive_reason|truncatechars:50 }}</small>
+                                        {% else %}
+                                            <span class="text-muted">No reason provided</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'directory:archive_detail' resource.pk %}" 
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                            {% if user.is_staff %}
+                                            <button type="button" class="btn btn-outline-success btn-sm" 
+                                                    onclick="unarchiveResource({{ resource.pk }})">
+                                                <i class="fas fa-undo"></i> Unarchive
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                    <nav aria-label="Archive pagination">
+                        <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.service_type %}&service_type={{ request.GET.service_type }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
+                                        <i class="fas fa-angle-double-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.service_type %}&service_type={{ request.GET.service_type }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
+                                        <i class="fas fa-angle-left"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                                </span>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.service_type %}&service_type={{ request.GET.service_type }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
+                                        <i class="fas fa-angle-right"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.service_type %}&service_type={{ request.GET.service_type }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
+                                        <i class="fas fa-angle-double-right"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-archive fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">No archived resources found</h4>
+                        <p class="text-muted">
+                            {% if request.GET.q or request.GET.category or request.GET.service_type %}
+                                Try adjusting your search criteria.
+                            {% else %}
+                                There are currently no archived resources in the system.
+                            {% endif %}
+                        </p>
+                        <a href="{% url 'directory:resource_list' %}" class="btn btn-primary">
+                            <i class="fas fa-list"></i> View Active Resources
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Unarchive Confirmation Modal -->
+<div class="modal fade" id="unarchiveModal" tabindex="-1" aria-labelledby="unarchiveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="unarchiveModalLabel">Unarchive Resource</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to unarchive this resource? It will become active again and appear in the main resource list.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="unarchiveForm" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Unarchive Resource</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function unarchiveResource(resourceId) {
+    if (confirm('Are you sure you want to unarchive this resource? It will become active again.')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/directory/resources/${resourceId}/unarchive/`;
+        
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrfToken;
+        
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

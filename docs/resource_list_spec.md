@@ -108,9 +108,11 @@ Build a small, internal-first web app to curate and maintain a high-quality dire
 
 ## 6) Workflows
 
-**Lifecycle:** `Draft → Needs Review → Published` (optional: `Archived` later)
+**Lifecycle:** `Draft → Needs Review → Published → Archived`
 
 **Editing:** Editing a Published record creates a new draft-like revision or demotes to `needs_review` (implementation choice) and always records a new `resource_version`.
+
+**Archiving:** Admin-only action requiring a reason; sets `is_archived`, `archived_at`, `archived_by`, `archive_reason`. Archived resources are excluded from normal lists and search by default but are visible in dedicated archive list/detail views. Unarchive restores visibility.
 
 **Merge (later, not MVP)**: Select winner + loser; survivor keeps chosen fields; loser soft-deleted; write `change_type='merge'` with metadata.
 

@@ -18,8 +18,14 @@ from django.views.generic.edit import FormView
 
 from .forms import ResourceForm
 from .models import Resource, ResourceVersion, ServiceType, TaxonomyCategory
-from .permissions import (require_admin, require_editor, require_reviewer,
-                          user_can_publish, user_can_submit_for_review)
+from .permissions import (
+    require_admin,
+    require_editor,
+    require_reviewer,
+    user_can_publish,
+    user_can_submit_for_review,
+    user_can_hard_delete,
+)
 from .utils import compare_versions
 
 
@@ -33,7 +39,15 @@ class ResourceListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         """Filter queryset based on search and filter parameters."""
-        queryset = Resource.objects.filter(is_deleted=False)
+        # Start with non-archived resources by default
+        queryset = Resource.objects.all()
+
+        # Check if user wants to see archived resources
+        show_archived = self.request.GET.get("show_archived", "").lower() == "true"
+        if show_archived:
+            queryset = Resource.objects.all_including_archived()
+        else:
+            queryset = Resource.objects.all()  # This uses the manager's default filter
 
         # Search using FTS5
         search_query = self.request.GET.get("q", "").strip()
@@ -41,7 +55,11 @@ class ResourceListView(LoginRequiredMixin, ListView):
             # Use combined search (FTS5 + exact matches)
             search_results = Resource.objects.search_combined(search_query)
             if search_results.exists():
-                queryset = search_results.filter(is_deleted=False)
+                # Apply archive filter to search results
+                if show_archived:
+                    queryset = search_results.filter(is_deleted=False)
+                else:
+                    queryset = search_results
             else:
                 # Fallback to basic search if FTS5 fails
                 queryset = queryset.filter(
@@ -87,6 +105,13 @@ class ResourceListView(LoginRequiredMixin, ListView):
             queryset = queryset.filter(is_24_hour_service=True)
         elif hour24_filter == "false":
             queryset = queryset.filter(is_24_hour_service=False)
+
+        # Archive filter
+        archive_filter = self.request.GET.get("archive", "")
+        if archive_filter == "archived":
+            queryset = Resource.objects.archived()
+        elif archive_filter == "active":
+            queryset = Resource.objects.all()  # Non-archived only
 
         # Sorting
         sort_by = self.request.GET.get("sort", "-updated_at")
@@ -141,8 +166,8 @@ class ResourceDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "resource"
 
     def get_queryset(self):
-        """Filter out deleted resources."""
-        return Resource.objects.filter(is_deleted=False)
+        """Filter out deleted resources but include archived ones."""
+        return Resource.objects.all_including_archived()
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         """Add additional context data."""
@@ -195,11 +220,12 @@ class ResourceCreateView(LoginRequiredMixin, CreateView):
 
 
 class ResourceUpdateView(LoginRequiredMixin, UpdateView):
-    """Update view for existing resources."""
+    """Update view for resources."""
 
     model = Resource
     form_class = ResourceForm
     template_name = "directory/resource_form.html"
+    context_object_name = "resource"
 
     def dispatch(self, request, *args, **kwargs):
         """Check permissions before processing the request."""
@@ -210,7 +236,7 @@ class ResourceUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_queryset(self):
         """Filter out deleted resources."""
-        return Resource.objects.filter(is_deleted=False)
+        return Resource.objects.all_including_archived()
 
     def get_form_kwargs(self):
         """Pass user to form for validation."""
@@ -218,8 +244,14 @@ class ResourceUpdateView(LoginRequiredMixin, UpdateView):
         kwargs["user"] = self.request.user
         return kwargs
 
+    def get_context_data(self, **kwargs):
+        """Add additional context."""
+        context = super().get_context_data(**kwargs)
+        context["is_edit"] = True
+        return context
+
     def form_valid(self, form):
-        """Set the user who updated the resource."""
+        """Handle form validation."""
         form.instance.updated_by = self.request.user
         return super().form_valid(form)
 
@@ -227,10 +259,109 @@ class ResourceUpdateView(LoginRequiredMixin, UpdateView):
         """Redirect to the resource detail page."""
         return reverse("directory:resource_detail", kwargs={"pk": self.object.pk})
 
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-        """Add additional context data."""
+
+class ArchiveListView(LoginRequiredMixin, ListView):
+    """List view for archived resources."""
+
+    model = Resource
+    template_name = "directory/archive_list.html"
+    context_object_name = "resources"
+    paginate_by = 20
+
+    def get_queryset(self):
+        """Get only archived resources."""
+        queryset = Resource.objects.archived()
+
+        # Search using FTS5
+        search_query = self.request.GET.get("q", "").strip()
+        if search_query:
+            # Use combined search (FTS5 + exact matches)
+            search_results = Resource.objects.search_combined(search_query)
+            if search_results.exists():
+                queryset = search_results.filter(is_archived=True, is_deleted=False)
+            else:
+                # Fallback to basic search if FTS5 fails
+                queryset = queryset.filter(
+                    Q(name__icontains=search_query)
+                    | Q(description__icontains=search_query)
+                    | Q(city__icontains=search_query)
+                    | Q(state__icontains=search_query)
+                )
+
+        # Filters
+        category_filter = self.request.GET.get("category", "")
+        if category_filter:
+            queryset = queryset.filter(category_id=category_filter)
+
+        service_type_filter = self.request.GET.get("service_type", "")
+        if service_type_filter:
+            queryset = queryset.filter(service_types_id=service_type_filter)
+
+        city_filter = self.request.GET.get("city", "")
+        if city_filter:
+            queryset = queryset.filter(city__icontains=city_filter)
+
+        state_filter = self.request.GET.get("state", "")
+        if state_filter:
+            queryset = queryset.filter(state__icontains=state_filter)
+
+        county_filter = self.request.GET.get("county", "")
+        if county_filter:
+            queryset = queryset.filter(county__icontains=county_filter)
+
+        # Sorting
+        sort_by = self.request.GET.get("sort", "-archived_at")
+        if sort_by in [
+            "name",
+            "-name",
+            "city",
+            "-city",
+            "archived_at",
+            "-archived_at",
+            "archived_by",
+            "-archived_by",
+        ]:
+            queryset = queryset.order_by(sort_by)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        """Add additional context."""
         context = super().get_context_data(**kwargs)
-        context["action"] = "Edit"
+        
+        # Get filter options
+        context["categories"] = TaxonomyCategory.objects.all().order_by("name")
+        context["service_types"] = ServiceType.objects.all().order_by("name")
+        
+        # Get archive statistics
+        context["total_archived"] = Resource.objects.archived().count()
+        context["archived_by_category"] = {}
+        for category in TaxonomyCategory.objects.all():
+            count = Resource.objects.archived().filter(category=category).count()
+            if count > 0:
+                context["archived_by_category"][category.name] = count
+
+        return context
+
+
+class ArchiveDetailView(LoginRequiredMixin, DetailView):
+    """Detail view for archived resources."""
+
+    model = Resource
+    template_name = "directory/archive_detail.html"
+    context_object_name = "resource"
+
+    def get_queryset(self):
+        """Get only archived resources."""
+        return Resource.objects.archived()
+
+    def get_context_data(self, **kwargs):
+        """Add additional context."""
+        context = super().get_context_data(**kwargs)
+        
+        # Get version history
+        context["versions"] = self.object.versions.all()[:10]
+        
         return context
 
 
@@ -281,13 +412,69 @@ def publish_resource(request: HttpRequest, pk: int) -> HttpResponse:
 def unpublish_resource(request: HttpRequest, pk: int) -> HttpResponse:
     """Unpublish a resource."""
     resource = get_object_or_404(Resource, pk=pk, is_deleted=False)
-
+    
     if not user_can_publish(request.user):
-        return HttpResponse("Permission denied", status=403)
+        from django.core.exceptions import PermissionDenied
+        raise PermissionDenied("Access denied. Requires Reviewer or Admin role.")
 
     resource.status = "needs_review"
+    resource.updated_by = request.user
     resource.save()
+
     return HttpResponse("Resource unpublished successfully")
+
+
+@login_required
+@require_http_methods(["POST"])
+def archive_resource(request: HttpRequest, pk: int) -> HttpResponse:
+    """Archive a resource."""
+    from django.utils import timezone
+    
+    # Use the manager's all_including_archived method to get the resource
+    resource = get_object_or_404(Resource.objects.all_including_archived(), pk=pk, is_archived=False)
+    
+    if not user_can_hard_delete(request.user):
+        from django.core.exceptions import PermissionDenied
+        raise PermissionDenied("Access denied. Requires Admin role.")
+
+    # Get archive reason from POST data
+    archive_reason = request.POST.get("archive_reason", "").strip()
+    
+    if not archive_reason:
+        return HttpResponse("Archive reason is required", status=400)
+
+    try:
+        resource.is_archived = True
+        resource.archived_at = timezone.now()
+        resource.archived_by = request.user
+        resource.archive_reason = archive_reason
+        resource.updated_by = request.user
+        resource.save()
+        # Redirect back to detail page for UX
+        return redirect("directory:resource_detail", pk=resource.pk)
+    except Exception as e:
+        return HttpResponse(f"Error archiving resource: {str(e)}", status=400)
+
+
+@login_required
+@require_http_methods(["POST"])
+def unarchive_resource(request: HttpRequest, pk: int) -> HttpResponse:
+    """Unarchive a resource."""
+    # Use the manager's archived method to get the resource
+    resource = get_object_or_404(Resource.objects.archived(), pk=pk)
+    
+    if not user_can_hard_delete(request.user):
+        from django.core.exceptions import PermissionDenied
+        raise PermissionDenied("Access denied. Requires Admin role.")
+
+    resource.is_archived = False
+    resource.archived_at = None
+    resource.archived_by = None
+    resource.archive_reason = ""
+    resource.updated_by = request.user
+    resource.save()
+
+    return redirect("directory:resource_detail", pk=resource.pk)
 
 
 @login_required
@@ -301,6 +488,9 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     published_count = Resource.objects.filter(
         status="published", is_deleted=False
     ).count()
+
+    # Get archived count
+    archived_count = Resource.objects.archived().count()
 
     # Get resources needing verification
     from datetime import timedelta
@@ -326,6 +516,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         "draft_count": draft_count,
         "review_count": review_count,
         "published_count": published_count,
+        "archived_count": archived_count,
         "needs_verification": needs_verification,
         "recent_resources": recent_resources,
     }

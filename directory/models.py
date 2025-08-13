@@ -17,6 +17,18 @@ from django.utils import timezone
 class ResourceManager(models.Manager):
     """Custom manager for Resource model with FTS5 search capabilities."""
 
+    def get_queryset(self):
+        """Return only non-archived, non-deleted resources by default."""
+        return super().get_queryset().filter(is_archived=False, is_deleted=False)
+
+    def all_including_archived(self):
+        """Return all resources including archived ones."""
+        return super().get_queryset().filter(is_deleted=False)
+
+    def archived(self):
+        """Return only archived resources."""
+        return super().get_queryset().filter(is_archived=True, is_deleted=False)
+
     def search_fts(self, query: str) -> models.QuerySet:
         """
         Search resources using SQLite FTS5 full-text search.
@@ -234,6 +246,19 @@ class Resource(models.Model):
     )
     is_deleted = models.BooleanField(default=False)
 
+    # Archive fields
+    is_archived = models.BooleanField(default=False, help_text="Mark if this resource is archived")
+    archived_at = models.DateTimeField(null=True, blank=True, help_text="When this resource was archived")
+    archived_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="archived_resources",
+        help_text="User who archived this resource",
+    )
+    archive_reason = models.TextField(blank=True, help_text="Reason for archiving this resource")
+
     class Meta:
         ordering = ["-updated_at"]
         indexes = [
@@ -245,6 +270,7 @@ class Resource(models.Model):
             models.Index(fields=["is_emergency_service"]),
             models.Index(fields=["is_24_hour_service"]),
             models.Index(fields=["updated_at"]),
+            models.Index(fields=["is_archived"]),
         ]
 
     def __str__(self) -> str:
@@ -299,6 +325,15 @@ class Resource(models.Model):
                     errors["last_verified_at"] = (
                         f"Verification must be within {settings.VERIFICATION_EXPIRY_DAYS} days."
                     )
+
+        # Archive validation
+        if self.is_archived:
+            if not self.archived_at:
+                errors["archived_at"] = "Archive date is required when archiving a resource."
+            if not self.archived_by:
+                errors["archived_by"] = "Archive user is required when archiving a resource."
+            if not self.archive_reason:
+                errors["archive_reason"] = "Archive reason is required when archiving a resource."
 
         # Postal code validation
         if self.state and self.postal_code:

@@ -106,6 +106,7 @@ class ResourceAdmin(admin.ModelAdmin):
         "county",
         "is_emergency_service",
         "is_24_hour_service",
+        "is_archived",
         "needs_verification_display",
         "updated_at",
     ]
@@ -118,6 +119,7 @@ class ResourceAdmin(admin.ModelAdmin):
         "county",
         "is_emergency_service",
         "is_24_hour_service",
+        "is_archived",
         "is_deleted",
         "created_at",
         "updated_at",
@@ -147,6 +149,8 @@ class ResourceAdmin(admin.ModelAdmin):
         "updated_at",
         "created_by",
         "updated_by",
+        "archived_at",
+        "archived_by",
         "needs_verification",
         "has_contact_info",
     ]
@@ -185,6 +189,13 @@ class ResourceAdmin(admin.ModelAdmin):
         ),
         ("Verification", {"fields": ("last_verified_at", "last_verified_by")}),
         (
+            "Archive Information",
+            {
+                "fields": ("is_archived", "archived_at", "archived_by", "archive_reason"),
+                "classes": ("collapse",),
+            },
+        ),
+        (
             "Metadata",
             {
                 "fields": (
@@ -201,7 +212,7 @@ class ResourceAdmin(admin.ModelAdmin):
         ),
     )
     inlines = [ResourceVersionInline]
-    actions = ["submit_for_review", "publish_resource", "unpublish_resource"]
+    actions = ["submit_for_review", "publish_resource", "unpublish_resource", "archive_resources", "unarchive_resources"]
 
     def needs_verification_display(self, obj):
         """Display verification status with color coding."""
@@ -219,7 +230,7 @@ class ResourceAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
-        """Filter out deleted resources by default."""
+        """Filter out deleted resources by default, but include archived ones."""
         qs = super().get_queryset(request)
         return qs.filter(is_deleted=False)
 
@@ -275,6 +286,53 @@ class ResourceAdmin(admin.ModelAdmin):
         self.message_user(request, f"Successfully unpublished {updated} resource(s).")
 
     unpublish_resource.short_description = "Unpublish selected resources"
+
+    def archive_resources(self, request, queryset):
+        """Archive selected resources."""
+        if not user_can_hard_delete(request.user):
+            raise PermissionDenied("You don't have permission to archive resources.")
+
+        # Filter out already archived resources
+        to_archive = queryset.filter(is_archived=False)
+        
+        if not to_archive.exists():
+            self.message_user(request, "No resources to archive.")
+            return
+
+        # For bulk archive, we'll set a generic reason
+        from django.utils import timezone
+        
+        updated = to_archive.update(
+            is_archived=True,
+            archived_at=timezone.now(),
+            archived_by=request.user,
+            archive_reason="Bulk archived by admin",
+        )
+        self.message_user(request, f"Successfully archived {updated} resource(s).")
+
+    archive_resources.short_description = "Archive selected resources"
+
+    def unarchive_resources(self, request, queryset):
+        """Unarchive selected resources."""
+        if not user_can_hard_delete(request.user):
+            raise PermissionDenied("You don't have permission to unarchive resources.")
+
+        # Filter to only archived resources
+        to_unarchive = queryset.filter(is_archived=True)
+        
+        if not to_unarchive.exists():
+            self.message_user(request, "No archived resources to unarchive.")
+            return
+
+        updated = to_unarchive.update(
+            is_archived=False,
+            archived_at=None,
+            archived_by=None,
+            archive_reason="",
+        )
+        self.message_user(request, f"Successfully unarchived {updated} resource(s).")
+
+    unarchive_resources.short_description = "Unarchive selected resources"
 
 
 @admin.register(ResourceVersion)

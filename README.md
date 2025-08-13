@@ -44,6 +44,13 @@ To provide accurate, verified, and up-to-date information about resources availa
 - **Responsive Design**: Works on desktop and mobile devices
 - **Intuitive Navigation**: Clear workflows and user-friendly forms
 
+### 🗃️ Archive Management
+- **Soft Archiving**: Admins can archive resources that are closed or no longer active
+- **Archive Reasoning**: Archive action requires a reason; tracked with who/when
+- **Archive Views**: Dedicated Archive List and Archive Detail to browse archived records
+- **Search Filters**: Resource list supports filtering by archive status
+- **Admin Actions**: Bulk archive/unarchive available in Django admin
+
 ## 🏗️ Architecture
 
 ### Tech Stack
@@ -243,8 +250,16 @@ The central entity containing comprehensive information about each service:
 
 ## 📈 Recent Enhancements
 
-### London KY Resources Import
-The system recently imported **42 verified resources** from comprehensive research on London, Kentucky homeless services:
+### Archive System & London KY Resources Import
+Recent updates include a complete archive workflow integrated across models, views, and admin:
+- Added fields: `is_archived`, `archived_at`, `archived_by`, `archive_reason`
+- Added endpoints: `POST /resources/<pk>/archive/` and `/unarchive/`
+- Updated list/detail views and templates with an archive modal and filters
+- Added archive list/detail pages and admin actions
+
+These changes ensure closed organizations can be preserved historically without appearing in active listings.
+
+Additionally, the system recently imported **42 verified resources** from comprehensive research on London, Kentucky homeless services:
 
 **Geographic Coverage:**
 - **Primary Focus**: 30 resources in London and Laurel County
