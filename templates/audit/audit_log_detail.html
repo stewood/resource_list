@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Log Detail{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="mb-4">
+        <a href="{% url 'audit:audit_log_list' %}" class="btn btn-outline-secondary">
+            ← Back to Audit Logs
+        </a>
+    </div>
+
+    <div class="card">
+        <!-- Header -->
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">Audit Log #{{ audit_log.id }}</h1>
+                <span class="badge 
+                    {% if audit_log.action == 'create_resource' %}bg-success
+                    {% elif audit_log.action == 'update_resource' %}bg-primary
+                    {% else %}bg-secondary{% endif %} fs-6">
+                    {{ audit_log.action }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="card-body">
+            <div class="row">
+                <!-- Basic Information -->
+                <div class="col-md-6">
+                    <h2 class="h5 mb-3">Basic Information</h2>
+                    <dl class="row">
+                        <dt class="col-sm-4">Timestamp</dt>
+                        <dd class="col-sm-8">{{ audit_log.created_at|date:"F d, Y H:i:s T" }}</dd>
+                        
+                        <dt class="col-sm-4">Actor</dt>
+                        <dd class="col-sm-8">
+                            {{ audit_log.actor.get_full_name|default:audit_log.actor.username }}
+                            <small class="text-muted">({{ audit_log.actor.username }})</small>
+                        </dd>
+                        
+                        <dt class="col-sm-4">Action</dt>
+                        <dd class="col-sm-8">{{ audit_log.action }}</dd>
+                        
+                        <dt class="col-sm-4">Target Table</dt>
+                        <dd class="col-sm-8">{{ audit_log.target_table }}</dd>
+                        
+                        <dt class="col-sm-4">Target ID</dt>
+                        <dd class="col-sm-8">{{ audit_log.target_id }}</dd>
+                    </dl>
+                </div>
+
+                <!-- Related Object -->
+                <div class="col-md-6">
+                    <h2 class="h5 mb-3">Related Object</h2>
+                    {% if related_object %}
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                {% if audit_log.target_table == 'resource' %}
+                                    <h3 class="h6">{{ related_object.name }}</h3>
+                                    <p class="text-muted small">{{ related_object.description|truncatewords:20 }}</p>
+                                    <div class="mb-2">
+                                        <span class="badge 
+                                            {% if related_object.status == 'published' %}bg-success
+                                            {% elif related_object.status == 'needs_review' %}bg-warning
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ related_object.get_status_display }}
+                                        </span>
+                                    </div>
+                                    <a href="{% url 'directory:resource_detail' related_object.pk %}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        View Resource →
+                                    </a>
+                                {% else %}
+                                    <p class="text-muted small">Object exists but details not available</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <p class="text-muted small">Related object not found or no longer exists</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Metadata -->
+            {% if audit_log.metadata %}
+            <div class="mt-4">
+                <h2 class="h5 mb-3">Metadata</h2>
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <pre class="mb-0 small">{{ audit_log.metadata|pprint }}</pre>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Raw JSON -->
+            <div class="mt-4">
+                <h2 class="h5 mb-3">Raw Data</h2>
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <details>
+                            <summary class="btn btn-sm btn-outline-secondary">
+                                View Raw JSON Data
+                            </summary>
+                            <pre class="mt-2 small text-muted">{{ audit_log.metadata_json }}</pre>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="mt-4 d-flex justify-content-between">
+        <div>
+            {% if audit_log.id > 1 %}
+            <a href="{% url 'audit:audit_log_detail' audit_log.id|add:'-1' %}" 
+               class="btn btn-secondary">
+                ← Previous Log
+            </a>
+            {% endif %}
+        </div>
+        <div>
+            <a href="{% url 'audit:audit_log_detail' audit_log.id|add:'1' %}" 
+               class="btn btn-primary">
+                Next Log →
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

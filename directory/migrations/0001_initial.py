@@ -15,101 +15,224 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='TaxonomyCategory',
+            name="TaxonomyCategory",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True)),
-                ('slug', models.SlugField(blank=True, max_length=100, unique=True)),
-                ('description', models.TextField(blank=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, unique=True)),
+                ("slug", models.SlugField(blank=True, max_length=100, unique=True)),
+                ("description", models.TextField(blank=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'verbose_name': 'Category',
-                'verbose_name_plural': 'Categories',
-                'ordering': ['name'],
+                "verbose_name": "Category",
+                "verbose_name_plural": "Categories",
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='Resource',
+            name="Resource",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('description', models.TextField(blank=True)),
-                ('phone', models.CharField(blank=True, max_length=20)),
-                ('email', models.EmailField(blank=True, max_length=254)),
-                ('website', models.URLField(blank=True)),
-                ('address1', models.CharField(blank=True, max_length=200)),
-                ('address2', models.CharField(blank=True, max_length=200)),
-                ('city', models.CharField(blank=True, max_length=100)),
-                ('state', models.CharField(blank=True, max_length=2)),
-                ('postal_code', models.CharField(blank=True, max_length=10)),
-                ('status', models.CharField(choices=[('draft', 'Draft'), ('needs_review', 'Needs Review'), ('published', 'Published')], default='draft', max_length=20)),
-                ('source', models.CharField(blank=True, max_length=200)),
-                ('last_verified_at', models.DateTimeField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('is_deleted', models.BooleanField(default=False)),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='created_resources', to=settings.AUTH_USER_MODEL)),
-                ('last_verified_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='verified_resources', to=settings.AUTH_USER_MODEL)),
-                ('updated_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='updated_resources', to=settings.AUTH_USER_MODEL)),
-                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='resources', to='directory.taxonomycategory')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("description", models.TextField(blank=True)),
+                ("phone", models.CharField(blank=True, max_length=20)),
+                ("email", models.EmailField(blank=True, max_length=254)),
+                ("website", models.URLField(blank=True)),
+                ("address1", models.CharField(blank=True, max_length=200)),
+                ("address2", models.CharField(blank=True, max_length=200)),
+                ("city", models.CharField(blank=True, max_length=100)),
+                ("state", models.CharField(blank=True, max_length=2)),
+                ("postal_code", models.CharField(blank=True, max_length=10)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("draft", "Draft"),
+                            ("needs_review", "Needs Review"),
+                            ("published", "Published"),
+                        ],
+                        default="draft",
+                        max_length=20,
+                    ),
+                ),
+                ("source", models.CharField(blank=True, max_length=200)),
+                ("last_verified_at", models.DateTimeField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("is_deleted", models.BooleanField(default=False)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="created_resources",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "last_verified_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="verified_resources",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "updated_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="updated_resources",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "category",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="resources",
+                        to="directory.taxonomycategory",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-updated_at'],
+                "ordering": ["-updated_at"],
             },
         ),
         migrations.CreateModel(
-            name='AuditLog',
+            name="AuditLog",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('action', models.CharField(max_length=100)),
-                ('target_table', models.CharField(max_length=50)),
-                ('target_id', models.CharField(max_length=50)),
-                ('metadata_json', models.TextField(blank=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('actor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='audit_actions', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("action", models.CharField(max_length=100)),
+                ("target_table", models.CharField(max_length=50)),
+                ("target_id", models.CharField(max_length=50)),
+                ("metadata_json", models.TextField(blank=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "actor",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="audit_actions",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-created_at'],
-                'indexes': [models.Index(fields=['actor'], name='directory_a_actor_i_77312d_idx'), models.Index(fields=['action'], name='directory_a_action_e71026_idx'), models.Index(fields=['target_table'], name='directory_a_target__8e7c9f_idx'), models.Index(fields=['created_at'], name='directory_a_created_4982c5_idx')],
+                "ordering": ["-created_at"],
+                "indexes": [
+                    models.Index(
+                        fields=["actor"], name="directory_a_actor_i_77312d_idx"
+                    ),
+                    models.Index(
+                        fields=["action"], name="directory_a_action_e71026_idx"
+                    ),
+                    models.Index(
+                        fields=["target_table"], name="directory_a_target__8e7c9f_idx"
+                    ),
+                    models.Index(
+                        fields=["created_at"], name="directory_a_created_4982c5_idx"
+                    ),
+                ],
             },
         ),
         migrations.CreateModel(
-            name='ResourceVersion',
+            name="ResourceVersion",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('version_number', models.PositiveIntegerField()),
-                ('snapshot_json', models.TextField()),
-                ('changed_fields', models.TextField()),
-                ('change_type', models.CharField(choices=[('create', 'Create'), ('update', 'Update'), ('status_change', 'Status Change')], max_length=20)),
-                ('changed_at', models.DateTimeField(auto_now_add=True)),
-                ('changed_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='resource_versions', to=settings.AUTH_USER_MODEL)),
-                ('resource', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='versions', to='directory.resource')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("version_number", models.PositiveIntegerField()),
+                ("snapshot_json", models.TextField()),
+                ("changed_fields", models.TextField()),
+                (
+                    "change_type",
+                    models.CharField(
+                        choices=[
+                            ("create", "Create"),
+                            ("update", "Update"),
+                            ("status_change", "Status Change"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("changed_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "changed_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="resource_versions",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "resource",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="versions",
+                        to="directory.resource",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-version_number'],
-                'unique_together': {('resource', 'version_number')},
+                "ordering": ["-version_number"],
+                "unique_together": {("resource", "version_number")},
             },
         ),
         migrations.AddIndex(
-            model_name='resource',
-            index=models.Index(fields=['status'], name='directory_r_status_9994fb_idx'),
+            model_name="resource",
+            index=models.Index(fields=["status"], name="directory_r_status_9994fb_idx"),
         ),
         migrations.AddIndex(
-            model_name='resource',
-            index=models.Index(fields=['city'], name='directory_r_city_0eae47_idx'),
+            model_name="resource",
+            index=models.Index(fields=["city"], name="directory_r_city_0eae47_idx"),
         ),
         migrations.AddIndex(
-            model_name='resource',
-            index=models.Index(fields=['state'], name='directory_r_state_5442c6_idx'),
+            model_name="resource",
+            index=models.Index(fields=["state"], name="directory_r_state_5442c6_idx"),
         ),
         migrations.AddIndex(
-            model_name='resource',
-            index=models.Index(fields=['category'], name='directory_r_categor_a65ce7_idx'),
+            model_name="resource",
+            index=models.Index(
+                fields=["category"], name="directory_r_categor_a65ce7_idx"
+            ),
         ),
         migrations.AddIndex(
-            model_name='resource',
-            index=models.Index(fields=['updated_at'], name='directory_r_updated_d38a7a_idx'),
+            model_name="resource",
+            index=models.Index(
+                fields=["updated_at"], name="directory_r_updated_d38a7a_idx"
+            ),
         ),
     ]

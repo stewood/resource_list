@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">Audit Dashboard</h1>
+        <div class="d-flex gap-2">
+            <a href="{% url 'audit:audit_log_list' %}" class="btn btn-primary">
+                View Logs
+            </a>
+            <a href="{% url 'audit:export_audit_logs' %}" class="btn btn-success">
+                Export CSV
+            </a>
+        </div>
+    </div>
+
+    <!-- Date Range Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="d-flex align-items-center gap-3">
+                <label for="days" class="form-label mb-0">Show data for last:</label>
+                <select name="days" id="days" class="form-select" style="width: auto;">
+                    <option value="7" {% if days == 7 %}selected{% endif %}>7 days</option>
+                    <option value="30" {% if days == 30 %}selected{% endif %}>30 days</option>
+                    <option value="90" {% if days == 90 %}selected{% endif %}>90 days</option>
+                </select>
+                <button type="submit" class="btn btn-primary">
+                    Update
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total Actions</h5>
+                    <p class="display-6 text-primary">{{ total_actions }}</p>
+                    <p class="text-muted small">{{ start_date|date:"M d" }} - {{ end_date|date:"M d, Y" }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Most Active User</h5>
+                    {% if actions_by_user %}
+                        <p class="h4 text-success">{{ actions_by_user.0.actor__username }}</p>
+                        <p class="text-muted small">{{ actions_by_user.0.count }} actions</p>
+                    {% else %}
+                        <p class="h4 text-muted">No data</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Most Common Action</h5>
+                    {% if actions_by_type %}
+                        <p class="h4 text-info">{{ actions_by_type.0.action }}</p>
+                        <p class="text-muted small">{{ actions_by_type.0.count }} times</p>
+                    {% else %}
+                        <p class="h4 text-muted">No data</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Most Active Table</h5>
+                    {% if actions_by_table %}
+                        <p class="h4 text-warning">{{ actions_by_table.0.target_table }}</p>
+                        <p class="text-muted small">{{ actions_by_table.0.count }} actions</p>
+                    {% else %}
+                        <p class="h4 text-muted">No data</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Actions by Type -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions by Type</h3>
+            {% if actions_by_type %}
+                <div class="space-y-3">
+                    {% for action in actions_by_type %}
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-gray-700">{{ action.action }}</span>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-32 bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-600 h-2 rounded-full" style="width: {{ action.count|div:total_actions|mul:100 }}%"></div>
+                            </div>
+                            <span class="text-sm text-gray-500 w-8 text-right">{{ action.count }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-center py-8">No data available</p>
+            {% endif %}
+        </div>
+
+        <!-- Actions by User -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Actions by User</h3>
+            {% if actions_by_user %}
+                <div class="space-y-3">
+                    {% for user in actions_by_user|slice:":10" %}
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-gray-700">{{ user.actor__username }}</span>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-32 bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-600 h-2 rounded-full" style="width: {{ user.count|div:total_actions|mul:100 }}%"></div>
+                            </div>
+                            <span class="text-sm text-gray-500 w-8 text-right">{{ user.count }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-center py-8">No data available</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Daily Activity -->
+    <div class="mt-8 bg-white p-6 rounded-lg shadow">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Daily Activity</h3>
+        {% if daily_activity %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chart</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for day in daily_activity %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ day.day|date:"M d, Y" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ day.count }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="w-32 bg-gray-200 rounded-full h-2">
+                                        {% with max_count=daily_activity.0.count %}
+                                        <div class="bg-purple-600 h-2 rounded-full" style="width: {{ day.count|div:max_count|mul:100 }}%"></div>
+                                        {% endwith %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center py-8">No daily activity data available</p>
+        {% endif %}
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="mt-8 bg-white p-6 rounded-lg shadow">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Recent Activity</h3>
+            <a href="{% url 'audit:audit_log_list' %}" class="text-blue-600 hover:text-blue-900 text-sm">
+                View All →
+            </a>
+        </div>
+        
+        {% if daily_activity %}
+            <div class="space-y-3">
+                {% for day in daily_activity|slice:":5" %}
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">{{ day.day|date:"M d, Y" }}</p>
+                        <p class="text-xs text-gray-500">{{ day.count }} actions performed</p>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        {% if day.count > 10 %}
+                            <span class="text-red-600">High Activity</span>
+                        {% elif day.count > 5 %}
+                            <span class="text-yellow-600">Medium Activity</span>
+                        {% else %}
+                            <span class="text-green-600">Low Activity</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center py-8">No recent activity data available</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

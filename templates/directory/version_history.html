@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Version History - {{ resource.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'directory:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'directory:resource_list' %}">Resources</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'directory:resource_detail' resource.pk %}">{{ resource.name }}</a></li>
+                    <li class="breadcrumb-item active">Version History</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-history"></i> Version History
+                </h1>
+                <div>
+                    <a href="{% url 'directory:resource_detail' resource.pk %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Resource
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resource Info -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ resource.name }}</h5>
+                    <p class="text-muted mb-0">
+                        <strong>Current Status:</strong> 
+                        {% if resource.status == 'draft' %}
+                            <span class="badge bg-secondary">Draft</span>
+                        {% elif resource.status == 'needs_review' %}
+                            <span class="badge bg-warning">Needs Review</span>
+                        {% elif resource.status == 'published' %}
+                            <span class="badge bg-success">Published</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Version History Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list"></i> All Versions ({{ versions|length }} total)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if versions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Version</th>
+                                    <th>Change Type</th>
+                                    <th>Changed By</th>
+                                    <th>Date</th>
+                                    <th>Changed Fields</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for version in versions %}
+                                <tr>
+                                    <td>
+                                        <strong>v{{ version.version_number }}</strong>
+                                    </td>
+                                    <td>
+                                        {% if version.change_type == 'create' %}
+                                            <span class="badge bg-success">Created</span>
+                                        {% elif version.change_type == 'update' %}
+                                            <span class="badge bg-primary">Updated</span>
+                                        {% elif version.change_type == 'status_change' %}
+                                            <span class="badge bg-warning">Status Changed</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ version.changed_by.get_full_name|default:version.changed_by.username }}
+                                    </td>
+                                    <td>
+                                        {{ version.changed_at|date:"M j, Y H:i" }}
+                                    </td>
+                                    <td>
+                                        {% if version.changed_field_list %}
+                                            <small class="text-muted">
+                                                {{ version.changed_field_list|join:", "|title }}
+                                            </small>
+                                        {% else %}
+                                            <small class="text-muted">All fields</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{% url 'directory:version_comparison' resource.pk version.pk %}" 
+                                               class="btn btn-outline-info" 
+                                               title="Compare with current">
+                                                <i class="fas fa-exchange-alt"></i> Compare
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-info-circle text-muted" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3">No Version History</h5>
+                        <p class="text-muted">This resource hasn't been modified yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Version Timeline -->
+    {% if versions %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-stream"></i> Timeline View
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        {% for version in versions %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                {% if version.change_type == 'create' %}
+                                    <i class="fas fa-plus-circle text-success"></i>
+                                {% elif version.change_type == 'update' %}
+                                    <i class="fas fa-edit text-primary"></i>
+                                {% elif version.change_type == 'status_change' %}
+                                    <i class="fas fa-exchange-alt text-warning"></i>
+                                {% endif %}
+                            </div>
+                            <div class="timeline-content">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">
+                                            Version {{ version.version_number }} - 
+                                            {% if version.change_type == 'create' %}
+                                                Resource Created
+                                            {% elif version.change_type == 'update' %}
+                                                Resource Updated
+                                            {% elif version.change_type == 'status_change' %}
+                                                Status Changed
+                                            {% endif %}
+                                        </h6>
+                                        <p class="text-muted mb-1">
+                                            <strong>By:</strong> {{ version.changed_by.get_full_name|default:version.changed_by.username }}
+                                        </p>
+                                        <p class="text-muted mb-2">
+                                            <strong>Date:</strong> {{ version.changed_at|date:"M j, Y H:i" }}
+                                        </p>
+                                        {% if version.changed_field_list %}
+                                        <p class="mb-2">
+                                            <small class="text-muted">
+                                                <strong>Changed:</strong> {{ version.changed_field_list|join:", "|title }}
+                                            </small>
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'directory:version_comparison' resource.pk version.pk %}" 
+                                           class="btn btn-outline-info btn-sm">
+                                            <i class="fas fa-exchange-alt"></i> Compare
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 1rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #dee2e6;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: -1.5rem;
+        top: 0.5rem;
+        width: 2rem;
+        height: 2rem;
+        background-color: white;
+        border: 2px solid #dee2e6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+    }
+    
+    .timeline-marker i {
+        font-size: 0.75rem;
+    }
+    
+    .timeline-content {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        margin-left: 1rem;
+    }
+    
+    .timeline-item:last-child .timeline-content {
+        margin-bottom: 0;
+    }
+</style>
+{% endblock %}

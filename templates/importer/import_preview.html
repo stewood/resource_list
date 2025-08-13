@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Preview Import - Import Resources{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">
+                        <i class="fas fa-eye"></i> Preview Import
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>Import Job:</strong> {{ import_job.name }}
+                        {% if import_job.description %}
+                            <br><strong>Description:</strong> {{ import_job.description }}
+                        {% endif %}
+                    </div>
+                    
+                    <p class="text-muted mb-4">
+                        Preview of the first {{ preview_data.total_previewed }} rows from your CSV file. 
+                        This shows how the data will be mapped to resource fields.
+                    </p>
+                    
+                    {% if preview_data.error %}
+                        <div class="alert alert-danger">
+                            <h6><i class="fas fa-exclamation-triangle"></i> Error:</h6>
+                            {{ preview_data.error }}
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 8%;">Row</th>
+                                        <th style="width: 8%;">Status</th>
+                                        <th style="width: 15%;">Name</th>
+                                        <th style="width: 12%;">Category</th>
+                                        <th style="width: 15%;">Phone</th>
+                                        <th style="width: 15%;">Email</th>
+                                        <th style="width: 12%;">City</th>
+                                        <th style="width: 15%;">Error</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in preview_data.rows %}
+                                        <tr class="{% if row.status == 'valid' %}table-success{% else %}table-danger{% endif %}">
+                                            <td class="text-center">
+                                                <strong>{{ row.row_number }}</strong>
+                                            </td>
+                                            <td class="text-center">
+                                                {% if row.status == 'valid' %}
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-check"></i> Valid
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">
+                                                        <i class="fas fa-times"></i> Invalid
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <strong>{{ row.data.name|default:"—" }}</strong>
+                                            </td>
+                                            <td>
+                                                {{ row.data.category|default:"—" }}
+                                            </td>
+                                            <td>
+                                                {{ row.data.phone|default:"—" }}
+                                            </td>
+                                            <td>
+                                                {{ row.data.email|default:"—" }}
+                                            </td>
+                                            <td>
+                                                {{ row.data.city|default:"—" }}
+                                            </td>
+                                            <td>
+                                                {% if row.error %}
+                                                    <small class="text-danger">{{ row.error }}</small>
+                                                {% else %}
+                                                    <span class="text-success">✓</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Validation Summary</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-unstyled mb-0">
+                                            <li>
+                                                <strong>Valid rows:</strong> 
+                                                <span class="badge bg-success">
+                                                    {{ preview_data.rows|length|add:"0" }}
+                                                </span>
+                                            </li>
+                                            <li>
+                                                <strong>Invalid rows:</strong> 
+                                                <span class="badge bg-danger">
+                                                    {{ preview_data.rows|length|add:"0" }}
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Import Information</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><strong>File:</strong> {{ import_job.file_name }}</li>
+                                            <li><strong>Size:</strong> {{ import_job.file_size|filesizeformat }}</li>
+                                            <li><strong>Skip header:</strong> {{ import_job.skip_header|yesno:"Yes,No" }}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form method="post" class="mt-4">
+                            {% csrf_token %}
+                            
+                            <div class="alert alert-warning">
+                                <div class="form-check">
+                                    {{ form.confirm_import }}
+                                    <label class="form-check-label" for="{{ form.confirm_import.id_for_label }}">
+                                        {{ form.confirm_import.label }}
+                                    </label>
+                                </div>
+                                {% if form.confirm_import.errors %}
+                                    <div class="text-danger mt-2">
+                                        {% for error in form.confirm_import.errors %}
+                                            <small>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'importer:column_mapping' import_job.id %}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Back to Mapping
+                                </a>
+                                <button type="submit" class="btn btn-success" 
+                                        {% if preview_data.error %}disabled{% endif %}>
+                                    <i class="fas fa-play"></i> Start Import
+                                </button>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

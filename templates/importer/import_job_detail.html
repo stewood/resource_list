@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}{{ import_job.name }} - Import Job Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-info-circle"></i> Import Job Details
+                </h2>
+                <div>
+                    <a href="{% url 'importer:import_job_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Jobs
+                    </a>
+                    {% if import_job.status == 'completed' and import_job.invalid_rows > 0 %}
+                        <a href="{% url 'importer:download_error_report' import_job.id %}" class="btn btn-warning">
+                            <i class="fas fa-download"></i> Download Error Report
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">{{ import_job.name }}</h4>
+                        </div>
+                        <div class="card-body">
+                            {% if import_job.description %}
+                                <p class="text-muted">{{ import_job.description }}</p>
+                            {% endif %}
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Job Information</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>Status:</strong> 
+                                            {% if import_job.status == 'pending' %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% elif import_job.status == 'processing' %}
+                                                <span class="badge bg-info">Processing</span>
+                                            {% elif import_job.status == 'completed' %}
+                                                <span class="badge bg-success">Completed</span>
+                                            {% elif import_job.status == 'failed' %}
+                                                <span class="badge bg-danger">Failed</span>
+                                            {% endif %}
+                                        </li>
+                                        <li><strong>Created by:</strong> {{ import_job.created_by.get_full_name|default:import_job.created_by.username }}</li>
+                                        <li><strong>Created:</strong> {{ import_job.uploaded_at|date:"F j, Y \a\t g:i A" }}</li>
+                                        {% if import_job.started_at %}
+                                            <li><strong>Started:</strong> {{ import_job.started_at|date:"F j, Y \a\t g:i A" }}</li>
+                                        {% endif %}
+                                        {% if import_job.completed_at %}
+                                            <li><strong>Completed:</strong> {{ import_job.completed_at|date:"F j, Y \a\t g:i A" }}</li>
+                                        {% endif %}
+                                        {% if import_job.duration %}
+                                            <li><strong>Duration:</strong> {{ import_job.duration|floatformat:1 }} seconds</li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>File Information</h6>
+                                    <ul class="list-unstyled">
+                                        <li><strong>File name:</strong> {{ import_job.file_name }}</li>
+                                        <li><strong>File size:</strong> {{ import_job.file_size|filesizeformat }}</li>
+                                        <li><strong>Skip header:</strong> {{ import_job.skip_header|yesno:"Yes,No" }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            {% if import_job.status == 'completed' %}
+                                <div class="row mt-4">
+                                    <div class="col-md-12">
+                                        <h6>Import Results</h6>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="text-center">
+                                                    <div class="h4 text-primary">{{ import_job.total_rows }}</div>
+                                                    <small class="text-muted">Total Rows</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="text-center">
+                                                    <div class="h4 text-success">{{ import_job.valid_rows }}</div>
+                                                    <small class="text-muted">Valid Rows</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="text-center">
+                                                    <div class="h4 text-danger">{{ import_job.invalid_rows }}</div>
+                                                    <small class="text-muted">Invalid Rows</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="text-center">
+                                                    <div class="h4 text-info">{{ import_job.resources_created }}</div>
+                                                    <small class="text-muted">Resources Created</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="progress mt-3">
+                                            {% if import_job.total_rows > 0 %}
+                                                {% widthratio import_job.valid_rows import_job.total_rows 100 as success_percent %}
+                                                <div class="progress-bar bg-success" style="width: {{ success_percent }}%">
+                                                    {{ success_percent }}% Success
+                                                </div>
+                                                {% widthratio import_job.invalid_rows import_job.total_rows 100 as error_percent %}
+                                                <div class="progress-bar bg-danger" style="width: {{ error_percent }}%">
+                                                    {{ error_percent }}% Errors
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Column Mapping</h6>
+                        </div>
+                        <div class="card-body">
+                            {% if import_job.column_mapping_dict %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>CSV Column</th>
+                                                <th>Resource Field</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for csv_index, field_name in import_job.column_mapping_dict.items %}
+                                                <tr>
+                                                    <td><code>{{ csv_index }}</code></td>
+                                                    <td><code>{{ field_name }}</code></td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No column mapping configured.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if import_job.errors.exists %}
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-exclamation-triangle"></i> Import Errors ({{ total_errors }})
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Row</th>
+                                        <th>Error Type</th>
+                                        <th>Field</th>
+                                        <th>Error Message</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for error in error_page_obj %}
+                                        <tr>
+                                            <td><strong>{{ error.row_number }}</strong></td>
+                                            <td>
+                                                <span class="badge bg-danger">{{ error.get_error_type_display }}</span>
+                                            </td>
+                                            <td>
+                                                {% if error.field_name %}
+                                                    <code>{{ error.field_name }}</code>
+                                                {% else %}
+                                                    <span class="text-muted">—</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <small>{{ error.error_message }}</small>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        {% if error_page_obj.has_other_pages %}
+                            <nav aria-label="Error pagination">
+                                <ul class="pagination justify-content-center">
+                                    {% if error_page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ error_page_obj.previous_page_number }}">Previous</a>
+                                        </li>
+                                    {% endif %}
+                                    
+                                    <li class="page-item active">
+                                        <span class="page-link">
+                                            Page {{ error_page_obj.number }} of {{ error_page_obj.paginator.num_pages }}
+                                        </span>
+                                    </li>
+                                    
+                                    {% if error_page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ error_page_obj.next_page_number }}">Next</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

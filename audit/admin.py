@@ -1,3 +1,4 @@
 from django.contrib import admin
 
-# Register your models here.
+# AuditLog is already registered in directory.admin
+# No additional admin registrations needed for this app

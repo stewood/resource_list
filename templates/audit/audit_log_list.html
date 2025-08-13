@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Logs{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">Audit Logs</h1>
+        <div class="d-flex gap-2">
+            <a href="{% url 'audit:audit_dashboard' %}" class="btn btn-primary">
+                Dashboard
+            </a>
+            <a href="{% url 'audit:export_audit_logs' %}?{{ request.GET.urlencode }}" class="btn btn-success">
+                Export CSV
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total Logs</h5>
+                    <p class="display-6 text-primary">{{ summary_stats.total_logs }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Today's Logs</h5>
+                    <p class="display-6 text-success">{{ summary_stats.today_logs }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Filtered Results</h5>
+                    <p class="display-6 text-info">{{ summary_stats.filtered_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Actions</h5>
+                    <p class="display-6 text-warning">{{ actions|length }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="q" class="form-label">Search</label>
+                        <input type="text" name="q" id="q" value="{{ current_filters.q }}" 
+                               class="form-control" placeholder="Search logs...">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="action" class="form-label">Action</label>
+                        <select name="action" id="action" class="form-select">
+                            <option value="">All Actions</option>
+                            {% for action in actions %}
+                            <option value="{{ action }}" {% if current_filters.action == action %}selected{% endif %}>
+                                {{ action }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="table" class="form-label">Table</label>
+                        <select name="table" id="table" class="form-select">
+                            <option value="">All Tables</option>
+                            {% for table in tables %}
+                            <option value="{{ table }}" {% if current_filters.table == table %}selected{% endif %}>
+                                {{ table }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="actor" class="form-label">Actor</label>
+                        <select name="actor" id="actor" class="form-select">
+                            <option value="">All Users</option>
+                            {% for actor in actors %}
+                            <option value="{{ actor.actor__id }}" {% if current_filters.actor == actor.actor__id|stringformat:"s" %}selected{% endif %}>
+                                {{ actor.actor__first_name|default:"" }} {{ actor.actor__last_name|default:"" }} ({{ actor.actor__username }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label for="date_from" class="form-label">From Date</label>
+                        <input type="date" name="date_from" id="date_from" value="{{ current_filters.date_from }}" 
+                               class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="date_to" class="form-label">To Date</label>
+                        <input type="date" name="date_to" id="date_to" value="{{ current_filters.date_to }}" 
+                               class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="time_range" class="form-label">Time Range</label>
+                        <select name="time_range" id="time_range" class="form-select">
+                            <option value="">All Time</option>
+                            <option value="24h" {% if current_filters.time_range == "24h" %}selected{% endif %}>Last 24 Hours</option>
+                            <option value="7d" {% if current_filters.time_range == "7d" %}selected{% endif %}>Last 7 Days</option>
+                            <option value="30d" {% if current_filters.time_range == "30d" %}selected{% endif %}>Last 30 Days</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                Apply Filters
+                            </button>
+                            <a href="{% url 'audit:audit_log_list' %}" class="btn btn-secondary">
+                                Clear Filters
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Audit Logs Table -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Actor</th>
+                            <th>Action</th>
+                            <th>Target</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for audit_log in audit_logs %}
+                        <tr>
+                            <td>{{ audit_log.created_at|date:"M d, Y H:i:s" }}</td>
+                            <td>{{ audit_log.actor.get_full_name|default:audit_log.actor.username }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if audit_log.action == 'create_resource' %}bg-success
+                                    {% elif audit_log.action == 'update_resource' %}bg-primary
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ audit_log.action }}
+                                </span>
+                            </td>
+                            <td>
+                                <div>{{ audit_log.target_table }}</div>
+                                <small class="text-muted">ID: {{ audit_log.target_id }}</small>
+                            </td>
+                            <td>
+                                <a href="{% url 'audit:audit_log_detail' audit_log.pk %}" 
+                                   class="btn btn-sm btn-outline-primary">View Details</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                No audit logs found matching your criteria.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <div>
+            <p class="text-muted mb-0">
+                Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} results
+            </p>
+        </div>
+        <nav aria-label="Audit logs pagination">
+            <ul class="pagination mb-0">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}">Previous</a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}&{{ request.GET.urlencode }}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}">Next</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -254,10 +254,13 @@
 <div class="row mt-4">
     <div class="col-12">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
                     <i class="fas fa-history"></i> Version History
                 </h5>
+                <a href="{% url 'directory:version_history' resource.pk %}" class="btn btn-outline-info btn-sm">
+                    <i class="fas fa-list"></i> Full History
+                </a>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -287,11 +290,14 @@
                                 <td>{{ version.changed_by.get_full_name|default:version.changed_by.username }}</td>
                                 <td>{{ version.changed_at|date:"M j, Y H:i" }}</td>
                                 <td>
-                                    <button class="btn btn-outline-info btn-sm" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#versionModal{{ version.id }}">
-                                        View Changes
-                                    </button>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{% url 'directory:version_comparison' resource.pk version.pk %}" 
+                                           class="btn btn-outline-info btn-sm" 
+                                           title="Compare with current">
+                                            <i class="fas fa-exchange-alt"></i> Current
+                                        </a>
+
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}

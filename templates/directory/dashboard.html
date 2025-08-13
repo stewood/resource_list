@@ -101,6 +101,21 @@
                         </a>
                     </div>
                     <div class="col-md-3 mb-2">
+                        <a href="{% url 'importer:csv_upload' %}" class="btn btn-success w-100">
+                            <i class="fas fa-upload"></i> Import CSV
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'importer:export' %}" class="btn btn-info w-100">
+                            <i class="fas fa-download"></i> Export CSV
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'importer:import_job_list' %}" class="btn btn-warning w-100">
+                            <i class="fas fa-list"></i> Import Jobs
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
                         <a href="{% url 'admin:index' %}" class="btn btn-secondary w-100">
                             <i class="fas fa-cog"></i> Admin Panel
                         </a>
