@@ -204,6 +204,13 @@ class Resource(models.Model):
     source = models.CharField(max_length=200, blank=True)
     hours_of_operation = models.TextField(blank=True, help_text="Service hours and availability")
     is_emergency_service = models.BooleanField(default=False, help_text="Mark if this is a crisis or emergency service")
+    is_24_hour_service = models.BooleanField(default=False, help_text="Mark if this service is available 24/7")
+    eligibility_requirements = models.TextField(blank=True, help_text="Qualification criteria and requirements")
+    populations_served = models.TextField(blank=True, help_text="Target demographics (e.g., veterans, women, children)")
+    insurance_accepted = models.TextField(blank=True, help_text="Insurance plans accepted for medical services")
+    cost_information = models.TextField(blank=True, help_text="Financial details and cost information")
+    languages_available = models.CharField(max_length=200, blank=True, help_text="Languages supported for accessibility")
+    capacity = models.CharField(max_length=100, blank=True, help_text="Service capacity information")
 
     # Verification
     last_verified_at = models.DateTimeField(null=True, blank=True)
@@ -235,6 +242,7 @@ class Resource(models.Model):
             models.Index(fields=["county"]),
             models.Index(fields=["category"]),
             models.Index(fields=["is_emergency_service"]),
+            models.Index(fields=["is_24_hour_service"]),
             models.Index(fields=["updated_at"]),
         ]
 

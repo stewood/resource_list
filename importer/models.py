@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
-from directory.models import Resource, TaxonomyCategory
+from directory.models import Resource, ServiceType, TaxonomyCategory
 
 
 class ImportJob(models.Model):
@@ -250,11 +250,20 @@ class CSVProcessor:
                 if csv_index < len(row):
                     value = row[csv_index].strip()
                     if value:  # Only set non-empty values
-                        resource_data[field_name] = value
+                        # Handle boolean fields
+                        if field_name in ["is_emergency_service", "is_24_hour_service"]:
+                            resource_data[field_name] = self._parse_boolean(value)
+                        else:
+                            resource_data[field_name] = value
             except (ValueError, IndexError):
                 continue
 
         return resource_data
+
+    def _parse_boolean(self, value: str) -> bool:
+        """Parse string value to boolean."""
+        true_values = ["true", "yes", "1", "on", "y"]
+        return value.lower() in true_values
 
     def _validate_resource_data(self, data: Dict[str, Any], row_num: int) -> None:
         """Validate resource data before creation."""
@@ -279,9 +288,33 @@ class CSVProcessor:
                     f"Row {row_num}: Category '{data['category']}' does not exist"
                 )
 
+        # Validate service types if provided
+        if data.get("service_types"):
+            service_type_names = [name.strip() for name in data["service_types"].split(",")]
+            valid_service_types = []
+            for service_type_name in service_type_names:
+                try:
+                    service_type = ServiceType.objects.get(name=service_type_name)
+                    valid_service_types.append(service_type)
+                except ServiceType.DoesNotExist:
+                    raise ValidationError(
+                        f"Row {row_num}: Service type '{service_type_name}' does not exist"
+                    )
+            data["service_types"] = valid_service_types
+
     def _create_resource(self, data: Dict[str, Any]) -> Resource:
         """Create a resource from validated data."""
-        return Resource.objects.create(**data)
+        # Handle ManyToManyField separately
+        service_types = data.pop("service_types", [])
+        
+        # Create the resource
+        resource = Resource.objects.create(**data)
+        
+        # Add service types if provided
+        if service_types:
+            resource.service_types.set(service_types)
+        
+        return resource
 
     def _create_import_error(
         self, row_num: int, row_data: List[str], error_message: str, error_type: str

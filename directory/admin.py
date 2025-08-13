@@ -105,6 +105,7 @@ class ResourceAdmin(admin.ModelAdmin):
         "state",
         "county",
         "is_emergency_service",
+        "is_24_hour_service",
         "needs_verification_display",
         "updated_at",
     ]
@@ -116,6 +117,7 @@ class ResourceAdmin(admin.ModelAdmin):
         "city",
         "county",
         "is_emergency_service",
+        "is_24_hour_service",
         "is_deleted",
         "created_at",
         "updated_at",
@@ -132,6 +134,12 @@ class ResourceAdmin(admin.ModelAdmin):
         "state",
         "county",
         "hours_of_operation",
+        "eligibility_requirements",
+        "populations_served",
+        "insurance_accepted",
+        "cost_information",
+        "languages_available",
+        "capacity",
     ]
     readonly_fields = [
         "created_at",
@@ -153,7 +161,19 @@ class ResourceAdmin(admin.ModelAdmin):
         ),
         (
             "Service Details",
-            {"fields": ("hours_of_operation", "is_emergency_service")},
+            {
+                "fields": (
+                    "hours_of_operation",
+                    "is_emergency_service",
+                    "is_24_hour_service",
+                    "eligibility_requirements",
+                    "populations_served",
+                    "insurance_accepted",
+                    "cost_information",
+                    "languages_available",
+                    "capacity",
+                )
+            },
         ),
         ("Verification", {"fields": ("last_verified_at", "last_verified_by")}),
         (

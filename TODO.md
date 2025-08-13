@@ -268,20 +268,20 @@ Build a small, internal-first web app to curate and maintain a high-quality dire
 #### ✅ **HIGH PRIORITY** - Essential for Data Import
 - [x] **Priority: HIGH** - Add `service_types` (ManyToManyField) for categorizing diverse services
 - [x] **Priority: HIGH** - Add `hours_of_operation` (TextField) for service availability times
-- [ ] **Priority: HIGH** - Add `eligibility_requirements` (TextField) for qualification criteria
+- [x] **Priority: HIGH** - Add `eligibility_requirements` (TextField) for qualification criteria
 - [x] **Priority: HIGH** - Add `county` (CharField) for better geographic organization
 
 #### ✅ **MEDIUM PRIORITY** - Important for User Experience
-- [ ] **Priority: MEDIUM** - Add `populations_served` (TextField) for target demographics
+- [x] **Priority: MEDIUM** - Add `populations_served` (TextField) for target demographics
 - [x] **Priority: MEDIUM** - Add `is_emergency_service` (BooleanField) for crisis situations
-- [ ] **Priority: MEDIUM** - Add `is_24_hour_service` (BooleanField) for round-the-clock services
+- [x] **Priority: MEDIUM** - Add `is_24_hour_service` (BooleanField) for round-the-clock services
 - [ ] **Priority: MEDIUM** - Add `primary_service_type` (ForeignKey) for main service classification
 
 #### ✅ **LOW PRIORITY** - Useful Enhancements
-- [ ] **Priority: LOW** - Add `capacity` (CharField) for service capacity information
-- [ ] **Priority: LOW** - Add `languages_available` (CharField) for accessibility
-- [ ] **Priority: LOW** - Add `insurance_accepted` (TextField) for medical services
-- [ ] **Priority: LOW** - Add `cost_information` (TextField) for financial details
+- [x] **Priority: LOW** - Add `capacity` (CharField) for service capacity information
+- [x] **Priority: LOW** - Add `languages_available` (CharField) for accessibility
+- [x] **Priority: LOW** - Add `insurance_accepted` (TextField) for medical services
+- [x] **Priority: LOW** - Add `cost_information` (TextField) for financial details
 
 ### 📊 8.2 New ServiceType Model
 - [x] **Priority: HIGH** - Create `ServiceType` model for service categorization
@@ -291,7 +291,7 @@ Build a small, internal-first web app to curate and maintain a high-quality dire
 
 ### 📊 8.3 Data Migration & Import
 - [x] **Priority: HIGH** - Create migration for new fields
-- [ ] **Priority: HIGH** - Update CSV import to handle new fields
+- [x] **Priority: HIGH** - Update CSV import to handle new fields
 - [ ] **Priority: HIGH** - Create data migration script for existing resources.csv
 - [x] **Priority: MEDIUM** - Update search functionality to include new fields
 - [x] **Priority: MEDIUM** - Update filtering options for new fields

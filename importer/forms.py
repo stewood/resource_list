@@ -139,6 +139,7 @@ class ColumnMappingForm(forms.Form):
         return [
             ("name", "Name"),
             ("category", "Category"),
+            ("service_types", "Service Types"),
             ("description", "Description"),
             ("phone", "Phone"),
             ("email", "Email"),
@@ -147,7 +148,17 @@ class ColumnMappingForm(forms.Form):
             ("address2", "Address Line 2"),
             ("city", "City"),
             ("state", "State"),
+            ("county", "County"),
             ("postal_code", "Postal Code"),
+            ("hours_of_operation", "Hours of Operation"),
+            ("is_emergency_service", "Is Emergency Service"),
+            ("is_24_hour_service", "Is 24 Hour Service"),
+            ("eligibility_requirements", "Eligibility Requirements"),
+            ("populations_served", "Populations Served"),
+            ("insurance_accepted", "Insurance Accepted"),
+            ("cost_information", "Cost Information"),
+            ("languages_available", "Languages Available"),
+            ("capacity", "Capacity"),
             ("source", "Source"),
         ]
 

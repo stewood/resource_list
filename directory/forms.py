@@ -33,6 +33,13 @@ class ResourceForm(forms.ModelForm):
             "postal_code",
             "hours_of_operation",
             "is_emergency_service",
+            "is_24_hour_service",
+            "eligibility_requirements",
+            "populations_served",
+            "insurance_accepted",
+            "cost_information",
+            "languages_available",
+            "capacity",
             "status",
             "source",
             "last_verified_at",
@@ -93,6 +100,49 @@ class ResourceForm(forms.ModelForm):
             ),
             "is_emergency_service": forms.CheckboxInput(
                 attrs={"class": "form-check-input"}
+            ),
+            "is_24_hour_service": forms.CheckboxInput(
+                attrs={"class": "form-check-input"}
+            ),
+            "eligibility_requirements": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 3,
+                    "placeholder": "Qualification criteria and requirements",
+                }
+            ),
+            "populations_served": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 3,
+                    "placeholder": "Target demographics (e.g., veterans, women, children)",
+                }
+            ),
+            "insurance_accepted": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 3,
+                    "placeholder": "Insurance plans accepted for medical services",
+                }
+            ),
+            "cost_information": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 3,
+                    "placeholder": "Financial details and cost information",
+                }
+            ),
+            "languages_available": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Languages supported for accessibility",
+                }
+            ),
+            "capacity": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Service capacity information",
+                }
             ),
             "status": forms.Select(attrs={"class": "form-control"}),
             "source": forms.TextInput(

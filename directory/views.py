@@ -82,6 +82,12 @@ class ResourceListView(LoginRequiredMixin, ListView):
         elif emergency_filter == "false":
             queryset = queryset.filter(is_emergency_service=False)
 
+        hour24_filter = self.request.GET.get("hour24", "")
+        if hour24_filter == "true":
+            queryset = queryset.filter(is_24_hour_service=True)
+        elif hour24_filter == "false":
+            queryset = queryset.filter(is_24_hour_service=False)
+
         # Sorting
         sort_by = self.request.GET.get("sort", "-updated_at")
         if sort_by in [
