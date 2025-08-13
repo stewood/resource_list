@@ -115,7 +115,16 @@ class Command(BaseCommand):
     def _assign_permissions(
         self, group, permission_names, resource_ct, category_ct, user_ct
     ):
-        """Assign permissions to a group."""
+        """
+        Assign permissions to a group.
+
+        Args:
+            group: Django Group instance to assign permissions to
+            permission_names: List of permission codenames to assign
+            resource_ct: ContentType for Resource model
+            category_ct: ContentType for TaxonomyCategory model  
+            user_ct: ContentType for User model
+        """
         for perm_name in permission_names:
             # Determine which content type this permission belongs to
             if (

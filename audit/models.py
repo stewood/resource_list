@@ -25,7 +25,19 @@ class AuditManager:
         target_id: str,
         metadata: Dict[str, Any] = None,
     ) -> AuditLog:
-        """Log an audit action."""
+        """
+        Log an audit action.
+
+        Args:
+            actor: User performing the action
+            action: Description of the action performed
+            target_table: Name of the table/model being affected
+            target_id: ID of the record being affected
+            metadata: Optional additional context data
+
+        Returns:
+            Created AuditLog instance
+        """
         return AuditLog.objects.create(
             actor=actor,
             action=action,
@@ -41,7 +53,18 @@ class AuditManager:
         change_type: str,
         changed_fields: List[str] = None,
     ) -> ResourceVersion:
-        """Create a new version of a resource."""
+        """
+        Create a new version of a resource.
+
+        Args:
+            resource: Resource instance to version
+            changed_by: User making the changes
+            change_type: Type of change (create, update, status_change)
+            changed_fields: List of field names that were changed
+
+        Returns:
+            Created ResourceVersion instance
+        """
         # Get the next version number
         latest_version = (
             ResourceVersion.objects.filter(resource=resource)

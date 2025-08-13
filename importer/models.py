@@ -237,7 +237,15 @@ class CSVProcessor:
             raise ValidationError(f"CSV processing failed: {str(e)}")
 
     def _map_row_to_resource(self, row: List[str]) -> Dict[str, Any]:
-        """Map CSV row data to resource fields."""
+        """
+        Map CSV row data to resource fields.
+
+        Args:
+            row: List of string values from CSV row
+
+        Returns:
+            Dictionary mapping resource field names to values
+        """
         resource_data = {
             "status": "draft",  # Default to draft
             "created_by": self.import_job.created_by,
@@ -261,12 +269,29 @@ class CSVProcessor:
         return resource_data
 
     def _parse_boolean(self, value: str) -> bool:
-        """Parse string value to boolean."""
+        """
+        Parse string value to boolean.
+
+        Args:
+            value: String value to parse
+
+        Returns:
+            Boolean value (True for 'true', 'yes', '1', 'on', 'y', False otherwise)
+        """
         true_values = ["true", "yes", "1", "on", "y"]
         return value.lower() in true_values
 
     def _validate_resource_data(self, data: Dict[str, Any], row_num: int) -> None:
-        """Validate resource data before creation."""
+        """
+        Validate resource data before creation.
+
+        Args:
+            data: Dictionary of resource field data to validate
+            row_num: Row number for error reporting
+
+        Raises:
+            ValidationError: If data fails validation requirements
+        """
         # Check required fields for draft status
         if not data.get("name"):
             raise ValidationError(f"Row {row_num}: Name is required")
@@ -303,7 +328,15 @@ class CSVProcessor:
             data["service_types"] = valid_service_types
 
     def _create_resource(self, data: Dict[str, Any]) -> Resource:
-        """Create a resource from validated data."""
+        """
+        Create a resource from validated data.
+
+        Args:
+            data: Dictionary of validated resource field data
+
+        Returns:
+            Created Resource instance
+        """
         # Handle ManyToManyField separately
         service_types = data.pop("service_types", [])
         
@@ -319,7 +352,15 @@ class CSVProcessor:
     def _create_import_error(
         self, row_num: int, row_data: List[str], error_message: str, error_type: str
     ) -> None:
-        """Create an ImportError record."""
+        """
+        Create an ImportError record.
+
+        Args:
+            row_num: Row number where the error occurred
+            row_data: Original row data that caused the error
+            error_message: Description of the error
+            error_type: Type of error (validation, mapping, data_type, etc.)
+        """
         ImportError.objects.create(
             import_job=self.import_job,
             row_number=row_num,
