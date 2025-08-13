@@ -56,12 +56,14 @@ To provide accurate, verified, and up-to-date information about resources availa
 
 ### Project Structure
 ```
-rl/
+homeless-resource-directory/
 ├── resource_directory/     # Django project settings
 ├── directory/             # Main app (models, views, admin)
 ├── audit/                 # Audit and versioning logic
 ├── importer/              # CSV import/export functionality
-├── data/                  # SQLite database (development)
+├── docs/                  # Project documentation
+├── scripts/               # Utility scripts
+├── data/                  # Data files and exports
 ├── static/                # Static files
 ├── templates/             # HTML templates
 ├── requirements.txt       # Python dependencies
@@ -198,8 +200,8 @@ The central entity containing comprehensive information about each service:
 
 1. **Clone and setup virtual environment**:
    ```bash
-   git clone <repository-url>
-   cd rl
+   git clone https://github.com/yourusername/homeless-resource-directory.git
+   cd homeless-resource-directory
    python3 -m venv venv
    source venv/bin/activate
    pip install -r requirements.txt
@@ -313,6 +315,7 @@ The system recently imported **42 verified resources** from comprehensive resear
 - **Integration Tests**: Complete workflows and end-to-end scenarios
 - **Performance Tests**: Search operations with large datasets
 - **Test Coverage**: Maintained above 90% with automated reporting
+- **Optimized Performance**: Parallel execution with 83% speed improvement
 
 ## 🧪 Testing
 
@@ -354,28 +357,45 @@ directory/
 # Activate virtual environment
 source venv/bin/activate
 
-# Run all tests
-python manage.py test
+# Run all tests with optimizations (recommended)
+./run_tests.py
 
-# Run specific test category
-python manage.py test directory.tests.test_models
-python manage.py test directory.tests.test_views
-python manage.py test directory.tests.test_search
+# Run specific test categories
+./run_tests.py models
+./run_tests.py views
+./run_tests.py search
+./run_tests.py integration
+
+# Run with coverage report
+./run_tests.py --coverage
+
+# Run tests sequentially (for debugging)
+./run_tests.py --no-parallel
 ```
 
 #### Test Runner Script
-A convenient test runner script is provided for easy test execution:
+A convenient test runner script is provided for optimized test execution:
 
 ```bash
-# Interactive test runner
+# Run all tests with optimizations (parallel + database reuse)
 ./run_tests.py
 
 # Run specific test types
 ./run_tests.py models
 ./run_tests.py views
 ./run_tests.py integration
-./run_tests.py all
-./run_tests.py coverage
+./run_tests.py permissions
+./run_tests.py versions
+./run_tests.py forms
+
+# Run with coverage report
+./run_tests.py --coverage
+
+# Run tests sequentially (for debugging)
+./run_tests.py --no-parallel
+
+# Verbose output
+./run_tests.py --verbose
 ```
 
 #### Test Execution Options
@@ -392,6 +412,17 @@ python manage.py test -v 2
 # Run tests in parallel (if available)
 python manage.py test --parallel
 ```
+
+#### Performance Optimizations
+The test suite is optimized for speed with the following features:
+- **Parallel Execution**: Tests run in parallel using multiple processes
+- **Database Reuse**: Test database is preserved between runs (`--keepdb`)
+- **Optimized Setup**: Static test data created once per test class (`setUpTestData`)
+- **Required Dependency**: `tblib` package for parallel traceback handling
+
+**Performance Results:**
+- **Before optimizations**: ~5 minutes (299 seconds)
+- **With optimizations**: ~50 seconds (83% faster)
 
 ### Test Features
 
@@ -492,8 +523,17 @@ self.resource = Resource.objects.create(
 
 ## 🤝 Contributing
 
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for detailed information on how to contribute to this project.
+
+### Quick Contributing Steps
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes following our coding standards
+4. Add tests for new functionality
+5. Submit a pull request
+
 ### Development Process
-1. Follow the established code style
+1. Follow the established code style (PEP 8, type hints, docstrings)
 2. Add tests for new functionality using the modular test structure
 3. Update documentation as needed
 4. Ensure all migrations are backward compatible
@@ -533,7 +573,7 @@ self.resource = Resource.objects.create(
 
 **Database Status**: 361 total resources with 42 verified London KY resources imported
 
-**Test Suite Status**: ✅ **COMPREHENSIVE** - 117+ tests across 7 modular test categories
+**Test Suite Status**: ✅ **COMPREHENSIVE** - 114 tests across 7 modular test categories with 83% performance improvement
 
 **Code Quality**: ✅ **EXCELLENT** - 90%+ test coverage with modular, maintainable test structure
 

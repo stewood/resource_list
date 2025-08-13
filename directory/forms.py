@@ -42,6 +42,7 @@ class ResourceForm(forms.ModelForm):
             "capacity",
             "status",
             "source",
+            "notes",
             "last_verified_at",
             "last_verified_by",
         ]
@@ -149,6 +150,13 @@ class ResourceForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "placeholder": "Source of this information",
+                }
+            ),
+            "notes": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 4,
+                    "placeholder": "Verification notes: Include contact person, phone numbers, websites, dates contacted, and any other verification details. Example: 'Contacted Jane Smith (502-555-1234) on 8/15/2024. Hours confirmed via website: www.example.org/hours. Eligibility requirements verified by phone call.'",
                 }
             ),
             "last_verified_at": forms.DateTimeInput(

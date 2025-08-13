@@ -15,31 +15,32 @@ from directory.models import Resource, ServiceType, TaxonomyCategory
 class BaseTestCase(TestCase):
     """Base test case with common setup."""
 
-    def setUp(self):
-        """Set up test data."""
+    @classmethod
+    def setUpTestData(cls):
+        """Set up test data once for the entire test class."""
         # Create users
-        self.user = User.objects.create_user(
+        cls.user = User.objects.create_user(
             username="testuser",
             password="testpass123",
             first_name="Test",
             last_name="User",
         )
         
-        self.editor = User.objects.create_user(
+        cls.editor = User.objects.create_user(
             username="editor",
             password="testpass123",
             first_name="Test",
             last_name="Editor",
         )
         
-        self.reviewer = User.objects.create_user(
+        cls.reviewer = User.objects.create_user(
             username="reviewer",
             password="testpass123",
             first_name="Test",
             last_name="Reviewer",
         )
         
-        self.admin = User.objects.create_user(
+        cls.admin = User.objects.create_user(
             username="admin",
             password="testpass123",
             first_name="Test",
@@ -47,23 +48,29 @@ class BaseTestCase(TestCase):
         )
 
         # Create groups
-        self.editor_group = Group.objects.create(name="Editor")
-        self.reviewer_group = Group.objects.create(name="Reviewer")
-        self.admin_group = Group.objects.create(name="Admin")
+        cls.editor_group = Group.objects.create(name="Editor")
+        cls.reviewer_group = Group.objects.create(name="Reviewer")
+        cls.admin_group = Group.objects.create(name="Admin")
 
         # Assign users to groups
-        self.editor.groups.add(self.editor_group)
-        self.reviewer.groups.add(self.reviewer_group)
-        self.admin.groups.add(self.admin_group)
+        cls.editor.groups.add(cls.editor_group)
+        cls.reviewer.groups.add(cls.reviewer_group)
+        cls.admin.groups.add(cls.admin_group)
 
         # Create categories and service types
-        self.category = TaxonomyCategory.objects.create(
+        cls.category = TaxonomyCategory.objects.create(
             name="Test Category", slug="test-category"
         )
         
-        self.service_type = ServiceType.objects.create(
+        cls.service_type = ServiceType.objects.create(
             name="Test Service", slug="test-service"
         )
+
+    def setUp(self):
+        """Set up test-specific data (runs for each test)."""
+        # Any test-specific setup can go here
+        # Most tests won't need additional setup
+        pass
 
 
 class ResourceModelTestCase(BaseTestCase):

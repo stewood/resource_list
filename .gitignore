@@ -161,3 +161,30 @@ staticfiles/
 # Backup files
 *.bak
 *.backup
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Lock files
+*.lock
+.~lock.*
+
+# Coverage and test artifacts
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Media files (if any)
+media/
+
+# Local development files
+local_settings.py
+.env.local
+.env.development

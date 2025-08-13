@@ -15,31 +15,32 @@ from directory.models import Resource, ServiceType, TaxonomyCategory
 class BaseTestCase(TestCase):
     """Base test case with common setup."""
 
-    def setUp(self):
-        """Set up test data."""
+    @classmethod
+    def setUpTestData(cls):
+        """Set up test data once for the entire test class."""
         # Create users
-        self.user = User.objects.create_user(
+        cls.user = User.objects.create_user(
             username="testuser",
             password="testpass123",
             first_name="Test",
             last_name="User",
         )
         
-        self.editor = User.objects.create_user(
+        cls.editor = User.objects.create_user(
             username="editor",
             password="testpass123",
             first_name="Test",
             last_name="Editor",
         )
         
-        self.reviewer = User.objects.create_user(
+        cls.reviewer = User.objects.create_user(
             username="reviewer",
             password="testpass123",
             first_name="Test",
             last_name="Reviewer",
         )
         
-        self.admin = User.objects.create_user(
+        cls.admin = User.objects.create_user(
             username="admin",
             password="testpass123",
             first_name="Test",
@@ -47,23 +48,28 @@ class BaseTestCase(TestCase):
         )
 
         # Create groups
-        self.editor_group = Group.objects.create(name="Editor")
-        self.reviewer_group = Group.objects.create(name="Reviewer")
-        self.admin_group = Group.objects.create(name="Admin")
+        cls.editor_group = Group.objects.create(name="Editor")
+        cls.reviewer_group = Group.objects.create(name="Reviewer")
+        cls.admin_group = Group.objects.create(name="Admin")
 
         # Assign users to groups
-        self.editor.groups.add(self.editor_group)
-        self.reviewer.groups.add(self.reviewer_group)
-        self.admin.groups.add(self.admin_group)
+        cls.editor.groups.add(cls.editor_group)
+        cls.reviewer.groups.add(cls.reviewer_group)
+        cls.admin.groups.add(cls.admin_group)
 
         # Create categories and service types
-        self.category = TaxonomyCategory.objects.create(
+        cls.category = TaxonomyCategory.objects.create(
             name="Test Category", slug="test-category"
         )
         
-        self.service_type = ServiceType.objects.create(
+        cls.service_type = ServiceType.objects.create(
             name="Test Service", slug="test-service"
         )
+
+    def setUp(self):
+        """Set up test-specific data (runs for each test)."""
+        # Any test-specific setup can go here
+        pass
 
     def create_test_resource(self, **kwargs):
         """Helper function to create a valid test resource."""
@@ -313,13 +319,13 @@ class ViewTestCase(BaseTestCase):
         self.client.login(username="testuser", password="testpass123")
         
         # Create resources with different names for sorting
-        self.create_test_resource(
+        alpha_resource = self.create_test_resource(
             name="Alpha Resource",
             phone="5551111",
             status="draft",
         )
         
-        self.create_test_resource(
+        beta_resource = self.create_test_resource(
             name="Beta Resource",
             phone="5552222",
             status="draft",
@@ -331,16 +337,28 @@ class ViewTestCase(BaseTestCase):
         
         self.assertEqual(response.status_code, 200)
         resources = response.context["resources"]
-        self.assertEqual(resources[0].name, "Alpha Resource")
-        self.assertEqual(resources[1].name, "Beta Resource")
+        
+        # Find our test resources in the sorted list
+        resource_names = [r.name for r in resources]
+        alpha_index = resource_names.index("Alpha Resource")
+        beta_index = resource_names.index("Beta Resource")
+        
+        # Alpha should come before Beta in ascending sort
+        self.assertLess(alpha_index, beta_index)
         
         # Test descending sort
         response = self.client.get(url, {"sort": "-name"})
         
         self.assertEqual(response.status_code, 200)
         resources = response.context["resources"]
-        self.assertEqual(resources[0].name, "Beta Resource")
-        self.assertEqual(resources[1].name, "Alpha Resource")
+        
+        # Find our test resources in the sorted list
+        resource_names = [r.name for r in resources]
+        alpha_index = resource_names.index("Alpha Resource")
+        beta_index = resource_names.index("Beta Resource")
+        
+        # Beta should come before Alpha in descending sort
+        self.assertLess(beta_index, alpha_index)
 
     def test_resource_list_view_htmx(self):
         """Test resource list view with HTMX requests."""

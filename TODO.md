@@ -114,6 +114,25 @@ Build a small, internal-first web app to curate and maintain a high-quality dire
 - ✅ Changes are clearly highlighted in diffs
 - ✅ Audit logs show complete action history
 
+### 🔧 3.3 Archive System for Closed Organizations
+- [ ] **Priority: HIGH** - Add archive fields to Resource model (is_archived, archived_at, archived_by, archive_reason)
+- [ ] **Priority: HIGH** - Create migration for archive fields
+- [ ] **Priority: HIGH** - Update all resource queries to exclude archived resources
+- [ ] **Priority: HIGH** - Create ArchiveListView and ArchiveDetailView
+- [ ] **Priority: HIGH** - Add "View Archived Resources" button to dashboard
+- [ ] **Priority: MEDIUM** - Create archive_list.html and archive_detail.html templates
+- [ ] **Priority: MEDIUM** - Add archive/unarchive actions to admin interface
+- [ ] **Priority: MEDIUM** - Add archive-specific URL patterns
+- [ ] **Priority: LOW** - Add archive reason validation and tracking
+- [ ] **Priority: LOW** - Add archive statistics to dashboard
+
+**Acceptance Criteria:**
+- Archived resources don't appear in normal searches or resource lists
+- Dashboard shows "View Archived Resources" button with count
+- Archive view displays all archived resources with archive details
+- Admin can archive/unarchive resources with reason tracking
+- Archive process creates version snapshots and audit logs
+
 ---
 
 ## 🎨 Phase 4: User Interface

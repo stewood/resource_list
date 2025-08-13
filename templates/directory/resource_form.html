@@ -399,6 +399,27 @@
                             </div>
                         </div>
                         
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">Verification Notes</label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.notes.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                <strong>Important:</strong> Use this field to track verification sources, contact information, and verification details. Include:
+                                <ul class="mt-1 mb-0">
+                                    <li>Contact person name and phone number</li>
+                                    <li>Date contacted</li>
+                                    <li>Website URLs used for verification</li>
+                                    <li>Any special notes about the verification process</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
                         <div class="col-md-4 mb-3">
                             <label for="{{ form.last_verified_at.id_for_label }}" class="form-label">Last Verified</label>
                             {{ form.last_verified_at }}

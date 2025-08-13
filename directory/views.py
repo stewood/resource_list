@@ -168,6 +168,13 @@ class ResourceCreateView(LoginRequiredMixin, CreateView):
     template_name = "directory/resource_form.html"
     success_url = reverse_lazy("directory:resource_list")
 
+    def dispatch(self, request, *args, **kwargs):
+        """Check permissions before processing the request."""
+        if not user_can_submit_for_review(request.user):
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied("Access denied. Requires Editor, Reviewer, or Admin role.")
+        return super().dispatch(request, *args, **kwargs)
+
     def get_form_kwargs(self):
         """Pass user to form for validation."""
         kwargs = super().get_form_kwargs()
@@ -193,6 +200,13 @@ class ResourceUpdateView(LoginRequiredMixin, UpdateView):
     model = Resource
     form_class = ResourceForm
     template_name = "directory/resource_form.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        """Check permissions before processing the request."""
+        if not user_can_submit_for_review(request.user):
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied("Access denied. Requires Editor, Reviewer, or Admin role.")
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         """Filter out deleted resources."""

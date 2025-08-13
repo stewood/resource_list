@@ -90,6 +90,7 @@ class AuditManager:
             "postal_code": resource.postal_code,
             "status": resource.status,
             "source": resource.source,
+            "notes": resource.notes,
             "last_verified_at": (
                 resource.last_verified_at.isoformat()
                 if resource.last_verified_at
@@ -148,6 +149,7 @@ def handle_resource_save(
             "postal_code",
             "status",
             "source",
+            "notes",
             "last_verified_at",
             "last_verified_by",
         ]
@@ -162,16 +164,27 @@ def handle_resource_save(
 
     # Log audit action
     action = "create_resource" if created else "update_resource"
+    
+    # Prepare metadata with notes if available
+    metadata = {
+        "resource_name": instance.name,
+        "status": instance.status,
+        "change_type": change_type,
+    }
+    
+    # Add notes to metadata if present
+    if instance.notes:
+        metadata["notes"] = instance.notes
+        metadata["has_notes"] = True
+    else:
+        metadata["has_notes"] = False
+    
     AuditManager.log_action(
         actor=instance.updated_by,
         action=action,
         target_table="resource",
         target_id=instance.id,
-        metadata={
-            "resource_name": instance.name,
-            "status": instance.status,
-            "change_type": change_type,
-        },
+        metadata=metadata,
     )
 
 

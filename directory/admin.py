@@ -140,6 +140,7 @@ class ResourceAdmin(admin.ModelAdmin):
         "cost_information",
         "languages_available",
         "capacity",
+        "notes",
     ]
     readonly_fields = [
         "created_at",
@@ -153,6 +154,13 @@ class ResourceAdmin(admin.ModelAdmin):
         (
             "Basic Information",
             {"fields": ("name", "category", "service_types", "description", "status", "source")},
+        ),
+        (
+            "Verification Notes",
+            {
+                "fields": ("notes",),
+                "description": "Use this field to track verification sources, contact information, and verification details. Include contact person, phone numbers, websites, dates contacted, and any other verification details.",
+            },
         ),
         ("Contact Information", {"fields": ("phone", "email", "website")}),
         (

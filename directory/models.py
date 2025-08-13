@@ -202,6 +202,7 @@ class Resource(models.Model):
     # Operational fields
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
     source = models.CharField(max_length=200, blank=True)
+    notes = models.TextField(blank=True, help_text="Notes and citations for updates and verification")
     hours_of_operation = models.TextField(blank=True, help_text="Service hours and availability")
     is_emergency_service = models.BooleanField(default=False, help_text="Mark if this is a crisis or emergency service")
     is_24_hour_service = models.BooleanField(default=False, help_text="Mark if this service is available 24/7")
