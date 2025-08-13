@@ -52,6 +52,17 @@
                             </select>
                         </div>
                         <div class="col-md-2 mb-3">
+                            <label for="service_type" class="form-label">Service Type</label>
+                            <select class="form-control" id="service_type" name="service_type">
+                                <option value="">All Service Types</option>
+                                {% for service_type in service_types %}
+                                    <option value="{{ service_type.id }}" {% if current_filters.service_type == service_type.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ service_type.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
                             <label for="city" class="form-label">City</label>
                             <input type="text" class="form-control" id="city" name="city" 
                                    value="{{ current_filters.city }}" placeholder="Filter by city">
@@ -61,7 +72,30 @@
                             <input type="text" class="form-control" id="state" name="state" 
                                    value="{{ current_filters.state }}" placeholder="Filter by state">
                         </div>
-                        <div class="col-md-1 mb-3">
+                        <div class="col-md-2 mb-3">
+                            <label for="county" class="form-label">County</label>
+                            <input type="text" class="form-control" id="county" name="county" 
+                                   value="{{ current_filters.county }}" placeholder="Filter by county">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2 mb-3">
+                            <label for="emergency" class="form-label">Emergency Service</label>
+                            <select class="form-control" id="emergency" name="emergency">
+                                <option value="">All Services</option>
+                                <option value="true" {% if current_filters.emergency == 'true' %}selected{% endif %}>Emergency Only</option>
+                                <option value="false" {% if current_filters.emergency == 'false' %}selected{% endif %}>Non-Emergency Only</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="hour24" class="form-label">24/7 Service</label>
+                            <select class="form-control" id="hour24" name="hour24">
+                                <option value="">All Services</option>
+                                <option value="true" {% if current_filters.hour24 == 'true' %}selected{% endif %}>24/7 Only</option>
+                                <option value="false" {% if current_filters.hour24 == 'false' %}selected{% endif %}>Non-24/7 Only</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
                             <label for="sort" class="form-label">Sort</label>
                             <select class="form-control" id="sort" name="sort">
                                 <option value="-updated_at" {% if current_filters.sort == '-updated_at' %}selected{% endif %}>Recent</option>
@@ -136,6 +170,15 @@
                                             </p>
                                         {% endif %}
                                         
+                                        {% if resource.service_types.all %}
+                                            <p class="text-muted small mb-2">
+                                                <i class="fas fa-cogs"></i> 
+                                                {% for service_type in resource.service_types.all %}
+                                                    <span class="badge bg-primary badge-sm me-1">{{ service_type.name }}</span>
+                                                {% endfor %}
+                                            </p>
+                                        {% endif %}
+                                        
                                         {% if resource.description %}
                                             <p class="card-text small text-muted mb-2">
                                                 {{ resource.description|truncatewords:20 }}
@@ -145,6 +188,18 @@
                                         {% if resource.city and resource.state %}
                                             <p class="text-muted small mb-2">
                                                 <i class="fas fa-map-marker-alt"></i> {{ resource.city }}, {{ resource.state }}
+                                                {% if resource.county %} ({{ resource.county }} County){% endif %}
+                                            </p>
+                                        {% endif %}
+                                        
+                                        {% if resource.is_emergency_service or resource.is_24_hour_service %}
+                                            <p class="text-muted small mb-2">
+                                                {% if resource.is_emergency_service %}
+                                                    <span class="badge bg-danger badge-sm me-1">Emergency</span>
+                                                {% endif %}
+                                                {% if resource.is_24_hour_service %}
+                                                    <span class="badge bg-success badge-sm me-1">24/7</span>
+                                                {% endif %}
                                             </p>
                                         {% endif %}
                                         

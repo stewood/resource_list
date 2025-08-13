@@ -61,6 +61,17 @@
                         <p class="mt-2">{{ resource.description|linebreaks }}</p>
                     </div>
                     {% endif %}
+                    
+                    {% if resource.service_types.all %}
+                    <div class="col-12 mb-3">
+                        <strong>Service Types:</strong>
+                        <div class="mt-2">
+                            {% for service_type in resource.service_types.all %}
+                                <span class="badge bg-primary me-1">{{ service_type.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -98,6 +109,81 @@
             </div>
         </div>
         
+        <!-- Service Details -->
+        {% if resource.hours_of_operation or resource.is_emergency_service or resource.is_24_hour_service or resource.eligibility_requirements or resource.populations_served or resource.insurance_accepted or resource.cost_information or resource.languages_available or resource.capacity %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs"></i> Service Details
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% if resource.hours_of_operation %}
+                    <div class="col-md-6 mb-3">
+                        <strong>Hours of Operation:</strong><br>
+                        {{ resource.hours_of_operation|linebreaks }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if resource.is_emergency_service or resource.is_24_hour_service %}
+                    <div class="col-md-6 mb-3">
+                        <strong>Service Availability:</strong><br>
+                        {% if resource.is_emergency_service %}
+                            <span class="badge bg-danger me-1">Emergency Service</span>
+                        {% endif %}
+                        {% if resource.is_24_hour_service %}
+                            <span class="badge bg-success me-1">24/7 Service</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    {% if resource.eligibility_requirements %}
+                    <div class="col-md-6 mb-3">
+                        <strong>Eligibility Requirements:</strong><br>
+                        {{ resource.eligibility_requirements|linebreaks }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if resource.populations_served %}
+                    <div class="col-md-6 mb-3">
+                        <strong>Populations Served:</strong><br>
+                        {{ resource.populations_served|linebreaks }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if resource.insurance_accepted %}
+                    <div class="col-md-6 mb-3">
+                        <strong>Insurance Accepted:</strong><br>
+                        {{ resource.insurance_accepted|linebreaks }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if resource.cost_information %}
+                    <div class="col-md-6 mb-3">
+                        <strong>Cost Information:</strong><br>
+                        {{ resource.cost_information|linebreaks }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if resource.languages_available %}
+                    <div class="col-md-6 mb-3">
+                        <strong>Languages Available:</strong><br>
+                        {{ resource.languages_available }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if resource.capacity %}
+                    <div class="col-md-6 mb-3">
+                        <strong>Capacity:</strong><br>
+                        {{ resource.capacity }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
         <!-- Location -->
         {% if resource.address1 or resource.city or resource.state %}
         <div class="card mb-4">
@@ -112,12 +198,15 @@
                     {% if resource.address2 %}{{ resource.address2 }}<br>{% endif %}
                     {% if resource.city and resource.state %}
                         {{ resource.city }}, {{ resource.state }}
+                        {% if resource.county %} ({{ resource.county }} County){% endif %}
                         {% if resource.postal_code %} {{ resource.postal_code }}{% endif %}
                     {% elif resource.city %}
                         {{ resource.city }}
+                        {% if resource.county %} ({{ resource.county }} County){% endif %}
                         {% if resource.postal_code %} {{ resource.postal_code }}{% endif %}
                     {% elif resource.state %}
                         {{ resource.state }}
+                        {% if resource.county %} ({{ resource.county }} County){% endif %}
                         {% if resource.postal_code %} {{ resource.postal_code }}{% endif %}
                     {% endif %}
                 </address>
