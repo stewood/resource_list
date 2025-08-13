@@ -55,6 +55,21 @@
                             {% endif %}
                         </div>
                         
+                        <div class="col-md-8 mb-3">
+                            <label for="{{ form.service_types.id_for_label }}" class="form-label">Service Types</label>
+                            {{ form.service_types }}
+                            {% if form.service_types.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.service_types.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Select all service types that apply to this resource.
+                            </div>
+                        </div>
+                        
                         <div class="col-12 mb-3">
                             <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
                             {{ form.description }}
@@ -173,6 +188,18 @@
                         </div>
                         
                         <div class="col-md-4 mb-3">
+                            <label for="{{ form.county.id_for_label }}" class="form-label">County</label>
+                            {{ form.county }}
+                            {% if form.county.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.county.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
                             <label for="{{ form.postal_code.id_for_label }}" class="form-label">Postal Code</label>
                             {{ form.postal_code }}
                             {% if form.postal_code.errors %}
@@ -182,6 +209,158 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Service Details -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="fas fa-cogs"></i> Service Details
+                            </h5>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.hours_of_operation.id_for_label }}" class="form-label">Hours of Operation</label>
+                            {{ form.hours_of_operation }}
+                            {% if form.hours_of_operation.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.hours_of_operation.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Service hours and availability (e.g., Mon-Fri 9AM-5PM, 24/7)
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                {{ form.is_emergency_service }}
+                                <label class="form-check-label" for="{{ form.is_emergency_service.id_for_label }}">
+                                    Emergency Service
+                                </label>
+                                {% if form.is_emergency_service.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.is_emergency_service.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Mark if this is a crisis or emergency service
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                {{ form.is_24_hour_service }}
+                                <label class="form-check-label" for="{{ form.is_24_hour_service.id_for_label }}">
+                                    24/7 Service
+                                </label>
+                                {% if form.is_24_hour_service.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.is_24_hour_service.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Mark if this service is available 24/7
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.languages_available.id_for_label }}" class="form-label">Languages Available</label>
+                            {{ form.languages_available }}
+                            {% if form.languages_available.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.languages_available.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Languages supported for accessibility
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.capacity.id_for_label }}" class="form-label">Capacity</label>
+                            {{ form.capacity }}
+                            {% if form.capacity.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.capacity.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Service capacity information
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.eligibility_requirements.id_for_label }}" class="form-label">Eligibility Requirements</label>
+                            {{ form.eligibility_requirements }}
+                            {% if form.eligibility_requirements.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.eligibility_requirements.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Qualification criteria and requirements
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.populations_served.id_for_label }}" class="form-label">Populations Served</label>
+                            {{ form.populations_served }}
+                            {% if form.populations_served.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.populations_served.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Target demographics (e.g., veterans, women, children)
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.insurance_accepted.id_for_label }}" class="form-label">Insurance Accepted</label>
+                            {{ form.insurance_accepted }}
+                            {% if form.insurance_accepted.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.insurance_accepted.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Insurance plans accepted for medical services
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="{{ form.cost_information.id_for_label }}" class="form-label">Cost Information</label>
+                            {{ form.cost_information }}
+                            {% if form.cost_information.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.cost_information.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Financial details and cost information
+                            </div>
                         </div>
                     </div>
                     
