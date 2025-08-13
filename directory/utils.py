@@ -3,7 +3,7 @@ Utility functions for the resource directory application.
 """
 
 import difflib
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 
 def compare_versions(
@@ -25,23 +25,24 @@ def compare_versions(
     all_keys = set(snapshot1.keys()) | set(snapshot2.keys())
 
     for key in all_keys:
-        value1 = snapshot1.get(key, "")
-        value2 = snapshot2.get(key, "")
+        value1 = snapshot1.get(key)
+        value2 = snapshot2.get(key)
 
-        # Convert to strings for comparison
-        str_value1 = str(value1) if value1 is not None else ""
-        str_value2 = str(value2) if value2 is not None else ""
-
-        if str_value1 != str_value2:
+        # Compare values directly (preserve types)
+        if value1 != value2:
             diff_type = "changed"
             if key not in snapshot1:
                 diff_type = "added"
             elif key not in snapshot2:
                 diff_type = "removed"
 
+            # Convert to strings for diff_html generation
+            str_value1 = str(value1) if value1 is not None else ""
+            str_value2 = str(value2) if value2 is not None else ""
+
             differences[key] = {
-                "old_value": str_value1,
-                "new_value": str_value2,
+                "old_value": value1,  # Preserve original type
+                "new_value": value2,  # Preserve original type
                 "diff_type": diff_type,
                 "diff_html": generate_diff_html(str_value1, str_value2),
             }
@@ -93,7 +94,7 @@ def generate_diff_html(old_text: str, new_text: str) -> str:
     return (
         "\n".join(html_lines)
         if html_lines
-        else f'<span class="text-muted">No diff available</span>'
+        else '<span class="text-muted">No diff available</span>'
     )
 
 

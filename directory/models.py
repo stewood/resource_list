@@ -3,7 +3,7 @@ Models for the resource directory application.
 """
 
 import json
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Any, Dict, List
 
 from django.conf import settings
