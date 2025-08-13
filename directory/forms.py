@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
-from .models import Resource, TaxonomyCategory
+from .models import Resource, ServiceType, TaxonomyCategory
 
 
 class ResourceForm(forms.ModelForm):
@@ -20,6 +20,7 @@ class ResourceForm(forms.ModelForm):
         fields = [
             "name",
             "category",
+            "service_types",
             "description",
             "phone",
             "email",
@@ -28,7 +29,10 @@ class ResourceForm(forms.ModelForm):
             "address2",
             "city",
             "state",
+            "county",
             "postal_code",
+            "hours_of_operation",
+            "is_emergency_service",
             "status",
             "source",
             "last_verified_at",
@@ -74,8 +78,21 @@ class ResourceForm(forms.ModelForm):
                     "maxlength": 2,
                 }
             ),
+            "county": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "County or parish name"}
+            ),
             "postal_code": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Postal code"}
+            ),
+            "hours_of_operation": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 3,
+                    "placeholder": "Service hours and availability (e.g., Mon-Fri 9AM-5PM, 24/7)",
+                }
+            ),
+            "is_emergency_service": forms.CheckboxInput(
+                attrs={"class": "form-check-input"}
             ),
             "status": forms.Select(attrs={"class": "form-control"}),
             "source": forms.TextInput(

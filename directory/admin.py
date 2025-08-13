@@ -8,11 +8,40 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
-from .models import AuditLog, Resource, ResourceVersion, TaxonomyCategory
+from .models import AuditLog, Resource, ResourceVersion, ServiceType, TaxonomyCategory
 from .permissions import (user_can_hard_delete, user_can_manage_taxonomies,
                           user_can_manage_users, user_can_publish,
                           user_can_submit_for_review, user_can_verify,
                           user_is_admin, user_is_editor, user_is_reviewer)
+
+
+@admin.register(ServiceType)
+class ServiceTypeAdmin(admin.ModelAdmin):
+    """Admin interface for service types."""
+
+    list_display = ["name", "slug", "resource_count", "created_at"]
+    list_filter = ["created_at"]
+    search_fields = ["name", "description"]
+    prepopulated_fields = {"slug": ("name",)}
+    readonly_fields = ["created_at"]
+
+    def resource_count(self, obj):
+        """Display the number of resources using this service type."""
+        return obj.resources.count()
+
+    resource_count.short_description = "Resources"
+
+    def has_add_permission(self, request):
+        """Only Reviewers and Admins can add service types."""
+        return user_can_manage_taxonomies(request.user)
+
+    def has_change_permission(self, request, obj=None):
+        """Only Reviewers and Admins can change service types."""
+        return user_can_manage_taxonomies(request.user)
+
+    def has_delete_permission(self, request, obj=None):
+        """Only Admins can delete service types."""
+        return user_is_admin(request.user)
 
 
 @admin.register(TaxonomyCategory)
@@ -74,14 +103,19 @@ class ResourceAdmin(admin.ModelAdmin):
         "status",
         "city",
         "state",
+        "county",
+        "is_emergency_service",
         "needs_verification_display",
         "updated_at",
     ]
     list_filter = [
         "status",
         "category",
+        "service_types",
         "state",
         "city",
+        "county",
+        "is_emergency_service",
         "is_deleted",
         "created_at",
         "updated_at",
@@ -96,6 +130,8 @@ class ResourceAdmin(admin.ModelAdmin):
         "address2",
         "city",
         "state",
+        "county",
+        "hours_of_operation",
     ]
     readonly_fields = [
         "created_at",
@@ -108,12 +144,16 @@ class ResourceAdmin(admin.ModelAdmin):
     fieldsets = (
         (
             "Basic Information",
-            {"fields": ("name", "category", "description", "status", "source")},
+            {"fields": ("name", "category", "service_types", "description", "status", "source")},
         ),
         ("Contact Information", {"fields": ("phone", "email", "website")}),
         (
             "Location",
-            {"fields": ("address1", "address2", "city", "state", "postal_code")},
+            {"fields": ("address1", "address2", "city", "state", "county", "postal_code")},
+        ),
+        (
+            "Service Details",
+            {"fields": ("hours_of_operation", "is_emergency_service")},
         ),
         ("Verification", {"fields": ("last_verified_at", "last_verified_by")}),
         (

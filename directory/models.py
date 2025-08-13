@@ -135,6 +135,28 @@ class TaxonomyCategory(models.Model):
         super().save(*args, **kwargs)
 
 
+class ServiceType(models.Model):
+    """Types of services offered by resources."""
+
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True, blank=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = "Service Type"
+        verbose_name_plural = "Service Types"
+
+    def __str__(self) -> str:
+        return self.name
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        if not self.slug:
+            self.slug = self.name.lower().replace(" ", "-")
+        super().save(*args, **kwargs)
+
+
 class Resource(models.Model):
     """A resource for people experiencing homelessness."""
 
@@ -156,6 +178,12 @@ class Resource(models.Model):
         blank=True,
         related_name="resources",
     )
+    service_types = models.ManyToManyField(
+        ServiceType,
+        blank=True,
+        related_name="resources",
+        help_text="Types of services offered by this resource",
+    )
     description = models.TextField(blank=True)
 
     # Contact information
@@ -168,11 +196,14 @@ class Resource(models.Model):
     address2 = models.CharField(max_length=200, blank=True)
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=2, blank=True)
+    county = models.CharField(max_length=100, blank=True, help_text="County or parish name")
     postal_code = models.CharField(max_length=10, blank=True)
 
     # Operational fields
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
     source = models.CharField(max_length=200, blank=True)
+    hours_of_operation = models.TextField(blank=True, help_text="Service hours and availability")
+    is_emergency_service = models.BooleanField(default=False, help_text="Mark if this is a crisis or emergency service")
 
     # Verification
     last_verified_at = models.DateTimeField(null=True, blank=True)
@@ -201,7 +232,9 @@ class Resource(models.Model):
             models.Index(fields=["status"]),
             models.Index(fields=["city"]),
             models.Index(fields=["state"]),
+            models.Index(fields=["county"]),
             models.Index(fields=["category"]),
+            models.Index(fields=["is_emergency_service"]),
             models.Index(fields=["updated_at"]),
         ]
 

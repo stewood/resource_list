@@ -17,7 +17,7 @@ from django.views.generic import CreateView, DetailView, ListView, UpdateView
 from django.views.generic.edit import FormView
 
 from .forms import ResourceForm
-from .models import Resource, ResourceVersion, TaxonomyCategory
+from .models import Resource, ResourceVersion, ServiceType, TaxonomyCategory
 from .permissions import (require_admin, require_editor, require_reviewer,
                           user_can_publish, user_can_submit_for_review)
 from .utils import compare_versions
@@ -60,6 +60,10 @@ class ResourceListView(LoginRequiredMixin, ListView):
         if category_filter:
             queryset = queryset.filter(category_id=category_filter)
 
+        service_type_filter = self.request.GET.get("service_type", "")
+        if service_type_filter:
+            queryset = queryset.filter(service_types_id=service_type_filter)
+
         city_filter = self.request.GET.get("city", "")
         if city_filter:
             queryset = queryset.filter(city__icontains=city_filter)
@@ -67,6 +71,16 @@ class ResourceListView(LoginRequiredMixin, ListView):
         state_filter = self.request.GET.get("state", "")
         if state_filter:
             queryset = queryset.filter(state__icontains=state_filter)
+
+        county_filter = self.request.GET.get("county", "")
+        if county_filter:
+            queryset = queryset.filter(county__icontains=county_filter)
+
+        emergency_filter = self.request.GET.get("emergency", "")
+        if emergency_filter == "true":
+            queryset = queryset.filter(is_emergency_service=True)
+        elif emergency_filter == "false":
+            queryset = queryset.filter(is_emergency_service=False)
 
         # Sorting
         sort_by = self.request.GET.get("sort", "-updated_at")
@@ -90,6 +104,7 @@ class ResourceListView(LoginRequiredMixin, ListView):
 
         # Add filter options
         context["categories"] = TaxonomyCategory.objects.all().order_by("name")
+        context["service_types"] = ServiceType.objects.all().order_by("name")
         context["status_choices"] = Resource.STATUS_CHOICES
 
         # Add current filters for form persistence
@@ -97,6 +112,7 @@ class ResourceListView(LoginRequiredMixin, ListView):
             "q": self.request.GET.get("q", ""),
             "status": self.request.GET.get("status", ""),
             "category": self.request.GET.get("category", ""),
+            "service_type": self.request.GET.get("service_type", ""),
             "city": self.request.GET.get("city", ""),
             "state": self.request.GET.get("state", ""),
             "sort": self.request.GET.get("sort", "-updated_at"),

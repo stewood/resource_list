@@ -266,14 +266,14 @@ Build a small, internal-first web app to curate and maintain a high-quality dire
 ### 📊 8.1 Resource Model Field Additions (Based on resources.csv Analysis)
 
 #### ✅ **HIGH PRIORITY** - Essential for Data Import
-- [ ] **Priority: HIGH** - Add `service_types` (ManyToManyField) for categorizing diverse services
-- [ ] **Priority: HIGH** - Add `hours_of_operation` (TextField) for service availability times
+- [x] **Priority: HIGH** - Add `service_types` (ManyToManyField) for categorizing diverse services
+- [x] **Priority: HIGH** - Add `hours_of_operation` (TextField) for service availability times
 - [ ] **Priority: HIGH** - Add `eligibility_requirements` (TextField) for qualification criteria
-- [ ] **Priority: HIGH** - Add `county` (CharField) for better geographic organization
+- [x] **Priority: HIGH** - Add `county` (CharField) for better geographic organization
 
 #### ✅ **MEDIUM PRIORITY** - Important for User Experience
 - [ ] **Priority: MEDIUM** - Add `populations_served` (TextField) for target demographics
-- [ ] **Priority: MEDIUM** - Add `is_emergency_service` (BooleanField) for crisis situations
+- [x] **Priority: MEDIUM** - Add `is_emergency_service` (BooleanField) for crisis situations
 - [ ] **Priority: MEDIUM** - Add `is_24_hour_service` (BooleanField) for round-the-clock services
 - [ ] **Priority: MEDIUM** - Add `primary_service_type` (ForeignKey) for main service classification
 
@@ -284,17 +284,17 @@ Build a small, internal-first web app to curate and maintain a high-quality dire
 - [ ] **Priority: LOW** - Add `cost_information` (TextField) for financial details
 
 ### 📊 8.2 New ServiceType Model
-- [ ] **Priority: HIGH** - Create `ServiceType` model for service categorization
-- [ ] **Priority: HIGH** - Add predefined service types (Hotlines, Food Assistance, Housing, etc.)
-- [ ] **Priority: MEDIUM** - Update admin interface for ServiceType management
-- [ ] **Priority: MEDIUM** - Update resource forms to include new fields
+- [x] **Priority: HIGH** - Create `ServiceType` model for service categorization
+- [x] **Priority: HIGH** - Add predefined service types (Hotlines, Food Assistance, Housing, etc.)
+- [x] **Priority: MEDIUM** - Update admin interface for ServiceType management
+- [x] **Priority: MEDIUM** - Update resource forms to include new fields
 
 ### 📊 8.3 Data Migration & Import
-- [ ] **Priority: HIGH** - Create migration for new fields
+- [x] **Priority: HIGH** - Create migration for new fields
 - [ ] **Priority: HIGH** - Update CSV import to handle new fields
 - [ ] **Priority: HIGH** - Create data migration script for existing resources.csv
-- [ ] **Priority: MEDIUM** - Update search functionality to include new fields
-- [ ] **Priority: MEDIUM** - Update filtering options for new fields
+- [x] **Priority: MEDIUM** - Update search functionality to include new fields
+- [x] **Priority: MEDIUM** - Update filtering options for new fields
 
 **Acceptance Criteria:**
 - All new fields are properly validated and normalized
