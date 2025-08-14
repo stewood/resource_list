@@ -4,6 +4,7 @@ Admin interface for the directory app.
 
 from django.contrib import admin
 from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -13,6 +14,7 @@ from .permissions import (user_can_hard_delete, user_can_manage_taxonomies,
                           user_can_manage_users, user_can_publish,
                           user_can_submit_for_review, user_can_verify,
                           user_is_admin, user_is_editor, user_is_reviewer)
+from .utils import export_resources_to_csv
 
 
 @admin.register(ServiceType)
@@ -212,7 +214,7 @@ class ResourceAdmin(admin.ModelAdmin):
         ),
     )
     inlines = [ResourceVersionInline]
-    actions = ["submit_for_review", "publish_resource", "unpublish_resource", "archive_resources", "unarchive_resources"]
+    actions = ["submit_for_review", "publish_resource", "unpublish_resource", "archive_resources", "unarchive_resources", "export_to_csv"]
 
     def needs_verification_display(self, obj):
         """Display verification status with color coding."""
@@ -333,6 +335,19 @@ class ResourceAdmin(admin.ModelAdmin):
         self.message_user(request, f"Successfully unarchived {updated} resource(s).")
 
     unarchive_resources.short_description = "Unarchive selected resources"
+
+    def export_to_csv(self, request, queryset):
+        """Export selected resources to CSV."""
+        if not user_is_admin(request.user):
+            raise PermissionDenied("You don't have permission to export resources.")
+
+        # If no resources are selected, export all non-deleted resources
+        if not queryset.exists():
+            queryset = Resource.objects.filter(is_deleted=False)
+
+        return export_resources_to_csv(queryset, include_header=True)
+
+    export_to_csv.short_description = "Export selected resources to CSV"
 
 
 @admin.register(ResourceVersion)

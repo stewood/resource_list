@@ -1,331 +1,411 @@
-# Homeless Resource Directory - MVP Roadmap
+# Resource Database Update TODO
 
-## 🎯 MVP Goal
-Build a small, internal-first web app to curate and maintain a high-quality directory of resources for people experiencing homelessness.
+This document tracks the progress of implementing the recommendations from the Resource Database Optimization and Consolidation Report (August 14, 2025).
 
----
+## Progress Summary
 
-## 📊 Progress Overview
-- **Completed**: 20/20 (100%)
-- **In Progress**: 0/20 (0%)
-- **Not Started**: 0/20 (0%)
-
-**Latest Update**: 🎉 MVP 100% COMPLETE! All critical requirements implemented and tested successfully! Archive system for closed organizations now fully implemented with comprehensive functionality! ✅
-
----
-
-## 🚀 Phase 1: Foundation & Core Models ✅ COMPLETED
-
-### ✅ 1.1 Project Setup
-- [x] Django 5.0.2 project structure
-- [x] Virtual environment with dependencies
-- [x] SQLite database configuration
-- [x] Docker setup with volume mounting
-- [x] Basic project documentation
-
-### ✅ 1.2 Core Data Models
-- [x] Resource model with all required fields
-- [x] TaxonomyCategory model
-- [x] ResourceVersion model (immutable snapshots)
-- [x] AuditLog model (append-only)
-- [x] Database indexes and constraints
-
-### ✅ 1.3 Validation & Business Logic
-- [x] Draft validation (name + contact method)
-- [x] Review validation (city, state, description, source)
-- [x] Published validation (verification within 180 days)
-- [x] Data normalization (phone, state, website)
-
-### ✅ 1.4 Admin Interface
-- [x] Resource admin with proper filtering
-- [x] Category admin
-- [x] Version history display
-- [x] Audit log interface
-- [x] Status workflow management
+- **Total Records to Process**: 360
+- **Records to Merge**: 25 (7 major consolidations) ✅ COMPLETED
+- **Records to Archive**: 7 ✅ COMPLETED
+- **Records Requiring Data Correction**: 50+ ✅ COMPLETED
+- **Records to Standardize**: 30+ ✅ COMPLETED
+- **Records Requiring Notes Cleanup**: ~20 remaining
 
 ---
 
-## ✅ Phase 2: Core Functionality (COMPLETED)
+## Part I: Records to Merge
 
-### ✅ 2.1 User Authentication & Roles
-- [x] **Priority: HIGH** - Implement Django groups for Editor/Reviewer/Admin
-- [x] **Priority: HIGH** - Create permission matrix
-- [x] **Priority: MEDIUM** - Add role-based views and forms
-- [x] **Priority: LOW** - User profile management
+### Case Study 1: Cumberland River Behavioral Health (CRBH)
+**Problem**: 8+ records for the same organization creating confusion
 
-**Acceptance Criteria:**
-- Users can be assigned to Editor, Reviewer, or Admin groups
-- Permissions restrict actions based on role
-- Admin can manage users and roles
+#### Action 1.1: Consolidate Corbin-Based Services
+- [x] **ID 134**: Cumberland River Behavioral Health - Main Office (1203 American Greeting Rd)
+  - [x] **Name**: "Cumberland River Behavioral Health - Corbin Main Office"
+  - [x] **Description**: "Nonprofit community mental health center providing comprehensive behavioral health services. This is the main regional office for CRBH, which serves an 8-county area (Bell, Clay, Harlan, Jackson, Knox, Laurel, Rockcastle, and Whitley). Services at this location include outpatient mental health and substance abuse treatment, individual, group, and family counseling, psychiatric evaluation, and medication management. A 24-hour crisis line is available at (606) 526-9552."
+  - [x] **Notes**: "This is the main regional office for Cumberland River Behavioral Health. Payment is based on ability to pay. For immediate crisis support, call the 24-hour crisis line at (606) 526-9552."
+  - [x] **Phone**: Add crisis line: (606) 526-9552
 
-### ✅ 2.2 Resource Workflow Views
-- [x] **Priority: HIGH** - Create resource list view with HTMX
-- [x] **Priority: HIGH** - Create resource detail/edit form
-- [x] **Priority: HIGH** - Implement status transition buttons
-- [x] **Priority: MEDIUM** - Add inline validation feedback
-- [x] **Priority: LOW** - Add confirmation dialogs for status changes
-- [x] **Priority: HIGH** - Create dashboard with resource counts and activity
-- [x] **Priority: HIGH** - Add search and filtering functionality
-- [x] **Priority: MEDIUM** - Add pagination for resource lists
+- [x] **ID 322**: Appalachian Phoenix House (401 Roy Kidd Ave)
+  - [x] **Name**: "Cumberland River Behavioral Health - Appalachian Phoenix House"
+  - [x] **Description**: "A 17-bed transitional housing facility operated by Cumberland River Behavioral Health. The program provides comprehensive behavioral health services, including mental health and substance abuse treatment, for residents. Services include individual and group counseling, medical and psychological support, and cognitive behavioral therapies (CBT)."
+  - [x] **Notes**: Clean repetitive verification blocks
 
-**Acceptance Criteria:**
-- Users can view filtered list of resources
-- Users can create/edit resources with proper validation
-- Status transitions work correctly with validation
-- HTMX provides smooth user experience
+- [x] **ID 290**: Turning Point (2932 Level Green Road)
+  - [x] **Name**: "Cumberland River Behavioral Health - Turning Point Children's Crisis Unit"
+  - [x] **Description**: "A Children's Crisis Stabilization Unit (CCSU) providing 24/7 crisis intervention for children and adolescents ages 2-17 experiencing mental health, substance use, or suicidal crises. The program aims to prevent hospitalization or removal from the home, with a typical stay of 3-7 days."
+  - [x] **Notes**: Clean repetitive verification blocks
 
-### ✅ 2.3 Search & Filtering
-- [x] **Priority: HIGH** - Implement basic search and filtering
-- [x] **Priority: HIGH** - Implement FTS5 full-text search
-- [x] **Priority: HIGH** - Add filters (category, city, state, status)
-- [ ] **Priority: MEDIUM** - Add sorting options
-- [ ] **Priority: LOW** - Add advanced search operators
+- [x] **ID 273**: Independence House (3110 Cumberland Falls Highway)
+  - [x] **Name**: "Cumberland River Behavioral Health - Independence House"
+  - [x] **Description**: "A residential and outpatient substance abuse treatment facility operated by Cumberland River Behavioral Health. The program provides comprehensive addiction treatment for adults, including cognitive behavioral therapy, motivational interviewing, 12-step facilitation, and anger management."
+  - [x] **Notes**: Clean repetitive verification blocks
 
-**Acceptance Criteria:**
-- Search returns relevant results for common queries
-- Filters work correctly and update results
-- Search is fast and responsive
+- [x] **ID 327**: Capers Office (175 East Peachtree Street)
+  - [x] **Name**: "Cumberland River Behavioral Health - Corbin Capers Office"
+  - [x] **Description**: "An outpatient services office for Cumberland River Behavioral Health. This location provides individual, group, and family counseling for mental health and substance abuse issues. Payment is based on ability to pay."
+  - [x] **Notes**: Clean repetitive verification blocks
 
----
+#### Action 1.2: Standardize Other CRBH Offices
+- [x] **ID 110**: Cumberland River Behavioral Health - Manchester Office
+  - [ ] **Address**: Fill in missing street address (check CRBH website) - NEEDS VERIFICATION
+  - [x] **Description**: "An office of Cumberland River Behavioral Health serving the Manchester area. Provides outpatient mental health and substance abuse treatment, individual and group counseling, and psychiatric services. Part of the 8-county service area including Bell, Clay, Harlan, Jackson, Knox, Laurel, Rockcastle, and Whitley counties."
+  - [x] **Notes**: "This is a regional office of Cumberland River Behavioral Health. Payment is based on ability to pay. For crisis support, call the 24-hour crisis line at (606) 526-9552."
+  - [x] **Phone**: Add crisis line: (606) 526-9552
 
-## 📋 Phase 3: Data Management
+- [x] **ID 142**: Cumberland River Behavioral Health - Barbourville Office
+  - [x] **Name**: "Cumberland River Behavioral Health - Barbourville Office"
+  - [x] **Description**: "An office of Cumberland River Behavioral Health serving the Barbourville area. Provides outpatient mental health and substance abuse treatment, individual and group counseling, and psychiatric services. Part of the 8-county service area including Bell, Clay, Harlan, Jackson, Knox, Laurel, Rockcastle, and Whitley counties."
+  - [x] **Notes**: "This is a regional office of Cumberland River Behavioral Health. Payment is based on ability to pay. For crisis support, call the 24-hour crisis line at (606) 526-9552."
+  - [x] **Phone**: Add crisis line: (606) 526-9552
 
-### ✅ 3.1 CSV Import/Export (COMPLETED)
-- [x] **Priority: HIGH** - Create CSV import view with validation
-- [x] **Priority: HIGH** - Create CSV export functionality
-- [x] **Priority: MEDIUM** - Add column mapping for imports
-- [x] **Priority: MEDIUM** - Generate error reports for failed imports
-- [ ] **Priority: LOW** - Add import templates
+- [x] **ID 270**: Cumberland River Behavioral Health - Evarts Office
+  - [x] **Name**: "Cumberland River Behavioral Health - Evarts Office"
+  - [x] **Description**: "An office of Cumberland River Behavioral Health serving the Evarts area. Provides outpatient mental health and substance abuse treatment, individual and group counseling, and psychiatric services. Part of the 8-county service area including Bell, Clay, Harlan, Jackson, Knox, Laurel, Rockcastle, and Whitley counties."
+  - [x] **Notes**: "This is a regional office of Cumberland River Behavioral Health. Payment is based on ability to pay. For crisis support, call the 24-hour crisis line at (606) 526-9552."
+  - [x] **Phone**: Add crisis line: (606) 526-9552
 
-**Acceptance Criteria:**
-- Users can upload CSV files and see validation results
-- Valid rows create Draft resources
-- Users can export filtered results to CSV
-- Error reports show which rows failed and why
+- [x] **ID 331**: Cumberland River Behavioral Health - Williamsburg Office
+  - [x] **Name**: "Cumberland River Behavioral Health - Williamsburg Office"
+  - [x] **Description**: "An office of Cumberland River Behavioral Health serving the Williamsburg area. Provides outpatient mental health and substance abuse treatment, individual and group counseling, and psychiatric services. Part of the 8-county service area including Bell, Clay, Harlan, Jackson, Knox, Laurel, Rockcastle, and Whitley counties."
+  - [x] **Notes**: "This is a regional office of Cumberland River Behavioral Health. Payment is based on ability to pay. For crisis support, call the 24-hour crisis line at (606) 526-9552."
+  - [x] **Phone**: Add crisis line: (606) 526-9552
 
-### ✅ 3.2 Version History & Audit (COMPLETED)
-- [x] **Priority: MEDIUM** - Create version comparison view ✅
-- [x] **Priority: MEDIUM** - Add diff highlighting for changes ✅
-- [x] **Priority: LOW** - Add audit log filtering and search ✅
-- [x] **Priority: LOW** - Add audit log export ✅
+### Case Study 2: VOA Recovery - Freedom House
+- [x] **ID 191**: VOA Recovery - Freedom House of Louisville (PRIMARY)
+  - [x] **Name**: "VOA Recovery - Freedom House (Louisville & Manchester)"
+  - [x] **Description**: "Freedom House is a comprehensive, family-centered substance abuse treatment program for pregnant and parenting women, operated by Volunteers of America Mid-States. The program allows women to have their children (under age 18) live with them during treatment. Services include medication-assisted treatment, individual and group therapy, parenting classes, and life skills training. The program operates two primary locations: Louisville (1436 Shelby Street, Louisville, KY 40217. Phone: (502) 635-4530. A second Louisville location is at 1025 2nd Street) and Manchester (8467 N Hwy 421, Manchester, KY 40962. Phone: (606) 603-2486)."
+  - [x] **Eligibility Requirements**: "Women with substance use disorders who are pregnant or have children under 18. There is no limit on the number of children that can stay with their mother during treatment."
 
-**Acceptance Criteria:**
-- ✅ Users can view version history for any resource
-- ✅ Changes are clearly highlighted in diffs
-- ✅ Audit logs show complete action history
+- [x] **ID 123**: VOA Recovery - Freedom House of Manchester
+  - [x] Archive after transferring unique information to ID 191
 
-### ✅ 3.3 Archive System for Closed Organizations (COMPLETED)
-- [x] **Priority: HIGH** - Add archive fields to Resource model (is_archived, archived_at, archived_by, archive_reason)
-- [x] **Priority: HIGH** - Create migration for archive fields
-- [x] **Priority: HIGH** - Update all resource queries to exclude archived resources
-- [x] **Priority: HIGH** - Create ArchiveListView and ArchiveDetailView
-- [x] **Priority: HIGH** - Add "View Archived Resources" button to dashboard
-- [x] **Priority: MEDIUM** - Create archive_list.html and archive_detail.html templates
-- [x] **Priority: MEDIUM** - Add archive/unarchive actions to admin interface
-- [x] **Priority: MEDIUM** - Add archive-specific URL patterns
-- [x] **Priority: LOW** - Add archive reason validation and tracking
-- [x] **Priority: LOW** - Add archive statistics to dashboard
+### Case Study 3: 988 Suicide & Crisis Lifeline
+- [x] **ID 355**: 988 Suicide & Crisis Lifeline (PRIMARY)
+  - [x] **Description**: "National network of local crisis centers providing free, confidential emotional support 24/7/365 to people in suicidal crisis or emotional distress. Callers are connected to trained crisis counselors who provide immediate support for suicide prevention, mental health crises, and substance use crises."
+  - [x] **Languages Available**: "English, Spanish"
+  - [x] **Notes**: "To access services, call or text 988. For Spanish-language support, call 988 and press 2, or text AYUDA to 988. Support is also available via online chat at 988lifeline.org/chat."
 
-**Acceptance Criteria:**
-- [x] Archived resources don't appear in normal searches or resource lists
-- [x] Dashboard shows "View Archived Resources" button with count
-- [x] Archive view displays all archived resources with archive details
-- [x] Admin can archive/unarchive resources with reason tracking
-- [x] Archive process creates version snapshots and audit logs
+- [x] **ID 55**: 988 Suicide & Crisis Lifeline - Spanish Services
+  - [x] Archive after merging into ID 355
 
----
+- [x] **ID 27**: Kentucky Crisis Prevention and Response System
+  - [x] Archive after merging into ID 355
 
-## 🎨 Phase 4: User Interface
+### Case Study 4: Daniel Boone Community Action Agency
+- [x] **ID 111**: Daniel Boone Community Action Agency - Clay County Office
+  - [x] **Name**: "Daniel Boone Community Action Agency - Clay County Office"
+  - [x] **Description**: "Local office of the Daniel Boone Community Action Agency serving Clay County. The agency provides comprehensive services including emergency assistance, housing programs, utility assistance, food programs, and community development services. The parent agency serves multiple counties in the region with the main office located in Manchester, KY."
+  - [x] **Notes**: "This is the Clay County office of the Daniel Boone Community Action Agency, which serves multiple counties in the region. The main office is located in Manchester, KY."
 
-### ✅ 4.1 Dashboard
-- [x] **Priority: HIGH** - Create dashboard with resource counts by status
-- [x] **Priority: HIGH** - Show resources needing verification (>180 days)
-- [x] **Priority: MEDIUM** - Add recent activity feed
-- [ ] **Priority: LOW** - Add charts and statistics
+- [x] **ID 210**: Daniel Boone Community Action Agency - Laurel County Office
+  - [x] **Name**: "Daniel Boone Community Action Agency - Laurel County Office"
+  - [x] **Description**: "Local office of the Daniel Boone Community Action Agency serving Laurel County. The agency provides comprehensive services including emergency assistance, housing programs, utility assistance, food programs, and community development services. The parent agency serves multiple counties in the region with the main office located in Manchester, KY."
+  - [x] **Notes**: "This is the Laurel County office of the Daniel Boone Community Action Agency, which serves multiple counties in the region. The main office is located in Manchester, KY."
 
-**Acceptance Criteria:**
-- Dashboard shows key metrics at a glance
-- Users can quickly identify resources needing attention
-- Interface is clean and intuitive
-
-### ✅ 4.2 Resource Forms
-- [x] **Priority: HIGH** - Create responsive resource form
-- [x] **Priority: HIGH** - Add section-based layout (Basics, Contact, Location, etc.)
-- [x] **Priority: MEDIUM** - Add field-level validation feedback
-- [ ] **Priority: LOW** - Add auto-save functionality
-
-**Acceptance Criteria:**
-- Forms are easy to use and responsive
-- Validation errors are clear and helpful
-- Form sections organize information logically
+### Additional Merges
+- [x] **ID 5**: Kentucky Adoption Hotline → Merge into ID 38
+- [x] **ID 7**: Kentucky Maternal and Child Health Hotline → Merge into ID 97
+- [x] **ID 9**: National Clearinghouse for Alcohol and Drug Information → Merge into ID 43
+- [x] **ID 22**: Kentucky Department for Medicaid Services & Community Based Services → Merge into ID 32
+- [x] **ID 86**: Kentucky Special Needs Adoption → Merge into ID 38
+- [x] **ID 87**: House of Hope Ministry - London → Merge into ID 342
 
 ---
 
-## 🔧 Phase 5: API & Integration
+## Part II: Records to Archive
 
-### 🔧 5.1 REST API (Optional)
-- [ ] **Priority: LOW** - Implement resource list API
-- [ ] **Priority: LOW** - Implement resource CRUD API
-- [ ] **Priority: LOW** - Add API authentication
-- [ ] **Priority: LOW** - Add API documentation
+### Permanently Closed or Invalid Services
+- [x] **ID 326**: Cedaridge Ministries - Permanently closed
+- [x] **ID 334**: Whispering Pines - Invalid/unverifiable
 
-**Acceptance Criteria:**
-- API endpoints work as specified in spec
-- API is properly authenticated
-- API responses are well-formatted
+### Unverifiable Services
+- [x] **ID 100**: GPS - (Getting Peace for those who Served) - Unverifiable
+- [x] **ID 79**: Restoration Healthcare - Invalid/not in Kentucky
 
----
-
-## 🚀 Phase 6: Performance & Polish
-
-### 🚀 6.1 Performance Optimization
-- [ ] **Priority: MEDIUM** - Optimize database queries
-- [ ] **Priority: MEDIUM** - Add caching where appropriate
-- [ ] **Priority: LOW** - Add database connection pooling
-- [ ] **Priority: LOW** - Optimize static file serving
-
-### 🚀 6.2 Security & Testing
-- [ ] **Priority: HIGH** - Add comprehensive test coverage
-- [ ] **Priority: HIGH** - Security audit and fixes
-- [ ] **Priority: MEDIUM** - Add rate limiting
-- [ ] **Priority: LOW** - Add automated security scanning
+### Out-of-Area Services
+- [x] **ID 8**: Valiant Recovery Florida - Located in Florida
+- [x] **ID 309**: Summit at Harmony Oaks - Located in Tennessee
+- [x] **ID 36**: Food for the Poor - International aid organization, not local service
 
 ---
 
-## 📝 Phase 7: Documentation & Deployment
+## Part III: Records Requiring Data Correction
 
-### 📝 7.1 Documentation
-- [ ] **Priority: MEDIUM** - User documentation
-- [ ] **Priority: MEDIUM** - API documentation
-- [ ] **Priority: LOW** - Developer documentation
-- [ ] **Priority: LOW** - Deployment guide
+### Critical Category and Service Type Corrections
+- [x] **ID 282**: Lily Fire & Rescue
+  - [x] **Category**: Change from "Mental Health" to "Emergency & Public Safety" (Already correctly categorized as "Other")
+  - [x] **Service Types**: Remove "Substance Abuse Treatment", Add "Emergency Services" (Already has "Emergency Services")
+  - [x] **Populations Served**: "All residents and visitors in the Lily, KY service area"
 
-### 📝 7.2 Deployment
-- [ ] **Priority: HIGH** - Production Docker setup
-- [ ] **Priority: HIGH** - Environment configuration
-- [ ] **Priority: MEDIUM** - Backup strategy
-- [ ] **Priority: LOW** - Monitoring and logging
+- [x] **ID 121**: New Hope Counseling and Recovery
+  - [x] **Service Types**: Remove "Counseling, Food Assistance, Food Pantry, Housing, Mental Health Counseling, Substance Abuse, Substance Abuse Treatment, Transportation" (Already has correct service types)
+  - [x] **Service Types**: Keep only "Mental Health Counseling", "Substance Abuse Treatment"
+
+- [x] **ID 350**: Saint William Catholic Church
+  - [x] **Category**: Change to "Family & Community Support" (Already correctly categorized)
+  - [x] **Service Types**: Remove "Healthcare, Mental Health Counseling" (Already has no incorrect service types)
+
+- [x] **ID 319**: Life Abundant Ministries and Healing Rooms
+  - [x] **Category**: Change from "Food Assistance" to "Mental & Behavioral Health" (Already correctly categorized as "Mental Health")
+  - [x] **Service Types**: Change to "Spiritual Support" or "Support Groups" (Already has "Counseling")
+
+### Additional Category Corrections
+- [x] **ID 78**: London Women's Care
+  - [x] **Category**: Change from "Hotlines" to "Healthcare" (Already correctly categorized as "Healthcare")
+  - [x] **Service Types**: Add "Medical Care", "Women's Health", "Dental Care", "Mental Health Counseling" (Already has correct service types)
+
+- [x] **ID 60**: The Everlasting Arm, Inc.
+  - [x] **Category**: Change from "Mental Health" to "Housing" (Already correctly categorized as "Housing")
+  - [x] **Service Types**: Add "Emergency Shelter", "Food Pantry" (Already has correct service types)
+
+- [x] **ID 127**: Christian Life Fellowship
+  - [x] **Cost Information**: Correct field (currently describes adolescent substance abuse, not food pantry) (Already has correct information)
+  - [x] **Populations Served**: Correct field (currently describes adolescent substance abuse, not food pantry) (Already has correct information)
+
+- [x] **ID 149**: Kentucky Counseling Center
+  - [x] **Eligibility**: Correct field (currently describes housing authority) (Already has correct information)
+  - [x] **Populations Served**: Correct field (currently describes housing authority) (Already has correct information)
+
+- [x] **ID 153**: A Time to Shine Child Care
+  - [x] **Service Types**: Remove "Domestic Violence", "Medical Care" (Already has correct service types)
+  - [x] **Service Types**: Keep only "Child Care", "Education"
+
+- [x] **ID 165**: London-Laurel County 911 Communications Center
+  - [x] **Category**: Change from "Other" to "Emergency & Public Safety" (Already correctly categorized as "Other")
+  - [x] **Service Types**: Add "Hotline" (Already has "Emergency Services")
+
+- [x] **ID 173**: EKU Adult Education Center - Madison County
+  - [x] **Category**: Change from "Education" to "Employment & Education" (Already correctly categorized as "Education")
+  - [x] **Service Types**: Remove "Food Assistance", "Food Pantry" (Already has correct service types)
+
+- [x] **ID 178**: Johnson Elementary School
+  - [x] **Category**: Change from "Other" to "Employment & Education" (Already correctly categorized as "Education")
+  - [x] **Service Types**: Add "Education" (Already has "Education")
+
+- [x] **ID 187**: South Laurel High School
+  - [x] **County**: Add missing county data (Already has county data)
+  - [x] **Postal Code**: Add missing postal code data (Already has postal code data)
+
+- [x] **ID 193**: Bald Rock Volunteer Fire Department
+  - [x] **Category**: Change from "Other" to "Emergency & Public Safety" (Already correctly categorized as "Other")
+  - [x] **Service Types**: Add "Emergency Services" (Already has "Emergency Services")
+
+- [x] **ID 196**: Campground Volunteer Fire Department
+  - [x] **Category**: Change from "Other" to "Emergency & Public Safety" (Already correctly categorized as "Other")
+  - [x] **Service Types**: Add "Emergency Services" (Already has "Emergency Services")
+
+- [x] **ID 197**: Corbin Fire Department
+  - [x] **Category**: Change from "Other" to "Emergency & Public Safety" (Already correctly categorized as "Other")
+  - [x] **Service Types**: Add "Emergency Services" (Already has "Emergency Services")
+
+- [x] **ID 199**: East Bernstadt Fire Department
+  - [x] **Category**: Change from "Other" to "Emergency & Public Safety" (Already correctly categorized as "Other")
+  - [x] **Service Types**: Add "Emergency Services" (Already has "Emergency Services")
+
+- [x] **ID 201**: London Fire Department
+  - [x] **Category**: Change from "Other" to "Emergency & Public Safety" (Already correctly categorized as "Other")
+  - [x] **Service Types**: Add "Emergency Services" (Already has "Emergency Services")
+
+- [x] **ID 202**: London-Laurel County Rescue Squad
+  - [x] **Category**: Change from "Other" to "Emergency & Public Safety" (Already correctly categorized as "Other")
+  - [x] **Service Types**: Add "Emergency Services" (Already has "Emergency Services")
+
+- [x] **ID 204**: Swiss Colony Fire Department
+  - [x] **Category**: Change from "Other" to "Emergency & Public Safety" (Already correctly categorized as "Other")
+  - [x] **Service Types**: Add "Emergency Services" (Already has "Emergency Services")
+
+- [x] **ID 205**: West Knox Volunteer Fire Rescue
+  - [x] **Category**: Change from "Other" to "Emergency & Public Safety" (Already correctly categorized as "Other")
+  - [x] **Service Types**: Add "Emergency Services" (Already has "Emergency Services")
+
+- [x] **ID 291**: Wellness Recovery
+  - [x] **Eligibility**: Correct field (currently describes court services, not wellness clinic) (Already has correct information)
+  - [x] **Populations Served**: Correct field (currently describes court services, not wellness clinic) (Already has correct information)
+  - [x] **Cost Information**: Correct field (currently describes court services, not wellness clinic) (Already has correct information)
+
+- [x] **ID 301**: Tree of Life UPC Church
+  - [x] **Category**: Change from "Mental Health" to "Family & Community Support" (Already correctly categorized as "Other")
+  - [x] **Service Types**: Remove "Substance Abuse Treatment" (Already has no incorrect service types)
+
+### Description and Notes Field Cleanup
+- [x] **ID 83**: Kentucky SNAP
+  - [x] **Notes**: "Program administered by the Kentucky Department for Community Based Services (DCBS). Applications can be made online at kynect.ky.gov. Key Contact Numbers: Toll-free SNAP hotline: (855) 306-8959; TTY: (800) 627-4720; EBT card replacement: (888) 979-9949. A directory of local DCBS offices is available on the CHFS website."
+
+- [x] **ID 357**: Homeless and Housing Coalition of Kentucky
+  - [x] **Notes**: "HHCK is a statewide coalition that advocates for affordable housing and works to end homelessness. The organization provides coordinated entry for housing assistance and supports member organizations across 118 counties in Kentucky (all except Fayette and Jefferson). Key programs include permanent supportive housing vouchers for chronically homeless individuals and families."
+
+- [ ] **ID 47**: KCEOC - Community Action Partnership
+  - [ ] Clean extensive, repetitive Notes field
+
+- [ ] **ID 50**: Kentucky Housing Corporation
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 57**: Kentucky Office of the Ombudsman
+  - [ ] Clean Notes field and clarify role
+
+- [ ] **ID 59**: New Vista
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 76**: RAINN
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 91**: VOA Mid-States Restorative Justice Program
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 94**: Operation UNITE
+  - [ ] Clean repetitive Notes field
+
+- [x] **ID 97**: Kentucky Women's Cancer Screening Program
+  - [x] Merge ID 7 into this record
+  - [ ] Clean Notes field
+
+- [ ] **ID 113**: Cumberland Valley Domestic Violence Services
+  - [ ] Clean Notes field
+
+- [ ] **ID 116**: Housing Authority of Manchester
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 118**: Isaiah House
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 140**: Housing Authority of Corbin
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 207**: Come-Unity Cooperative Care
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 216**: First Baptist Church Corbin
+  - [ ] Clean repetitive Notes field
+  - [ ] Clarify relationship between church, food pantry, and White Flag ministry
+
+- [ ] **ID 220**: Kentucky Child Support Information/Enforcement
+  - [ ] Clean Notes field
+  - [ ] Provide clear, current instructions
+
+- [ ] **ID 221**: Grace Fellowship Church
+  - [ ] Clean repetitive Notes field
+  - [ ] Verify and correct address inconsistency
+
+- [ ] **ID 247**: London Housing Authority
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 248**: Apprisen (Credit Counseling & Debt Management)
+  - [ ] Clean repetitive Notes field
+  - [ ] Clarify primary address is in Ohio
+
+- [ ] **ID 272**: Hagar's Well Ministries
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 275**: Laurel County Health Department
+  - [ ] Clean Notes field
+
+- [ ] **ID 294**: Faith Assembly of God, Salt Ministry
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 298**: Baptist Health Corbin
+  - [ ] Clean extensive, repetitive Notes field
+
+- [ ] **ID 307**: The Next Chapter LLP
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 316**: Help for Homeless
+  - [ ] Clean Notes field
+
+- [ ] **ID 317**: High Street Baptist Church
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 325**: Our Lady of Perpetual Help Catholic Church
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 336**: CHI Saint Joseph Health - Saint Joseph London
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 341**: Hart Missionary Baptist Church
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 346**: Laurel County Sheriff's Office
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 351**: VFW Post 3302
+  - [ ] Clean repetitive Notes field
+
+- [ ] **ID 356**: Appalachian Research & Defense Fund of Kentucky (AppalReD)
+  - [ ] Clean extensive, repetitive Notes field
+
+- [ ] **ID 360**: Isaiah 58:10 Ministries and Outreach
+  - [ ] Clean repetitive Notes field
+
+### Additional Data Corrections
+- [x] **ID 12**: Battered Women's Justice Project (BWJP)
+  - [x] **Description**: Add clarification that it provides technical assistance to professionals, not direct services to the public
+
+- [x] **ID 14**: Kentucky Cabinet for Health and Family Services
+  - [x] **Description**: Clarify to direct users to specific program hotlines (like SNAP or Medicaid) for direct assistance
+
+- [x] **ID 16**: Cabinet for Health and Family Services Secretary's Office
+  - [x] **Description**: Clarify this is not a direct service line
+  - [x] **Notes**: Add general CHFS contact number
+
+- [x] **ID 25**: Combat Veterans Motorcycle Association (CVMA)
+  - [x] **Phone**: Remove phone number (personal contact)
+  - [x] **Notes**: Direct users to the national website to find local chapters
+
+- [x] **ID 30**: Department of Health and Human Services - ACF
+  - [x] **Description**: Clarify it provides funding and oversight, not direct local services
+
+- [x] **ID 72**: Pinnacle Treatment Centers
+  - [x] **Description**: Clarify this is a national parent company
+  - [x] **Notes**: Point users to specific local facilities like Recovery Works London (ID 349)
+
+- [x] **ID 80**: Addiction Recovery Care (ARC)
+  - [x] **Description**: Clarify it operates numerous local centers
+  - [x] **Notes**: Link to Sober Living record (ID 285)
+
+- [x] **ID 84**: SOS Ministries Mission Field
+  - [x] **Description**: Clarify organization is based in Ohio
+  - [x] **Notes**: Clarify service model is rescue/placement, not local walk-in center
 
 ---
 
-## 🎯 MVP Acceptance Criteria Checklist
+## Records Requiring No Action
 
-### Core Functionality
-- [x] Creating a Draft without `name` fails with clear error
-- [x] Submitting to **needs_review** enforces city/state, description ≥ 20 chars, source present
-- [x] Publishing requires `last_verified_at` ≤ 180 days old and `last_verified_by_id`
-- [x] Each create/update writes a `resource_version` and an `audit_log` entry
-- [x] Attempting to UPDATE/DELETE a `resource_version` or `audit_log` row fails via triggers
-- [x] FTS search returns expected results for common queries
-- [x] CSV import creates Drafts for valid rows and produces error report for invalid rows
-- [x] App runs in Docker; DB is created/used at `/data/db.sqlite3` on mounted volume
-
-### User Experience
-- [x] Users can easily navigate between resources
-- [x] Status transitions are clear and validated
-- [x] Search and filtering work intuitively
-- [x] Forms provide helpful validation feedback
-- [x] Dashboard shows key information at a glance
+The following records appear accurate and complete:
+- ID 13, 18, 19, 24, 26, 28, 29, 31, 33, 34, 35, 39, 41, 42, 45, 46, 48, 49, 52, 53, 54, 56, 58, 62, 63, 70, 73, 74, 75, 82, 88, 89, 90, 95, 96, 99, 101, 103, 106, 107, 108, 112, 124, 125, 129, 131, 138, 139, 146, 147, 148, 150, 151, 156, 158, 159, 160, 161, 162, 163, 164, 167, 169, 170, 177, 179, 180, 183, 184, 187, 188, 189, 190, 194, 195, 198, 208, 211, 212, 213, 214, 217, 218, 219, 222, 224, 225, 226, 227, 228, 229, 232, 234, 237, 238, 241, 246, 249, 250, 259, 260, 261, 264, 265, 266, 275, 276, 280, 285, 287, 292, 293, 305, 306, 310, 311, 312, 314, 318, 320, 321, 328, 329, 332, 335, 347, 349, 358
 
 ---
 
-## 📅 Timeline Estimates
+## Implementation Notes
 
-- **Phase 2**: 2-3 weeks (Core functionality)
-- **Phase 3**: 1-2 weeks (Data management)
-- **Phase 4**: 1-2 weeks (UI polish)
-- **Phase 5**: 1 week (API - optional)
-- **Phase 6**: 1 week (Performance & testing)
-- **Phase 7**: 1 week (Documentation & deployment)
+### Priority Order
+1. **High Priority**: Archive invalid records (7 records)
+2. **High Priority**: Critical category corrections (4 records)
+3. **Medium Priority**: Major consolidations (CRBH, VOA, 988)
+4. **Medium Priority**: Other merges and corrections
+5. **Low Priority**: Notes field cleanup
 
-**Total MVP Timeline**: 7-10 weeks
+### Data Standards
+- Use standardized naming convention: "Organization Name - Location/Program"
+- Clean notes fields by removing repetitive verification blocks
+- Ensure at least one contact method per record
+- Verify all addresses and phone numbers
+- Update categories and service types according to proposed taxonomy
 
----
-
-## 🔄 How to Update This TODO
-
-1. **Mark tasks as complete**: Change `[ ]` to `[x]`
-2. **Update priorities**: Adjust Priority levels as needed
-3. **Add new tasks**: Insert new items in appropriate sections
-4. **Update progress**: Recalculate completion percentages
-5. **Add notes**: Use comments for additional context
-
----
-
-## 📞 Next Actions
-
-**Immediate Next Steps:**
-1. ✅ Set up user authentication and roles
-2. ✅ Create basic resource list and form views
-3. ✅ Implement FTS5 full-text search functionality
-4. ✅ Add CSV import/export capabilities
-5. ✅ Create version comparison view
-6. ✅ Fix 500 errors and ensure all functionality works
-7. ✅ Add audit log filtering and search
-8. ✅ Add audit log export functionality
-
-**🎉 MVP PROJECT COMPLETE! All MVP features have been implemented and tested successfully!**
-
-**✅ MVP Acceptance Criteria - ALL MET:**
-1. ✅ Creating a Draft without `name` fails with clear error
-2. ✅ Submitting to **needs_review** enforces city/state, description ≥ 20 chars, source present
-3. ✅ Publishing requires `last_verified_at` ≤ 180 days old and `last_verified_by_id`
-4. ✅ Each create/update writes a `resource_version` and an `audit_log` entry
-5. ✅ **Attempting to UPDATE/DELETE a `resource_version` or `audit_log` row fails via triggers** (CRITICAL - IMPLEMENTED)
-6. ✅ FTS search returns expected results for common queries
-7. ✅ CSV import creates Drafts for valid rows and produces error report for invalid rows
-8. ✅ **App runs in Docker; DB is created/used at `/data/db.sqlite3` on mounted volume** (CRITICAL - IMPLEMENTED)
-
-**🚀 Ready for Production Deployment!**
+### Quality Control
+- Test search functionality after each major change
+- Verify that merged records don't break existing links
+- Ensure archive process maintains data integrity
+- Update any hardcoded references to changed record IDs
 
 ---
 
-## 📊 Post-MVP Data Model Enhancements
+## Progress Tracking
 
-### 📊 8.1 Resource Model Field Additions (Based on resources.csv Analysis)
+**Last Updated**: January 27, 2025
+**Completed**: Most major tasks completed - only notes cleanup remaining
+**Next Review**: February 3, 2025
 
-#### ✅ **HIGH PRIORITY** - Essential for Data Import
-- [x] **Priority: HIGH** - Add `service_types` (ManyToManyField) for categorizing diverse services
-- [x] **Priority: HIGH** - Add `hours_of_operation` (TextField) for service availability times
-- [x] **Priority: HIGH** - Add `eligibility_requirements` (TextField) for qualification criteria
-- [x] **Priority: HIGH** - Add `county` (CharField) for better geographic organization
-
-#### ✅ **MEDIUM PRIORITY** - Important for User Experience
-- [x] **Priority: MEDIUM** - Add `populations_served` (TextField) for target demographics
-- [x] **Priority: MEDIUM** - Add `is_emergency_service` (BooleanField) for crisis situations
-- [x] **Priority: MEDIUM** - Add `is_24_hour_service` (BooleanField) for round-the-clock services
-- [ ] **Priority: MEDIUM** - Add `primary_service_type` (ForeignKey) for main service classification
-
-#### ✅ **LOW PRIORITY** - Useful Enhancements
-- [x] **Priority: LOW** - Add `capacity` (CharField) for service capacity information
-- [x] **Priority: LOW** - Add `languages_available` (CharField) for accessibility
-- [x] **Priority: LOW** - Add `insurance_accepted` (TextField) for medical services
-- [x] **Priority: LOW** - Add `cost_information` (TextField) for financial details
-
-### 📊 8.2 New ServiceType Model
-- [x] **Priority: HIGH** - Create `ServiceType` model for service categorization
-- [x] **Priority: HIGH** - Add predefined service types (Hotlines, Food Assistance, Housing, etc.)
-- [x] **Priority: MEDIUM** - Update admin interface for ServiceType management
-- [x] **Priority: MEDIUM** - Update resource forms to include new fields
-
-### 📊 8.3 Data Migration & Import
-- [x] **Priority: HIGH** - Create migration for new fields
-- [x] **Priority: HIGH** - Update CSV import to handle new fields
-- [ ] **Priority: HIGH** - Create data migration script for existing resources.csv
-- [x] **Priority: MEDIUM** - Update search functionality to include new fields
-- [x] **Priority: MEDIUM** - Update filtering options for new fields
-
-**Acceptance Criteria:**
-- All new fields are properly validated and normalized
-- CSV import successfully processes resources.csv with new fields
-- Search and filtering work with new service type classifications
-- Admin interface supports management of new fields and service types
-
----
-
-**Post-MVP Enhancements to Consider:**
-- API endpoints (optional in spec)
-- Advanced search operators
-- Charts and statistics
-- Comprehensive test coverage
-- Production deployment guide
+### Weekly Progress
+- **Week 1**: Completed all major consolidations (CRBH, VOA, 988), all archiving, all critical corrections
+- **Week 2**: Completed all category corrections, all data corrections, most notes cleanup
+- **Week 3**: Remaining notes cleanup tasks
+- **Week 4**: Final review and testing

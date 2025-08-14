@@ -2,8 +2,123 @@
 Utility functions for the resource directory application.
 """
 
+import csv
 import difflib
+from io import StringIO
 from typing import Any, Dict, List
+
+from django.http import HttpResponse
+from django.utils import timezone
+
+
+def export_resources_to_csv(queryset, include_header=True):
+    """
+    Export resources to CSV format with all fields.
+    
+    Args:
+        queryset: QuerySet of resources to export
+        include_header: Whether to include header row
+        
+    Returns:
+        HttpResponse with CSV content
+    """
+    # Define all fields to export (excluding history/version fields)
+    field_mapping = {
+        # ID
+        'id': 'ID',
+        # Basic information
+        'name': 'Name',
+        'category': 'Category',
+        'description': 'Description',
+        'status': 'Status',
+        'source': 'Source',
+        'notes': 'Notes',
+        
+        # Contact information
+        'phone': 'Phone',
+        'email': 'Email',
+        'website': 'Website',
+        
+        # Location
+        'address1': 'Address Line 1',
+        'address2': 'Address Line 2',
+        'city': 'City',
+        'state': 'State',
+        'county': 'County',
+        'postal_code': 'Postal Code',
+        
+        # Operational fields
+        'hours_of_operation': 'Hours of Operation',
+        'is_emergency_service': 'Emergency Service',
+        'is_24_hour_service': '24 Hour Service',
+        'eligibility_requirements': 'Eligibility Requirements',
+        'populations_served': 'Populations Served',
+        'insurance_accepted': 'Insurance Accepted',
+        'cost_information': 'Cost Information',
+        'languages_available': 'Languages Available',
+        'capacity': 'Capacity',
+        
+        # Verification
+        'last_verified_at': 'Last Verified At',
+        'last_verified_by': 'Last Verified By',
+        
+        # Metadata
+        'created_at': 'Created At',
+        'updated_at': 'Updated At',
+        'created_by': 'Created By',
+        'updated_by': 'Updated By',
+        
+        # Archive information
+        'is_archived': 'Is Archived',
+        'archived_at': 'Archived At',
+        'archived_by': 'Archived By',
+        'archive_reason': 'Archive Reason',
+    }
+    
+    # Create CSV response
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="resources_export_{timezone.now().strftime("%Y%m%d_%H%M%S")}.csv"'
+    
+    # Create CSV writer
+    writer = csv.writer(response)
+    
+    # Write header if requested
+    if include_header:
+        header = list(field_mapping.values()) + ['Service Types']
+        writer.writerow(header)
+    
+    # Write data rows
+    for resource in queryset:
+        row = []
+        for field_name in field_mapping.keys():
+            value = getattr(resource, field_name, None)
+            
+            # Handle special cases
+            if field_name == 'category' and value:
+                value = value.name
+            elif field_name == 'last_verified_by' and value:
+                value = value.username
+            elif field_name == 'created_by' and value:
+                value = value.username
+            elif field_name == 'updated_by' and value:
+                value = value.username
+            elif field_name == 'archived_by' and value:
+                value = value.username
+            elif field_name in ['last_verified_at', 'created_at', 'updated_at', 'archived_at'] and value:
+                value = value.strftime('%Y-%m-%d %H:%M:%S')
+            elif field_name in ['is_emergency_service', 'is_24_hour_service', 'is_archived']:
+                value = 'Yes' if value else 'No'
+            
+            # Convert to string, handling None values
+            row.append(str(value) if value is not None else '')
+        
+        # Add service types as a separate column
+        service_types = ', '.join([st.name for st in resource.service_types.all()])
+        row.append(service_types)
+        
+        writer.writerow(row)
+    
+    return response
 
 
 def compare_versions(

@@ -322,7 +322,10 @@ class ExportView(LoginRequiredMixin, FormView):
 
         # Write header if requested
         if include_header:
-            writer.writerow(fields_to_export)
+            header = list(fields_to_export)
+            if "service_types" not in fields_to_export:
+                header.append("Service Types")
+            writer.writerow(header)
 
         # Write data rows
         for resource in queryset:
@@ -333,13 +336,30 @@ class ExportView(LoginRequiredMixin, FormView):
                 # Handle special cases
                 if field == "category" and resource.category:
                     value = resource.category.name
+                elif field == "last_verified_by" and value:
+                    value = value.username
+                elif field == "created_by" and value:
+                    value = value.username
+                elif field == "updated_by" and value:
+                    value = value.username
+                elif field == "archived_by" and value:
+                    value = value.username
                 elif (
-                    field in ["last_verified_at", "created_at", "updated_at"] and value
+                    field in ["last_verified_at", "created_at", "updated_at", "archived_at"] and value
                 ):
                     value = value.strftime("%Y-%m-%d %H:%M:%S")
+                elif field in ["is_emergency_service", "is_24_hour_service", "is_archived"]:
+                    value = "Yes" if value else "No"
+                elif field == "service_types":
+                    value = ", ".join([st.name for st in resource.service_types.all()])
 
                 row.append(str(value) if value is not None else "")
 
+            # Add service types if not already included
+            if "service_types" not in fields_to_export:
+                service_types = ", ".join([st.name for st in resource.service_types.all()])
+                row.append(service_types)
+            
             writer.writerow(row)
 
         return response
