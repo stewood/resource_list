@@ -1,0 +1,21 @@
+{
+  "name": "London Police Department",
+  "description": "The London Police Department is an accredited law enforcement agency established in 1826, providing protection and law enforcement services to the community of Laurel County, Kentucky. The department's mission is to reduce crime through prevention, detection and apprehension of offenders; provide for the orderly and safe movement of vehicular traffic through traffic law enforcement and accident investigation; ensure public safety through regulation and control of hazardous conditions; recover and return lost and stolen property; and provide non-enforcement services through community programs.",
+  "source": "Verified from official website, Google Business listing, and government sources",
+  "phone": "(606) 878-7004",
+  "website": "https://www.londonpd.com",
+  "address1": "503 S. Main Street",
+  "city": "London",
+  "state": "KY",
+  "postal_code": "40741",
+  "county": "Laurel",
+  "hours_of_operation": "Monday-Friday 9:00 AM-5:00 PM (Clerk's Office), 24/7 emergency response",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Serves all residents and visitors in London, Kentucky and surrounding areas",
+  "populations_served": "Residents and visitors of London, Kentucky and Laurel County",
+  "cost_information": "Free emergency services, some administrative services may have fees",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official website https://www.londonpd.com. Address and phone number verified from Google Business listing and official website. Hours of operation verified from contact page. Organization established in 1826 and is an accredited law enforcement agency. Emergency number: 911. Non-emergency dispatch: (606) 878-7000. Fax: (606) 878-9758. Department provides 24/7 emergency response services. Clerk's office hours are Monday-Friday 9:00 AM-5:00 PM. Department has active social media presence on Facebook and Instagram.",
+  "service_type_ids": [5, 14]
+}

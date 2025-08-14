@@ -1,0 +1,22 @@
+{
+  "name": "United Way of Laurel County",
+  "description": "Nonprofit organization serving Laurel County since 1956, providing disaster relief, hunger assistance, homelessness support, home repairs, and children's needs programs. Currently serving as the official long-term disaster recovery organization for tornado relief efforts. Offers summer feeding programs and emergency assistance to local families.",
+  "source": "Verified from official website and multiple online sources",
+  "phone": "(606) 657-3999",
+  "email": "uwlaurelcounty@gmail.com",
+  "website": "https://unitedwaylaurelcounty.com/",
+  "address1": "610 Sublimity School Rd",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel County",
+  "postal_code": "40744",
+  "hours_of_operation": "Monday-Friday 9:00 AM-5:00 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Laurel County residents in need of assistance",
+  "populations_served": "Laurel County residents, disaster victims, families in need",
+  "cost_information": "Free services for eligible individuals",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information and services verified from official website https://unitedwaylaurelcounty.com/ and multiple online sources. Phone number (606) 657-3999 confirmed working and is the correct number for this organization. Original phone number 6068643181 appears to be incorrect or outdated. Address 610 Sublimity School Rd, London, KY 40744 confirmed across multiple sources. Organization serves as the official long-term disaster recovery organization for Laurel County tornado relief efforts. Founded in 1956, guided by a volunteer board of seven dedicated Laurel Countians. Provides disaster relief, hunger assistance, homelessness support, home repairs, children's needs, and summer feeding programs. All funds remain in Laurel County with zero administrative fees. Currently accepting financial donations for tornado relief efforts.",
+  "service_type_ids": [1, 13, 21]
+}

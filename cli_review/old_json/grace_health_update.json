@@ -1,0 +1,23 @@
+{
+  "name": "Miss Barbara's Child Care Center Inc",
+  "description": "Licensed child care center providing quality childcare services for infants through age 12. Celebrating over 20 years of service to families in the London area. Offers a safe and nurturing environment for children with experienced staff.",
+  "source": "Verified from 411.info business listing and Google search results",
+  "phone": "(606) 864-0783",
+  "email": "",
+  "website": "",
+  "address1": "1366 S Laurel Rd",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40744",
+  "hours_of_operation": "Monday-Friday 6:30 AM-6:00 PM",
+  "is_emergency_service": false,
+  "notes": "Licensed child care facility serving infants through age 12. Over 20 years of experience in child care services.",
+  "service_types": ["Child Care"],
+  "capacity": "Varies based on age groups and licensing requirements",
+  "cost_information": "Contact for current rates and availability",
+  "eligibility": "Children from infancy through age 12",
+  "required_documents": "Immunization records, emergency contact information",
+  "languages": ["English"],
+  "accessibility": "Contact for specific accessibility accommodations"
+}

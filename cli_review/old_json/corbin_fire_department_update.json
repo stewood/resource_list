@@ -1,0 +1,29 @@
+{
+  "name": "Corbin Fire Department",
+  "description": "The Corbin City Fire Department is dedicated to preserving the people, pets, and property of Corbin, Kentucky from the destruction that fire can cause. They serve the city with vigilance, diligence, and readiness to meet any challenge that develops. The department is committed to protecting the community through education, prevention, and response. They stand ready to meet needs at a moment's notice and work in conjunction with the community to keep the city and its inhabitants safe from harm.",
+  "source": "Verified from official City of Corbin website and multiple sources",
+  "phone": "(606) 523-6509",
+  "email": "barry.mcdonald@corbin-ky.gov",
+  "website": "https://www.corbin-ky.gov/Blog/14/fire-department",
+  "address1": "805 S Main St #106",
+  "city": "Corbin",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40701",
+  "hours_of_operation": "24/7",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Serves the City of Corbin and surrounding areas",
+  "populations_served": "Residents and visitors of Corbin, Kentucky",
+  "service_types": [
+    "Fire Protection",
+    "Emergency Response",
+    "Fire Prevention",
+    "Fire Safety Education",
+    "Emergency Services",
+    "Public Safety",
+    "Fire Suppression",
+    "Rescue Services"
+  ],
+  "notes": "Official city fire department for Corbin, Kentucky. Fire Chief: Barry McDonald. Provides 24/7 emergency fire protection and response services to the community."
+}

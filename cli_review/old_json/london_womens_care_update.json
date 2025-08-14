@@ -1,0 +1,35 @@
+{
+  "name": "London Women's Care",
+  "description": "Comprehensive healthcare facility providing care for the entire family at one convenient location. Services include Primary Care, Obstetrics & Gynecology, Pediatrics, Dentistry, and Behavioral Health. LWC offers preventive care, chronic condition management, prenatal and postpartum care, well-child visits, dental services, and mental health support. The facility accepts most insurance plans and provides discounts for uninsured patients based on family size and income.",
+  "source": "Verified from official website and multiple sources",
+  "phone": "(606) 878-3240",
+  "email": "info@londonwomenscare.com",
+  "website": "https://londonwomenscare.com/",
+  "address1": "803 Meyers Baker Road, Suite 200",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40741",
+  "hours_of_operation": "Monday - Friday: 8:00 AM - 5:00 PM",
+  "services": [
+    "Primary Care",
+    "Obstetrics & Gynecology",
+    "Pediatrics",
+    "Dentistry",
+    "Behavioral Health",
+    "Preventive Care",
+    "Chronic Condition Management",
+    "Prenatal Care",
+    "Postpartum Care",
+    "Well-child Visits",
+    "Dental Cleanings",
+    "Mental Health Support"
+  ],
+  "insurance_accepted": [
+    "Most major insurance plans",
+    "Medicaid",
+    "Medicare",
+    "Sliding scale for uninsured"
+  ],
+  "notes": "Comprehensive family healthcare facility with multiple specialties under one roof. Offers patient portal access through FollowMyHealth. Emergency services available 24/7 by calling 911. Facebook page: https://www.facebook.com/LondonWomensCare/"
+}

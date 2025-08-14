@@ -1,0 +1,20 @@
+{
+  "name": "Food and Drug Administration (FDA)",
+  "description": "Federal agency of the Department of Health and Human Services that regulates food, drugs, medical devices, radiation-emitting products, vaccines, blood, biologics, animal and veterinary products, cosmetics, and tobacco products. Provides consumer information and handles complaints about regulated products.",
+  "source": "Verified from official FDA website and government sources",
+  "phone": "(888) 463-6332",
+  "email": "",
+  "website": "https://www.fda.gov",
+  "address1": "10903 New Hampshire Ave",
+  "city": "Silver Spring",
+  "state": "MD",
+  "county": "Montgomery",
+  "postal_code": "20993",
+  "hours_of_operation": "Monday-Friday 8:00 AM - 4:30 PM (Eastern Time)",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Open to all US residents",
+  "service_types": ["Hotlines", "Consumer Information", "Regulatory Services", "Product Safety"],
+  "category": "Hotlines",
+  "notes": "Federal government agency with jurisdiction over the United States. Founded in 1906, headquartered in Silver Spring, Maryland. Annual budget of $6.5 billion (2022). Provides information hotline for consumer inquiries and product safety concerns."
+}

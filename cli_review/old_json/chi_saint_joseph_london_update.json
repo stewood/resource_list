@@ -1,0 +1,22 @@
+{
+  "name": "CHI Saint Joseph Health - Saint Joseph London",
+  "description": "Saint Joseph London is a 150-bed regional hospital established in 1926, serving the London, Kentucky community and surrounding areas. The hospital provides comprehensive medical care including emergency services, diagnostic imaging, cancer care, breast care, primary care, and various specialty services. The facility features private patient rooms, state-of-the-art technology, and serves patients across southeastern Kentucky including Clay, Laurel, Jackson, Knox, Pulaski, Rockcastle and Whitley counties.",
+  "source": "Verified from official website and CommonSpirit Health information",
+  "phone": "(606) 330-6000",
+  "email": "",
+  "website": "https://www.chisaintjosephhealth.org/saint-joseph-london",
+  "address1": "1001 Saint Joseph Lane",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40741",
+  "hours_of_operation": "Open 24 hours for emergency services. General hours vary by department.",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Open to all patients. Accepts most major insurance plans. Financial assistance available for qualifying patients.",
+  "populations_served": "Residents of southeastern Kentucky including Clay, Laurel, Jackson, Knox, Pulaski, Rockcastle and Whitley counties",
+  "cost_information": "Accepts most major insurance plans. Financial assistance available for qualifying patients. Cost estimates available online.",
+  "languages_available": "English, Language assistance available",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-15. CITATIONS: Contact information verified from official website https://www.commonspirit.org/find-a-location/chi-saint-joseph-health-saint-joseph-london-2999. Address and phone number confirmed from website. Hospital established in 1926, 150-bed facility serving southeastern Kentucky. Emergency room open 24 hours. Website verified current and accessible. Part of CommonSpirit Health system. All information cross-referenced with official hospital sources and verified as current.",
+  "service_type_ids": [1, 6, 22]
+}

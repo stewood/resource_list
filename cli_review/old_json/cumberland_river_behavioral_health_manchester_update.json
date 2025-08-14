@@ -1,0 +1,21 @@
+{
+  "name": "Cumberland River Behavioral Health - Manchester Office",
+  "description": "Cumberland River Behavioral Health is a nonprofit community mental health center serving the region since 1966. The Manchester office provides comprehensive mental health and substance abuse services including individual, group, and family counseling, psychiatric evaluation, medication management, crisis intervention, and substance abuse treatment. The organization serves Bell, Clay, Harlan, Jackson, Knox, Laurel, Rockcastle, and Whitley counties. Services are confidential, sensitive to cultural needs and differences, and payment is based on ability to pay. The Manchester office is open Monday through Friday from 8:00 AM to 4:30 PM with after-hours services available as scheduled.",
+  "source": "Verified from official website and multiple sources",
+  "phone": "606-598-5172",
+  "website": "https://crbhky.org",
+  "city": "Manchester",
+  "state": "KY",
+  "zip_code": "40962",
+  "address": "565 Muddy Gap Road",
+  "service_types": [
+    "Mental Health Services",
+    "Substance Abuse Treatment",
+    "Crisis Intervention",
+    "Psychiatric Services",
+    "Individual Counseling",
+    "Group Counseling",
+    "Family Counseling",
+    "Medication Management"
+  ]
+}

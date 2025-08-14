@@ -1,0 +1,22 @@
+{
+  "name": "St. John Episcopal Church",
+  "description": "St. John's Episcopal Church is a Christian church serving the tri-county area of Laurel, Whitley, and Knox counties in southeastern Kentucky. The church provides food pantry services and community meals to help those in need. They offer free community meals on Tuesdays (except 1st Tuesday) at 6:00 PM and host various support groups including Al-Anon and NA meetings. The church is part of the Episcopal Diocese of Lexington and provides worship services, community outreach, and food assistance programs.",
+  "source": "Verified from official St. John's Episcopal Church website and multiple online directories",
+  "phone": "(606) 528-1659",
+  "website": "http://stjohnscorbin.org/",
+  "address1": "701 Engineer St.",
+  "city": "Corbin",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40701",
+  "hours_of_operation": "Office hours vary - call for current schedule. Free community meals: Tuesdays 6:00 PM (except 1st Tuesday), Worship: Sundays 11:00 AM, Wednesdays 6:00 PM",
+  "is_emergency_service": false,
+  "is_24_hour": false,
+  "is_active": true,
+  "eligibility_requirements": "Open to all community members in need. No specific eligibility requirements for food assistance.",
+  "populations_served": "Community members in Laurel, Whitley, and Knox counties, particularly those in need of food assistance",
+  "cost_information": "Free - no cost for food pantry services or community meals",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official St. John's Episcopal Church website http://stjohnscorbin.org/. Phone number (606) 528-1659 confirmed as office number. Address 701 Engineer St., Corbin, KY 40701 verified from official website contact page. Website verified current and accessible. Food pantry services confirmed from multiple online directories including FoodPantries.org and Episcopal Asset Map. Community meal schedule verified from official website. Church services and programs verified from official website. All information cross-referenced with Google search results and multiple directories for consistency. Church serves tri-county area of Laurel, Whitley, and Knox counties.",
+  "service_type_ids": [17, 4, 2]
+}

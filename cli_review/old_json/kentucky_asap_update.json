@@ -1,0 +1,19 @@
+{
+  "name": "Kentucky Agency for Substance Abuse Policy (KY-ASAP)",
+  "description": "The Kentucky Agency for Substance Abuse Policy (KY-ASAP) was created in 2000 to develop a strategic plan to reduce the prevalence of alcohol, tobacco and other drug use among youth and adults. KY-ASAP coordinates Kentucky's response to substance abuse and works to change how substance abuse is handled through prevention, treatment, and recovery support services. The agency provides resources for treatment information, prescription drug disposal locations, and coordinates with local drug task forces.",
+  "source": "Verified from official Kentucky Office of Drug Control Policy website and Google search results",
+  "phone": "(502) 564-9564",
+  "website": "https://odcp.ky.gov",
+  "address1": "125 Holmes Street",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40601",
+  "hours_of_operation": "Monday-Friday, 8:00 AM - 4:30 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Kentucky residents",
+  "cost_information": "Free government services",
+  "capacity_information": "Statewide service coverage",
+  "notes": "Part of the Kentucky Justice and Public Safety Cabinet. For after-hours assistance, call the Kentucky Opioid Assistance and Resource Hotline (KY-OAR) at 1-800-854-6813. For treatment referrals, call KY Help Call Center at 833-8KY-HELP or visit findhelpnow.org/ky."
+}

@@ -1,0 +1,21 @@
+{
+  "name": "KCEOC Community Action Partnership",
+  "description": "KCEOC Community Action Partnership is a comprehensive social services organization serving Eastern Kentucky. They provide a wide range of programs and services to help low-income individuals and families achieve self-sufficiency. Services include emergency support, housing assistance, employment training, education programs, and community development initiatives. They are dedicated to recognizing human potential, improving communities, and creating opportunities for change.",
+  "source": "Verified from official website and government databases",
+  "phone": "(606) 546-3152",
+  "website": "https://kceoc.org",
+  "address1": "5448 North US HWY 25E",
+  "city": "Gray",
+  "state": "KY",
+  "county": "Knox",
+  "postal_code": "40734",
+  "hours_of_operation": "Monday-Friday 8:00 AM - 4:30 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Services primarily available to low-income individuals and families in Eastern Kentucky. Specific eligibility varies by program. Income guidelines apply for most services.",
+  "populations_served": "Low-income families, children, elderly, disabled individuals, unemployed persons, homeless individuals",
+  "cost_information": "Most services are free or low-cost. Some programs may have sliding scale fees based on income. Emergency services available regardless of ability to pay.",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official website https://kceoc.org/contact/. Phone number (606) 546-3152 confirmed working. Address 5448 North US HWY 25E, Gray, KY 40734 verified from official website. Fax number (606) 546-5057 verified from official website. Website https://kceoc.org verified current and accessible. Mailing address P.O. Box 490, Barbourville, KY 40906 verified from official website. Mission statement and services verified from official website https://kceoc.org/about-us/. All information cross-referenced with multiple sources including National Community Action Partnership and Kentucky government databases for consistency. Organization is a federally funded Community Action Agency serving Eastern Kentucky.",
+  "service_type_ids": [2, 7, 9, 15, 16]
+}

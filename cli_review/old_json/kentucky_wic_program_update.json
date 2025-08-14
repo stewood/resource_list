@@ -1,0 +1,20 @@
+{
+  "name": "Kentucky WIC Program - Women, Infants and Children",
+  "description": "The Kentucky WIC (Women, Infants and Children) Program is a federally funded nutrition education program administered by the Kentucky Cabinet for Health and Family Services. WIC provides nutritional counseling, breastfeeding support and education, nutritious foods, and referrals to health care services for pregnant, breastfeeding, and postpartum women, infants, and children up to age 5. The program improves the health of participants through nutrition education, breastfeeding promotion, and access to healthy foods. WIC also offers the Farmers Market Nutrition Program, providing $30 in benefits for locally grown fruits, vegetables, and fresh-cut herbs. Services are available statewide through local health departments. Free language assistance and disability accommodations are available.",
+  "source": "Verified from official Kentucky government website and USDA sources",
+  "phone": "1-800-462-6122",
+  "website": "https://chfs.ky.gov/agencies/dph/dmch/nsb/Pages/wic.aspx",
+  "city": "Frankfort",
+  "state": "KY",
+  "zip_code": "40621",
+  "address": "275 E. Main St. HS2-EE",
+  "service_types": [
+    "Nutrition Education",
+    "Breastfeeding Support",
+    "Food Assistance",
+    "Health Care Referrals",
+    "Prenatal Care",
+    "Child Nutrition",
+    "Farmers Market Program"
+  ]
+}

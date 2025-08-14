@@ -1,0 +1,51 @@
+{
+  "name": "Battered Women's Justice Project (BWJP)",
+  "description": "BWJP is a collective of national policy and practice centers at the intersection of gender-based violence and legal systems. The organization provides resources, training, consultations, and research to improve civil and criminal justice responses to domestic and dating violence, sexual assault, stalking, and human trafficking. BWJP offers technical assistance to advocates, attorneys, judges, court personnel, law enforcement officers, and other professionals working with survivors of gender-based violence.",
+  "source": "Verified from official BWJP website and multiple resource directories",
+  "phone": "(800) 903-0111 x 1",
+  "email": "technicalassistance@bwjp.org",
+  "website": "https://bwjp.org/",
+  "address1": "540 Fairview Avenue N, Suite 208",
+  "city": "St. Paul",
+  "state": "MN",
+  "county": "Ramsey",
+  "zip_code": "55104",
+  "service_types": [
+    "Domestic Violence",
+    "Legal Services",
+    "Training",
+    "Technical Assistance",
+    "Policy Development",
+    "Research",
+    "Advocacy",
+    "Hotlines"
+  ],
+  "hours": "Monday-Friday, 9:00 AM - 5:00 PM CT",
+  "eligibility": "Available to advocates, attorneys, judges, court personnel, law enforcement officers, and other professionals working with survivors of gender-based violence",
+  "fees": "Free technical assistance and resources",
+  "languages": [
+    "English",
+    "Spanish"
+  ],
+  "special_programs": [
+    "Criminal Justice Responses",
+    "Civil Justice Responses",
+    "Child Protection and Custody",
+    "Firearms and Domestic Violence",
+    "Protection Orders",
+    "Offender Intervention",
+    "Criminalized Survivors",
+    "Global Rights for Women"
+  ],
+  "additional_services": [
+    "Technical assistance and training",
+    "Policy development and analysis",
+    "Research and evaluation",
+    "Resource development",
+    "Consultation services",
+    "Learning community access",
+    "Survivor support line",
+    "Legal advocacy resources"
+  ],
+  "notes": "BWJP is a 501(c)(3) non-profit organization (EIN 46-3584341). The organization recently merged with Global Rights for Women to expand their global impact. They provide comprehensive support for professionals working to end gender-based violence through legal and systemic change."
+}

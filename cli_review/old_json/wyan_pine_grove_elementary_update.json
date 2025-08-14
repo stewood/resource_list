@@ -1,0 +1,22 @@
+{
+  "name": "Wyan-Pine Grove Elementary School",
+  "description": "Wyan-Pine Grove Elementary School is a public elementary school serving students in the Laurel County Public Schools district. The school provides comprehensive education including core academic subjects, preschool programs, and extracurricular activities. The school is part of the Laurel County Public Schools system and serves the London, Kentucky area.",
+  "source": "Verified from official Laurel County Schools website, Google search results, and multiple school directories",
+  "phone": "(606) 862-5400",
+  "email": "",
+  "website": "https://www.laurel.kyschools.us/o/wpes",
+  "address1": "2330 Keavy Road",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40744",
+  "hours_of_operation": "Monday - Friday, Opens 8:00 AM, Tardy bell 8:10 AM, Dismissal 3:05 PM",
+  "is_emergency_service": false,
+  "is_24_hour": false,
+  "notes": "Public elementary school serving preschool through elementary grades. Part of Laurel County Public Schools district. Offers school meals, preschool programs, and various educational activities. School calendar and specific programs available on the district website.",
+  "service_types": [
+    "Education",
+    "School Meals",
+    "Preschool Programs"
+  ]
+}

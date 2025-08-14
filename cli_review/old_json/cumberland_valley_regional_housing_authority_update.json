@@ -1,0 +1,28 @@
+{
+  "name": "Cumberland Valley Regional Housing Authority",
+  "description": "The Cumberland Valley Regional Housing Authority (CVRHA) is a public housing agency serving multiple counties in southeastern Kentucky. The organization provides affordable housing solutions including Section 8 Housing Choice Vouchers, public housing units, and transitional housing programs. CVRHA operates multiple offices across the region including Barbourville (main office), Williamsburg, and Harlan locations. The agency administers federal housing assistance programs to help low-income families, elderly, and disabled individuals access safe and affordable housing. Services include housing application processing, rental assistance, housing inspections, and case management for housing stability.",
+  "source": "Verified from official CVRHA website and multiple online directories",
+  "phone": "1-800-928-5971",
+  "email": "receptionist@cvrhaky.com",
+  "website": "https://www.cvrhaky.com",
+  "address1": "P.O. Box 806",
+  "city": "Barbourville",
+  "state": "KY",
+  "zip_code": "40906",
+  "county": "Knox",
+  "hours": "Monday-Friday 8:00 AM - 4:30 PM",
+  "eligibility": "Low-income families, elderly, and disabled individuals meeting federal income guidelines. Must complete application process and meet program-specific requirements.",
+  "services": [
+    "Section 8 Housing Choice Vouchers",
+    "Public housing units",
+    "Transitional housing",
+    "Housing application processing",
+    "Rental assistance programs",
+    "Housing inspections",
+    "Case management",
+    "Housing counseling",
+    "Emergency housing assistance",
+    "Housing stability services"
+  ],
+  "notes": "Main office located in Barbourville with additional offices in Williamsburg (221 N 3rd St, Williamsburg, KY 40769) and Harlan (107 N Cumberland Ave #101, Harlan, KY 40831). Contact receptionist@cvrhaky.com for general inquiries. Fax: 1-606-546-3740. Staff contact emails available on website for specific departments."
+}

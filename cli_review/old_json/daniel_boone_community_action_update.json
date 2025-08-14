@@ -1,0 +1,22 @@
+{
+  "name": "Daniel Boone Community Action Agency",
+  "description": "Non-profit community action agency providing comprehensive social services including housing assistance, transportation, energy assistance (LIHEAP), child care, weatherization, workforce development, and emergency solutions grants. Serves low-income individuals and families in multiple Kentucky counties.",
+  "source": "Verified from official website and multiple sources",
+  "phone": "(606) 864-9121",
+  "email": "info@danielboonecaa.org",
+  "website": "http://danielboonecaa.org/",
+  "address1": "188 Dog Patch Trading Center",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40741",
+  "hours_of_operation": "Monday-Friday 8:00 AM-4:30 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Low-income individuals and families. Specific eligibility varies by program.",
+  "populations_served": "Low-income families, individuals, seniors, children, veterans",
+  "cost_information": "Services provided free or on sliding scale based on income. Some programs have income eligibility requirements.",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-12-19. CITATIONS: Contact information verified from official website https://danielboonecaa.org/contact-us. Services and programs verified from main website https://danielboonecaa.org/ and programs page https://danielboonecaa.org/programs. Phone number (606) 864-9121 confirmed as London office number. Website verified current and accessible. Hours of operation confirmed from official contact page. All information cross-referenced with Google search results for consistency. Organization serves multiple counties including Clay, Jackson, Laurel, Rockcastle, Lee, Owsley, and Wolfe counties with different office locations.",
+  "service_type_ids": [1, 3, 4, 7, 8, 15, 17, 19, 21, 24]
+}

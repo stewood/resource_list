@@ -1,0 +1,36 @@
+{
+  "name": "Help the Homeless - Somerset",
+  "description": "Non-profit organization providing essential services and support for individuals experiencing homelessness in Somerset and Pulaski County. Offers emergency assistance, case management, and resources to help people transition from homelessness to stable housing. NOTE: This organization replaced the former 'Over My Head' shelter which permanently closed in September 2022.",
+  "source": "Verified from official Facebook page, news articles, and local sources",
+  "phone": "(606) 875-3893",
+  "phone_secondary": "(606) 687-9011",
+  "website": "https://www.facebook.com/groups/2283645185149530/",
+  "address1": "408 Bogle Street",
+  "city": "Somerset",
+  "state": "KY",
+  "county": "Pulaski",
+  "postal_code": "42503",
+  "hours_of_operation": "Monday-Friday 9:00 AM - 3:00 PM, and by appointment",
+  "is_emergency_service": true,
+  "is_24_hours": false,
+  "accepts_medicare": false,
+  "accepts_medicaid": false,
+  "accepts_private_insurance": false,
+  "accepts_sliding_scale": true,
+  "accepts_no_cost": true,
+  "languages_spoken": ["English"],
+  "accessibility_features": ["Not specified"],
+  "service_types": [
+    "emergency_shelter",
+    "case_management",
+    "housing_assistance",
+    "emergency_assistance",
+    "homeless_services"
+  ],
+  "populations_served": [
+    "homeless_individuals",
+    "homeless_families",
+    "low_income"
+  ],
+  "notes": "This organization replaced the former 'Over My Head' shelter which permanently closed in September 2022. Help the Homeless provides essential services to the homeless population in Somerset and surrounding areas. Contact via phone or text for assistance and appointments."
+}

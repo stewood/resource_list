@@ -1,0 +1,18 @@
+{
+  "name": "U.S. Department of Housing and Urban Development (HUD) Office of Fair Housing and Equal Opportunity (FHEO)",
+  "description": "Federal agency responsible for enforcing fair housing laws and investigating housing discrimination complaints. The Office of Fair Housing and Equal Opportunity (FHEO) works to eliminate housing discrimination, promote economic opportunity, and achieve diverse, inclusive communities. Services include investigating complaints of housing discrimination based on race, color, national origin, religion, sex, familial status, and disability; providing technical assistance and education on fair housing rights; and enforcing the Fair Housing Act and other civil rights laws. The agency serves Kentucky through its Region IV office in Atlanta, Georgia.",
+  "source": "Verified from official HUD website and multiple third-party directories",
+  "phone": "1-800-669-9777",
+  "email": "",
+  "website": "https://www.hud.gov",
+  "address1": "77 Forsyth St SW",
+  "city": "Atlanta",
+  "state": "GA",
+  "postal_code": "30303",
+  "county": "",
+  "hours": "Monday-Friday 8:00 AM - 5:00 PM (Eastern Time)",
+  "eligibility": "All individuals who believe they have experienced housing discrimination based on race, color, national origin, religion, sex, familial status, or disability",
+  "services": "Housing discrimination complaint investigation, fair housing education and outreach, technical assistance, enforcement of Fair Housing Act, civil rights law enforcement",
+  "notes": "Regional office serving Alabama, Florida, Georgia, Kentucky, Mississippi, North Carolina, South Carolina, and Tennessee. Provides interpreters for limited English proficiency and disability accommodations upon request. Complaints can be filed online, by phone, or by mail.",
+  "categories": ["Housing", "Legal Services", "Government Services", "Civil Rights"]
+}

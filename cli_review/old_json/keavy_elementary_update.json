@@ -1,0 +1,20 @@
+{
+  "name": "Keavy Elementary School",
+  "description": "Public elementary school serving students in grades PK-5 in the Laurel County School District. Located in Keavy, Kentucky, this school provides comprehensive elementary education with a focus on academic achievement. The school offers breakfast and lunch programs, has a student-teacher ratio of 14:1, and serves approximately 298 students. Keavy Elementary is part of the Laurel County Public Schools system and provides transportation services for students.",
+  "source": "Verified from official Laurel County Schools website and National Center for Education Statistics",
+  "phone": "(606) 862-4672",
+  "website": "https://www.laurel.k12.ky.us/o/kes",
+  "address1": "598 West Hwy 312",
+  "city": "Keavy",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40737",
+  "hours_of_operation": "School hours: 7:30 AM - 2:30 PM (Monday-Friday during school year)",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Students residing in the Keavy Elementary attendance zone in Laurel County",
+  "fees": "Free public education",
+  "languages": "English",
+  "accessibility": "Public school accessible to all eligible students",
+  "notes": "Part of Laurel County School District. School serves grades PK-5 with approximately 298 students. Fax: (606) 878-6825. School has active PTO and community involvement."
+}

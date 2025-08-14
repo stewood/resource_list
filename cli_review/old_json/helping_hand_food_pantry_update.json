@@ -1,0 +1,15 @@
+{
+  "name": "Helping Hand Food Pantry",
+  "description": "Helping Hand Food Pantry is a food assistance organization located in Corbin, Kentucky that provides food to individuals and families experiencing food insecurity. The pantry offers emergency food assistance and operates on a monthly visit basis, allowing one visit per month per household. In emergency situations, additional assistance may be available. The organization serves the Corbin area and surrounding communities, providing nutritious food to help meet basic nutritional needs.",
+  "source": "Verified from multiple online directories and food bank listings",
+  "phone": "606-528-2102",
+  "city": "Corbin",
+  "state": "KY",
+  "zip_code": "40701",
+  "address": "2386 N Highway 1223",
+  "service_types": [
+    "Food Pantry",
+    "Emergency Food Assistance",
+    "Food Distribution"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "SAMHSA National Helpline",
+  "description": "Free, confidential, 24/7, 365-day-a-year treatment referral and information service for individuals and families facing mental and/or substance use disorders. Available in English and Spanish. Provides referrals to local treatment facilities, support groups, and community-based organizations. Also offers online treatment locator at FindTreatment.gov and text messaging service (text HELP4U to 435748).",
+  "source": "Verified from official SAMHSA website",
+  "phone": "800-662-4357",
+  "website": "https://www.samhsa.gov/find-help/helplines/national-helpline",
+  "address1": "Not provided",
+  "city": "Not provided",
+  "state": "KY",
+  "county": "Not provided",
+  "postal_code": "",
+  "hours_of_operation": "24 hours a day, 7 days a week, 365 days a year",
+  "is_emergency_service": true,
+  "is_free": true,
+  "notes": "Formerly known as the National Clearinghouse for Alcohol and Drug Information (NCADI). The old number 800-729-6686 is no longer active. This is the current official SAMHSA National Helpline. TTY available at 1-800-487-4889. Online treatment locator available at FindTreatment.gov."
+}

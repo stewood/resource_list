@@ -1,0 +1,26 @@
+{
+  "name": "National Lead Information Center",
+  "description": "The National Lead Information Center is a federally operated hotline and information service operated by the U.S. Environmental Protection Agency (EPA). The center provides comprehensive information and resources about lead hazards, lead poisoning prevention, and lead-based paint regulations. The hotline offers direct access to specialists who can answer questions about lead safety, provide guidance on lead testing and abatement, and offer information about federal lead regulations and requirements. The center serves as a national resource for homeowners, contractors, health professionals, and the general public seeking information about lead safety and compliance.",
+  "source": "Verified from official EPA website and multiple government sources",
+  "phone": "800-424-5323",
+  "email": "",
+  "website": "https://www.epa.gov/lead/forms/lead-hotline-national-lead-information-center",
+  "address1": "422 South Clinton Avenue",
+  "city": "Rochester",
+  "state": "NY",
+  "zip_code": "14620",
+  "county": "Monroe",
+  "hours": "Monday through Friday, 8:00 AM to 6:00 PM Eastern time (except federal holidays)",
+  "eligibility": "Open to all individuals seeking information about lead hazards and safety",
+  "services": [
+    "Lead hazard information and education",
+    "Lead poisoning prevention guidance",
+    "Lead-based paint regulation information",
+    "Lead testing and abatement guidance",
+    "Contractor certification information",
+    "Federal lead regulation compliance assistance",
+    "Lead safety resource referrals",
+    "Technical assistance for lead-related issues"
+  ],
+  "notes": "The hotline is operated by the EPA and provides free, confidential information about lead hazards and safety. Callers can speak directly with specialists who are trained in lead safety and regulations. The center also provides educational materials and can refer callers to local resources and certified lead professionals."
+}

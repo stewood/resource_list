@@ -1,0 +1,29 @@
+{
+  "name": "Beacon of Hope Emergency Shelter",
+  "description": "The Beacon of Hope Emergency Shelter provides homeless families and individuals access to overnight and short-term shelter, along with safety net support services. The shelter is open 24 hours a day, 7 days a week, 365 days a year to ensure no one in Clark County goes hungry or without a place to stay.",
+  "source": "Verified from official Beacon of Hope website and FindHelp.org",
+  "phone": "(859) 644-5171",
+  "email": "",
+  "website": "http://mobile.beaconofhopeky.org/",
+  "address1": "850 Bypass Rd",
+  "city": "Winchester",
+  "state": "KY",
+  "county": "Clark",
+  "postal_code": "40391",
+  "hours_of_operation": "24 hours a day, 7 days a week, 365 days a year",
+  "is_emergency_service": true,
+  "is_24_hours": true,
+  "accepts_medicare": false,
+  "accepts_medicaid": false,
+  "accepts_private_insurance": false,
+  "accepts_sliding_scale": false,
+  "accepts_no_cost": true,
+  "accepts_donations": true,
+  "notes": "Emergency shelter for homeless families and individuals. Provides overnight and short-term shelter with support services. Fax: (859) 385-4604. President contact: (859) 644-5171. Also accessible through 2-1-1 or 866-362-6211 for assistance.",
+  "service_types": [
+    "Hotlines",
+    "Emergency Shelter",
+    "Hotlines"
+  ],
+  "resource_id": 106
+}

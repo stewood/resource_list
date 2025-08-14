@@ -1,0 +1,26 @@
+{
+  "name": "Medicare.gov",
+  "description": "Official federal government website managed by the U.S. Centers for Medicare and Medicaid Services (CMS) that provides comprehensive information about Medicare benefits, coverage, and services. Offers tools to find and compare health and drug plans, locate care providers, manage Medicare accounts, and access educational resources about Medicare benefits and enrollment.",
+  "source": "Verified from official federal government website",
+  "phone": "(800) 633-4227",
+  "email": "",
+  "website": "https://www.medicare.gov/",
+  "address1": "7500 Security Boulevard",
+  "city": "Baltimore",
+  "state": "MD",
+  "county": "Baltimore",
+  "postal_code": "21244",
+  "hours_of_operation": "24 hours a day, 7 days a week (except some federal holidays)",
+  "services": [
+    "Medicare enrollment assistance",
+    "Health and drug plan comparison",
+    "Provider and facility search",
+    "Coverage information",
+    "Account management",
+    "Fraud reporting",
+    "Educational resources",
+    "Live chat support",
+    "TTY services"
+  ],
+  "notes": "Federal government website providing official Medicare information and services. Available 24/7 with live chat and phone support. TTY users can call 1-877-486-2048. Managed by the Centers for Medicare and Medicaid Services (CMS)."
+}

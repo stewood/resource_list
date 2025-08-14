@@ -1,0 +1,22 @@
+{
+  "name": "Appalachian Research & Defense Fund of Kentucky",
+  "description": "AppalReD Legal Aid provides free legal services to low-income and vulnerable individuals in eastern and south-central Kentucky. Services include consumer problems, domestic violence and family law, housing issues, public benefits, utility disputes, education rights, healthcare issues, employment problems, senior citizen services, tax issues, and expungements. No fees charged.",
+  "source": "Verified from official website and administrative office information",
+  "phone": "1-866-277-5733",
+  "email": "angied@ardfky.org",
+  "website": "https://www.ardfky.org",
+  "address1": "120 N. Front Ave.",
+  "city": "Prestonsburg",
+  "state": "KY",
+  "county": "Floyd",
+  "postal_code": "41653",
+  "hours_of_operation": "Monday-Friday 8:00 AM-5:00 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Must be low-income with limited assets. Senior citizens eligible regardless of income. Must have a legal problem that AppalReD handles.",
+  "populations_served": "Low-income individuals, vulnerable populations, senior citizens, disaster survivors",
+  "cost_information": "Free legal services - no fees charged",
+  "languages_available": "English, Spanish",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-15. CITATIONS: Contact information verified from official website https://www.ardfky.org/node/8/contact-us. Administrative office details verified from https://www.ardfky.org/node/9/administrative-office. Services and eligibility verified from https://www.ardfky.org/node/17/how-get-help. Phone number 1-866-277-5733 confirmed as central intake number. Website verified current and accessible. Multiple office locations serve different counties across eastern and south-central Kentucky. Disaster Legal Services hotline available at 1-844-478-0099. All information cross-referenced with official government sources and verified as current.",
+  "service_type_ids": [5, 23]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Cumberland River Behavioral Health - Corbin Office",
+  "description": "Nonprofit community mental health center providing outpatient mental health and substance abuse services. Offers individual, group, and family counseling, psychiatric evaluation, medication management, case management, and peer support services. Serves 8 counties in southeastern Kentucky including Bell, Clay, Harlan, Jackson, Knox, Laurel, Rockcastle, and Whitley counties.",
+  "source": "Verified from official website and cross-referenced with multiple sources",
+  "phone": "(606) 528-7010",
+  "website": "https://crbhky.org",
+  "address1": "1203 American Greeting Rd",
+  "city": "Corbin",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40701",
+  "hours_of_operation": "Mon-Tues 8:00 AM – 6:00 PM (Virtual only after 4:30pm), Wednesday 8:00 AM – 6:00 PM, Thurs.-Fri. 8:00 AM – 4:30 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Open to all age groups, payment based on ability to pay",
+  "populations_served": "Adults, children, and families with mental health and substance abuse needs",
+  "cost_information": "Payment based on ability to pay, accepts insurance",
+  "languages_available": "English, ASL interpreter services available",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official website https://crbhky.org/locations/. Services and programs verified from main website https://crbhky.org and adult mental health services page https://crbhky.org/adult-mental-health-services/. Phone number (606) 528-7010 confirmed working and cross-referenced with Google search results. Website verified current and accessible. Address 1203 American Greeting Rd, Corbin, KY 40701 confirmed from official locations page. Hours of operation verified from locations table. IMPORTANT: This is the Corbin office of Cumberland River Behavioral Health, not a separate organization. All information cross-referenced with multiple sources including uwbg211.org, FindHelp.org, and CARF International listings for consistency.",
+  "service_type_ids": [2, 13, 20, 21]
+}

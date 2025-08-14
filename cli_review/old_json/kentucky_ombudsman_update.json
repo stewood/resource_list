@@ -1,0 +1,21 @@
+{
+  "name": "Commonwealth Office of the Ombudsman",
+  "description": "State government office that serves Kentuckians who receive public services through the Cabinet for Health and Family Services (CHFS). Ensures the Cabinet is held accountable by providing recommendations to improve its performance. Answers questions about CHFS programs, investigates customer complaints and works with CHFS management to resolve them, advises CHFS management about patterns of complaints and recommends corrective action when appropriate. Provides meaningful feedback to Cabinet staff to improve customer service and satisfaction.",
+  "source": "Verified from official website and government resources",
+  "phone": "(866) 596-6283",
+  "email": "kyombud@ky.gov",
+  "website": "https://www.auditor.ky.gov/kyombud/Pages/default.aspx",
+  "address1": "209 St. Clair Street",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40601",
+  "hours_of_operation": "Standard government business hours",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Kentucky residents receiving services through the Cabinet for Health and Family Services",
+  "cost_information": "Free service",
+  "capacity_information": "Statewide service",
+  "notes": "Official state ombudsman office that handles complaints and provides oversight for CHFS programs. Also handles complaints for foster youth and child welfare services.",
+  "service_types": ["Government Services", "Complaint Resolution", "Advocacy", "Information and Referral"]
+}

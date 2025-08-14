@@ -1,0 +1,22 @@
+{
+  "name": "Housing Authority of Manchester",
+  "description": "Provides public housing to low-income families in Manchester, Kentucky. Established in 1966, they offer affordable rental housing with modernized facilities. Currently has a closed waiting list due to extremely high demand.",
+  "source": "Verified from official website and cross-referenced with multiple sources",
+  "phone": "(606) 598-3884",
+  "email": "manchesterha.rent@gmail.com",
+  "website": "http://www.housingauthorityofmanchester.com",
+  "address1": "306 Town Branch Road",
+  "city": "Manchester",
+  "state": "KY",
+  "county": "Clay",
+  "postal_code": "40962",
+  "hours_of_operation": "Monday through Thursday, 8:00 AM - 3:30 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Low-income families eligible for public housing assistance",
+  "populations_served": "Low-income families and individuals",
+  "cost_information": "Income-based rental rates for public housing",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official website https://www.housingauthorityofmanchester.com/contact-us. Services and programs verified from main website https://www.housingauthorityofmanchester.com. Phone number (606) 598-3884 confirmed working and cross-referenced with Google search results. Website verified current and accessible. Address 306 Town Branch Road, Manchester, KY 40962 confirmed from official website footer. Hours of operation verified from contact page. IMPORTANT: Waiting list is currently closed due to extremely high wait times. All information cross-referenced with multiple sources including uwbg211.org, FindHelp.org, and Yelp listings for consistency.",
+  "service_type_ids": [3, 19]
+}

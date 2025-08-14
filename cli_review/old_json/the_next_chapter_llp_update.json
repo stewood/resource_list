@@ -1,0 +1,29 @@
+{
+  "name": "The Next Chapter LLP",
+  "description": "The Next Chapter LLP (TNC) is a Christian-based, state-licensed AODE (Alcohol and Other Drug Entity) and BHSO (Behavioral Health Service Organization) that provides comprehensive addiction treatment services. They take a holistic approach to treat the entire person, not just the addiction, and tailor treatment plans specifically to individual needs. Services are based on American Society of Addiction Medicine (ASAM) levels of care using evidence-based, nationally recognized curriculum while incorporating a personal touch. TNC has full CARF certification and accreditation. They provide inpatient drug and alcohol residential treatment for both men and women, offering faith-based recovery programs.",
+  "source": "Verified from official TNC website and multiple government sources",
+  "phone": "(606) 376-7414",
+  "email": "thenextchapterllp@gmail.com",
+  "website": "https://www.thenextchapterllp.com",
+  "address1": "65 Center Avenue",
+  "city": "Whitley City",
+  "state": "KY",
+  "county": "McCreary",
+  "postal_code": "42653",
+  "hours_of_operation": "Open 24 hours",
+  "is_emergency_service": false,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Individuals seeking addiction treatment services",
+  "populations_served": "Adults with substance use disorders",
+  "service_types": [
+    "Addiction Treatment",
+    "Substance Abuse Treatment",
+    "Mental Health Services",
+    "Residential Treatment",
+    "Faith-Based Recovery",
+    "Alcohol Treatment",
+    "Drug Treatment",
+    "Behavioral Health"
+  ],
+  "notes": "Christian-based treatment facility with CARF certification. Provides both male and female residential treatment programs. Located in McCreary County, Kentucky."
+}

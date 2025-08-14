@@ -1,0 +1,20 @@
+{
+  "name": "Kentucky Department for Medicaid Services - Member Services",
+  "description": "Official Medicaid services hotline for the Commonwealth of Kentucky. The Department for Medicaid Services (DMS) provides medical assistance to eligible low-income Kentuckians. This toll-free hotline serves as the primary contact point for Medicaid members with questions about their coverage, benefits, eligibility, and enrollment. The service helps members access their health coverage benefits and provides information about Medicaid programs and services.",
+  "source": "Verified from official Kentucky Cabinet for Health and Family Services website",
+  "phone": "(800) 635-2570",
+  "website": "https://www.chfs.ky.gov/agencies/dms/member/pages/default.aspx",
+  "address1": "Not applicable - toll-free hotline",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40601",
+  "hours_of_operation": "Monday-Friday during business hours",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Kentucky Medicaid members and individuals seeking information about Medicaid eligibility",
+  "fees": "Free service",
+  "languages": "English, Spanish",
+  "accessibility": "Toll-free service accessible to all",
+  "notes": "Main contact for Medicaid member services. For fraud reporting, call (800) 372-2970. For kynect enrollment assistance, call 855-4kynect (855-459-6328)."
+}

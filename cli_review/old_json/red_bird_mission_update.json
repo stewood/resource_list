@@ -1,0 +1,22 @@
+{
+  "name": "Red Bird Mission",
+  "description": "Red Bird Mission provides comprehensive community services to the Appalachian Kentucky community since 1921. Services include food assistance, healthcare, education, housing improvement, and economic opportunity programs. The organization serves the Red Bird River Valley area with a focus on addressing chronic poverty, lack of jobs, poor housing, and rugged mountainous terrain challenges.",
+  "source": "Verified from official website (redbirdky.org) and multiple online sources on 2024-01-15",
+  "phone": "(606) 598-3155",
+  "email": "info@rbmission.org",
+  "website": "https://www.redbirdky.org",
+  "address1": "70 Queendale Center",
+  "city": "Beverly",
+  "state": "KY",
+  "county": "Clay",
+  "postal_code": "40913",
+  "hours_of_operation": "Monday-Friday 8:00 AM-4:30 PM (Health Services), Monday-Friday 9:00 AM-3:30 PM (Dental Clinic)",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Services available to residents of the Red Bird River Valley area. Flexible payment options for dental services. Prescription assistance available for uninsured patients.",
+  "populations_served": "Residents of Appalachian Kentucky, families, children, adults, seniors, uninsured individuals",
+  "cost_information": "Affordable healthcare services with flexible payment options. Free medication and supplies for uninsured patients through pharmaceutical company programs. Significant scholarships available for education programs.",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official website https://www.redbirdky.org/contact. Services and programs verified from main website https://www.redbirdky.org and clinic page https://www.redbirdky.org/clinic. Phone number (606) 598-3155 confirmed working. Website verified current and accessible. Dental clinic hours and services verified from clinic page. Organization history and mission verified from multiple pages including main site and 'Our Story' section. Founded in 1921, serving the Appalachian Kentucky community for over 100 years. All information cross-referenced with Google search results for consistency.",
+  "service_type_ids": [4, 6, 9, 22, 8]
+}

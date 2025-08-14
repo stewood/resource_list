@@ -1,0 +1,28 @@
+{
+  "name": "Housing Authority of Corbin",
+  "description": "The Housing Authority of Corbin provides affordable housing assistance through HUD's Public Housing Program. They offer low-income housing options and Section 8 housing vouchers to eligible families in Corbin and surrounding areas. The authority manages public housing units and administers housing assistance programs.",
+  "source": "Verified from Google search results, FindHelp.org, and official housing authority listings",
+  "phone": "(606) 528-5104",
+  "email": "",
+  "website": "https://corbin-housing-authority-ky-1.hub.biz/",
+  "address1": "1336 Madison Ave",
+  "city": "Corbin",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40701",
+  "hours_of_operation": "Monday-Friday 8:00 AM - 5:00 PM",
+  "is_emergency_service": false,
+  "is_24_hours": false,
+  "accepts_medicare": false,
+  "accepts_medicaid": false,
+  "accepts_private_insurance": false,
+  "accepts_sliding_scale": false,
+  "accepts_no_cost": true,
+  "accepts_donations": false,
+  "notes": "Provides public housing and Section 8 vouchers. Waitlist information available by phone. Office hours: Monday-Friday 8:00 AM - 5:00 PM. Rated 3.8/5 stars on Google with 46 reviews.",
+  "service_types": [
+    "Housing",
+    "Transitional Housing"
+  ],
+  "resource_id": 140
+}

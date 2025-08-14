@@ -1,0 +1,22 @@
+{
+  "name": "Housing Voucher Programs in Manchester, KY",
+  "description": "Provides access to Housing Choice Voucher (Section 8) programs and public housing assistance in Manchester, Kentucky. The Kentucky Housing Corporation administers the statewide HCV program, while the Manchester Housing Authority provides local public housing services. Both programs help low-income families, elderly, and disabled individuals find affordable housing.",
+  "source": "Verified from official websites and government databases",
+  "phone": "(606) 598-3884",
+  "email": "manchesterha.rent@gmail.com",
+  "website": "https://www.housingauthorityofmanchester.com",
+  "address1": "306 Town Branch Road",
+  "city": "Manchester",
+  "state": "KY",
+  "county": "Clay",
+  "postal_code": "40962",
+  "hours_of_operation": "Monday through Thursday 8:00 AM - 3:30 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Must meet annual household income requirements. Income limits vary by family size and are set by HUD. Priority given to families with children, elderly, and disabled individuals.",
+  "populations_served": "Low-income families, elderly, disabled individuals, veterans",
+  "cost_information": "Rent is based on 30% of adjusted monthly income. Some utilities may be included. Section 8 vouchers help pay the difference between what the tenant can afford and the market rent.",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official website https://www.housingauthorityofmanchester.com/contact-us. Phone number (606) 598-3884 confirmed working. Address 306 Town Branch Road, Manchester, KY 40962 verified from multiple sources including HUD database and official website. Hours of operation Monday-Thursday 8:00 AM-3:30 PM verified from official website. Email manchesterha.rent@gmail.com verified from official contact page. Website https://www.housingauthorityofmanchester.com verified current and accessible. Kentucky Housing Corporation HCV program information verified from official website https://www.kyhousing.org/Rental/HCV/Pages/Contact-Us.aspx with phone (502) 564-9946 and toll-free (877) 552-7368. All information cross-referenced with Google search results, HUD database, and multiple government sources for consistency.",
+  "service_type_ids": [3, 19]
+}

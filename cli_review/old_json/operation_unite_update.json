@@ -1,0 +1,56 @@
+{
+  "name": "Operation UNITE",
+  "description": "Operation UNITE is a collaborative model striving to prevent substance misuse and facilitate recovery. The organization creates strategic partnerships, provides leadership, promotes education, coordinates treatment, and supports law enforcement to address substance abuse issues in Kentucky. UNITE serves multiple counties across the state with prevention programs, treatment coordination, and community education initiatives.",
+  "source": "Verified from official Operation UNITE website",
+  "phone": "(606) 330-1400",
+  "toll_free": "1-866-OP-UNITE (1-866-678-6483)",
+  "email": "contact@OperationUNITE.org",
+  "website": "https://operationunite.org/",
+  "address1": "350 C.A.P. Drive",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "zip_code": "40744",
+  "service_types": [
+    "Substance Abuse Treatment",
+    "Prevention Programs",
+    "Education",
+    "Treatment Coordination",
+    "Law Enforcement Support",
+    "Community Outreach",
+    "Youth Programs",
+    "Coalition Building"
+  ],
+  "hours": "Monday-Friday, 8:00 AM - 5:00 PM ET",
+  "eligibility": "Available to residents of service counties in Kentucky",
+  "fees": "Free services and resources",
+  "languages": [
+    "English"
+  ],
+  "special_programs": [
+    "KY HELP Statewide Call Center (1-833-859-4357)",
+    "Treatment Help Line (1-866-908-6483)",
+    "Drug Tip Line (1-866-424-4382)",
+    "UNITE Service Corps",
+    "Shoot Hoops Not Drugs",
+    "Regional UNITE Coalition Symposiums",
+    "Prevention Programs",
+    "Treatment Voucher Program"
+  ],
+  "service_area": [
+    "Multiple Kentucky counties including Laurel, Knox, Jackson, Whitley, Rockcastle, Bell, Clay, Harlan, and others"
+  ],
+  "additional_services": [
+    "Substance abuse prevention education",
+    "Treatment referral and coordination",
+    "Youth activities and programs",
+    "Community coalition building",
+    "Law enforcement support",
+    "Educational resources",
+    "Treatment vouchers",
+    "Crisis intervention",
+    "Community outreach",
+    "Professional training"
+  ],
+  "notes": "Operation UNITE operates multiple offices including the main office in London, Big Sandy office in Prestonsburg, and financial office in Somerset. The organization provides comprehensive substance abuse prevention and treatment coordination services across Kentucky with a focus on collaborative community-based approaches."
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Mountain Outreach (University of the Cumberlands)",
+  "description": "Non-profit service organization operated by University of the Cumberlands providing food assistance, housing assistance, home builds, and community service projects. Serves the Cumberlands region with affordable housing (0% interest mortgages), food pantries, repair projects, and various service programs for children, elderly, and financially struggling families.",
+  "source": "Verified from official website and multiple sources",
+  "phone": "(606) 539-4346",
+  "email": "mountainoutreach@ucumberlands.edu",
+  "website": "https://www.ucumberlands.edu/student-life/student-ministries/mountain-outreach",
+  "address1": "7521 College Station Dr",
+  "city": "Williamsburg",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40769",
+  "hours_of_operation": "Monday-Friday 8:00 AM-5:00 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Families in need within the Cumberlands service region. Specific eligibility varies by program.",
+  "populations_served": "Children, elderly, financially struggling families, community residents",
+  "cost_information": "Free food assistance. Affordable housing with 0% interest mortgages and no down payment for qualified families.",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-12-19. CITATIONS: Contact information verified from official website https://www.ucumberlands.edu/student-life/student-ministries/mountain-outreach. Phone number (606) 539-4346 confirmed from Google search results and official website. Address and location verified from multiple sources including Google Maps and official University of the Cumberlands website. Services and programs verified from official Mountain Outreach page. Organization has been operating since 1982 and provides comprehensive community service including food assistance, housing, and repair projects. All information cross-referenced with Google search results for consistency.",
+  "service_type_ids": [3, 4, 17]
+}

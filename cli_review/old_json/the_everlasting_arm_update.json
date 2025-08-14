@@ -1,0 +1,22 @@
+{
+  "name": "The Everlasting Arm, Inc.",
+  "description": "Non-profit Christian homeless shelter that provides emergency shelter and clothing assistance to those in need. Offers a 16-bed emergency shelter for up to 90 days, food and clothing bank, and spiritual guidance services. Focused on helping individuals experiencing homelessness with immediate shelter needs and basic necessities.",
+  "source": "Verified from multiple online directories and resource guides",
+  "phone": "(606) 528-3669",
+  "email": "theeverlastingarminc@gmail.com",
+  "website": "",
+  "address1": "2006 S. Main St.",
+  "city": "Corbin",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40701",
+  "hours_of_operation": "Monday-Friday 9:00 AM - 5:00 PM",
+  "services": [
+    "Emergency shelter",
+    "Food assistance",
+    "Clothing assistance",
+    "Spiritual guidance",
+    "Homeless services"
+  ],
+  "notes": "Christian-based organization providing emergency shelter and basic needs assistance. 16-bed capacity with 90-day stay limit. Also operates clothing bank and food assistance programs."
+}

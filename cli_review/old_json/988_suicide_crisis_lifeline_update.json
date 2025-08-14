@@ -1,0 +1,29 @@
+{
+  "name": "988 Suicide & Crisis Lifeline",
+  "description": "The 988 Suicide & Crisis Lifeline provides free and confidential emotional support to people in suicidal crisis or emotional distress 24 hours a day, 7 days a week, 365 days a year. This national mental health hotline connects callers, texters, and chatters with trained crisis counselors who provide compassionate support, crisis intervention, and suicide prevention services. The lifeline serves anyone experiencing mental health struggles, emotional distress, alcohol or drug use concerns, or just needing someone to talk to. Services are available in English and Spanish, with specialized support for veterans and those who are deaf or hard of hearing.",
+  "source": "Verified from official 988 Lifeline website and multiple government sources",
+  "phone": "988",
+  "email": "info@988lifeline.org",
+  "website": "https://988lifeline.org",
+  "address1": "National service - no physical address",
+  "city": "National",
+  "state": "KY",
+  "county": "N/A",
+  "postal_code": "00000",
+  "hours_of_operation": "24/7/365",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Available to anyone in crisis or emotional distress",
+  "populations_served": "Anyone experiencing mental health crisis, emotional distress, or suicidal thoughts",
+  "service_types": [
+    "Crisis Hotline",
+    "Suicide Prevention",
+    "Mental Health Support",
+    "Crisis Intervention",
+    "Emotional Support",
+    "Substance Abuse Support",
+    "Veterans Support",
+    "Deaf/Hard of Hearing Support"
+  ],
+  "notes": "National crisis hotline available by phone (988), text (988), and online chat. Free and confidential service. Available in English and Spanish. Specialized support for veterans (press 1) and those who are deaf or hard of hearing."
+}

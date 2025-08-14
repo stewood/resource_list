@@ -1,0 +1,22 @@
+{
+  "name": "Kentucky Women's Cancer Screening Program",
+  "description": "The Kentucky Women's Cancer Screening Program (KWCSP) is a federally funded public health program providing free breast and cervical cancer screening and diagnostic services to eligible women in Kentucky. Services include mammograms, Pap tests, and diagnostic follow-up care. The program is administered through local health departments and participating clinics across the state.",
+  "source": "Verified from official Kentucky Cabinet for Health and Family Services website and multiple resource directories",
+  "phone": "(800) 462-6122",
+  "email": "KWCSP@ky.gov",
+  "website": "https://www.chfs.ky.gov/agencies/dph/dwh/Pages/cancerscreening.aspx",
+  "address1": "275 E. Main St. HS1WF",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40621",
+  "hours_of_operation": "Varies by provider location - call for specific hours",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Women ages 21+, household income at or below 250% federal poverty level, no health insurance (including Medicaid and Medicare Part B)",
+  "populations_served": "Eligible women in Kentucky seeking cancer screening services",
+  "cost_information": "Free screening services for eligible women",
+  "languages_available": "English, Spanish",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-27. CITATIONS: Contact information verified from official Kentucky Cabinet for Health and Family Services website https://www.chfs.ky.gov/agencies/dph/dwh/Pages/cancerscreening.aspx. Phone number (800) 462-6122 confirmed on multiple resource directories and official sources. Email KWCSP@ky.gov verified from official website. Address 275 E. Main St. HS1WF, Frankfort, KY 40621 verified from official website. Services verified as federally funded breast and cervical cancer screening program. Current toll-free number for finding providers: (844) 249-0708. Website verified current and accessible. All information cross-referenced with multiple resource directories and official sources for consistency.",
+  "service_type_ids": [6, 22]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Kentucky Counseling Center",
+  "description": "Comprehensive mental health services provider offering online counseling, psychiatry, and targeted case management. Multiple locations across Kentucky including Louisville, Bowling Green, Lexington, London, Richmond, and Covington. Provides telehealth services and accepts various insurance plans. Licensed mental health professionals serving individuals, families, and groups.",
+  "source": "Verified from official website and cross-referenced with multiple sources",
+  "phone": "(855) 591-0092",
+  "email": "info@kentuckycounselingcenter.com",
+  "website": "https://kentuckycounselingcenter.com/",
+  "address1": "1795 Alysheba Way Suite 7202, PMB 50499",
+  "city": "Lexington",
+  "state": "KY",
+  "county": "Fayette",
+  "postal_code": "40509",
+  "hours_of_operation": "Monday-Friday 8:00 AM-5:00 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "notes": "Comprehensive verification completed. Phone number (855) 591-0092 confirmed current across multiple sources including official website, Yelp, FindHelp.org, and other directories. Organization provides mental health services across multiple Kentucky locations with telehealth capabilities. Main administrative address in Lexington, KY. Services include counseling, psychiatry, and case management. Verified as active and accepting new clients.",
+  "service_types": ["Mental Health", "Counseling"],
+  "transition_status": "needs_review"
+}

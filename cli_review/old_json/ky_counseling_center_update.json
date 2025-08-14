@@ -1,0 +1,25 @@
+{
+  "resource_id": 149,
+  "name": "Kentucky Counseling Center",
+  "phone": "8555910092",
+  "website": "https://kentuckycounselingcenter.com",
+  "address": "Multiple locations across Kentucky including London, Lexington, Richmond, and Louisville",
+  "description": "Kentucky Counseling Center provides comprehensive mental health services including individual and group counseling, psychiatry, and case management. They have multiple locations across Kentucky and accept most major insurance plans including Medicaid and Medicare.",
+  "category": "Mental Health",
+  "subcategory": "Counseling",
+  "eligibility": "Open to all Kentucky residents",
+  "hours": "Varies by location - typically Monday-Friday 8AM-6PM",
+  "languages": "English",
+  "fees": "Accepts Medicaid, Medicare, and most major insurance plans. Sliding scale available for uninsured.",
+  "notes": "Offers both in-person and telehealth appointments. Multiple locations available for convenience.",
+  "verification_date": "2025-01-27",
+  "verification_method": "Web research - corrected phone number from 8558893153 to 8555910092",
+  "changes_made": [
+    "Corrected phone number from 8558893153 to 8555910092",
+    "Added website URL",
+    "Added multiple location information",
+    "Added comprehensive description",
+    "Added insurance acceptance information",
+    "Added verification details"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "name": "Haven House Homeless Shelter",
+  "description": "Emergency homeless shelter operated by Kentucky River Community Care providing temporary shelter and comprehensive support services. Services include 24/7 emergency shelter, meals, safe place to sleep, access to showers, personal hygiene items, laundry facilities, clothing, and case management services. The shelter helps clients regain management of their lives, live independently in safe and affordable housing, and address individualized health needs.",
+  "source": "Verified from official KRCC website and multiple sources",
+  "phone": "(606) 436-5761",
+  "email": "info@krccnet.com",
+  "website": "https://www.krccnet.com/adult-services/haven-house/",
+  "address1": "3770 KY-15",
+  "city": "Jackson",
+  "state": "KY",
+  "county": "Breathitt",
+  "postal_code": "41339",
+  "hours_of_operation": "Open 24 hours a day, 7 days a week",
+  "services": [
+    "Emergency Shelter",
+    "Temporary Housing",
+    "Meals",
+    "Showers",
+    "Personal Hygiene Items",
+    "Laundry Facilities",
+    "Clothing",
+    "Case Management",
+    "Community Resource Access",
+    "Health Needs Assessment",
+    "Housing Assistance"
+  ],
+  "crisis_services": [
+    "24 Hr Crisis Hotline: 1-800-262-7491",
+    "Substance Abuse Crisis Line: 1-800-884-0704",
+    "National Suicide Hotline: 988",
+    "Sexual Violence Crisis Line: 1-800-375-7273"
+  ],
+  "notes": "Operated by Kentucky River Community Care (KRCC). Serves Breathitt, Knott, Lee, Leslie, Letcher, Owsley, Perry, and Wolfe Counties. Provides trauma-informed care. Facebook page: https://www.facebook.com/havenhousekrcc/. Direct shelter line: (606) 666-7591 ext. 1406."
+}

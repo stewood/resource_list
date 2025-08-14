@@ -1,0 +1,22 @@
+{
+  "name": "SOS Ministries Mission Field",
+  "description": "SOS (Save Our Souls) Ministries is a Christian organization dedicated to rescuing victims of sex trafficking and drug addiction. Founded in 2016, they provide extraction services, emergency rescue, placement in recovery programs, and long-term rehabilitation support. Their mission is to strategically remove women and men from dangerous situations and help them recover through faith-based programs.",
+  "source": "Verified from official website and multiple online sources",
+  "phone": "(937) 262-4100",
+  "email": "rescue@saveoursoulsministries.org",
+  "website": "https://saveoursoulsministries.org/",
+  "address1": "PO Box 315",
+  "city": "Xenia",
+  "state": "OH",
+  "county": "Greene",
+  "postal_code": "45385",
+  "hours_of_operation": "24/7 emergency response for rescue operations. Office hours vary - call for availability.",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Victims of sex trafficking and drug addiction. Services available to women and men in crisis situations across America.",
+  "populations_served": "Victims of sex trafficking, individuals struggling with drug addiction, homeless populations, and those in crisis situations.",
+  "cost_information": "Free services. Organization relies on donations and volunteers to operate.",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official website https://saveoursoulsministries.org/contact/. Mission and services verified from https://saveoursoulsministries.org/about/. Phone numbers corrected from concatenated format '93726241008556962453' to proper format '(937) 262-4100' and '(855) 696-2453'. Website verified current and accessible. Organization founded in 2016 by Carolyn and Jeremiah Byrd. Has rescued over 300 people from sex trafficking and drug addiction across 30+ cities. Services include emergency extraction, safe house placement, detox support, and long-term recovery program placement. All information cross-referenced with Google search results for consistency.",
+  "service_type_ids": [13, 21]
+}

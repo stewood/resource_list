@@ -1,0 +1,19 @@
+{
+  "name": "Child Support Voice Response",
+  "description": "Kentucky Child Support services - NOTE: The automated voice response system (800) 443-1576 has been discontinued. Child support customers should now use the Kentucky Child Support Interactive website for payment and account information. For assistance with online access, call (800) 248-1163. Services include child support case management, payment processing, account balance information, and case status updates.",
+  "source": "Verified from official Kentucky Child Support website and cross-referenced with multiple sources",
+  "phone": "(800) 248-1163",
+  "email": "",
+  "website": "https://kentuckychildsupport.ky.gov/",
+  "address1": "275 E Main St",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40621",
+  "hours_of_operation": "Monday-Friday 8:00 AM-4:30 PM ET",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "notes": "IMPORTANT UPDATE: The automated voice response system (800) 443-1576 has been discontinued. Child support customers must now use the Kentucky Child Support Interactive website (https://kentuckychildsupport.ky.gov/) for payment and account information. For assistance with online access or case information, call (800) 248-1163. The service is administered by the Kentucky Division of Child Support within the Cabinet for Health and Family Services. Main administrative office located in Frankfort, KY. Services available statewide.",
+  "service_types": ["Hotlines", "Legal Services"],
+  "transition_status": "needs_review"
+}

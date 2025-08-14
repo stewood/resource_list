@@ -1,0 +1,19 @@
+{
+  "name": "kynect Health Coverage",
+  "description": "kynect Health Coverage is Kentucky's official health insurance marketplace, operated by the Commonwealth of Kentucky. The platform helps Kentuckians find and enroll in health insurance plans that are right for them, including Medicaid, Kentucky Children's Health Insurance Program (KCHIP), Qualified Health Plans, and premium assistance programs. kynect provides access to free enrollment assistance through kynectors and insurance agents.",
+  "source": "Verified from official kynect.ky.gov website and Google search results",
+  "phone": "1-855-459-6328",
+  "website": "https://kynect.ky.gov/healthcoverage/",
+  "address1": "Not applicable - online service",
+  "city": "Statewide",
+  "state": "KY",
+  "county": "Statewide",
+  "postal_code": "00000",
+  "hours_of_operation": "24/7 online access, phone support available",
+  "is_emergency_service": false,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Kentucky residents",
+  "cost_information": "Free enrollment assistance, costs vary by plan",
+  "capacity_information": "Statewide service coverage",
+  "notes": "Main contact: 1-855-459-6328. For benefits assistance: 1-855-306-8959. TTY: 1-855-326-4654. Technical assistance: 1-844-407-8398. Local kynector assistance available through Grace Health at 606-389-6708. Services include Medicaid, KCHIP, Qualified Health Plans, premium assistance, and small business health options."
+}

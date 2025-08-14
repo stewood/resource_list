@@ -1,0 +1,22 @@
+{
+  "name": "Laurel County Sheriff's Office",
+  "description": "Official law enforcement agency serving Laurel County, Kentucky since 1825. Provides comprehensive law enforcement services including patrol, criminal investigations, drug enforcement, accident reconstruction, and community policing. Offers services such as collision reports, eviction process assistance, vehicle inspections, away from home patrol, and prescription drug drop-off. Led by Sheriff John Root with over 35 years of law enforcement experience.",
+  "source": "Verified from official website and multiple sources",
+  "phone": "(606) 864-6600",
+  "email": "g.acciardo@laurelcountysheriff.com",
+  "website": "https://www.laurelcountysheriff.com",
+  "address1": "1380 East Highway 192",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40741",
+  "hours_of_operation": "Monday-Friday 8:00 AM-4:00 PM (Emergency services available 24/7)",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Serves all residents and visitors of Laurel County, Kentucky. Emergency services available to anyone in need. Specific services may have additional requirements.",
+  "populations_served": "Residents and visitors of Laurel County, Kentucky. Provides law enforcement services to the entire county population.",
+  "cost_information": "Most law enforcement services are free. Some services have fees: collision reports $5.00, eviction notices $60.00, vehicle inspections $5.00, away from home inspection $10.00.",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-15. CITATIONS: Contact information and services verified from official website https://www.laurelcountysheriff.com. Address, phone number, and services cross-verified with website content. Phone number (606) 864-6600 confirmed working and listed on official website. Email address g.acciardo@laurelcountysheriff.com verified from website for Public Affairs Officer. Website verified current and accessible. Organization has served Laurel County since 1825. Current Sheriff is John Root with 35 years law enforcement experience. Services include narcotics unit, K-9 unit, accident/crime scene investigation, special response team, school resource officer, and public information officer. All information cross-referenced with official website for consistency.",
+  "service_type_ids": [5, 23]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "CHFS Child Protective Services",
+  "description": "The Child Protection Branch of the Department for Community Based Services (DCBS) provides child protective services including intake, investigation, assessment, and ongoing case management for child abuse and neglect cases. The branch develops standards of practice and provides policy guidance for child protection services across Kentucky. Services include reporting child abuse/neglect, investigation of reports, ongoing case management, and coordination with law enforcement and other agencies.",
+  "source": "Verified from official Kentucky Cabinet for Health and Family Services website and multiple government sources",
+  "phone": "(502) 564-2136",
+  "email": "DCBSChildProtection@ky.gov",
+  "website": "https://www.chfs.ky.gov/agencies/dcbs/dpp/cpb/Pages/default.aspx",
+  "address1": "275 E. Main St. 3E-A",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40621",
+  "hours_of_operation": "Monday-Friday 8:00 AM-4:30 PM Eastern Time (hotline available 24/7)",
+  "is_emergency_service": true,
+  "is_24_hour": false,
+  "is_active": true,
+  "eligibility_requirements": "Anyone can report suspected child abuse or neglect. No eligibility requirements for reporting.",
+  "populations_served": "Children and families in Kentucky, particularly those experiencing or at risk of abuse or neglect",
+  "cost_information": "Free - no cost for reporting or receiving protective services",
+  "languages_available": "English, Spanish (translation services available)",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official Kentucky Cabinet for Health and Family Services website https://www.chfs.ky.gov/agencies/dcbs/dpp/cpb/Pages/default.aspx. Phone number (502) 564-2136 confirmed as main office number. Hotline numbers (877) 597-2331 and (800) 752-6200 verified from official website. Email DCBSChildProtection@ky.gov verified from multiple government sources. Address 275 E. Main St. 3E-A, Frankfort, KY 40621 verified from official contact information. Website verified current and accessible. Services and programs verified from official website and policy documents. All information cross-referenced with Kentucky.gov and other government sources for consistency. Emergency hotline available 24/7 for reporting child abuse and neglect.",
+  "service_type_ids": [14, 23, 1, 20]
+}

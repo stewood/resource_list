@@ -1,0 +1,28 @@
+{
+  "name": "Kentucky River Foothills Development Council - Supportive Services for Veteran Families (SSVF)",
+  "description": "The Supportive Services for Veteran Families (SSVF) program provides short-term assistance to Veterans who are either facing eviction or are homeless. The program is dedicated to preventing Veterans from experiencing homelessness or slipping into poverty. Through case management and supportive services, they aim to prevent the loss of a Veteran's home or find alternative housing solutions. Services include temporary rental assistance, assistance with rental and utility deposits, and ensuring Veterans have access to quality, safe, and affordable housing.",
+  "source": "Verified from official Kentucky River Foothills website and contact information",
+  "phone": "(859) 624-2046",
+  "email": "foothills@foothillscap.org",
+  "website": "https://foothillscap.org",
+  "address1": "6021 Atwood Drive",
+  "city": "Richmond",
+  "state": "KY",
+  "county": "Madison",
+  "postal_code": "40475",
+  "hours_of_operation": "Mon – Fri 8:30 a.m. – 4:30 p.m.",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Low-income Veteran families in temporary or transitional housing. Veterans who are homeless or at risk of eviction. Must meet income guidelines and be a Veteran or family member of a Veteran.",
+  "services_offered": [
+    "Supportive Services for Veteran Families (SSVF)",
+    "Case management",
+    "Temporary rental assistance",
+    "Rental and utility deposit assistance",
+    "Housing stability support",
+    "Homelessness prevention",
+    "Veteran housing assistance",
+    "Transitional housing support"
+  ],
+  "notes": "The SSVF program is funded by the United States Department of Veteran Affairs, Grant: 14-KY-204. Kentucky River Foothills Development Council serves Clark, Estill, Madison, and Powell counties. The organization is a 501(c)(3) nonprofit committed to fostering self-reliance and community engagement. They also offer other services including energy assistance, transportation, and family services."
+}

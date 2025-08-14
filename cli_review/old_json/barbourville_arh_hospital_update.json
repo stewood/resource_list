@@ -1,0 +1,19 @@
+{
+  "name": "Barbourville ARH Hospital",
+  "description": "Barbourville ARH Hospital is a 25-bed critical access hospital primarily serving Knox and Bell counties in Kentucky. The facility offers comprehensive medical services including emergency department, behavioral health, cardiac rehabilitation, laboratory services, pharmacy, intensive care unit (ICU), swing bed care, and diagnostic radiology. The hospital features private rooms and baths, and operates both retail and specialty pharmacies as well as six clinics. Acquired by Appalachian Regional Healthcare in December 2015.",
+  "source": "Verified from official ARH website and Google search results",
+  "phone": "(606) 546-4175",
+  "website": "https://providers.arh.org/location/barbourville-arh-hospital/loc0000132771",
+  "address1": "80 Hospital Drive",
+  "city": "Barbourville",
+  "state": "KY",
+  "county": "Knox",
+  "postal_code": "40906",
+  "hours_of_operation": "24 hours a day, 7 days a week",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Open to all patients",
+  "cost_information": "Accepts most insurance plans, financial assistance available",
+  "capacity_information": "25-bed critical access hospital",
+  "notes": "Specialties include gastroenterology, cardiology, podiatry, general surgery, family medicine, internal medicine, occupational therapy, physical therapy, speech-language pathology, and mental health therapy. Swing bed care provides 7-21 day skilled nursing for patients transitioning from acute care to home."
+}

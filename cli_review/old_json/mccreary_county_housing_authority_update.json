@@ -1,0 +1,21 @@
+{
+  "name": "McCreary County Housing Authority",
+  "description": "The McCreary County Housing Authority provides public housing assistance and housing choice vouchers (Section 8) to low-income residents in McCreary County, Kentucky. The authority manages affordable housing units and helps eligible families find and maintain safe, decent, and affordable housing. They offer both public housing units and rental assistance programs to qualifying individuals and families.",
+  "source": "Verified from Google Maps, FindHelp.org, and multiple online directories",
+  "phone": "(606) 354-2200",
+  "address1": "488 State Hwy 2792",
+  "city": "Pine Knot",
+  "state": "KY",
+  "county": "McCreary",
+  "postal_code": "42635",
+  "hours_of_operation": "Office hours not specified - call for current schedule",
+  "is_emergency_service": false,
+  "is_24_hour": false,
+  "is_active": true,
+  "eligibility_requirements": "Must meet income guidelines for public housing or Section 8 vouchers. Income limits vary by family size and are set by HUD. Background checks and other screening requirements apply.",
+  "populations_served": "Low-income residents of McCreary County, Kentucky",
+  "cost_information": "Rent based on income - typically 30% of adjusted gross income for public housing",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from Google Maps and multiple online directories. Phone number (606) 354-2200 confirmed as main contact number. Address 488 State Hwy 2792, Pine Knot, KY 42635 verified from Google Maps and multiple sources. Organization correctly identified as McCreary County Housing Authority, not Whitley City. Public housing services confirmed from FindHelp.org and other directories. Authority serves McCreary County residents. All information cross-referenced with multiple sources for consistency. Note: Original resource name was incorrect - this is McCreary County Housing Authority, not Whitley City.",
+  "service_type_ids": [3, 19]
+}

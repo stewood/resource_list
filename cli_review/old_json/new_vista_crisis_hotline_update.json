@@ -1,0 +1,29 @@
+{
+  "name": "New Vista 24-Hour Helpline",
+  "description": "24-hour crisis hotline providing emergency mental health, substance use, and intellectual and developmental disability services. New Vista Helpline calls are answered by trained crisis counselors who ensure prompt attention to your situation and explore possible solutions. The helpline is the central point for all services at New Vista, where individuals and families can make appointments and access services for mental health, substance use, intellectual and developmental disabilities, and primary care.",
+  "source": "Verified from official New Vista website and Kentucky Department for Behavioral Health",
+  "phone": "1-800-928-8000",
+  "website": "https://newvista.org",
+  "address1": "1351 Newtown Pike, Building 1",
+  "city": "Lexington",
+  "state": "KY",
+  "county": "Fayette",
+  "postal_code": "40511",
+  "hours_of_operation": "24/7",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Available to anyone in crisis in Central Kentucky. No age restrictions or eligibility requirements for crisis services.",
+  "services_offered": [
+    "24-hour crisis hotline",
+    "Mental health crisis intervention",
+    "Substance use crisis services",
+    "Intellectual and developmental disability emergency services",
+    "Crisis counseling",
+    "Emergency mental health assessment",
+    "Appointment scheduling",
+    "Referral services",
+    "Walk-in crisis services",
+    "Emergency assessment telehealth"
+  ],
+  "notes": "New Vista is one of the largest nonprofit community mental health centers in the United States with more than 200 therapists and doctors working in 17 Central Kentucky counties. They have worked to make the community a better place since 1966. The organization serves Anderson, Bourbon, Boyle, Clark, Estill, Fayette, Franklin, Hardin, Harrison, Jessamine, Lincoln, Madison, Powell, and Scott counties. New Vista has four anchor centers that provide a full range of services in Boyle, Fayette, Madison and Scott counties, surrounded by satellite offices in neighboring counties."
+}

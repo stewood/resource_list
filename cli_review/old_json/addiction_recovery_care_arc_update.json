@@ -1,0 +1,44 @@
+{
+  "name": "Addiction Recovery Care (ARC)",
+  "description": "Comprehensive substance abuse treatment organization operating 38 addiction treatment centers across 16 Eastern and Central Kentucky counties. Offers full continuum of care including detox, residential, transitional, intensive outpatient, outpatient, and medically assisted treatment (MAT). Provides vocational rehabilitation, job training, and the innovative 'Crisis to Career™' program. CARF accredited with nationally recognized best practices.",
+  "source": "Verified from official website and search results",
+  "phone": "(888) 520-8736",
+  "phone_secondary": "(606) 653-1275",
+  "website": "https://www.arccenters.com/",
+  "address1": "16386 US-23",
+  "city": "Louisa",
+  "state": "KY",
+  "county": "Lawrence",
+  "postal_code": "41230",
+  "hours_of_operation": "24 hours a day, 7 days a week",
+  "is_emergency_service": true,
+  "is_24_hours": true,
+  "is_active": true,
+  "notes": "Headquartered in Louisa, KY with 38 treatment centers across 16 Kentucky counties. Crisis line: 988. Client message line: (606) 653-1275. Offers comprehensive addiction treatment with vocational training and career development programs.",
+  "service_types": [
+    "substance_abuse_treatment",
+    "mental_health_services",
+    "detoxification",
+    "residential_treatment",
+    "outpatient_treatment",
+    "medically_assisted_treatment",
+    "vocational_training",
+    "job_training",
+    "peer_support",
+    "crisis_intervention"
+  ],
+  "populations_served": [
+    "adults",
+    "individuals_with_substance_use_disorders",
+    "kentucky_residents"
+  ],
+  "languages": [
+    "english"
+  ],
+  "accessibility": [
+    "phone_accessible",
+    "website_accessible",
+    "in_person_accessible",
+    "24_hour_access"
+  ]
+}

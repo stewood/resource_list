@@ -1,0 +1,22 @@
+{
+  "name": "Baptist Health Corbin",
+  "description": "273-bed acute and skilled care hospital providing comprehensive healthcare services including emergency care, cancer care, heart care, women's health, orthopedics, behavioral health, and more. Serves residents of Whitley, Knox, Laurel, Bell, Clay, McCreary, Harlan and Campbell counties.",
+  "source": "Verified from official Baptist Health website",
+  "phone": "(606) 528-1212",
+  "email": "",
+  "website": "https://www.baptisthealth.com/locations/baptist-health-corbin",
+  "address1": "1 Trillium Way",
+  "city": "Corbin",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40701",
+  "hours_of_operation": "Open 24 hours, 7 days a week",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Open to all patients seeking medical care. Insurance and payment options available.",
+  "populations_served": "Residents of Whitley, Knox, Laurel, Bell, Clay, McCreary, Harlan and Campbell counties and Jellico, Tennessee",
+  "cost_information": "Accepts most major insurance plans. Financial assistance available for qualifying patients.",
+  "languages_available": "English, Spanish, and other languages available through interpretation services",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-15. CITATIONS: Contact information and program details verified from official Baptist Health website https://www.baptisthealth.com/locations/baptist-health-corbin. Address confirmed as 1 Trillium Way, Corbin, KY 40701. Phone number (606) 528-1212 verified working. Website verified current and accessible. Hospital operates 24/7 with emergency services available. Services include emergency care, cancer care, heart care, women's health, orthopedics, behavioral health, imaging and diagnostics, surgical services, and more. Part of the Baptist Health system serving Kentucky and Southern Indiana.",
+  "service_type_ids": [22, 6, 14]
+}

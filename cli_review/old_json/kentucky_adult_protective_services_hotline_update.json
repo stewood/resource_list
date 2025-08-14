@@ -1,0 +1,22 @@
+{
+  "name": "Kentucky Adult Protective Services Hotline",
+  "description": "24/7 toll-free hotline for reporting suspected abuse, neglect, or exploitation of adults in Kentucky. Operated by the Kentucky Cabinet for Health and Family Services, Department for Community Based Services. Investigates all known or suspected incidents of adult maltreatment and provides protective services to vulnerable adults.",
+  "source": "Verified from official website and multiple sources",
+  "phone": "(800) 752-6200",
+  "email": "",
+  "website": "https://chfs.ky.gov/agencies/dcbs/dpp/apb/pages/default.aspx",
+  "address1": "275 E. Main St. 3E-A",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40621",
+  "hours_of_operation": "24 hours a day, 7 days a week",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Any person with reasonable cause to suspect adult abuse, neglect, or exploitation. Mandatory reporting for certain professionals.",
+  "populations_served": "Adults 18 and older who are vulnerable to abuse, neglect, or exploitation",
+  "cost_information": "Free service",
+  "languages_available": "English, Spanish, and other languages available through translation services",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-12-19. CITATIONS: Contact information verified from official Kentucky government website https://chfs.ky.gov/agencies/dcbs/dpp/apb/pages/default.aspx. Phone number (800) 752-6200 confirmed from multiple official sources including Kentucky Attorney General, University of Kentucky, and various county government websites. Address and location verified from official Adult Protection Branch contact information. Services and mission verified from official website. This is the official Kentucky Adult Protective Services hotline operated by the Cabinet for Health and Family Services. All information cross-referenced with multiple official sources for consistency.",
+  "service_type_ids": [1, 2, 17]
+}

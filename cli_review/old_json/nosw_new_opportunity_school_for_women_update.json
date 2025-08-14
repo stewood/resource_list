@@ -1,0 +1,28 @@
+{
+  "name": "NOSW - New Opportunity School for Women",
+  "description": "Educational and empowerment organization providing free programs for under-resourced Appalachian women 18 years and older. Offers residential and non-residential programs, online offerings, and ongoing support through The Sisterhood. Programs focus on building confidence, skills, and personal development to help women make positive changes in their lives. Services include job training, education, transportation assistance, and community support.",
+  "source": "Verified from official website and multiple online sources",
+  "phone": "(859) 985-7200",
+  "email": "info@nosw.org",
+  "website": "https://nosw.org",
+  "address1": "204 Chestnut St",
+  "city": "Berea",
+  "state": "KY",
+  "county": "Madison",
+  "postal_code": "40403",
+  "hours": "Monday-Friday 9:00 AM-5:00 PM",
+  "services": [
+    "Educational programs",
+    "Job training",
+    "Personal development",
+    "Confidence building",
+    "Transportation assistance",
+    "Community support",
+    "Residential programs",
+    "Non-residential programs",
+    "Online offerings",
+    "The Sisterhood support network"
+  ],
+  "eligibility": "Women 18 years and older, under-resourced Appalachian women",
+  "notes": "All programs are free. Founded in 1987, NOSW has helped thousands of women transform their lives. Programs include 2-week residential and 3-day non-residential options. Located in Berea, KY, serving the Appalachian region. Provides comprehensive support including meals, transportation, and ongoing community connections."
+}

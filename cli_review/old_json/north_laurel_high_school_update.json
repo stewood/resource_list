@@ -1,0 +1,37 @@
+{
+  "name": "North Laurel High School",
+  "description": "Public high school serving grades 9-12 in the Laurel County School District. Offers comprehensive secondary education including AP courses, career pathways, and a Gifted & Talented program. Provides academic support, extracurricular activities, and college preparation services. Features a student-teacher ratio of 18:1 with approximately 1,260 students enrolled.",
+  "source": "Verified from official website and contact information",
+  "phone": "(606) 862-4699",
+  "email": "",
+  "website": "https://www.laurel.k12.ky.us/o/nlhs",
+  "address1": "1300 East Hal Rogers Parkway",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40741",
+  "hours_of_operation": "Monday-Friday, closes at 3:30 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Open to students in grades 9-12 residing in the Laurel County School District attendance zone.",
+  "services_offered": [
+    "High School Education",
+    "Advanced Placement (AP) Courses",
+    "Career Pathways",
+    "Gifted & Talented Program",
+    "Extracurricular Activities",
+    "College Preparation",
+    "Academic Support",
+    "Student Counseling",
+    "Athletics",
+    "Fine Arts Programs"
+  ],
+  "target_population": [
+    "High school students (grades 9-12)",
+    "Students in Laurel County School District",
+    "Students seeking AP courses",
+    "Students interested in career pathways",
+    "Gifted and talented students"
+  ],
+  "notes": "Part of Laurel County Public Schools. Offers Infinite Campus parent portal access, student code of conduct, and meal services. Features assessment data tracking with proficiency rates in reading and math. Provides mobile app access for parents and students. Fax: (606) 862-4700."
+}

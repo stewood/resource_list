@@ -1,0 +1,20 @@
+{
+  "name": "Hart Missionary Baptist Church",
+  "description": "Baptist church providing food ministry and outreach services to Laurel County residents. Offers food distribution program called 'Feed the Need' to help families in need.",
+  "source": "Verified from Google search results, church website, and multiple food bank directories",
+  "phone": "(606) 864-9366",
+  "email": "hartbaptistchurch1@gmail.com",
+  "website": "http://www.hartbaptistchurch.org",
+  "address1": "1 Hart Church Rd",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40743",
+  "hours_of_operation": "3rd Tuesday only at 12:30 PM (food pantry)",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Laurel County residents, must bring current form of identification",
+  "service_types": ["Food Pantry", "Food Distribution", "Church Services"],
+  "category": "Food Assistance",
+  "notes": "Rated 5.0 out of 5 stars with 13 Google reviews. One box of food per household. Must be present to receive a box. Part of God's Pantry Food Bank network. Also partners with Operation BBQ Relief for community meals."
+}

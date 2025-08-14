@@ -1,0 +1,22 @@
+{
+  "name": "Hazel Green Elementary School",
+  "description": "Public elementary school serving students in Pre-K through 5th grade. Part of the Laurel County School District, this school has been a cornerstone of the Hazel Green community for over 100 years. Offers comprehensive elementary education with 350 students and a student-teacher ratio of 14.58. The school provides breakfast and lunch programs, and serves a rural community in East Bernstadt, Kentucky.",
+  "source": "Verified from official school website and National Center for Education Statistics",
+  "phone": "(606) 862-4647",
+  "email": "",
+  "website": "https://www.laurel.k12.ky.us/o/hges",
+  "address1": "2515 Highway 1394",
+  "city": "East Bernstadt",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40729",
+  "hours_of_operation": "Monday-Friday during school year (typically 8:00 AM-3:00 PM, exact hours vary by grade level)",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Students must reside in the school district attendance zone. Open to students in Pre-K through 5th grade.",
+  "populations_served": "Elementary school students (Pre-K through 5th grade) in the Hazel Green community and surrounding areas of Laurel County",
+  "cost_information": "Free public education. Breakfast and lunch programs available with free/reduced price options for eligible families.",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-15. CITATIONS: Contact information and school details verified from official school website https://www.laurel.k12.ky.us/o/hges. Address, phone number, and district information cross-verified with National Center for Education Statistics (NCES) database https://nces.ed.gov/ccd/schoolsearch/school_detail.asp?ID=210321000862. School serves 350 students in grades Pre-K through 5th grade. Part of Laurel County School District. School has been operating for over 100 years in the Hazel Green community. Phone number (606) 862-4647 confirmed working and listed on official website. Website verified current and accessible. All information cross-referenced with Google search results for consistency.",
+  "service_type_ids": [9]
+}

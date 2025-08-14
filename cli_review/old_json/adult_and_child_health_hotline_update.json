@@ -1,0 +1,19 @@
+{
+  "name": "Kentucky Maternal and Child Health Hotline",
+  "description": "A toll-free hotline operated by the Kentucky Department for Public Health's Division of Maternal and Child Health. This government service provides information and referrals for maternal and child health programs, including prenatal care, child development, newborn screening, adolescent health, and family health improvement programs. The hotline serves as a central resource for families seeking information about health services and programs available throughout Kentucky.",
+  "source": "Verified from Kentucky Cabinet for Health and Family Services official website, Google search results, and multiple resource directories",
+  "phone": "(800) 462-6122",
+  "email": "CHFS.Listens@ky.gov",
+  "website": "https://chfs.ky.gov/agencies/dph/dmch/cfhib/Pages/default.aspx",
+  "address1": "275 E. Main St.",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "zip": "40621",
+  "service_type": "Hotlines",
+  "hours": "Available during business hours (call for specific hours)",
+  "notes": "This is the official Kentucky Department for Public Health's Maternal and Child Health Hotline. The service provides information about maternal and child health programs, referrals to local health departments, and guidance on various health services including prenatal care, child development, newborn screening, and adolescent health programs. For general CHFS inquiries, call (833) 372-0004.",
+  "verified": true,
+  "verification_date": "2024-08-14",
+  "verification_method": "Online research - Kentucky government website, multiple resource directories, official contact information"
+}

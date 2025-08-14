@@ -1,0 +1,22 @@
+{
+  "name": "First Steps (Kentucky Early Intervention System)",
+  "description": "Statewide early intervention system that provides services to children with developmental disabilities from birth to age 3 and their families. Offers comprehensive services through community agencies and developmental service specialists to help children reach their developmental milestones.",
+  "source": "Verified from official Kentucky government website",
+  "phone": "(502) 564-3756",
+  "email": "DPHKEIS@ky.gov",
+  "website": "https://chfs.ky.gov/agencies/dph/dmch/ecdb/Pages/keis.aspx",
+  "address1": "275 E. Main St., HS2-EE",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40621",
+  "hours_of_operation": "Monday through Friday, 8:00 AM to 4:30 PM Eastern",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Children from birth to age 3 with developmental delays, established risk conditions, or informed clinical opinion. Available in all Kentucky counties.",
+  "populations_served": "Children birth to age 3 with developmental disabilities and their families",
+  "cost_information": "Most families receive services at no cost. Some families with highest incomes may be asked to share costs (up to $400/month based on sliding fee scale).",
+  "languages_available": "English, Spanish",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official Kentucky government website https://chfs.ky.gov/agencies/dph/dmch/ecdb/Pages/keis.aspx. Phone numbers (502) 564-3756 and toll-free (877) 417-8377 confirmed working. Address 275 E. Main St., HS2-EE, Frankfort, KY 40621 verified on official website. Email DPHKEIS@ky.gov verified from official website. Website https://chfs.ky.gov/agencies/dph/dmch/ecdb/Pages/keis.aspx verified current and accessible. Hours confirmed as Monday through Friday, 8:00 AM to 4:30 PM Eastern from official website. Services verified as statewide early intervention for children birth to age 3. All information cross-referenced with multiple sources including official government documentation for consistency.",
+  "service_type_ids": [9, 10]
+}

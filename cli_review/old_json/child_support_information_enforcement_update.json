@@ -1,0 +1,28 @@
+{
+  "name": "Kentucky Child Support Information/Enforcement",
+  "description": "The Kentucky Child Support Enforcement program provides information and enforcement services for child support cases. The program helps establish paternity, establish and modify child support orders, collect and distribute child support payments, and enforce child support obligations. Services include case management, payment processing, and enforcement actions.",
+  "source": "Verified from official Kentucky.gov websites and Attorney General's Office",
+  "phone": "(800) 248-1163",
+  "email": "",
+  "website": "https://kentuckychildsupport.ky.gov/",
+  "address1": "Not applicable - Statewide service",
+  "city": "Not applicable",
+  "state": "KY",
+  "county": "Not applicable",
+  "postal_code": "",
+  "hours_of_operation": "Monday-Friday during business hours",
+  "is_emergency_service": false,
+  "is_24_hours": false,
+  "accepts_medicare": false,
+  "accepts_medicaid": false,
+  "accepts_private_insurance": false,
+  "accepts_sliding_scale": false,
+  "accepts_no_cost": true,
+  "accepts_donations": false,
+  "notes": "Kentucky Child Support Enforcement Hotline: (800) 248-1163. The program has moved from the Cabinet for Health and Family Services to the Kentucky Office of Attorney General. Call to verify and obtain individual child support identification number. Payments can be made by phone, online, or mailed to Child Support Enforcement, PO BOX 14059, Lexington, KY 40512.",
+  "service_types": [
+    "Hotlines",
+    "Hotlines"
+  ],
+  "resource_id": 20
+}

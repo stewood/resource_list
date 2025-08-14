@@ -1,0 +1,21 @@
+{
+  "name": "Laurel County Circuit Court Clerk",
+  "description": "The Laurel County Circuit Court Clerk's office provides court services and records management for Laurel County, Kentucky. Located in the Laurel County Judicial Center, this office handles circuit court filings, records, and provides public access to court information and documents.",
+  "source": "Verified from official Kentucky Court of Justice website and search results",
+  "phone": "(606) 330-2079",
+  "website": "http://courts.ky.gov/courts/clerks/Pages/default.aspx?county=Laurel",
+  "address1": "305 S. Main St.",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40741",
+  "hours_of_operation": "Monday-Friday 8:00 AM-4:00 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Open to the public for court records and filings",
+  "populations_served": "Residents of Laurel County seeking court services, legal professionals, and the general public",
+  "cost_information": "Standard court filing fees apply",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-22. CITATIONS: Contact information verified from official Kentucky Court of Justice website https://kycourts.gov/Courts/County-Information/Pages/Laurel.aspx. Phone number (606) 330-2079 confirmed as Circuit Court Clerk number. Address 305 S. Main St., London, KY 40741 verified from official court website. Office hours Monday-Friday 8:00 AM-4:00 PM verified from multiple sources. Located in Laurel County Judicial Center. Also serves as PO Box 1798, London, KY 40743-1798 for mail correspondence. All information cross-referenced with official government websites and search results for accuracy.",
+  "service_type_ids": [5, 23]
+}

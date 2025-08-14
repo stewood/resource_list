@@ -1,0 +1,29 @@
+{
+  "name": "Appalachian Phoenix House - Cumberland River Comprehensive Care Center",
+  "description": "The Appalachian Phoenix House is a behavioral health clinic operated by Cumberland River Comprehensive Care Center, providing comprehensive mental health and substance abuse treatment services. They offer individual, couple, marital, family, and group counseling for mental health issues, as well as substance abuse treatment programs. The facility provides comprehensive treatment programs that include mental health aspects, medical and psychological support, experiential therapies, and cognitive behavioral therapies (CBT).",
+  "source": "Verified from multiple government and healthcare sources",
+  "phone": "(606) 528-4381",
+  "email": "info@crbhky.org",
+  "website": "https://crbhky.org",
+  "address1": "401 Roy Kidd Ave",
+  "city": "Corbin",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40701",
+  "hours_of_operation": "Contact for hours",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Individuals seeking mental health or substance abuse treatment",
+  "populations_served": "Adults and families seeking behavioral health services",
+  "service_types": [
+    "Mental Health Services",
+    "Substance Abuse Treatment",
+    "Behavioral Health",
+    "Individual Counseling",
+    "Family Counseling",
+    "Group Therapy",
+    "Cognitive Behavioral Therapy",
+    "Comprehensive Care"
+  ],
+  "notes": "Part of Cumberland River Comprehensive Care Center network. Provides comprehensive behavioral health services including mental health and substance abuse treatment. Wheelchair accessible facility."
+}

@@ -1,0 +1,22 @@
+{
+  "name": "The Trillium Center at Baptist Health Corbin",
+  "description": "Inpatient adult behavioral health unit providing 24-hour psychiatric care for adults 18 and older. Treats complex mental illness including depression, bipolar disorder, anxiety, schizophrenia, and dual-diagnosis addictive disorders. Offers comprehensive treatment including medication management, individual and group therapy, and discharge planning.",
+  "source": "Verified from official website and multiple sources",
+  "phone": "(606) 528-1212",
+  "email": "",
+  "website": "https://www.baptisthealth.com/care-services/services/behavioral-health/services-and-programs/psychiatry-programs/inpatient-adult-psychiatric-care",
+  "address1": "1 Trillium Way",
+  "city": "Corbin",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40701",
+  "hours_of_operation": "24 hours a day, 365 days a year",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Adults 18 years and older who require 24-hour nursing care and cannot be treated in a less intense setting",
+  "populations_served": "Adults with complex mental illness, substance abuse disorders, dual diagnosis",
+  "cost_information": "Accepts insurance. Contact for specific coverage and payment information.",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-12-19. CITATIONS: Contact information verified from official website https://www.baptisthealth.com/care-services/services/behavioral-health/services-and-programs/psychiatry-programs/inpatient-adult-psychiatric-care. Phone number (606) 528-1212 confirmed from Google search results and official website. Address and location verified from multiple sources including Google Maps and official Baptist Health website. Hours of operation confirmed as 24/7 from official website. Services and treatment programs verified from official Baptist Health behavioral health page. All information cross-referenced with Google search results for consistency.",
+  "service_type_ids": [12, 20, 21, 22, 8]
+}

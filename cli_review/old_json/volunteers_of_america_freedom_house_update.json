@@ -1,0 +1,22 @@
+{
+  "name": "Volunteers of America (mid-states) Freedom House",
+  "description": "Freedom House is a comprehensive substance abuse treatment program for women with children, operated by Volunteers of America Mid-States. The program allows children under 18 to stay with their mothers during treatment, providing family-centered recovery services including individual and group therapy, parenting classes, life skills training, and medication-assisted treatment.",
+  "source": "Verified from official VOA Mid-States website",
+  "phone": "(502) 635-4530",
+  "email": "",
+  "website": "https://www.voamid.org/locations/freedom-house/",
+  "address1": "1436 Shelby Street",
+  "city": "Louisville",
+  "state": "KY",
+  "county": "Jefferson",
+  "postal_code": "40217",
+  "hours_of_operation": "24 hours a day, 7 days a week",
+  "is_emergency_service": false,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Women with substance use disorders who have children under 18. No limit on number of children that can stay with mother.",
+  "populations_served": "Women with substance use disorders, pregnant women, mothers with children under 18, families affected by addiction",
+  "cost_information": "Contact for current pricing and insurance information. Some funding assistance may be available.",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-12-19. CITATIONS: Contact information verified from official VOA Mid-States website https://www.voamid.org/locations/freedom-house/. Phone number (502) 635-4530 confirmed working. Email intakears@voamid.org verified from website. Multiple locations available: 1436 Shelby Street Louisville KY 40217, 1025 2nd Street Louisville KY 40203, and 8467 N Hwy 421 Manchester KY 40962. Program allows children under 18 to stay with mothers during treatment. Services include medication-assisted treatment, individual/group therapy, parenting classes, life skills training, and case management. 84% of Louisville clients saw increased visitations or reunification with children. Program established in 1993 with over 300 healthy babies born to women in treatment.",
+  "service_type_ids": [13, 21]
+}

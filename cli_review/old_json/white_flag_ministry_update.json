@@ -1,0 +1,25 @@
+{
+  "name": "White Flag Ministry",
+  "description": "Cold weather relief ministry providing shelter, hot meals, clothing, blankets, and counseling services to homeless individuals in Corbin, KY. Operates seasonally from Monday after Thanksgiving through mid-March. Located at the Burkhart Center at St. John's Episcopal Church. Provides case management through RRJ Solutions for mental health and substance abuse counseling. Partners with local businesses, churches, and community members to serve the homeless population.",
+  "source": "Verified from official website and multiple online sources",
+  "phone": "(606) 528-4738",
+  "email": "",
+  "website": "http://www.corbinfbc.org/whiteflag",
+  "address1": "701 E Engineer St",
+  "city": "Corbin",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40701",
+  "hours": "Monday-Friday 4:00 PM-5:00 PM (Seasonal: Monday after Thanksgiving through mid-March)",
+  "services": [
+    "Cold weather shelter",
+    "Hot meals",
+    "Clothing and blankets",
+    "Mental health counseling",
+    "Substance abuse counseling",
+    "Case management",
+    "Community resource connections"
+  ],
+  "eligibility": "Homeless individuals in need of cold weather relief",
+  "notes": "A mission of First Baptist Church fueled by the community of Corbin, KY. Shelter nights are announced on their Facebook page. Operates solely on private donations. Partners with RRJ Solutions for counseling services and St. John's Episcopal Church for facility use."
+}

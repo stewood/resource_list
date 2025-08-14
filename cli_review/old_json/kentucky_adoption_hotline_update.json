@@ -1,0 +1,32 @@
+{
+  "name": "Kentucky Adoption Hotline",
+  "description": "Official hotline operated by the Kentucky Department for Community Based Services for foster care and adoption information and inquiries. Provides information about becoming a foster or adoptive parent, certification requirements, waiting children, and kinship care. Part of the KY FACES (Kentucky Foster and Adoptive Care Enhancement System) program serving children in need of temporary or permanent homes.",
+  "source": "Verified from official government website and multiple authoritative sources",
+  "phone": "(800) 432-9346",
+  "email": "",
+  "website": "http://adopt.ky.gov/",
+  "address1": "275 East Main Street, 3C-E",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40621",
+  "hours_of_operation": "Monday-Friday 8:00 AM-4:30 PM Eastern Time",
+  "service_types": [
+    "Hotlines",
+    "Adoption Services",
+    "Foster Care Services",
+    "Adoption Information",
+    "Foster Care Information",
+    "Kinship Care Support",
+    "Child Placement Services",
+    "Adoption Assistance",
+    "Foster Parent Training",
+    "Adoptive Parent Support"
+  ],
+  "eligibility": "Open to all Kentucky residents interested in foster care or adoption",
+  "fees": "Free",
+  "languages": ["English"],
+  "accessibility": "Available statewide; provides informational meetings and resources",
+  "notes": "Operated by the Kentucky Department for Community Based Services. Part of the KY FACES program that supports foster care and adoption throughout Kentucky. Provides information about certification requirements, waiting children, and support services for foster and adoptive families. Also supports kinship caregivers.",
+  "last_updated": "2024-12-10"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "KY HELP Statewide Call Center",
+  "description": "Toll-free statewide call center providing personalized, compassionate assistance and resources for Kentuckians seeking help for substance use disorders and offering support to their families. Staffed by Operation UNITE specialists who provide crisis management, treatment referrals, and outreach services.",
+  "source": "Verified from official Operation UNITE website and multiple government sources",
+  "phone": "1-833-859-4357",
+  "email": "KYHELP@OperationUNITE.org",
+  "website": "https://operationunite.org/programs/kyhelp-call-center/",
+  "address1": "Not applicable - statewide call center",
+  "city": "Statewide",
+  "state": "KY",
+  "county": "Statewide",
+  "postal_code": "",
+  "hours_of_operation": "Monday-Friday 7:00 AM-10:00 PM EST, Saturday-Sunday 8:30 AM-5:30 PM EST",
+  "is_emergency_service": true,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Kentucky residents seeking help for substance use disorders or family support",
+  "populations_served": "Kentuckians with substance use disorders, families seeking support and resources",
+  "cost_information": "Free service",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information and services verified from official Operation UNITE website https://operationunite.org/programs/kyhelp-call-center/. Phone number 1-833-859-4357 confirmed working and matches original record. Call center created and operated by Operation UNITE as a bona fide agent of the Kentucky Office of Drug Control Policy. Launched December 1, 2017, funded by Kentucky Justice and Public Safety Cabinet. Services include crisis management, treatment referrals, insurance assistance, and outreach services for up to one year. All calls kept confidential. For after-hours assistance, individuals should contact KY/Opioid & Assistance Resource Hotline: 1-800-854-6813. Also provides email assistance at KYHELP@OperationUNITE.org. Staffed by trained Screening & Referral Specialists who connect individuals to appropriate treatment resources across Kentucky.",
+  "service_type_ids": [1, 13, 21]
+}

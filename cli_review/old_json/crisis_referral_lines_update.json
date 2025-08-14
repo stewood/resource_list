@@ -1,0 +1,16 @@
+{
+  "name": "Kentucky Crisis Prevention and Response System",
+  "description": "Kentucky's comprehensive crisis prevention and response system provides 24/7 crisis intervention services for individuals experiencing behavioral health, mental health, or substance use crises. The system includes the 988 Suicide & Crisis Lifeline, regional community mental health center crisis hotlines, mobile crisis services, walk-in crisis intervention, and residential crisis stabilization units. Services are designed to stabilize or prevent escalation of crisis situations and connect individuals to appropriate treatment and support resources.",
+  "source": "Verified from official Kentucky Department for Behavioral Health, Developmental and Intellectual Disabilities website (dbhdid.ky.gov)",
+  "phone": "988",
+  "website": "https://dbhdid.ky.gov/crisis",
+  "address1": "Statewide crisis services",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40601",
+  "hours": "24/7",
+  "eligibility": "All Kentucky residents experiencing crisis",
+  "services": "Crisis intervention, suicide prevention, mental health crisis services, substance use crisis services, mobile crisis teams, walk-in crisis services, residential crisis stabilization",
+  "notes": "Main crisis hotline is 988. Additional regional crisis hotlines available through community mental health centers. Services include assessment, intervention, referral, and follow-up support. Chat services available at 988lifeline.org/chat/."
+}

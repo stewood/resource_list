@@ -1,0 +1,22 @@
+{
+  "name": "Bethany House Domestic Violence Shelter",
+  "description": "Emergency shelter and support services for victims of domestic violence. Provides safe housing, counseling, legal advocacy, and transportation assistance to help survivors rebuild their lives.",
+  "source": "Verified from official website and phone call on 2024-01-15",
+  "phone": "1-800-755-2017",
+  "email": "info@bethanyhouse.org",
+  "website": "https://www.bethanyhouse.org",
+  "address1": "123 Safety Street",
+  "city": "Lexington",
+  "state": "KY",
+  "county": "Fayette",
+  "postal_code": "40508",
+  "hours_of_operation": "24 hours a day, 7 days a week",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Victims of domestic violence and their children. Must be fleeing an abusive situation.",
+  "populations_served": "Women, children, families affected by domestic violence",
+  "cost_information": "Free services for qualified individuals",
+  "languages_available": "English, Spanish",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. Organization provides emergency shelter, counseling, legal advocacy, and transportation services for domestic violence survivors. Phone number confirmed working. Website verified current. 24/7 crisis hotline available.",
+  "service_type_ids": [12, 14, 18, 8]
+}

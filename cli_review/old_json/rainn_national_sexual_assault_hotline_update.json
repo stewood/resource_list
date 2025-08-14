@@ -1,0 +1,21 @@
+{
+  "name": "RAINN National Sexual Assault Hotline",
+  "description": "RAINN (Rape, Abuse & Incest National Network) operates the National Sexual Assault Hotline, providing free, confidential support 24/7 to survivors of sexual violence and their loved ones. Services include crisis intervention, emotional support, information about medical care, legal options, and referrals to local resources.",
+  "source": "Verified from official RAINN website and contact information",
+  "phone": "1-800-656-4673",
+  "website": "https://www.rainn.org",
+  "address1": "Not provided",
+  "city": "Washington",
+  "state": "DC",
+  "county": "Not provided",
+  "postal_code": "",
+  "hours_of_operation": "24 hours a day, 7 days a week",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Available to anyone affected by sexual violence, including survivors, friends, family members, and professionals seeking information",
+  "populations_served": "Survivors of sexual violence, their loved ones, and anyone seeking information about sexual assault resources",
+  "cost_information": "Free and confidential services",
+  "languages_available": "English, Spanish (rainn.org/es)",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-22. CITATIONS: Contact information verified from official website https://www.rainn.org. Phone number 1-800-656-4673 confirmed as current hotline number. Website https://www.rainn.org verified current and accessible. Services and mission verified from About page https://rainn.org/about-rainn. Additional contact methods include online chat at https://hotline.rainn.org/online, WhatsApp chat, and text HOPE to 64673. Organization operates in partnership with over 1,000 local sexual assault service providers nationwide. Business contact: 202.544.1034. Media contact: media@rainn.org. All information cross-referenced with official RAINN website for accuracy.",
+  "service_type_ids": [1, 14]
+}

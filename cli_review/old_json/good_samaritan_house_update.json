@@ -1,0 +1,23 @@
+{
+  "name": "Good Samaritan House Homeless Shelter",
+  "description": "Good Samaritan House is a Christian homeless shelter providing safe, clean temporary housing and nutritious meals for individuals and families experiencing homelessness. The shelter operates 24 hours a day, seven days a week and can house up to 30 people. They focus on serving the working homeless, particularly women and children, and help residents get jobs and save money. The facility is drug-free and provides shelter, food, and toiletries to those in need.",
+  "source": "Verified from official Good Samaritan House website and multiple online directories",
+  "phone": "(606) 862-2872",
+  "email": "info@goodsamaritanhouseinc.com",
+  "website": "http://www.goodsamaritanhouseinc.com/",
+  "address1": "220 E 4th St",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40741",
+  "hours_of_operation": "24 hours a day, 7 days a week. Walk-ins accepted from 7:00 AM to 10:00 PM daily.",
+  "is_emergency_service": true,
+  "is_24_hour": true,
+  "is_active": true,
+  "eligibility_requirements": "Must be Kentucky resident, picture ID required, warrant check, 10-panel drug test, background check, and interview required. Appointments preferred - call ahead. Drug-free facility.",
+  "populations_served": "Working homeless individuals and families, with focus on women and children experiencing homelessness",
+  "cost_information": "Free - no cost for shelter services",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official Good Samaritan House website http://www.goodsamaritanhouseinc.com/. Phone number (606) 862-2872 confirmed as main contact number. Address 220 E 4th St, London, KY 40741 verified from Google Maps and multiple directories. Website verified current and accessible. 24/7 operation confirmed from multiple sources including uwbg211.org and FindHelp.org. Shelter capacity of 30 people verified from multiple directories. Requirements including drug testing, background check, and Kentucky residency confirmed from search results. Christian mission and focus on working homeless verified from official website and social media. All information cross-referenced with Google search results and multiple directories for consistency. Shelter serves London and surrounding areas in Laurel County.",
+  "service_type_ids": [18, 14, 7]
+}

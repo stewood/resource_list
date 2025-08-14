@@ -1,0 +1,22 @@
+{
+  "name": "KCEOC Community Action Partnership Emergency Support Center",
+  "description": "KCEOC Emergency Support Center provides emergency shelter with 23 beds for individuals and families facing homelessness. Services include meals, clothing, basic necessities, case management, counseling, employment services, life skills training, education services, and transportation assistance. The center operates under McKinney Act guidelines and collaborates with the Southeastern Kentucky Homeless and Housing Alliance (SKHHA) to provide comprehensive support services.",
+  "source": "Verified from official KCEOC Community Action Partnership website and direct contact information",
+  "phone": "(606) 546-3152",
+  "email": "sbingham@kceoc.com",
+  "website": "https://kceoc.org/community-services/emergency-support-center/",
+  "address1": "5448 North US HWY 25E",
+  "city": "Gray",
+  "state": "KY",
+  "county": "Knox",
+  "postal_code": "40734",
+  "hours_of_operation": "24-hour emergency shelter services - call for specific intake hours",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Must meet McKinney Guidelines for homelessness, age 18+, alcohol/drug-free status, no outstanding warrants or felony offenses involving violence, capable of basic self-care and childcare, willing to develop goal plan and abide by shelter rules",
+  "populations_served": "Low-income individuals and families facing homelessness, victims of domestic violence",
+  "cost_information": "Free emergency shelter services",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-27. CITATIONS: Contact information and services verified from official website https://kceoc.org/community-services/emergency-support-center/. Phone number (606) 546-3152 confirmed on website header and footer. Address 5448 North US HWY 25E, Gray, KY 40734 verified from website footer. Contact person Shawn Bingham (shelter operations staff) listed on website. Email sbingham@kceoc.com provided on website. Services and eligibility criteria verified from detailed program description on official website. Website verified current and accessible. All information cross-referenced with Google search results for consistency.",
+  "service_type_ids": [1, 2, 3, 7, 8, 14, 18]
+}

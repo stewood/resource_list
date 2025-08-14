@@ -1,0 +1,22 @@
+{
+  "name": "Southern Kentucky Area Health Education Center",
+  "description": "Comprehensive health education center that improves health in our 15-county service region by linking community and academic resources. Provides health career education for middle and high school students, clinical education for health profession students, continuing education for healthcare professionals, and specialized programs including AHEC Scholars and FutureDocs.",
+  "source": "Verified from official website and contact information",
+  "phone": "(606) 256-0950",
+  "email": "",
+  "website": "https://soahec.org/",
+  "address1": "145 Newcomb Avenue",
+  "city": "Mount Vernon",
+  "state": "KY",
+  "county": "Rockcastle",
+  "postal_code": "40456",
+  "hours_of_operation": "Monday-Friday 8:00 AM-5:00 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Varies by program - health career programs for middle/high school students, clinical education for health profession students, continuing education for healthcare professionals",
+  "populations_served": "Students interested in health careers, health profession students, healthcare professionals, residents of 15-county service region",
+  "cost_information": "Most programs are free, some programs have fees (e.g., FutureDocs program is $400)",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official website https://soahec.org/. Services and programs verified from main website https://soahec.org/ and About page https://soahec.org/about/. Phone number (606) 256-0950 confirmed working. Website verified current and accessible. Address: 145 Newcomb Avenue, Mount Vernon, KY 40456 confirmed. Serves 15 counties: Boyle, Casey, Estill, Garrard, Jackson, Knox, Laurel, Lincoln, McCreary, Madison, Mercer, Pulaski, Rockcastle, Wayne, and Whitley. Administered through University of Kentucky Center for Interprofessional Health and Community Education and hosted by Rockcastle Regional Hospital and Respiratory Center.",
+  "service_type_ids": [9, 22, 6]
+}

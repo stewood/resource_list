@@ -1,0 +1,26 @@
+{
+  "name": "Bell-Whitley Community Action Agency, Inc.",
+  "description": "Bell-Whitley Community Action Agency is a non-profit organization that provides comprehensive services to help individuals and families achieve self-sufficiency. Services include LIHEAP energy assistance, housing programs, food assistance, employment services, Head Start early childhood education, and various community support programs. The agency serves Bell and Whitley Counties in Kentucky.",
+  "source": "Verified from official Bell-Whitley CAA website, contact information, and multiple business directories",
+  "phone": "(606) 549-3933",
+  "email": "info@bellwhitley.com",
+  "website": "https://www.bellwhitley.com",
+  "address1": "215 North 4th Street",
+  "city": "Williamsburg",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40769",
+  "hours_of_operation": "Monday - Friday 8:00 AM - 4:30 PM",
+  "is_emergency_service": false,
+  "is_24_hour": false,
+  "notes": "This is the Whitley County office location. The agency also has a Bell County office at 129 North Pine Street, Pineville, KY 40977 with phone (606) 337-3044. Toll-free number: (866) 587-6773. Services include LIHEAP, housing assistance, food programs, employment services, and Head Start.",
+  "service_types": [
+    "Food Pantry",
+    "Hotlines",
+    "Energy Assistance",
+    "Housing Assistance",
+    "Employment Services",
+    "Early Childhood Education",
+    "Community Services"
+  ]
+}

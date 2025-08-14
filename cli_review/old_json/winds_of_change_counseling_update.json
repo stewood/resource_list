@@ -1,0 +1,39 @@
+{
+  "name": "Winds of Change Counseling Services",
+  "description": "Comprehensive counseling and therapy services for adults and adolescents, specializing in addiction recovery, mental health, and family therapy. Offers intensive outpatient programs, individual therapy sessions, targeted case management, and educational classes including parenting and DUI programs. Provides holistic care including emotional, physical, and spiritual healing with a focus on creating safe spaces for the healing process.",
+  "source": "Verified from official website and contact information",
+  "phone": "(606) 515-3582",
+  "email": "hope@windsofchangeky.com",
+  "website": "https://windsofchangeky.com",
+  "address1": "1220 Master Street",
+  "city": "Corbin",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40701",
+  "hours_of_operation": "Monday-Friday 9:00 AM - 5:00 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Accepts all Kentucky Medicaid and most major insurance plans. Initial assessment required ($100).",
+  "services_offered": [
+    "Mental Health Counseling",
+    "Substance Abuse Treatment",
+    "Intensive Outpatient Programs",
+    "Individual Therapy",
+    "Family Therapy",
+    "Targeted Case Management",
+    "Parenting Classes",
+    "DUI Classes",
+    "Addiction Recovery Services",
+    "Adolescent Counseling"
+  ],
+  "target_population": [
+    "Adults",
+    "Adolescents",
+    "Individuals with mental health needs",
+    "Individuals with substance abuse issues",
+    "Families",
+    "Medicaid recipients",
+    "Insurance holders"
+  ],
+  "notes": "Owned by Edward and Hope Huddleston. Specializes in addiction recovery with extensive experience in substance abuse treatment. Offers grace, encouragement, and support to all clients. Emergency situations should call 911. Fax: (606) 404-5105."
+}

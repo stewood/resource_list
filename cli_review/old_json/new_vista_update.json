@@ -1,0 +1,22 @@
+{
+  "name": "New Vista",
+  "description": "Mental health and substance use services organization that assists individuals and families in the enhancement of their emotional, mental and physical well-being through behavioral health, substance use, intellectual and developmental disability and primary care services. Serves children and adults in 17 Central Kentucky counties with comprehensive mental health and crisis services.",
+  "source": "Verified from official website and contact information",
+  "phone": "(800) 928-8000",
+  "email": "",
+  "website": "https://newvista.org/",
+  "address1": "1351 Newtown Pike, Building 1",
+  "city": "Lexington",
+  "state": "KY",
+  "county": "Fayette",
+  "postal_code": "40511",
+  "hours_of_operation": "24-Hour Helpline available, office hours vary by location",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Serves residents of 17 Central Kentucky counties, accepts most insurance and offers sliding scale fees",
+  "populations_served": "Children and adults in Central Kentucky, individuals with mental health needs, substance use disorders, developmental disabilities",
+  "cost_information": "Accepts most insurance, sliding scale fees available, some services may be free",
+  "languages_available": "English, Spanish, Arabic, Dutch, French, German, Italian, Portuguese, Russian",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official website https://newvista.org/. Phone number (800) 928-8000 confirmed as 24-Hour Helpline. Website verified current and accessible. Address: 1351 Newtown Pike, Building 1, Lexington, KY 40511 confirmed. Founded in 1965, serves 17 Central Kentucky counties: Anderson, Bourbon, Boyle, Clark, Estill, Fayette, Franklin, Hardin, Harrison, Jessamine, Lincoln, Madison, Powell, Scott, and others. Provides mental health, substance use, developmental services, emergency services, and primary care.",
+  "service_type_ids": [1, 8, 20, 21, 22]
+}

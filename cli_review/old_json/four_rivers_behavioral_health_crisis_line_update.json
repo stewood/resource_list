@@ -1,0 +1,14 @@
+{
+  "name": "Four Rivers Behavioral Health Crisis Line",
+  "description": "24-hour crisis intervention hotline operated by Four Rivers Behavioral Health, a private, not-for-profit community agency providing comprehensive, integrated mental health, substance abuse, and developmental disability services. They serve 9 counties in western Kentucky including Ballard, Calloway, Carlisle, Fulton, Graves, Hickman, Livingston, Marshall, and McCracken counties. The crisis line provides immediate support for mental health emergencies, substance abuse crises, and other behavioral health emergencies.",
+  "source": "Verified from official website and cross-referenced with multiple sources",
+  "phone": "(800) 592-3980",
+  "website": "https://4rbh.org",
+  "address1": "425 Broadway",
+  "city": "Paducah",
+  "state": "KY",
+  "county": "McCracken",
+  "postal_code": "42001",
+  "hours_of_operation": "24/7 crisis hotline",
+  "service_types": ["Hotlines", "Mental Health", "Crisis Intervention"]
+}

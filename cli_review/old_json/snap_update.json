@@ -1,0 +1,23 @@
+{
+  "name": "Kentucky SNAP (Supplemental Nutrition Assistance Program)",
+  "description": "The Kentucky SNAP program helps low-income individuals and families buy food for healthy meals at participating stores. SNAP benefits increase household food buying power when added to household income. The program is administered by the Kentucky Department for Community Based Services (DCBS) and provides electronic benefits transfer (EBT) cards for food purchases.",
+  "source": "Verified from official Kentucky Cabinet for Health and Family Services website and kynect.ky.gov",
+  "phone": "(855) 306-8959",
+  "website": "https://kynect.ky.gov/benefits/s/snap-program",
+  "address1": "275 E. Main St. 3E-I",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40621",
+  "hours_of_operation": "Varies by local office - call for specific hours",
+  "is_emergency_service": false,
+  "is_24_hour": false,
+  "is_active": true,
+  "eligibility_requirements": "U.S. citizens and eligible legal residents, income limits based on household size, resource limits ($2,250 for most households, $3,500 for households with elderly/disabled), work registration required for adults 18-59",
+  "populations_served": "Low-income individuals and families, elderly, disabled, children",
+  "cost_information": "Free program - no cost to apply or receive benefits",
+  "languages_available": "English, Spanish, Arabic, Bosnian, Chinese, French, Russian, Somali, Vietnamese",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-27. CITATIONS: Contact information verified from official Kentucky Cabinet for Health and Family Services website https://www.chfs.ky.gov/agencies/dcbs/dfs/nab/Pages/snap.aspx. Program information and application process verified from kynect.ky.gov https://kynect.ky.gov/benefits/s/snap-program. Phone number (855) 306-8959 confirmed as toll-free SNAP hotline. TTY available at (800) 627-4720. EBT card replacement: (888) 979-9949. Online applications available at benefind.ky.gov. Local office directory available at https://prd.webapps.chfs.ky.gov/Office_Phone/index.aspx. All information cross-referenced with multiple official sources for consistency.",
+  "service_type_ids": [4, 17],
+  "transition_status": "needs_review"
+}

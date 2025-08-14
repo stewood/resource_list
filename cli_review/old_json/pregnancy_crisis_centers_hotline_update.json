@@ -1,0 +1,22 @@
+{
+  "name": "Pregnancy Crisis Centers Hotline",
+  "description": "National hotline service providing pregnancy crisis support and information. Offers confidential assistance to individuals facing pregnancy-related challenges, including unplanned pregnancies, pregnancy complications, and related crisis situations. Available 24/7 to provide support, information, and referrals to appropriate services.",
+  "source": "Verified from multiple Kentucky government resource directories and counseling service websites",
+  "phone": "(800) 432-9337",
+  "address1": "National hotline service",
+  "city": "National",
+  "state": "KY",
+  "county": "Statewide",
+  "postal_code": "00000",
+  "hours_of_operation": "24/7",
+  "is_emergency_service": true,
+  "is_24_hours": true,
+  "accepts_medicaid": "Not applicable",
+  "accepts_medicare": "Not applicable",
+  "accepts_private_insurance": "Not applicable",
+  "accepts_sliding_scale": "Not applicable",
+  "accepts_vouchers": "Not applicable",
+  "languages": "English",
+  "accessibility": "Phone-based service",
+  "notes": "This is a national hotline service that provides pregnancy crisis support and information. The service is free and confidential, offering assistance to individuals facing pregnancy-related challenges. Listed in multiple Kentucky government resource directories and counseling service websites as a legitimate crisis hotline."
+}

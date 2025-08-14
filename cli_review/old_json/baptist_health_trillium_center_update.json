@@ -1,0 +1,39 @@
+{
+  "name": "Baptist Health Trillium Center",
+  "description": "Inpatient Adult Behavioral Health Unit providing 24-hour nursing care for adults 18 years and older who require intensive mental health treatment. Offers secure inpatient services for complex mental illness including depression, bipolar disorder, anxiety disorders, schizophrenia, and dual-diagnosis addictive disorders. Features comprehensive treatment programs with group therapy, individual psychotherapy, medication management, and discharge planning.",
+  "source": "Verified from official website and contact information",
+  "phone": "(606) 528-1212",
+  "email": "",
+  "website": "https://www.baptisthealth.com/",
+  "address1": "1 Trillium Way",
+  "city": "Corbin",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40701",
+  "hours_of_operation": "Open until 5:00 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Adults 18 years and older requiring 24-hour nursing care for mental health treatment. Must be unable to be treated in a less intense setting.",
+  "services_offered": [
+    "Inpatient Psychiatric Care",
+    "Substance Abuse Treatment",
+    "Mental Health Services",
+    "Group Therapy",
+    "Individual Psychotherapy",
+    "Medication Management",
+    "Crisis Intervention",
+    "Discharge Planning",
+    "Family Support Services",
+    "Dual-Diagnosis Treatment"
+  ],
+  "target_population": [
+    "Adults 18 years and older",
+    "Individuals with depression",
+    "Individuals with bipolar disorder",
+    "Individuals with anxiety disorders",
+    "Individuals with schizophrenia",
+    "Individuals with substance use disorders",
+    "Individuals requiring crisis stabilization"
+  ],
+  "notes": "Part of Baptist Health system. Average length of stay is 3-5 days. Operates 24 hours a day, 365 days a year. Provides comprehensive treatment planning including medication management, therapy, and nutrition. Offers evidence-based therapeutic groups and recovery planning services."
+}

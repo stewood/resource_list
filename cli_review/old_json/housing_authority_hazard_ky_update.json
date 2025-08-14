@@ -1,0 +1,17 @@
+{
+  "name": "Housing Authority of Hazard",
+  "description": "The Housing Authority of Hazard is a public housing authority that provides affordable housing assistance to low-income families, elderly, and disabled individuals in Hazard, Kentucky and surrounding Perry County area. The authority administers public housing units and Section 8 Housing Choice Voucher programs. Services include rental assistance, housing placement, and property management for affordable housing units.",
+  "source": "Verified from HUD documentation and official contact information",
+  "phone": "(606) 436-5741",
+  "email": "housing@hahazard.com",
+  "website": "",
+  "address1": "100 Campbell Street",
+  "city": "Hazard",
+  "state": "KY",
+  "zip": "41701",
+  "hours": "Monday-Friday, 8:00 AM - 4:30 PM",
+  "services": "Public Housing, Section 8 Housing Choice Vouchers, Low-Income Housing Assistance, Rental Assistance Programs, Housing Placement Services",
+  "eligibility": "Low-income families, elderly, and disabled individuals meeting HUD income guidelines",
+  "fees": "Based on income - typically 30% of adjusted gross income for rent",
+  "notes": "Executive Director: I. H. Buchanan, III. Board Chairperson: Nan Gorman. The authority serves Perry County and surrounding areas. Contact for application information and waiting list status."
+}

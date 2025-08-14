@@ -1,0 +1,32 @@
+{
+  "name": "Kentucky Welfare and Medicaid Fraud Hotline",
+  "description": "Official hotline operated by the Kentucky Cabinet for Health and Family Services Division of Audits and Investigations for reporting suspected fraud, waste, or abuse in Medicaid, KTAP, food stamps, child care benefits, and WIC programs. Investigates fraud by healthcare providers, recipients, vendors, and CHFS employees. Part of the Office of Inspector General with authority to enforce the Kentucky Controlled Substances Act.",
+  "source": "Verified from official government website and multiple authoritative sources",
+  "phone": "(800) 372-2970",
+  "email": "chfs.fraud@ky.gov",
+  "website": "https://www.chfs.ky.gov/agencies/os/oig/dai/Pages/default.aspx",
+  "address1": "275 E. Main St., 5E-D",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40621",
+  "hours_of_operation": "Monday-Friday 8:00 AM-4:30 PM Eastern Time (24/7 message line available)",
+  "service_types": [
+    "Hotlines",
+    "Fraud Reporting",
+    "Medicaid Fraud Investigation",
+    "Welfare Fraud Investigation",
+    "Food Stamp Fraud Investigation",
+    "Child Care Benefits Fraud Investigation",
+    "WIC Program Fraud Investigation",
+    "Healthcare Provider Fraud Investigation",
+    "Controlled Substance Abuse Investigation",
+    "Government Fraud Investigation"
+  ],
+  "eligibility": "Open to all Kentucky residents to report suspected fraud",
+  "fees": "Free",
+  "languages": ["English"],
+  "accessibility": "Available 24/7 via phone; accepts anonymous reports",
+  "notes": "Operated by the Division of Audits and Investigations under the Office of Inspector General. Accepts anonymous reports but caller information helps with follow-up. Investigates fraud by physicians, dentists, Medicaid providers, recipients, grocery stores, vendors, and CHFS employees. Substantiated cases referred for criminal prosecution or administrative sanctions.",
+  "last_updated": "2024-12-10"
+}

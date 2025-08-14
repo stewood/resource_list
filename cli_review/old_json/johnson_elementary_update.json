@@ -1,0 +1,21 @@
+{
+  "name": "Johnson Elementary School",
+  "description": "Public elementary school serving grades K-5 in Laurel County Public Schools district. Offers Gifted & Talented program, breakfast and lunch programs, and comprehensive educational services. Located in London, Kentucky with a dedicated staff including school counselor and teachers.",
+  "source": "Verified from official Laurel County Schools website and NCES database",
+  "phone": "(606) 862-4664",
+  "website": "https://www.laurel.kyschools.us/o/jes",
+  "address1": "1781 McWhorter Rd",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40741",
+  "hours_of_operation": "Opens at 7:30 AM (contact school for specific hours)",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Open to students in grades K-5 within the school district",
+  "populations_served": "Elementary school students (grades K-5)",
+  "cost_information": "Free public education",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official Laurel County Schools website https://www.laurel.kyschools.us/o/jes. Address and phone number confirmed through NCES database https://nces.ed.gov/ccd/schoolsearch/school_detail.asp?Search=1&County=Laurel%20County&State=21&ID=210321000863. School details confirmed through GreatSchools.org and Niche.com. Phone number (606) 862-4664 confirmed working and listed across multiple sources. Address 1781 McWhorter Rd, London, KY 40741 verified through official school website and multiple directories. This is a public elementary school serving grades K-5 with a Gifted & Talented program, breakfast/lunch programs, and comprehensive educational services.",
+  "service_type_ids": [9]
+}

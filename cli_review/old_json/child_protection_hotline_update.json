@@ -1,0 +1,18 @@
+{
+  "name": "Child Protection Hotline",
+  "description": "Kentucky Child and Adult Protective Services hotline for reporting abuse, neglect, and exploitation. 24-hour emergency hotline operated by the Kentucky Cabinet for Health and Family Services. Accepts reports of child abuse, neglect, dependency, and adult abuse/neglect. Provides immediate response for emergency situations and coordinates with local law enforcement and social services agencies.",
+  "source": "Verified from official Kentucky government websites and cross-referenced with multiple sources",
+  "phone": "(877) 597-2331",
+  "email": "",
+  "website": "https://prd.webapps.chfs.ky.gov/reportabuse/home.aspx",
+  "address1": "275 E. Main St. 3E-A",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40621",
+  "hours_of_operation": "24 hours (Emergency Hotline)",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "service_types": ["Hotlines", "Emergency Services"],
+  "notes": "Verified information from official Kentucky Cabinet for Health and Family Services website (https://www.chfs.ky.gov/agencies/dcbs/dpp/cpb/Pages/default.aspx) and Child/Adult Protective Services Reporting System (https://prd.webapps.chfs.ky.gov/reportabuse/home.aspx). Alternative numbers: (877) KYSAFE1, (800) 752-6200. Online reporting available Monday-Friday 8:00 AM-4:30 PM ET at https://prd.webapps.chfs.ky.gov/reportabuse/home.aspx. For emergencies, call 911. Branch Manager: William Eric Smith, MSSW. Part of the Department for Community Based Services, Division of Protection and Permanency."
+}

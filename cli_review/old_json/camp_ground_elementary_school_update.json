@@ -1,0 +1,48 @@
+{
+  "name": "Camp Ground Elementary School",
+  "description": "Camp Ground Elementary School is a public elementary school in the Laurel County School District serving students from pre-kindergarten through elementary grades. The school provides comprehensive educational services including academic instruction, special education programs, and extracurricular activities. The school is part of the Laurel County Public Schools system and serves the Camp Ground community area.",
+  "source": "Verified from official Laurel County Schools website and multiple school directories",
+  "phone": "(606) 862-4625",
+  "fax": "(606) 862-4626",
+  "website": "https://www.laurel.kyschools.us/o/cges",
+  "address1": "6800 Barbourville Road",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "zip_code": "40744",
+  "service_types": [
+    "Education",
+    "Elementary School",
+    "Public School",
+    "Special Education",
+    "Early Childhood Education"
+  ],
+  "hours": "Monday-Friday, 7:30 AM - 3:00 PM (school hours)",
+  "eligibility": "Students residing in the Camp Ground Elementary School attendance zone",
+  "fees": "Free public education",
+  "languages": [
+    "English"
+  ],
+  "special_programs": [
+    "Pre-kindergarten Program",
+    "Elementary Education (K-5)",
+    "Special Education Services",
+    "Gifted & Talented Program",
+    "School Breakfast and Lunch Program",
+    "Transportation Services",
+    "Extracurricular Activities"
+  ],
+  "additional_services": [
+    "Academic instruction",
+    "Special education support",
+    "School counseling",
+    "Health services",
+    "Transportation",
+    "Meal programs",
+    "Parent-teacher communication",
+    "Extracurricular activities",
+    "Technology education",
+    "Library services"
+  ],
+  "notes": "Camp Ground Elementary School is part of the Laurel County School District. The school provides comprehensive educational services to students in the Camp Ground area. The school has a principal and full teaching staff. Parents can access information through the Infinite Campus Parent Portal and the school website."
+}

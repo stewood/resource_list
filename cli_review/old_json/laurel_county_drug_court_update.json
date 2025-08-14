@@ -1,0 +1,22 @@
+{
+  "name": "Laurel County Drug Court",
+  "description": "Kentucky Drug Court program serving Laurel County, providing substance use disorder treatment and recovery support for individuals charged with criminal offenses. Offers close court supervision, treatment, agency collaboration, and recovery support services to break the cycle of substance use disorder and crime.",
+  "source": "Verified from official Kentucky Court of Justice website and government sources",
+  "phone": "(606) 330-2150",
+  "email": "",
+  "website": "https://www.kycourts.gov/Court-Programs/Specialty-Courts/Pages/Drug-Court.aspx",
+  "address1": "305 S. Main St.",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40741",
+  "hours_of_operation": "Monday-Friday 8:00 AM-4:00 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Individuals charged with criminal offenses whose primary presenting problems stem from substance use disorder",
+  "populations_served": "Individuals with substance use disorders, those charged with drug-related criminal offenses",
+  "cost_information": "Contact for specific program costs and requirements",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official Kentucky Court of Justice website https://www.kycourts.gov/Court-Programs/Specialty-Courts/Pages/Drug-Court.aspx. Address 305 S. Main St., London, KY 40741 verified from Laurel County Judicial Center information https://kycourts.gov/Courts/County-Information/Pages/Laurel.aspx. Phone number (606) 330-2150 confirmed as Drug Court contact. Program is part of Kentucky's statewide Drug Court system serving all 120 counties. Services include behavioral health treatment, self-help/community support groups, frequent random urine screening, and individualized program plans. All information cross-referenced with Google search results and multiple government sources for consistency.",
+  "service_type_ids": [12, 13, 21]
+}

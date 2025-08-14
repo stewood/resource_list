@@ -1,0 +1,19 @@
+{
+  "name": "Emergency Fund Services, Inc.",
+  "description": "Emergency Fund Services, Inc. is part of KCEOC Community Action Partnership, a nonprofit organization serving low-income individuals and families across 16 counties in eastern and central Kentucky for over 60 years. The Emergency Support Center provides temporary emergency shelter to women, men with families, and women with children who fall under the McKinney Act. The organization offers comprehensive community services including emergency assistance, housing support, and essential services for families in need.",
+  "source": "Verified from official KCEOC Community Action website and Google search results",
+  "phone": "(606) 546-3152",
+  "website": "https://kceoc.org/",
+  "address1": "P.O. Box 490",
+  "city": "Barbourville",
+  "state": "KY",
+  "county": "Knox",
+  "postal_code": "40906",
+  "hours_of_operation": "Monday-Friday, 8:00 AM - 5:00 PM",
+  "is_emergency_service": true,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Low-income individuals and families in 16-county service area",
+  "cost_information": "Free services for eligible individuals",
+  "capacity_information": "Serves 16 counties in eastern and central Kentucky",
+  "notes": "Physical address: 5448 North US HWY 25E, Gray, KY 40734. Fax: 606-546-5057. Part of KCEOC Community Action Partnership which served 6,662 unduplicated individuals in 2024. Services include emergency shelter, housing assistance, and community support programs."
+}

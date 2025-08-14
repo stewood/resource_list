@@ -1,0 +1,16 @@
+{
+  "name": "West Knox Volunteer Fire Rescue",
+  "description": "West Knox Volunteer Fire Rescue is a volunteer fire department serving the Corbin and Gray areas of Kentucky. Founded in 1962, the department operates three stations providing fire protection, emergency response, and fire safety education to the community. The department is staffed entirely by volunteers who are on call 24/7 and receive no compensation for their services. They provide fire suppression, emergency medical response, vehicle extrication, and fire prevention education including their 'Give A Beep' smoke detector program. The department serves both Knox and Laurel counties and operates through community support and membership fees.",
+  "source": "Verified from official website and multiple online directories",
+  "phone": "606-528-1700",
+  "website": "https://www.westknoxfd.com/",
+  "city": "Corbin",
+  "state": "KY",
+  "zip_code": "40701",
+  "address": "351 US Hwy 25W",
+  "service_types": ["Emergency Services", "Fire Protection", "Emergency Response", "Fire Safety Education", "Community Service"],
+  "hours": "24/7 emergency response",
+  "eligibility": "Serves Knox and Laurel counties",
+  "fees": "Membership fees may apply",
+  "notes": "Volunteer fire department with three stations: Station 1 (90 Gloucester Avenue, Corbin), Station 2 (351 US Hwy 25W, Corbin), Station 3 (174 Ascot Drive, Gray). Mailing address: PO Box 1210, Corbin, KY 40702-1210. Fax: 606-523-5016. Founded in 1962, operates entirely with volunteers. Provides fire suppression, emergency medical response, vehicle extrication, and fire prevention education."
+}

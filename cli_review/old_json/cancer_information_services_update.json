@@ -1,0 +1,17 @@
+{
+  "name": "NCI's Cancer Information Service",
+  "description": "The National Cancer Institute's Cancer Information Service (CIS) provides free, confidential, and accurate cancer-related information to patients, families, healthcare providers, and researchers. Since 1975, CIS has been offering personalized responses to cancer topics including prevention, screening, symptoms, treatment, clinical trials, and living with cancer. The service is available in English and Spanish and is operated by trained information specialists.",
+  "source": "Verified from official National Cancer Institute website (cancer.gov)",
+  "phone": "1-800-422-6237",
+  "email": "NCIinfo@nih.gov",
+  "website": "https://www.cancer.gov/contact",
+  "address1": "National Cancer Institute",
+  "city": "Bethesda",
+  "state": "MD",
+  "county": "Montgomery",
+  "postal_code": "20892",
+  "hours": "Monday–Friday, 9 a.m. to 9 p.m. ET",
+  "eligibility": "Open to all - patients, families, healthcare providers, and researchers",
+  "services": "Free cancer information, prevention and screening guidance, treatment information, clinical trial information, smoking cessation support (1-877-44U-QUIT), live chat, email support",
+  "notes": "This is a federal government service operated by the National Cancer Institute. All services are free and confidential. Live chat available at https://livehelp.cancer.gov/. Smoking cessation support available at 1-877-44U-QUIT (1-877-448-7848)."
+}

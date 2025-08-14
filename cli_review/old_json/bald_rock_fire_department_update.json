@@ -1,0 +1,19 @@
+{
+  "name": "Bald Rock Volunteer Fire Department",
+  "description": "Volunteer fire department serving approximately 400 residents across 38 square miles in Laurel County. Provides fire prevention, fire suppression, emergency response, hazmat services, and special operations. Staffed by volunteer firefighters with specialized training in medical response, instruction, and firefighting. Emergency services available 24/7.",
+  "source": "Verified from official website and cross-referenced with multiple sources",
+  "phone": "(606) 864-2727",
+  "email": "",
+  "website": "http://www.baldrockfire.com/",
+  "address1": "1001 London Dock Rd",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40744",
+  "hours_of_operation": "24 hours (Emergency Services)",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "notes": "Comprehensive verification completed. Phone number (606) 864-2727 confirmed current across multiple sources including official website, Google Maps, Yellow Pages, and other directories. Organization is an active volunteer fire department serving Laurel County. Chief: Douglas Creech, Assistant Chief: Jimmy Anders. Services include fire prevention, fire suppression, emergency response, hazmat, and special operations. Verified as active and responding to emergency calls.",
+  "service_types": ["Emergency Services"],
+  "transition_status": "needs_review"
+}

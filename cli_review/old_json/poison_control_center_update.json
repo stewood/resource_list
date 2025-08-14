@@ -1,0 +1,29 @@
+{
+  "name": "Poison Control Center",
+  "description": "The Poison Control Center provides free, expert, and confidential emergency poison information and assistance 24 hours a day, 7 days a week. The national toll-free number 1-800-222-1222 connects callers to their local poison center for immediate help with suspected poisonings. Services include emergency poison information, treatment recommendations, first aid guidance, and prevention education. The center handles exposures to medications, household chemicals, plants, pesticides, and other toxic substances. They also offer webPOISONCONTROL®, an online tool for non-emergency poison information and guidance.",
+  "source": "Verified from official Poison Control website and multiple government sources",
+  "phone": "(800) 222-1222",
+  "email": "info@poison.org",
+  "website": "https://www.poison.org",
+  "address1": "National service - no physical address",
+  "city": "National",
+  "state": "KY",
+  "county": "N/A",
+  "postal_code": "00000",
+  "hours_of_operation": "24/7/365",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Available to anyone with a suspected poisoning",
+  "populations_served": "Anyone experiencing or concerned about a poisoning exposure",
+  "service_types": [
+    "Emergency Services",
+    "Poison Information",
+    "Emergency Hotline",
+    "Medical Information",
+    "First Aid Guidance",
+    "Poison Prevention",
+    "Toxicology Services",
+    "Emergency Response"
+  ],
+  "notes": "National poison control hotline available 24/7. Free and confidential service. Also offers webPOISONCONTROL® online tool for non-emergency situations. Call 911 immediately if person collapses, has seizures, trouble breathing, or cannot be awakened."
+}

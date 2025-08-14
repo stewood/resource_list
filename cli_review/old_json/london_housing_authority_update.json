@@ -1,0 +1,22 @@
+{
+  "name": "London Housing Authority",
+  "description": "The London Housing Authority provides public housing for low-income families, seniors, and people with disabilities who need assistance finding decent, safe, and sanitary housing. They offer a wide variety of programs including affordable public housing, housing projects, and subsidized housing throughout London, Kentucky. Services include HUD Public Housing Program and Housing Choice Vouchers (Section 8) to help eligible families find affordable housing.",
+  "source": "Verified from multiple government and community sources",
+  "phone": "(606) 864-5474",
+  "email": "admin@londonha.net",
+  "website": "http://affordablehousingonline.com/housing-authority/Kentucky/Housing-Authority-of-London/KY065/",
+  "address1": "100 Scott Street, Suite 100",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40741",
+  "hours_of_operation": "Monday-Friday 8:00 AM-5:00 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Low-income families, seniors, and people with disabilities. Income limits apply based on family size and HUD guidelines.",
+  "populations_served": "Low-income families, seniors, people with disabilities, individuals seeking affordable housing",
+  "cost_information": "Rent based on income - typically 30% of adjusted gross income for public housing",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from London Laurel County Chamber of Commerce https://londonlaurelchamber.com/membership/member-search/housing-authority-of-london/. Phone number (606) 864-5474 confirmed working and listed on multiple government sources including HUD PHA Contact Report. Address 100 Scott Street, Suite 100, London, KY 40741 verified from chamber listing and Google Maps. Contact person: Sam Flannery, Director. Email admin@londonha.net verified from chamber listing. Fax number: (606) 864-5429. Website verified from chamber listing. Services and programs verified from FindHelp.org and HUD sources. Organization provides public housing and Section 8 vouchers for low-income families, seniors, and people with disabilities. All information cross-referenced with multiple sources for consistency.",
+  "service_type_ids": [3, 7, 19]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "DAV - Disabled American Veterans",
+  "description": "DAV (Disabled American Veterans) is a nonprofit organization providing lifetime support to veterans of all generations, their families, and survivors at no cost. The organization helps more than a million veterans annually with VA benefits assistance, medical transportation, employment services, transition services, and claims assistance. DAV is veterans serving veterans with nearly a million members nationwide.",
+  "source": "Verified from official DAV website and contact information",
+  "phone": "(877) 426-2838",
+  "email": "",
+  "website": "https://www.dav.org",
+  "address1": "860 Dolwick Drive",
+  "city": "Erlanger",
+  "state": "KY",
+  "county": "Kenton",
+  "postal_code": "41018",
+  "hours_of_operation": "Monday - Friday, standard business hours",
+  "is_emergency_service": false,
+  "is_24_hour": false,
+  "notes": "National veterans service organization with headquarters in Erlanger, KY. Also has Washington, DC office at 1300 I Street NW, Suite 400 West, Washington, DC 20005. Phone: (877) I AM A VET. Provides comprehensive support to disabled veterans and their families including VA benefits assistance, medical transportation, employment services, and transition support.",
+  "service_types": [
+    "Veterans Services",
+    "VA Benefits Assistance",
+    "Medical Transportation",
+    "Employment Services",
+    "Transition Services",
+    "Claims Assistance"
+  ]
+}

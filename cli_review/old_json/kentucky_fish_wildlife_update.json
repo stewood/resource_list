@@ -1,0 +1,22 @@
+{
+  "name": "Kentucky Department of Fish and Wildlife Resources",
+  "description": "Official state agency responsible for managing Kentucky's fish and wildlife resources, hunting and fishing programs, boating safety, wildlife education, and conservation. Provides hunting and fishing licenses, manages wildlife areas, offers educational programs, and enforces wildlife laws. Serves hunters, anglers, boaters, and outdoor enthusiasts across Kentucky.",
+  "source": "Verified from official website and multiple sources",
+  "phone": "(800) 858-1549",
+  "email": "Info.Center@ky.gov",
+  "website": "https://fw.ky.gov/",
+  "address1": "1 Sportsman's Lane",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40601",
+  "hours_of_operation": "Monday-Friday 8:00 AM-4:30 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Kentucky residents and non-residents seeking hunting/fishing licenses or wildlife services",
+  "populations_served": "Hunters, anglers, boaters, outdoor enthusiasts, general public",
+  "cost_information": "License fees vary by type and residency status. Some services are free.",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-12-19. CITATIONS: Contact information verified from official website https://fw.ky.gov/. Phone number (800) 858-1549 confirmed from official website and multiple sources. Address and location verified from official website. Services and mission verified from official website. This is the official Kentucky state agency for fish and wildlife management. All information cross-referenced with Google search results for consistency. Organization provides comprehensive wildlife management and outdoor recreation services.",
+  "service_type_ids": [2, 3, 4, 17]
+}

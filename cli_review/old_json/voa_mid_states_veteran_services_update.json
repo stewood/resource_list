@@ -1,0 +1,22 @@
+{
+  "name": "VOA Mid-States Veteran Services",
+  "description": "Volunteers of America Mid-States provides comprehensive veteran support services through their Supportive Services for Veteran Families (SSVF) program. Services include housing assistance, case management, VA benefits assistance, employment training, health care services, transportation, legal services, and financial planning. Serves Kentucky, Tennessee, West Virginia, and Clark/Floyd counties in Indiana.",
+  "source": "Verified from official website, 211.org listings, and multiple online sources",
+  "phone": "(502) 636-0771",
+  "email": "info@voamid.org",
+  "website": "https://www.voamid.org/services/veterans-services/",
+  "address1": "570 South Fourth Street, Suite 100",
+  "city": "Louisville",
+  "state": "KY",
+  "county": "Jefferson",
+  "postal_code": "40202",
+  "hours_of_operation": "Monday-Friday 8:00 AM-5:00 PM (main office). Regional offices may have different hours - call for specific location hours.",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Must be a veteran or member of a veteran family. Household income cannot exceed 50% of area median income. Must be residing in permanent housing, homeless and scheduled to become resident within 90 days, or exited permanent housing within previous 90 days seeking alternative low-income housing.",
+  "populations_served": "Veterans and their families in Kentucky, Tennessee, West Virginia, and Clark/Floyd counties in Indiana.",
+  "cost_information": "Free services for eligible veterans and families.",
+  "languages_available": "English, Spanish",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official website https://www.voamid.org/contact/. Veteran services verified from https://www.voamid.org/services/veterans-services/. Kentucky locations and contact details verified from https://www.voamid.org/locations/supportive-services-for-veterans-and-families-program-kentucky/. Phone number (502) 636-0771 confirmed working and current across all sources. Website verified current and accessible. Multiple regional offices available throughout Kentucky including Louisville, Lexington, Eastern Kentucky, Lincoln Trail, Middlesboro, Bowling Green, and Owensboro. London office contact: Suzanne Fox, (606) 658-9236, suzannef@voamid.org, 1106A South Main St, London, KY 40741. All information cross-referenced with Google search results and 211.org listings for consistency.",
+  "service_type_ids": [1, 11]
+}

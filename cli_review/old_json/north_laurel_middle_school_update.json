@@ -1,0 +1,23 @@
+{
+  "name": "North Laurel Middle School",
+  "description": "North Laurel Middle School is a public middle school serving students in grades 6-8 in the Laurel County Public Schools district. The school provides comprehensive education including core academic subjects, sports programs, STEM activities, and extracurricular opportunities. The school is part of the Laurel County Public Schools system and serves the London, Kentucky area.",
+  "source": "Verified from official Laurel County Schools website, Google search results, and multiple school directories",
+  "phone": "(606) 862-4715",
+  "email": "",
+  "website": "https://www.laurel.kyschools.us/o/nlms",
+  "address1": "101 Johnson Road",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40741",
+  "hours_of_operation": "Monday - Friday, Opens 7:30 AM (school hours vary by grade level)",
+  "is_emergency_service": false,
+  "is_24_hour": false,
+  "notes": "Public middle school serving grades 6-8. Part of Laurel County Public Schools district. Offers sports programs, STEM activities, school meals, and various extracurricular activities. School calendar and specific hours available on the district website.",
+  "service_types": [
+    "Education",
+    "School Meals",
+    "Sports Programs",
+    "STEM Activities"
+  ]
+}

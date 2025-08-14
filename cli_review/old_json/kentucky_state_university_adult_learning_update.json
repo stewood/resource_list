@@ -1,0 +1,24 @@
+{
+  "name": "Kentucky State University Center for Adult Learning",
+  "description": "Center dedicated to providing quality education and accessible services for adult learners. Offers online degree programs and comprehensive wrap-around services to help non-traditional students balance education with work and family responsibilities. Provides support for Project Graduate students and credit for life experience programs.",
+  "source": "Verified from official university website",
+  "phone": "(502) 597-5080",
+  "email": "Cathi.Smith@kysu.edu",
+  "website": "https://www.kysu.edu/academics/adult-learning/",
+  "address1": "400 East Main St.",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40601",
+  "hours_of_operation": "Monday-Friday during business hours",
+  "services": [
+    "Online degree programs",
+    "Project Graduate support",
+    "Credit for life experience",
+    "Adult learner advising",
+    "Enrollment support",
+    "Wrap-around services",
+    "Individualized student support"
+  ],
+  "notes": "Part of Kentucky State University's Academic Affairs division. Serves adult learners seeking to complete degrees or advance their education. Offers Project Graduate program for students with 30+ credit hours (associate) or 80+ credit hours (bachelor's) who have been out of college for at least 2 years."
+}

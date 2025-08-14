@@ -1,0 +1,21 @@
+{
+  "name": "Laurel County Adult Education Center",
+  "description": "Laurel County Adult Education and Literacy is a private, non-profit agency dedicated to assisting Laurel County citizens in achieving their personal, educational, and vocational goals. The center offers comprehensive adult education services including GED testing and preparation, college preparation, English Language Acquisition classes, reading skills improvement, and workforce development programs. As an official GED Testing facility, testing is offered every Wednesday from 12:00 PM to 8:00 PM. The center uses technology-based programs to help adults at any reading level reach their educational goals and improve their career prospects.",
+  "source": "Verified from official website, Kentucky Adult Education directory, and government sources",
+  "phone": "(606) 878-9134",
+  "website": "http://www.laureladulted.org/",
+  "address": "103 S. Broad St., London, KY 40741",
+  "hours": "Monday - Thursday 8:00 AM - 7:00 PM, Saturday 12:00 PM - 7:00 PM",
+  "services": [
+    "GED Testing and Preparation",
+    "College Preparation",
+    "English Language Acquisition Classes",
+    "Reading Skills Improvement",
+    "Workforce Development",
+    "Technology-Based Learning Programs",
+    "Adult Literacy Services"
+  ],
+  "eligibility": "Adults 18 and older in Laurel County",
+  "fees": "Free for eligible participants",
+  "notes": "Official GED Testing facility. Testing available every Wednesday 12 PM - 8 PM. Also has a Corbin location at 103 Northside Plaza, Corbin, KY 40701, phone (606) 528-0379."
+}

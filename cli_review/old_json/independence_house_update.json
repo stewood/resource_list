@@ -1,0 +1,20 @@
+{
+  "name": "Independence House",
+  "description": "Residential treatment facility operated by Cumberland River Behavioral Health providing comprehensive substance abuse treatment and mental health services. Offers residential treatment programs for individuals seeking recovery from addiction and mental health challenges.",
+  "source": "Verified from official Cumberland River Behavioral Health website and Google search results",
+  "phone": "(606) 523-9386",
+  "email": "",
+  "website": "https://crbhky.org",
+  "address1": "3110 Cumberland Falls Hwy",
+  "city": "Corbin",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40701",
+  "hours_of_operation": "Monday-Friday 8:00 AM - 4:30 PM (standard business hours)",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Adults seeking residential substance abuse treatment and mental health services",
+  "service_types": ["Substance Abuse Treatment", "Residential Treatment", "Mental Health Services", "Transitional Housing"],
+  "category": "Mental Health",
+  "notes": "Part of Cumberland River Behavioral Health network serving Bell, Clay, Harlan, Jackson, Knox, Laurel, Rockcastle, and Whitley counties. Offers comprehensive behavioral health services including crisis intervention, outpatient counseling, and residential treatment programs."
+}

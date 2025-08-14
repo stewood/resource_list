@@ -1,0 +1,26 @@
+{
+  "resource_id": 39,
+  "name": "National Runaway Safeline - Home Free Program",
+  "phone": "18007862929",
+  "website": "https://www.1800runaway.org",
+  "address": "National service - no physical address required",
+  "description": "The National Runaway Safeline's Home Free program helps runaway, homeless, and exploited youth ages 12-21 get free bus tickets home or to alternative living arrangements. This program is operated in partnership with Greyhound Lines, Inc.",
+  "category": "Other",
+  "subcategory": "Transportation",
+  "eligibility": "Youth ages 12-21 who are runaway, homeless, or exploited",
+  "hours": "24/7 Crisis Hotline",
+  "languages": "English, Spanish",
+  "fees": "Free",
+  "notes": "Call 1-800-RUNAWAY (1-800-786-2929) for immediate assistance. The program provides free bus tickets home or to safe alternative living arrangements. Crisis intervention and referrals to local resources also available.",
+  "verification_date": "2025-01-27",
+  "verification_method": "Web research - confirmed phone number and program details",
+  "changes_made": [
+    "Updated name to be more specific",
+    "Added website URL",
+    "Added comprehensive description",
+    "Added eligibility information",
+    "Added hours of operation",
+    "Added language information",
+    "Added verification details"
+  ]
+}

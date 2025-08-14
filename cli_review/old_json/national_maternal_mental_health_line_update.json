@@ -1,0 +1,23 @@
+{
+  "name": "National Maternal Mental Health Hotline",
+  "description": "The National Maternal Mental Health Hotline provides free, confidential, 24/7 support in English and Spanish for pregnant and postpartum individuals experiencing mental health issues. Professional counselors offer emotional support, resources, and referrals to local support groups and healthcare professionals. The hotline is administered by the Health Resources and Services Administration (HRSA) and serves as a vital resource for new and expecting parents.",
+  "source": "Verified from official HRSA Maternal and Child Health Bureau website",
+  "phone": "1-833-852-6262",
+  "website": "https://mchb.hrsa.gov/programs-impact/national-maternal-mental-health-hotline",
+  "address1": "National hotline service",
+  "city": "National",
+  "state": "US",
+  "county": "Not applicable",
+  "postal_code": "00000",
+  "hours_of_operation": "24 hours a day, 7 days a week",
+  "is_emergency_service": false,
+  "is_24_hour": true,
+  "is_active": true,
+  "eligibility_requirements": "Available to pregnant individuals and those who have recently given birth (postpartum)",
+  "populations_served": "Pregnant and postpartum individuals, new parents, families",
+  "cost_information": "Free service - no cost to call or text",
+  "languages_available": "English, Spanish",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-27. CITATIONS: Contact information verified from official HRSA Maternal and Child Health Bureau website https://mchb.hrsa.gov/programs-impact/national-maternal-mental-health-hotline. Phone number confirmed as 1-833-TLC-MAMA (1-833-852-6262) for both calls and texts. Hotline provides free, confidential, 24/7 support in English and Spanish. Professional counselors offer emotional support, resources, and referrals to local support groups and healthcare professionals. Service administered by Health Resources and Services Administration (HRSA). Launched on Mother's Day 2022. All information cross-referenced with multiple official sources for consistency.",
+  "service_type_ids": [1, 16, 20],
+  "transition_status": "needs_review"
+}

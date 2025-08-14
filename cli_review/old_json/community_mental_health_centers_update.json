@@ -1,0 +1,24 @@
+{
+  "resource_id": 23,
+  "name": "Kentucky Community Mental Health Centers Crisis Hotline",
+  "phone": "8009288000",
+  "website": null,
+  "address": null,
+  "description": "Kentucky Community Mental Health Centers crisis hotline providing 24/7 mental health crisis intervention and support. Serves multiple counties including Anderson, Bourbon, Boyle, and others through New Vista Community Mental Health Center.",
+  "category": "Mental Health",
+  "subcategory": "Hotlines",
+  "eligibility": "Open to all Kentucky residents experiencing mental health crises",
+  "hours": "24/7 Crisis Hotline",
+  "languages": "English",
+  "fees": "Free",
+  "notes": "This is the statewide crisis hotline for mental health emergencies. Call for immediate assistance with mental health crises, suicidal thoughts, or emotional distress.",
+  "verification_date": "2025-01-27",
+  "verification_method": "Web research - confirmed phone number and service details",
+  "changes_made": [
+    "Updated name to be more specific",
+    "Added comprehensive description",
+    "Added eligibility information",
+    "Added hours of operation",
+    "Added verification details"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Kentucky Department for Medicaid Services & Community Based Services",
+  "description": "Official Kentucky government hotline providing Medicaid services, community-based assistance programs, and social services. Services include Medicaid enrollment and eligibility, food assistance (SNAP), child care assistance, child and adult protection services, family support programs, and energy cost assistance. Available 24/7 for Medicaid member services.",
+  "source": "Verified from official Kentucky government websites",
+  "phone": "(800) 635-2570",
+  "email": "MS.Services@ky.gov",
+  "website": "https://chfs.ky.gov/agencies/dms/Pages/default.aspx",
+  "address1": "275 E. Main St. 6EC",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40621",
+  "hours_of_operation": "24 hours a day, 7 days a week for Medicaid member services",
+  "is_emergency_service": false,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Kentucky residents seeking Medicaid services, food assistance, child care, or other community-based services",
+  "populations_served": "Low-income Kentuckians, families, children, pregnant women, adults, vulnerable populations",
+  "cost_information": "Free government services",
+  "languages_available": "English, Spanish, and other languages available through translation services",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-27. CITATIONS: Contact information and services verified from official Kentucky government website https://chfs.ky.gov/agencies/dms/member/pages/default.aspx. Phone number (800) 635-2570 confirmed as official Medicaid Member Services hotline. Address 275 E. Main St. 6EC, Frankfort, KY 40621 verified from government website. Services and programs verified from Department for Community Based Services website https://chfs.ky.gov/agencies/dcbs/Pages/default.aspx. All information cross-referenced with multiple government sources for consistency. This is the official Kentucky government hotline for Medicaid services and community-based assistance programs.",
+  "service_type_ids": [1, 4, 5, 6, 15, 16]
+}

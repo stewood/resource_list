@@ -1,0 +1,27 @@
+{
+  "resource_id": 18,
+  "name": "Kentucky Child Care Assistance Program (CCAP)",
+  "phone": "8553068959",
+  "website": "http://kynect.ky.gov",
+  "address": "Statewide program - apply online or contact local offices",
+  "description": "The Kentucky Child Care Assistance Program (CCAP) helps low-income families pay for child care while they work, attend school, or participate in approved training programs. The program is administered by the Kentucky Cabinet for Health and Family Services.",
+  "category": "Child Care",
+  "subcategory": "Financial Assistance",
+  "eligibility": "Low-income families with children under age 13 who are working, attending school, or in approved training programs",
+  "hours": "Monday-Friday 8AM-4:30PM",
+  "languages": "English, Spanish",
+  "fees": "Income-based co-payments may apply",
+  "notes": "Apply online through kynect.ky.gov or call the hotline for assistance. Documentation of income, work/school schedule, and child care provider information required.",
+  "verification_date": "2025-01-27",
+  "verification_method": "Web research - confirmed phone number and program details",
+  "changes_made": [
+    "Updated name to be more specific",
+    "Added comprehensive description",
+    "Added eligibility information",
+    "Added hours of operation",
+    "Added language information",
+    "Added fee information",
+    "Added application notes",
+    "Added verification details"
+  ]
+}

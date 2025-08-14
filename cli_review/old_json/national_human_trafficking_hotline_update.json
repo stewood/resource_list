@@ -1,0 +1,25 @@
+{
+  "name": "National Human Trafficking Hotline",
+  "description": "The National Human Trafficking Hotline is a national, toll-free hotline operated by Polaris and supported by the Administration for Children and Families (ACF) of the U.S. Department of Health and Human Services. The hotline provides 24/7 confidential assistance to victims and survivors of human trafficking, as well as those who want to report suspected trafficking cases. Highly trained Anti-Trafficking Hotline Advocates are available in more than 200 languages to provide crisis intervention, safety planning, and referrals to local service providers. The hotline serves as a central access point for connecting victims with emergency, transitional, and long-term services across the United States.",
+  "source": "Verified from official website, U.S. Department of State, Homeland Security, and multiple government sources",
+  "phone": "1-888-373-7888",
+  "website": "https://humantraffickinghotline.org/",
+  "email": "help@humantraffickinghotline.org",
+  "address": "Washington, DC",
+  "city": "Washington",
+  "state": "DC",
+  "hours": "24 hours a day, 7 days a week",
+  "services": [
+    "24/7 Crisis Intervention",
+    "Safety Planning",
+    "Referrals to Local Service Providers",
+    "Anonymous Reporting of Trafficking Cases",
+    "Emergency Assistance",
+    "Multi-language Support (200+ languages)",
+    "Text and Live Chat Services",
+    "Victim and Survivor Support"
+  ],
+  "eligibility": "Available to anyone in the United States",
+  "fees": "Free",
+  "notes": "TTY: 711 for hearing or speech impaired. Text 'BEFREE' to 233733. Live chat available on website. In immediate danger, call 911 first. Operated by Polaris Project with federal funding support."
+}

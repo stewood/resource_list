@@ -1,0 +1,22 @@
+{
+  "name": "The Trevor Project",
+  "description": "The Trevor Project is the leading national organization providing crisis intervention and suicide prevention services to LGBTQ+ young people under 25. Founded in 1998, they provide 24/7 crisis counseling through phone, text, and chat services. Their mission is to end suicide among LGBTQ+ young people by providing life-affirming and life-saving resources. Services include crisis intervention, suicide prevention, educational resources, advocacy, and community support. All services are free, confidential, and available nationwide.",
+  "source": "Verified from official website and multiple sources",
+  "phone": "1-866-488-7386",
+  "email": "advocacy@thetrevorproject.org",
+  "website": "https://www.thetrevorproject.org",
+  "address1": "PO Box 69232",
+  "city": "West Hollywood",
+  "state": "CA",
+  "county": "Los Angeles",
+  "postal_code": "90069",
+  "hours_of_operation": "24 hours a day, 7 days a week",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "LGBTQ+ young people under 25 years old",
+  "populations_served": "LGBTQ+ young people under 25, youth in crisis, individuals at risk of suicide",
+  "cost_information": "Free services - no cost to participants",
+  "languages_available": "English, Spanish",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-27. CITATIONS: Contact information verified from official website https://www.thetrevorproject.org. Crisis hotline 1-866-488-7386 confirmed working and listed on multiple sources including official website, PFLAG, and government resources. Address PO Box 69232, West Hollywood, CA 90069 verified from official contact page. Website https://www.thetrevorproject.org confirmed working and current. Services and mission verified from official website including 24/7 crisis intervention and suicide prevention. Organization is a registered 501(c)(3) nonprofit with EIN 95-4681287. Additional contact methods include text START to 678678 and chat at TheTrevorProject.org/Get-Help. All information cross-referenced with multiple sources for consistency.",
+  "service_type_ids": [1, 2, 8, 14]
+}

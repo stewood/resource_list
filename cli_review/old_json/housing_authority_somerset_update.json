@@ -1,0 +1,33 @@
+{
+  "name": "Housing Authority of Somerset",
+  "description": "Public housing authority serving Somerset and Pulaski County providing affordable housing solutions including public housing (low rent), Housing Choice Vouchers (Section 8), and Family Self-Sufficiency programs. Features a dual-use Administration Building and Learning Center with technology resources, Neighborhood Network Center, and Colonial Village Community Center. Offers comprehensive support services and community programs for low-income families.",
+  "source": "Verified from official website and multiple authoritative sources",
+  "phone": "(606) 679-1332",
+  "email": "info@hasomerset.org",
+  "website": "http://www.hasomerset.org",
+  "address1": "400 Hail Knob Road",
+  "address2": "PO Box 449",
+  "city": "Somerset",
+  "state": "KY",
+  "county": "Pulaski",
+  "postal_code": "42502",
+  "hours_of_operation": "Monday-Friday 8:00 AM-4:30 PM",
+  "service_types": [
+    "Housing",
+    "Public Housing",
+    "Section 8 Housing",
+    "Housing Choice Vouchers",
+    "Affordable Housing",
+    "Family Self-Sufficiency Program",
+    "Community Centers",
+    "Technology Training",
+    "Educational Programs",
+    "Transitional Housing"
+  ],
+  "eligibility": "Low-income families and individuals meeting HUD income guidelines",
+  "fees": "Based on income; typically 30% of adjusted gross income",
+  "languages": ["English"],
+  "accessibility": "Wheelchair accessible facilities",
+  "notes": "HUD-funded public housing authority serving Lake Cumberland area. Features technology-rich learning center and community programs. Provides access to various support services including child care, energy assistance, employment, and family services. Online application available at hasomerset.housingmanager.com.",
+  "last_updated": "2024-12-10"
+}

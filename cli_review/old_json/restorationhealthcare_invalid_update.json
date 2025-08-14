@@ -1,0 +1,29 @@
+{
+  "name": "Restoration Healthcare (INVALID - Not in Kentucky)",
+  "description": "NOTE: This resource appears to be invalid. The website restorationhealthcare.com is not associated with any medical organization in Kentucky. The domain redirects to unrelated content or is associated with organizations in California and Arkansas. This resource should be reviewed and potentially removed from the directory.",
+  "source": "Verified through web search - website not associated with Kentucky medical services",
+  "phone": "Not applicable",
+  "website": "http://restorationhealthcare.com/",
+  "address1": "Not applicable",
+  "city": "Not applicable",
+  "state": "KY",
+  "county": "Not applicable",
+  "postal_code": "00000",
+  "hours_of_operation": "Not applicable",
+  "is_emergency_service": false,
+  "is_24_hours": false,
+  "is_active": false,
+  "notes": "CRITICAL ISSUE: This resource appears to be invalid. The website restorationhealthcare.com is not associated with any medical organization in Kentucky. Search results show organizations with similar names in California and Arkansas, but none in Kentucky. The domain may be non-functional, redirected, or associated with incorrect information. This resource should be reviewed by administrators and potentially removed from the directory.",
+  "service_types": [
+    "invalid_resource"
+  ],
+  "populations_served": [
+    "not_applicable"
+  ],
+  "languages": [
+    "not_applicable"
+  ],
+  "accessibility": [
+    "not_applicable"
+  ]
+}

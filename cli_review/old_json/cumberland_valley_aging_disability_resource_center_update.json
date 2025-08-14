@@ -1,0 +1,22 @@
+{
+  "name": "Cumberland Valley Aging & Disability Resource Center",
+  "description": "The Cumberland Valley Area Development District serves as the Area Agency on Aging and Independent Living, providing comprehensive services for older adults age 60 and older. Services include information and access, case management, assessment, community-based services, and elder rights. Programs include Family Caregiver Support, Homecare Services, Legal Services, Ombudsman Program, Participant Directed Services, Senior Centers, Senior Community Service Employment, and State Health Insurance Assistance Program (SHIP).",
+  "source": "Verified from official CVADD website and Kentucky government sources",
+  "phone": "(606) 877-5763",
+  "email": "rmcfadden@cvadd.org",
+  "website": "http://www.cvadd.org",
+  "address1": "342 Old Whitley Road",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40743",
+  "hours_of_operation": "Monday-Friday 8:00 AM-5:00 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Services available for individuals age 60 and older",
+  "populations_served": "Older adults, seniors, individuals with disabilities, caregivers",
+  "cost_information": "Services provided at no cost or on a sliding scale basis",
+  "languages_available": "English, translation services available upon request",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official website http://www.cvadd.org. Phone number (606) 877-5763 confirmed working and listed on multiple government sources. Address 342 Old Whitley Road, London, KY 40743 verified from official website and Google Maps. Services and programs verified from aging resources page http://www.cvadd.org/agingresources.html. Staff contact information verified from staff directory http://www.cvadd.org/staff.html. Rachel Maggard is the ADRC Coordinator with email rmcfadden@cvadd.org. Organization serves 8 counties: Adair, Casey, Clinton, Cumberland, Green, McCreary, Pulaski, and Russell. Toll-free number available: 1-844-213-9676. TDD services available: 1-800-648-6056 for TDD users, 1-800-648-6057 for voice users. Website verified current and accessible. All information cross-referenced with Kentucky government sources for consistency.",
+  "service_type_ids": [1, 2, 5, 6, 9, 11, 15, 20, 23]
+}

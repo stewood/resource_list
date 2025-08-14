@@ -1,0 +1,35 @@
+{
+  "name": "Kentucky Office of the Ombudsman",
+  "description": "State government office that investigates complaints about state agencies and helps resolve problems between citizens and government. Provides independent, impartial assistance to help resolve issues with state government services. Handles complaints about state agencies, programs, and services. NOTE: This is NOT a Medicaid Managed Care Ombudsman - this is the general state ombudsman office.",
+  "source": "Verified from official Kentucky.gov website and Commonwealth Office of the Ombudsman",
+  "phone": "(866) 596-6283",
+  "email": "ombudsman@ky.gov",
+  "website": "https://ombudsman.ky.gov/",
+  "address1": "209 St. Clair Street",
+  "city": "Frankfort",
+  "state": "KY",
+  "county": "Franklin",
+  "postal_code": "40601",
+  "hours_of_operation": "Monday-Friday 8:00 AM - 4:30 PM",
+  "is_emergency_service": false,
+  "is_24_hours": false,
+  "is_active": true,
+  "notes": "This is the general Kentucky Office of the Ombudsman, not a Medicaid-specific ombudsman. The phone number 800-807-4027 from the original record was incorrect and not associated with any official Kentucky ombudsman service.",
+  "service_types": [
+    "government_services",
+    "complaint_resolution",
+    "advocacy"
+  ],
+  "populations_served": [
+    "general_public",
+    "state_residents"
+  ],
+  "languages": [
+    "english"
+  ],
+  "accessibility": [
+    "phone_accessible",
+    "email_accessible",
+    "website_accessible"
+  ]
+}

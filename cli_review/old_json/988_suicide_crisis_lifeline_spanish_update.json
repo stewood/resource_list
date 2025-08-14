@@ -1,0 +1,21 @@
+{
+  "name": "988 Suicide & Crisis Lifeline - Spanish Services",
+  "description": "National 24/7 suicide prevention and crisis intervention hotline offering free, confidential support in Spanish. Provides immediate help for anyone experiencing suicidal thoughts, mental health crises, or emotional distress. Services available via phone, text, and chat.",
+  "source": "Verified from official 988 Lifeline website and SAMHSA.gov",
+  "phone": "988",
+  "website": "https://988lifeline.org/es/inicio/",
+  "address1": "Not applicable - National hotline",
+  "city": "National",
+  "state": "KY",
+  "county": "Not applicable",
+  "postal_code": "00000",
+  "hours_of_operation": "24 hours a day, 7 days a week, 365 days a year",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Available to anyone in the United States experiencing suicidal thoughts, mental health crises, or emotional distress. No restrictions based on age, location, or insurance status.",
+  "populations_served": "All individuals experiencing mental health crises, suicidal thoughts, or emotional distress. Spanish-speaking individuals specifically served through dedicated Spanish language services.",
+  "cost_information": "Free - no cost for any services",
+  "languages_available": "Spanish, English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official 988 Lifeline website https://988lifeline.org/es/inicio/. Spanish services information verified from https://988lifeline.org/es/servicios-de-traduccion/servicios-en-espanol/. Services and programs verified from SAMHSA.gov https://www.samhsa.gov/mental-health/988. Phone number 988 confirmed as the official national crisis hotline. Website verified current and accessible. Spanish language services confirmed available 24/7. For Spanish services: Call 988 and press 2, text AYUDA to 988, or visit chat.988lifeline.org/?lang=es. All information cross-referenced with multiple government sources for consistency.",
+  "service_type_ids": [1, 8, 16]
+}

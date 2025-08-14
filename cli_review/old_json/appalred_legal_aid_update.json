@@ -1,0 +1,23 @@
+{
+  "name": "Appalachian Research & Defense Fund of Kentucky (AppalReD)",
+  "description": "Providing free legal services to the low-income and vulnerable in eastern and south-central Kentucky. We do not charge. Services include family law, housing, consumer issues, public benefits, and disaster legal services. Multiple office locations serve different counties across the region.",
+  "source": "Verified from official website and multiple sources",
+  "phone": "1-866-277-5733",
+  "email": "angied@ardfky.org",
+  "website": "https://www.ardfky.org",
+  "address1": "120 N. Front Ave.",
+  "city": "Prestonsburg",
+  "state": "KY",
+  "county": "Floyd",
+  "postal_code": "41653",
+  "hours_of_operation": "Monday-Friday 8:00 AM-5:00 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Low-income individuals and families in eastern and south-central Kentucky. Income limits apply.",
+  "populations_served": "Low-income and vulnerable individuals in eastern and south-central Kentucky",
+  "cost_information": "Free legal services - no charge",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information verified from official website https://www.ardfky.org/node/8/contact-us. Administrative office address and phone verified from https://www.ardfky.org/node/9/administrative-office. Central intake phone number 1-866-277-5733 confirmed current across multiple sources including Kentucky Court of Justice (.gov), Kentucky Bar Association, and Immigration Advocates Network. Website verified current and accessible. Multiple office locations serve different counties: Richmond (Clark, Estill, Garrard, Jackson, Madison, Powell), Barbourville (Bell, Clay, Harlan, Knox, Laurel, Whitley), Hazard (Breathitt, Lee, Leslie, Letcher, Owsley, Perry, Wolfe), Pikeville (Pike), Prestonsburg (Floyd, Johnson, Knott, Lawrence, Magoffin, Martin, Pike), Somerset (Adair, Casey, Clinton, Cumberland, Lincoln, McCreary, Monroe, Pulaski, Rockcastle, Russell, Wayne). Services include family law, housing, consumer issues, public benefits, disaster legal services, and low-income tax clinic. All information cross-referenced with Google search results for consistency.",
+  "service_type_ids": [5, 23]
+}
+

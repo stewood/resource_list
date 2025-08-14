@@ -1,0 +1,22 @@
+{
+  "name": "RAINN (Rape, Abuse & Incest National Network)",
+  "description": "The nation's largest anti-sexual violence organization providing 24/7 crisis intervention and support services. Services include the National Sexual Assault Hotline, online chat support, WhatsApp chat, text messaging support, and referrals to local sexual assault service providers. RAINN operates in partnership with over 1,000 local sexual assault service providers across the country.",
+  "source": "Verified from official RAINN website and multiple sources",
+  "phone": "(800) 656-4673",
+  "email": "media@rainn.org",
+  "website": "https://rainn.org/",
+  "address1": "1220 L Street NW",
+  "city": "Washington",
+  "state": "DC",
+  "county": "District of Columbia",
+  "postal_code": "20005",
+  "hours_of_operation": "24 hours a day, 7 days a week",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Available to anyone affected by sexual violence, including survivors, loved ones, and those seeking information",
+  "populations_served": "Survivors of sexual violence, their loved ones, military personnel, anyone seeking information about sexual assault",
+  "cost_information": "Free and confidential services",
+  "languages_available": "English, Spanish (rainn.org/es), and other languages through translation services",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-27. CITATIONS: Contact information and services verified from official RAINN website https://rainn.org/. Phone number (800) 656-4673 confirmed as National Sexual Assault Hotline. Website https://rainn.org/ verified current and accessible. Services include online chat at online.rainn.org, WhatsApp chat, and text support. Organization founded in 1994 and has supported over 5 million survivors. Address verified from multiple sources. All information cross-referenced with official website and multiple verification sources for consistency. This is the nation's largest and most recognized anti-sexual violence organization.",
+  "service_type_ids": [1, 12, 14, 16]
+}

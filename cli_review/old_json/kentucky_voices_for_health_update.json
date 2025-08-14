@@ -1,0 +1,24 @@
+{
+  "name": "Kentucky Voices for Health",
+  "description": "Kentucky Voices for Health (KVH) is a coalition of individuals and organizations working together to improve the health of all Kentuckians through advocacy, policy work, and community engagement. The organization provides training, consultations, speaker requests, and advocacy tools to help communities across Kentucky have a voice in healthcare policy decisions.",
+  "source": "Verified from official Kentucky Voices for Health website and contact information",
+  "phone": "(502) 209-9088",
+  "email": "kelly@kyvoicesforhealth.org",
+  "website": "https://kyvoicesforhealth.org",
+  "address1": "1640 Lyndon Farm Court, Suite 108",
+  "city": "Louisville",
+  "state": "KY",
+  "county": "Jefferson",
+  "postal_code": "40223",
+  "hours_of_operation": "Monday - Friday, standard business hours",
+  "is_emergency_service": false,
+  "is_24_hour": false,
+  "notes": "Health advocacy organization serving all of Kentucky. Provides policy advocacy, training, consultations, and speaker services. Coalition of over 200+ organizations and individuals working to improve healthcare access and policy in Kentucky.",
+  "service_types": [
+    "Medical Care",
+    "Health Advocacy",
+    "Policy Work",
+    "Training",
+    "Consultations"
+  ]
+}

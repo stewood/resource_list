@@ -1,0 +1,21 @@
+{
+  "name": "Crisis Text Line",
+  "description": "Free, 24/7, confidential text-based mental health support and crisis intervention service. Text HOME to 741741 to connect with a trained volunteer Crisis Counselor who can help you move from a hot moment to a cool calm. Available in both English and Spanish for anyone in the United States and Puerto Rico. The service is completely free and confidential, with trained volunteers providing empathetic support for people in crisis.",
+  "source": "Verified from official Crisis Text Line website and SAMHSA directory",
+  "phone": "741741",
+  "email": "info@crisistextline.org",
+  "website": "https://www.crisistextline.org",
+  "address1": "Not applicable - text-based service",
+  "city": "Not applicable",
+  "state": "NA",
+  "county": "Not applicable",
+  "postal_code": "00000",
+  "hours_of_operation": "24/7 - Available anytime",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Available to anyone in the United States and Puerto Rico",
+  "fees": "Free service",
+  "languages": "English, Spanish",
+  "accessibility": "Text-based service accessible to all",
+  "notes": "Text HOME to 741741 for English or HOLA to 741741 for Spanish. Also available via WhatsApp and web chat. International support available in Canada (686868), UK (85258), and Ireland (50808)."
+}

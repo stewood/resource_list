@@ -1,0 +1,41 @@
+{
+  "name": "Laurel County Sheriff's Office",
+  "description": "County law enforcement agency serving Laurel County since 1825. Provides comprehensive law enforcement services including patrol, investigations, accident reports, eviction process assistance, vehicle inspections, and property tax collection. Operates the county jail and provides courthouse security. Offers drug drop-off location for prescription medications and 'Away From Home Patrol' for residents on vacation.",
+  "source": "Verified from official website and Google search results",
+  "phone": "(606) 864-6600",
+  "phone_secondary": "(606) 864-3494",
+  "email": "g.acciardo@laurelcountysheriff.com",
+  "website": "https://www.laurelcountysheriff.com/",
+  "address1": "1380 East Hwy 192",
+  "city": "London",
+  "state": "KY",
+  "county": "Laurel",
+  "postal_code": "40741",
+  "hours_of_operation": "Monday-Friday 8:00 AM - 4:00 PM",
+  "is_emergency_service": true,
+  "is_24_hours": false,
+  "is_active": true,
+  "notes": "Sheriff John Root (elected 2010). For emergencies, dial 911. Non-emergency dispatch: (606) 878-7000. Drug drop-off location available in front lobby during business hours.",
+  "service_types": [
+    "law_enforcement",
+    "legal_services",
+    "emergency_services",
+    "property_tax_collection",
+    "vehicle_inspections",
+    "accident_reports",
+    "eviction_services"
+  ],
+  "populations_served": [
+    "laurel_county_residents",
+    "general_public"
+  ],
+  "languages": [
+    "english"
+  ],
+  "accessibility": [
+    "phone_accessible",
+    "email_accessible",
+    "website_accessible",
+    "in_person_accessible"
+  ]
+}

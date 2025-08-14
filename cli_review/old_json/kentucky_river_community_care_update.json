@@ -1,0 +1,21 @@
+{
+  "name": "Kentucky River Community Care",
+  "description": "Kentucky River Community Care (KRCC) is a private nonprofit Community Mental Health Center dedicated to improving the health and well-being of the people in Breathitt, Knott, Lee, Leslie, Letcher, Owsley, Perry, and Wolfe Counties. KRCC provides comprehensive mental health, substance abuse, and developmental disability services including crisis intervention, outpatient therapy, case management, community support, supported employment, children's services, and residential treatment programs. The organization offers 24-hour crisis services and accepts all patients regardless of ability to pay with discounts based on family size and income.",
+  "source": "Verified from official website and multiple resource directories",
+  "phone": "(606) 436-1945",
+  "website": "https://www.krccnet.com/",
+  "address1": "310 Roy Campbell Dr",
+  "city": "Hazard",
+  "state": "KY",
+  "county": "Perry",
+  "postal_code": "41701",
+  "hours_of_operation": "24-hour crisis services available, call for specific program hours",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Open to all patients regardless of ability to pay, discounts available based on family size and income",
+  "populations_served": "Residents of Breathitt, Knott, Lee, Leslie, Letcher, Owsley, Perry, and Wolfe Counties",
+  "cost_information": "No one denied services due to inability to pay, discounts available based on family size and income",
+  "languages_available": "English, TTY services available",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-27. CITATIONS: Contact information verified from official website https://www.krccnet.com/. Phone number (606) 436-1945 confirmed on MapQuest and Yahoo Local listings. Address 310 Roy Campbell Dr, Hazard, KY 41701 verified from MapQuest and official sources. Website verified current and accessible. Organization confirmed as Kentucky River Community Care, a private nonprofit Community Mental Health Center. Services verified as comprehensive mental health, substance abuse, and developmental disability services. 24-hour crisis hotline: 1-800-262-7491. Substance abuse crisis line: 1-800-884-0704. TTY services: 1-800-606-6464. Website shows extensive service offerings including crisis services, outpatient therapy, case management, children's services, and residential programs. All information cross-referenced with multiple resource directories and official sources for consistency.",
+  "service_type_ids": [2, 8, 13, 20, 21]
+}

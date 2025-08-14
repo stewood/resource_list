@@ -1,0 +1,22 @@
+{
+  "name": "Consumer Product Safety Commission (CPSC)",
+  "description": "Federal government agency protecting consumers from unreasonable risks of injury or death from consumer products. Services include consumer product safety hotline, product recalls and warnings, safety education, consumer assistance, and small business resources. CPSC works to ensure the safety of consumer products sold in the United States.",
+  "source": "Verified from official CPSC government website",
+  "phone": "(800) 638-2772",
+  "email": "info@cpsc.gov",
+  "website": "https://www.cpsc.gov/",
+  "address1": "4330 East-West Highway",
+  "city": "Bethesda",
+  "state": "MD",
+  "county": "Montgomery",
+  "postal_code": "20814",
+  "hours_of_operation": "Monday-Friday 8:00 AM to 5:30 PM Eastern Time",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Available to all U.S. consumers and businesses",
+  "populations_served": "All U.S. consumers, families, businesses, manufacturers, importers",
+  "cost_information": "Free government services",
+  "languages_available": "English, Spanish (TTY 800-638-8270)",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-27. CITATIONS: Contact information and services verified from official CPSC government website https://www.cpsc.gov/. Phone number (800) 638-2772 confirmed as official consumer hotline. Address 4330 East-West Highway, Bethesda, MD 20814 verified from government website. Hours Monday-Friday 8:00 AM to 5:30 PM ET confirmed. Services include product recalls, safety education, consumer assistance, and business resources. All information cross-referenced with official government website and multiple verification sources for consistency. This is the official federal Consumer Product Safety Commission.",
+  "service_type_ids": [1, 14, 16]
+}

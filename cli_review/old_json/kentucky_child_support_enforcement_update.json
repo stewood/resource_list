@@ -1,0 +1,17 @@
+{
+  "name": "Kentucky Child Support Information/Enforcement",
+  "description": "The Kentucky Division of Child Support Enforcement is a state government program that provides comprehensive child support services including case information, payment processing, enforcement actions, and case management. The program offers both mobile and desktop self-service options for accessing child support information, making payments, checking balances, viewing court dates and appointments, uploading documents, communicating with caseworkers, updating addresses and direct deposit information, and applying for services. The hotline provides assistance with child support identification numbers, case status, payment information, and general inquiries. Services are available statewide through local child support offices and the centralized hotline.",
+  "source": "Verified from official Kentucky government website and multiple sources",
+  "phone": "1-800-248-1163",
+  "website": "https://kentuckychildsupport.ky.gov",
+  "city": "Frankfort",
+  "state": "KY",
+  "service_types": [
+    "Child Support Information",
+    "Child Support Enforcement",
+    "Payment Processing",
+    "Case Management",
+    "Legal Services",
+    "Hotlines"
+  ]
+}

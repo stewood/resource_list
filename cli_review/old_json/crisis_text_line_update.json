@@ -1,0 +1,28 @@
+{
+  "name": "Crisis Text Line",
+  "description": "Free, 24/7, confidential text-based mental health support and crisis intervention service. Text HOME to 741741 to connect with a trained volunteer Crisis Counselor who can help you move from a hot moment to a cool calm. Available in both English and Spanish for anyone in the United States and Puerto Rico. The service is completely free and confidential, with trained volunteers providing empathetic support for people in crisis.",
+  "source": "Verified from official Crisis Text Line website and FAQ",
+  "phone": "741741",
+  "email": "info@crisistextline.org",
+  "website": "https://www.crisistextline.org",
+  "address1": "Not applicable - text-based service",
+  "city": "Not applicable",
+  "state": "NA",
+  "county": "Not applicable",
+  "postal_code": "00000",
+  "hours_of_operation": "24/7",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Anyone in the United States and Puerto Rico can use the service. No age restrictions or eligibility requirements.",
+  "services_offered": [
+    "Crisis intervention",
+    "Mental health support",
+    "Suicide prevention",
+    "Text-based counseling",
+    "Web chat support",
+    "WhatsApp support",
+    "Confidential crisis counseling",
+    "Support for anxiety, depression, self-harm, eating disorders, gun violence, and other mental health issues"
+  ],
+  "notes": "Crisis Text Line is a 501(c)(3) nonprofit organization founded in 2013. The service is powered by volunteer Crisis Counselors who work remotely and are trained to provide empathetic crisis intervention. The service is completely free and confidential. Text messages do not appear on phone bills. The organization is accredited by ICH (International Council for Helplines) and has helped millions of people in crisis worldwide."
+}

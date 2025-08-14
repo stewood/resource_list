@@ -1,0 +1,23 @@
+{
+  "name": "National Clearinghouse for Alcohol and Drug Information",
+  "description": "Federal information service that provides comprehensive resources and referrals for alcohol and drug abuse issues. Offers information about substance abuse prevention, treatment options, educational materials, and referrals to local treatment providers. Serves as a central resource for individuals seeking help with alcohol and drug-related problems.",
+  "source": "Verified from multiple online sources and resource directories",
+  "phone": "(800) 729-6686",
+  "email": "",
+  "website": "",
+  "address1": "5600 Fishers Lane, Rockwall II Building, Room 670",
+  "city": "Rockville",
+  "state": "MD",
+  "county": "Montgomery",
+  "postal_code": "20857",
+  "hours_of_operation": "24/7 availability",
+  "services": [
+    "Alcohol and drug information",
+    "Treatment referrals",
+    "Educational materials",
+    "Prevention resources",
+    "Crisis intervention",
+    "Resource directories"
+  ],
+  "notes": "Federal government information service providing alcohol and drug abuse resources and referrals. Available 24/7 for information and referral services. Part of the national substance abuse prevention and treatment network."
+}

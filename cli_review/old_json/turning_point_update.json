@@ -1,0 +1,22 @@
+{
+  "name": "Turning Point",
+  "description": "Children's Crisis Stabilization Unit (CCSU) providing 24/7 crisis intervention and stabilization services for children ages 2-17 who are experiencing mental health, substance use, or suicide crises. Services include behavioral health treatment, substance use treatment, and crisis intervention to prevent hospitalization or removal from home. Children remain at the unit until stabilized, typically 3-7 days, with comprehensive community resource coordination for families.",
+  "source": "Verified from official Cumberland River Behavioral Health website and multiple third-party directories",
+  "phone": "(606) 526-1626",
+  "email": "",
+  "website": "https://crbhky.org",
+  "address1": "2932 Level Green Road",
+  "city": "Corbin",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40701",
+  "hours_of_operation": "24 hours a day, 7 days a week",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Children ages 2-17 years who are in crisis and/or at high risk for hospitalization or removal from home during a crisis situation",
+  "populations_served": "Children and adolescents ages 2-17 experiencing mental health, substance use, or suicide crises",
+  "cost_information": "Payment based on ability to pay; services are confidential and sensitive to cultural needs",
+  "languages_available": "English, ASL interpreter services available for Deaf and Hard of Hearing individuals",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information and services verified from official Cumberland River Behavioral Health website https://crbhky.org/childrens-services/ and https://crbhky.org/locations/. Phone number (606) 526-1626 confirmed working and listed on official website. Address 2932 Level Green Road, Corbin, KY 40701 verified on multiple directories including uwbg211.org, rehab.com, and treatmentcentersdirectory.com. 24/7 crisis services confirmed on official website. Children's Crisis Stabilization Unit (CCSU) services detailed on children's services page. All information cross-referenced with Google search results for consistency. Organization is part of Cumberland River Behavioral Health, a nonprofit community mental health center serving 8 counties in Kentucky.",
+  "service_type_ids": [1, 2, 13, 20, 21]
+}

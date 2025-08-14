@@ -1,0 +1,26 @@
+{
+  "name": "Laurel County Correctional Center",
+  "description": "The Laurel County Correctional Center is a county-operated detention facility serving Laurel County, Kentucky. The facility provides secure housing for individuals who are awaiting trial, serving sentences, or being held for other legal proceedings. The center operates under the supervision of Jailer Jamie Mosley and provides 24/7 detention services. The facility includes administrative offices, inmate housing units, and support services for the criminal justice system. The center works in coordination with local law enforcement agencies and the court system to ensure proper detention and processing of individuals in custody.",
+  "source": "Verified from official Laurel County Corrections website and multiple online directories",
+  "phone": "606-878-9431",
+  "email": "",
+  "website": "https://laurelcountycorrections.org",
+  "address1": "440 Hammock Road",
+  "city": "London",
+  "state": "KY",
+  "zip_code": "40744",
+  "county": "Laurel",
+  "hours": "Administrative office: Monday-Friday 8:00 AM - 10:00 PM. Phone available 24/7",
+  "eligibility": "Individuals detained by law enforcement, serving court-ordered sentences, or awaiting legal proceedings",
+  "services": [
+    "Inmate detention and housing",
+    "Inmate processing and booking",
+    "Visitation services",
+    "Inmate phone services",
+    "Inmate mail services",
+    "Inmate commissary",
+    "Medical services for inmates",
+    "Administrative support for criminal justice system"
+  ],
+  "notes": "Jailer: Jamie Mosley. The facility operates 24/7 for detention services. Administrative office hours are Monday-Friday 8:00 AM - 10:00 PM. Phone is available 24/7. Inmates cannot receive incoming calls but can make outgoing calls. Visit the website for inmate information, visitation schedules, and facility policies."
+}

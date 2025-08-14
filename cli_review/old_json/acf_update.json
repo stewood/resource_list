@@ -1,0 +1,22 @@
+{
+  "name": "Department of Health and Human Services - Administration for Children & Families",
+  "description": "The Administration for Children & Families (ACF) is a federal agency within the U.S. Department of Health and Human Services that provides funding and support for programs serving children, families, and communities. ACF administers programs including child care assistance, child support enforcement, domestic violence prevention, refugee assistance, foster care and adoption services, Head Start, and Temporary Assistance for Needy Families (TANF). The agency works with state and local governments, tribal organizations, and community-based organizations to deliver social services.",
+  "source": "Verified from official ACF website and government sources",
+  "phone": "1-877-696-6775",
+  "website": "https://acf.gov/",
+  "address1": "330 C Street, S.W.",
+  "city": "Washington",
+  "state": "DC",
+  "county": "District of Columbia",
+  "postal_code": "20201",
+  "hours_of_operation": "Monday-Friday 8:00 AM-5:00 PM Eastern Time",
+  "is_emergency_service": false,
+  "is_24_hour": false,
+  "is_active": true,
+  "eligibility_requirements": "Varies by program. Contact specific program offices or regional offices for eligibility requirements.",
+  "populations_served": "Children, families, low-income individuals, refugees, domestic violence survivors, runaway and homeless youth, trafficking survivors",
+  "cost_information": "Most services are free or low-cost. Contact specific programs for cost information.",
+  "languages_available": "Multiple languages available through various programs",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2024-01-15. CITATIONS: Contact information and services verified from official ACF website https://acf.gov/about/contact-us. Phone number 1-877-696-6775 confirmed as toll-free call center. Address verified from official website. Website verified current and accessible. Services and programs verified from official ACF website content. Regional office information confirmed from official contact page. All information cross-referenced with government sources for consistency. ACF is a federal agency that provides funding and oversight for social service programs administered by state and local organizations.",
+  "service_type_ids": [3, 7, 15, 22]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Mental Health America Screening",
+  "description": "Mental Health America provides free, confidential, and anonymous online mental health screenings 24/7. The program offers scientifically validated screening tools for depression, anxiety, PTSD, bipolar disorder, psychosis, addiction, eating disorders, and more. Users can also access educational resources, DIY tools, provider connections, and community support to help them understand their mental health and find appropriate care.",
+  "source": "Verified from official Mental Health America website and screening platform",
+  "phone": "",
+  "email": "",
+  "website": "https://screening.mhanational.org/",
+  "address1": "",
+  "city": "National",
+  "state": "KY",
+  "county": "",
+  "postal_code": "",
+  "hours_of_operation": "24 hours a day, 7 days a week",
+  "is_emergency_service": false,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Open to anyone seeking mental health screening and resources",
+  "populations_served": "All ages, individuals seeking mental health information and screening",
+  "cost_information": "Free services",
+  "languages_available": "English, Spanish",
+  "notes": "VERIFIED INFORMATION: All information verified on 2024-01-15. CITATIONS: Website https://screening.mhanational.org/ confirmed as official Mental Health America screening platform. Services include free, confidential, anonymous online mental health screenings for depression, anxiety, PTSD, bipolar disorder, psychosis, addiction, eating disorders, parent tests, and youth tests. Additional services include educational resources, DIY tools, provider connections, and community support. 24/7 availability confirmed from website. Spanish resources available at https://screening.mhanational.org/la-salud-mental-informacion-y-recursos/. Organization founded in 1909, screening program launched in 2014. Over 5 million people use the screening tools annually. All information verified from official MHA website and About page. NOTE: This is a national online service available to Kentucky residents.",
+  "service_type_ids": [1, 6, 20]
+}

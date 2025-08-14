@@ -1,0 +1,28 @@
+{
+  "name": "988 Suicide and Crisis Lifeline",
+  "description": "The 988 Suicide and Crisis Lifeline is a national network of local crisis centers that provides free and confidential emotional support to people in suicidal crisis or emotional distress 24 hours a day, 7 days a week. The service is available to all Kentuckians and connects callers with trained crisis counselors who can provide immediate support, intervention, and referrals to local mental health resources.",
+  "source": "Verified from official 988.ky.gov website and SAMHSA resources",
+  "phone": "988",
+  "email": "",
+  "website": "https://988lifeline.org/",
+  "address1": "Not applicable - National hotline",
+  "city": "Not applicable",
+  "state": "KY",
+  "county": "Not applicable",
+  "postal_code": "",
+  "hours_of_operation": "24 hours a day, 7 days a week, 365 days a year",
+  "is_emergency_service": true,
+  "is_24_hours": true,
+  "accepts_medicare": false,
+  "accepts_medicaid": false,
+  "accepts_private_insurance": false,
+  "accepts_sliding_scale": false,
+  "accepts_no_cost": true,
+  "accepts_donations": false,
+  "notes": "Free, confidential crisis intervention and suicide prevention hotline. Available in English and Spanish. Can also text 988 or chat online at chat.988lifeline.org. Replaces the previous 1-800-273-8255 number. Kentucky has 14 regional community mental health centers that answer these calls.",
+  "service_types": [
+    "Hotlines",
+    "Hotlines"
+  ],
+  "resource_id": 26
+}

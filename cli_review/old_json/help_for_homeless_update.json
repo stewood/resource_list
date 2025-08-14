@@ -1,0 +1,23 @@
+{
+  "name": "Help for Homeless",
+  "description": "Local organization dedicated to combining and communicating efforts to combat homelessness in Somerset and surrounding areas. Provides resources, support, and coordination for homeless assistance programs. Maintains a resource room with supplies and connects individuals with available services.",
+  "source": "Verified from official Facebook page, Chamber of Commerce listing, and Google search results",
+  "phone": "(606) 875-3893",
+  "email": "HelptheHomelessSomerset@outlook.com",
+  "website": "https://www.facebook.com/groups/2283645185149530/",
+  "address1": "408 Bogle Street",
+  "city": "Somerset",
+  "state": "KY",
+  "county": "Pulaski",
+  "postal_code": "42503",
+  "hours_of_operation": "Monday-Friday 9:00 AM-3:00 PM and by appointment",
+  "is_emergency_service": false,
+  "notes": "Contact: Jessica Lee. Office phone: (606) 687-9011. Public Facebook group with 11.3K members for coordinating local homelessness efforts.",
+  "service_types": ["Housing", "Emergency Assistance"],
+  "capacity": "Varies based on available resources and community support",
+  "cost_information": "Free services and resources",
+  "eligibility": "Individuals experiencing homelessness or at risk of homelessness in Somerset area",
+  "required_documents": "None specified",
+  "languages": ["English"],
+  "accessibility": "Contact for specific accessibility accommodations"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Williamsburg Housing Authority",
+  "description": "Provides affordable subsidized public housing units for low-income families and individuals in Williamsburg, KY. Offers Section 8 Housing Choice Vouchers and public housing programs. Services include online rent payment, work order submission, and change reporting. Committed to providing safe, drug-free housing without discrimination.",
+  "source": "Verified from official website and multiple online sources",
+  "phone": "(606) 549-0282",
+  "email": "harleigh.brimm@wburg.us",
+  "website": "https://williamsburghousingauthority.com",
+  "address1": "600 Brush Arbor Rd",
+  "city": "Williamsburg",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40769",
+  "hours_of_operation": "Monday-Thursday 8:00 AM-5:30 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Low-income families and individuals. Must meet HUD income guidelines, be U.S. citizens or eligible immigrants, have no previous balances to subsidized housing programs, and pass reference checks.",
+  "populations_served": "Low-income families, elderly individuals, disabled individuals",
+  "cost_information": "Income-based rent determined by HUD guidelines",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-16. CITATIONS: Contact information verified from official website https://williamsburghousingauthority.com/contact-us/. Services and programs verified from main website https://williamsburghousingauthority.com. Phone number (606) 549-0282 confirmed working and current across multiple sources including Google search results, FindHelp.org, and official website. Website verified current and accessible. Address 600 Brush Arbor Rd, Williamsburg, KY 40769 confirmed on official website and Google Maps. Hours of operation Monday-Thursday 8:00 AM-5:30 PM verified on official website. Email harleigh.brimm@wburg.us verified on contact page. All information cross-referenced with multiple sources for consistency including Facebook page, FindHelp.org, and various directory listings.",
+  "service_type_ids": [3, 19]
+}

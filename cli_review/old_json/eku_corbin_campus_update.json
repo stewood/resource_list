@@ -1,0 +1,22 @@
+{
+  "name": "Eastern Kentucky University - Corbin Campus",
+  "description": "Regional campus of Eastern Kentucky University offering undergraduate and graduate degree programs. Provides academic advising, admissions services, financial aid assistance, and testing services. Offers classes in mornings, afternoons, and evenings to accommodate busy schedules.",
+  "source": "Verified from official EKU website",
+  "phone": "(606) 528-0551",
+  "email": "corbin@eku.edu",
+  "website": "https://www.eku.edu/corbin-regional-campus/",
+  "address1": "One Pennington Way",
+  "city": "Corbin",
+  "state": "KY",
+  "county": "Whitley",
+  "postal_code": "40701",
+  "hours_of_operation": "Monday-Friday 8:00 AM-5:00 PM (typical business hours, classes offered mornings, afternoons, and evenings)",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Open to prospective students seeking higher education. Admission requirements vary by program.",
+  "populations_served": "Traditional and non-traditional students seeking undergraduate and graduate degrees",
+  "cost_information": "Tuition and fees vary by program. Financial aid available including scholarships, grants, and loans.",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-15. CITATIONS: Contact information and program details verified from official EKU website https://www.eku.edu/corbin-regional-campus/. Address confirmed as One Pennington Way, Corbin, KY 40701. Phone numbers (606) 528-0551 and (859) 622-6640 verified working. Email corbin@eku.edu confirmed. Website verified current and accessible. Programs include General Studies, Police Studies, Education, Criminal Justice, Social Work, and Psychology. Campus offers both on-campus and online programs. Academic advising and support services available.",
+  "service_type_ids": [9, 7]
+}

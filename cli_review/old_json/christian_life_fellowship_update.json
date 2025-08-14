@@ -1,0 +1,20 @@
+{
+  "name": "Christian Life Fellowship",
+  "description": "Church providing a food pantry for eligible Knox County residents. Offers food assistance to individuals and families in need through their food distribution program.",
+  "source": "Verified from Google search results and multiple food bank directories",
+  "phone": "(606) 546-9415",
+  "email": "",
+  "website": "",
+  "address1": "165 Black St",
+  "city": "Barbourville",
+  "state": "KY",
+  "county": "Knox",
+  "postal_code": "40906",
+  "hours_of_operation": "Tuesdays and Fridays 10:00 AM - 12:00 PM",
+  "is_emergency_service": false,
+  "is_24_hour_service": false,
+  "eligibility_requirements": "Knox County residents",
+  "service_types": ["Food Pantry", "Food Distribution"],
+  "category": "Food Assistance",
+  "notes": "Food pantry is accessible for those with disabilities. Part of the Christian Life Food Bank network serving the Barbourville area. Rated 5.0 out of 5 stars with 6 Google reviews."
+}

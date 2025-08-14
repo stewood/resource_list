@@ -1,0 +1,24 @@
+{
+  "name": "Kentucky Child Care Assistance Program (CCAP)",
+  "description": "Statewide government program that helps low-income families pay for child care. Administered by the Kentucky Department for Community Based Services (DCBS) under the Cabinet for Health and Family Services. Provides financial assistance to eligible families to access quality child care while parents work, attend school, or participate in approved activities. Available to Kentucky residents with children under 13 years of age (or up to 19 with disabilities).",
+  "source": "Verified from official government websites and multiple online sources",
+  "phone": "(855) 306-8959",
+  "email": "",
+  "website": "https://kynect.ky.gov/benefits/s/child-care-program",
+  "address1": "Statewide program - contact local DCBS office",
+  "city": "Statewide",
+  "state": "KY",
+  "county": "Statewide",
+  "postal_code": "00000",
+  "hours": "Monday-Friday 8:00 AM-4:30 PM (varies by local office)",
+  "services": [
+    "Child care financial assistance",
+    "Child care provider search",
+    "Eligibility screening",
+    "Application assistance",
+    "Case management",
+    "Provider enrollment support"
+  ],
+  "eligibility": "Kentucky residents with children under 13 (or up to 19 with disabilities), low-income families meeting work/school requirements, income limits apply",
+  "notes": "Administered by Kentucky Department for Community Based Services (DCBS). Applications can be submitted online at kynect.ky.gov, by phone, or in person at local DCBS offices. Program helps families who work, attend school, or participate in approved activities. Income limits and work requirements apply. Families remain eligible for 12 months before recertification."
+}

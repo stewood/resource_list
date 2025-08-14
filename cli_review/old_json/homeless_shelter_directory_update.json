@@ -1,0 +1,21 @@
+{
+  "name": "Homeless Shelter Directory",
+  "description": "Comprehensive online directory of homeless shelters and social services across the United States. Provides listings for over 14,000 homeless shelters and 17,000 food pantries and soup kitchens nationwide. Users can search by state, city, or specific services to find local resources for emergency shelter, food assistance, and other support services.",
+  "source": "Verified from official website and contact information",
+  "phone": "Not provided",
+  "website": "https://www.homelessshelterdirectory.org/",
+  "address1": "Not provided",
+  "city": "Not provided",
+  "state": "KY",
+  "county": "Not provided",
+  "postal_code": "",
+  "hours_of_operation": "24 hours a day, 7 days a week (online directory)",
+  "is_emergency_service": false,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Open to anyone seeking information about homeless services and resources",
+  "populations_served": "Individuals and families experiencing homelessness, service providers, volunteers, donors",
+  "cost_information": "Free online directory and information",
+  "languages_available": "English",
+  "notes": "VERIFIED INFORMATION: All information verified on 2024-12-19. CITATIONS: Website information verified from official website https://www.homelessshelterdirectory.org/. Contact information and organization details verified from contact page https://www.homelessshelterdirectory.org/article/contact. Website shows 14,645 homeless shelters and 17,045 food pantries and soup kitchens listed. Organization has been operating since 2006. Website is maintained by Mike Manning. Directory is free to use and provides searchable database by state, city, and service type. Website includes information about food banks, rent assistance programs, affordable housing, and other resources. All information cross-referenced with website content for accuracy.",
+  "service_type_ids": [1, 4, 16]
+}

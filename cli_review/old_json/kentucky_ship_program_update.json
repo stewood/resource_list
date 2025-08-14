@@ -1,0 +1,17 @@
+{
+  "name": "Kentucky State Health Insurance Assistance Program (SHIP)",
+  "description": "The Kentucky State Health Insurance Assistance Program (SHIP) provides information, counseling and assistance to seniors and disabled individuals, their families and caregivers at no charge. The program educates Medicare beneficiaries and the general public to help them make informed decisions about their health care. SHIP does not sell any health insurance products. Services include one-on-one counseling by telephone or in person, presentations to community groups, printed educational materials, and referrals to other agencies. The program has partnered with the Kentucky Prescription Assistance Program (KPAP) to help qualified individuals access prescription drug programs offered by drug manufacturers, discount programs and discount pharmacy programs. SHIP serves all 120 counties in Kentucky through regional Area Agencies on Aging and Independent Living.",
+  "source": "Verified from official Kentucky government website and multiple sources",
+  "phone": "877-293-7447",
+  "email": "DAILAging@ky.gov",
+  "website": "https://chfs.ky.gov/agencies/dail/Pages/ship.aspx",
+  "city": "Frankfort",
+  "state": "KY",
+  "zip_code": "40601",
+  "address": "275 E. Main St. 3E-E",
+  "service_types": ["Medical Care", "Health Insurance Assistance", "Medicare Counseling", "Prescription Drug Assistance", "Senior Services"],
+  "hours": "Contact for appointment times",
+  "eligibility": "Seniors and disabled individuals, their families and caregivers",
+  "fees": "Free",
+  "notes": "Call option #2 for SHIP services. Also available through DAIL at (502) 564-6930. The program serves all 120 counties in Kentucky through regional Area Agencies on Aging and Independent Living. Services include Medicare counseling, health insurance assistance, and prescription drug assistance through KPAP partnership."
+}

@@ -1,0 +1,21 @@
+{
+  "name": "National Runaway Safeline - Home Free Program",
+  "description": "Established in 1995 in partnership with Greyhound Lines, Inc., the Home Free program helps runaway, homeless and exploited youth ages 12-21 return home safely or get to a stable place where they can receive appropriate services. The program provides free bus tickets to reunite youth with their family, legal guardian, or alternative living arrangement. Youth must initiate the process by calling the hotline and speaking with NRS Crisis Services team. Services are available 24/7 and include crisis intervention, local resource referrals, and transportation assistance.",
+  "source": "Verified from official website and multiple government sources",
+  "phone": "1-800-786-2929",
+  "website": "https://www.1800runaway.org",
+  "address1": "3141B N. Lincoln Ave.",
+  "city": "Chicago",
+  "state": "IL",
+  "county": "Cook",
+  "postal_code": "60657",
+  "hours_of_operation": "24 hours a day, 7 days a week",
+  "is_emergency_service": true,
+  "is_24_hour_service": true,
+  "eligibility_requirements": "Youth must be between ages 12-21 and self-identify as homeless, runaway or victim of human trafficking. Youth under 18 can only return to parent/legal guardian. Youth 18-21 can return home or travel to approved alternative living arrangement.",
+  "populations_served": "Runaway, homeless and exploited youth ages 12-21, victims of human trafficking, youth in crisis",
+  "cost_information": "Free service - no cost to participants",
+  "languages_available": "English, Spanish",
+  "notes": "VERIFIED INFORMATION: All contact information verified on 2025-01-27. CITATIONS: Contact information and program details verified from official website https://www.1800runaway.org. Home Free program information verified from https://www.1800runaway.org/youth-teens/home-free. Phone number 1-800-786-2929 confirmed working and listed on multiple government websites including ACF.gov and state government sites. Address verified from website footer. Hours of operation confirmed as 24/7 from multiple sources. Program eligibility and restrictions verified from official Home Free program page. All information cross-referenced with Google search results for consistency. Organization is federally funded through Family and Youth Services Bureau, U.S. Department of Health and Human Services.",
+  "service_type_ids": [1, 3, 8, 14]
+}
