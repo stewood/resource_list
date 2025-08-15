@@ -1,8 +1,74 @@
 """
-Custom permissions and permission helpers for the resource directory.
+Resource Directory Permissions - Role-Based Access Control and Permission Management
+
+This module provides comprehensive role-based access control (RBAC) functionality
+for the resource directory application. It implements a hierarchical permission
+system with three primary roles (Editor, Reviewer, Admin) and provides utility
+functions for permission checking and view decorators.
+
+Key Features:
+    - Role-based permission checking functions
+    - View decorators for access control
+    - Primary role identification and hierarchy
+    - Permission mapping for each role
+    - Superuser privilege handling
+    - Anonymous user support
+
+Role Hierarchy:
+    - Anonymous: No authenticated access
+    - User: Basic authenticated access
+    - Editor: Can create and edit resources, submit for review
+    - Reviewer: Can review, publish, and verify resources
+    - Admin: Full system access including user management
+    - Superuser: Override all permissions
+
+Permission Functions:
+    - user_has_role: Check if user has specific role
+    - user_is_editor/reviewer/admin: Check primary role
+    - user_can_*: Check specific permissions
+    - get_user_role: Get primary role of user
+    - get_role_permissions: Get permissions for role
+
+Decorators:
+    - require_role: Generic role requirement decorator
+    - require_editor/reviewer/admin: Specific role decorators
+
+Author: Resource Directory Team
+Created: 2024
+Last Modified: 2025-08-15
+Version: 1.0.0
+
+Dependencies:
+    - Django: django.contrib.auth.models.User, django.core.exceptions.PermissionDenied
+    - Typing: typing.List for type hints
+
+Usage:
+    from directory.permissions import user_can_publish, require_reviewer
+    
+    # Check permissions
+    if user_can_publish(request.user):
+        # Allow publishing
+    
+    # Use decorators
+    @require_reviewer
+    def publish_view(request):
+        # Only reviewers can access
+
+Examples:
+    # Check if user can submit for review
+    if user_can_submit_for_review(user):
+        resource.status = 'needs_review'
+    
+    # Get user's primary role
+    role = get_user_role(user)  # Returns 'Editor', 'Reviewer', 'Admin', etc.
+    
+    # Use decorator for view protection
+    @require_admin
+    def delete_resource(request, pk):
+        # Only admins can access this view
 """
 
-from typing import List
+from typing import List, Callable, Any
 
 from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
@@ -113,8 +179,8 @@ def user_can_manage_taxonomies(user: User) -> bool:
 def require_role(role: str):
     """Decorator to require a specific role."""
 
-    def decorator(view_func):
-        def wrapper(request, *args, **kwargs):
+    def decorator(view_func: Callable[..., Any]) -> Callable[..., Any]:
+        def wrapper(request, *args: Any, **kwargs: Any) -> Any:
             if not user_has_role(request.user, role):
                 raise PermissionDenied(f"Access denied. Requires {role} role.")
             return view_func(request, *args, **kwargs)
@@ -124,17 +190,17 @@ def require_role(role: str):
     return decorator
 
 
-def require_editor(view_func):
+def require_editor(view_func: Callable[..., Any]) -> Callable[..., Any]:
     """Decorator to require Editor role."""
     return require_role("Editor")(view_func)
 
 
-def require_reviewer(view_func):
+def require_reviewer(view_func: Callable[..., Any]) -> Callable[..., Any]:
     """Decorator to require Reviewer role."""
     return require_role("Reviewer")(view_func)
 
 
-def require_admin(view_func):
+def require_admin(view_func: Callable[..., Any]) -> Callable[..., Any]:
     """Decorator to require Admin role."""
     return require_role("Admin")(view_func)
 
