@@ -51,7 +51,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'directory:dashboard' %}">
+            <a class="navbar-brand" href="{% url 'directory:public_home' %}">
                 Resource Directory
             </a>
             
@@ -62,17 +62,25 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'directory:dashboard' %}">Dashboard</a>
+                        <a class="nav-link" href="{% url 'directory:public_home' %}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'directory:resource_list' %}">Resources</a>
+                        <a class="nav-link" href="{% url 'directory:public_resource_list' %}">Resources</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'directory:resource_create' %}">Add Resource</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'audit:audit_log_list' %}">Audit Logs</a>
-                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'directory:dashboard' %}">Admin Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'directory:resource_list' %}">Manage Resources</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'directory:resource_create' %}">Add Resource</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'audit:audit_log_list' %}">Audit Logs</a>
+                        </li>
+                    {% endif %}
                 </ul>
                 
                 <ul class="navbar-nav">
@@ -91,7 +99,7 @@
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{% url 'admin:logout' %}">Logout</a></li>
+                                <li><a class="dropdown-item" href="{% url 'directory:logout' %}">Logout</a></li>
                             </ul>
                         </li>
                     {% else %}

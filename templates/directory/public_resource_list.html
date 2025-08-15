@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+{% load directory_extras %}
+
+{% block title %}Resources - Homeless Resource Directory{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" id="filter-form">
+                        <!-- Search -->
+                        <div class="mb-3">
+                            <label for="search" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="search" name="q" value="{{ search_query }}" placeholder="Search resources...">
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" name="category">
+                                <option value="">All Categories</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}" {% if category_filter == category.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Service Type Filter -->
+                        <div class="mb-3">
+                            <label for="service_type" class="form-label">Service Type</label>
+                            <select class="form-select" id="service_type" name="service_type">
+                                <option value="">All Service Types</option>
+                                {% for service_type in service_types %}
+                                <option value="{{ service_type.id }}" {% if service_type_filter == service_type.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ service_type.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- City Filter -->
+                        <div class="mb-3">
+                            <label for="city" class="form-label">City</label>
+                            <select class="form-select" id="city" name="city">
+                                <option value="">All Cities</option>
+                                {% for city in cities %}
+                                <option value="{{ city }}" {% if city_filter == city %}selected{% endif %}>
+                                    {{ city }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- State Filter -->
+                        <div class="mb-3">
+                            <label for="state" class="form-label">State</label>
+                            <select class="form-select" id="state" name="state">
+                                <option value="">All States</option>
+                                {% for state in states %}
+                                <option value="{{ state }}" {% if state_filter == state %}selected{% endif %}>
+                                    {{ state }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Emergency Services Filter -->
+                        <div class="mb-3">
+                            <label class="form-label">Emergency Services</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="emergency" id="emergency_all" value="" {% if emergency_filter == "" %}checked{% endif %}>
+                                <label class="form-check-label" for="emergency_all">All Services</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="emergency" id="emergency_true" value="true" {% if emergency_filter == "true" %}checked{% endif %}>
+                                <label class="form-check-label" for="emergency_true">Emergency Only</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="emergency" id="emergency_false" value="false" {% if emergency_filter == "false" %}checked{% endif %}>
+                                <label class="form-check-label" for="emergency_false">Non-Emergency Only</label>
+                            </div>
+                        </div>
+
+                        <!-- 24-Hour Services Filter -->
+                        <div class="mb-3">
+                            <label class="form-label">24-Hour Services</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="24hour" id="24hour_all" value="" {% if twenty_four_hour_filter == "" %}checked{% endif %}>
+                                <label class="form-check-label" for="24hour_all">All Services</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="24hour" id="24hour_true" value="true" {% if twenty_four_hour_filter == "true" %}checked{% endif %}>
+                                <label class="form-check-label" for="24hour_true">24-Hour Only</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="24hour" id="24hour_false" value="false" {% if twenty_four_hour_filter == "false" %}checked{% endif %}>
+                                <label class="form-check-label" for="24hour_false">Non-24-Hour Only</label>
+                            </div>
+                        </div>
+
+                        <!-- Sort Options -->
+                        <div class="mb-3">
+                            <label for="sort" class="form-label">Sort By</label>
+                            <select class="form-select" id="sort" name="sort">
+                                <option value="name" {% if sort_by == "name" %}selected{% endif %}>Name</option>
+                                <option value="city" {% if sort_by == "city" %}selected{% endif %}>City</option>
+                                <option value="category" {% if sort_by == "category" %}selected{% endif %}>Category</option>
+                                <option value="emergency" {% if sort_by == "emergency" %}selected{% endif %}>Emergency First</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-filter"></i> Apply Filters
+                            </button>
+                            <a href="{% url 'directory:public_resource_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Clear All
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">Resources</h1>
+                    <p class="text-muted mb-0">
+                        Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} resources
+                        {% if search_query or category_filter or service_type_filter or city_filter or state_filter or emergency_filter or twenty_four_hour_filter %}
+                            <span class="text-primary">(filtered)</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div>
+                    <a href="{% url 'directory:public_home' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+
+            <!-- Active Filters Display -->
+            {% if search_query or category_filter or service_type_filter or city_filter or state_filter or emergency_filter or twenty_four_hour_filter %}
+            <div class="alert alert-info mb-4">
+                <h6 class="alert-heading">Active Filters:</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    {% if search_query %}
+                    <span class="badge bg-primary">Search: "{{ search_query }}"</span>
+                    {% endif %}
+                    {% if category_filter %}
+                    <span class="badge bg-secondary">Category: {{ categories_dict|get_item:category_filter|default:"Unknown" }}</span>
+                    {% endif %}
+                    {% if service_type_filter %}
+                    <span class="badge bg-secondary">Service: {{ service_types_dict|get_item:service_type_filter|default:"Unknown" }}</span>
+                    {% endif %}
+                    {% if city_filter %}
+                    <span class="badge bg-secondary">City: {{ city_filter }}</span>
+                    {% endif %}
+                    {% if state_filter %}
+                    <span class="badge bg-secondary">State: {{ state_filter }}</span>
+                    {% endif %}
+                    {% if emergency_filter == "true" %}
+                    <span class="badge bg-danger">Emergency Services Only</span>
+                    {% elif emergency_filter == "false" %}
+                    <span class="badge bg-secondary">Non-Emergency Only</span>
+                    {% endif %}
+                    {% if twenty_four_hour_filter == "true" %}
+                    <span class="badge bg-success">24-Hour Services Only</span>
+                    {% elif twenty_four_hour_filter == "false" %}
+                    <span class="badge bg-secondary">Non-24-Hour Only</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Resource List -->
+            {% if page_obj %}
+            <div class="row g-4">
+                {% for resource in page_obj %}
+                <div class="col-md-6">
+                    <div class="card h-100 resource-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">
+                                    <a href="{% url 'directory:public_resource_detail' resource.pk %}" class="text-decoration-none">
+                                        {{ resource.name }}
+                                    </a>
+                                </h5>
+                                <div class="d-flex gap-1">
+                                    {% if resource.is_emergency_service %}
+                                    <span class="badge bg-danger" title="Emergency Service">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </span>
+                                    {% endif %}
+                                    {% if resource.is_24_hour_service %}
+                                    <span class="badge bg-success" title="24-Hour Service">
+                                        <i class="fas fa-clock"></i>
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            {% if resource.category %}
+                            <p class="text-muted small mb-2">
+                                <i class="fas fa-tag"></i> {{ resource.category.name }}
+                            </p>
+                            {% endif %}
+                            
+                            {% if resource.description %}
+                            <p class="card-text">{{ resource.description|truncatewords:20 }}</p>
+                            {% endif %}
+                            
+                            {% if resource.city and resource.state %}
+                            <p class="text-muted small mb-2">
+                                <i class="fas fa-map-marker-alt"></i> {{ resource.city }}, {{ resource.state }}
+                            </p>
+                            {% endif %}
+                            
+                            {% if resource.phone %}
+                            <p class="text-muted small mb-2">
+                                <i class="fas fa-phone"></i> {{ resource.phone }}
+                            </p>
+                            {% endif %}
+                            
+                            <div class="mt-auto">
+                                <a href="{% url 'directory:public_resource_detail' resource.pk %}" class="btn btn-outline-primary btn-sm">
+                                    View Details <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Resource pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.next_page_number }}">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No resources found matching your criteria.
+                <a href="{% url 'directory:public_resource_list' %}" class="alert-link">View all resources</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% block title %}{{ resource.name }} - Homeless Resource Directory{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'directory:public_home' %}">Home</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'directory:public_resource_list' %}">Resources</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">{{ resource.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Resource Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h1 class="h2 mb-2">{{ resource.name }}</h1>
+                            {% if resource.category %}
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-tag"></i> {{ resource.category.name }}
+                            </p>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex gap-2">
+                            {% if resource.is_emergency_service %}
+                            <span class="badge bg-danger fs-6" title="Emergency Service">
+                                <i class="fas fa-exclamation-triangle"></i> Emergency
+                            </span>
+                            {% endif %}
+                            {% if resource.is_24_hour_service %}
+                            <span class="badge bg-success fs-6" title="24-Hour Service">
+                                <i class="fas fa-clock"></i> 24-Hour
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if resource.description %}
+                    <div class="mb-4">
+                        <h5>Description</h5>
+                        <p class="lead">{{ resource.description }}</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Service Types -->
+                    {% if resource.service_types.exists %}
+                    <div class="mb-4">
+                        <h5>Services Offered</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for service_type in resource.service_types.all %}
+                            <span class="badge bg-primary">{{ service_type.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-address-book"></i> Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if resource.phone %}
+                        <div class="col-md-6 mb-3">
+                            <h6><i class="fas fa-phone text-primary"></i> Phone</h6>
+                            <p class="mb-0">
+                                <a href="tel:{{ resource.phone }}" class="text-decoration-none">{{ resource.phone }}</a>
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if resource.email %}
+                        <div class="col-md-6 mb-3">
+                            <h6><i class="fas fa-envelope text-primary"></i> Email</h6>
+                            <p class="mb-0">
+                                <a href="mailto:{{ resource.email }}" class="text-decoration-none">{{ resource.email }}</a>
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if resource.website %}
+                        <div class="col-md-6 mb-3">
+                            <h6><i class="fas fa-globe text-primary"></i> Website</h6>
+                            <p class="mb-0">
+                                <a href="{{ resource.website }}" target="_blank" class="text-decoration-none">{{ resource.website }}</a>
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location -->
+            {% if resource.address1 or resource.city or resource.state %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Location</h5>
+                </div>
+                <div class="card-body">
+                    <address class="mb-0">
+                        {% if resource.address1 %}{{ resource.address1 }}<br>{% endif %}
+                        {% if resource.address2 %}{{ resource.address2 }}<br>{% endif %}
+                        {% if resource.city or resource.state or resource.postal_code %}
+                            {% if resource.city %}{{ resource.city }}{% endif %}{% if resource.city and resource.state %}, {% endif %}
+                            {% if resource.state %}{{ resource.state }}{% endif %}
+                            {% if resource.postal_code %} {{ resource.postal_code }}{% endif %}
+                        {% endif %}
+                        {% if resource.county %}<br>{{ resource.county }} County{% endif %}
+                    </address>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Operational Details -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-clock"></i> Operational Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if resource.hours_of_operation %}
+                        <div class="col-md-6 mb-3">
+                            <h6>Hours of Operation</h6>
+                            <p class="mb-0">{{ resource.hours_of_operation }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if resource.capacity %}
+                        <div class="col-md-6 mb-3">
+                            <h6>Capacity</h6>
+                            <p class="mb-0">{{ resource.capacity }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if resource.eligibility_requirements %}
+                        <div class="col-12 mb-3">
+                            <h6>Eligibility Requirements</h6>
+                            <p class="mb-0">{{ resource.eligibility_requirements }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if resource.populations_served %}
+                        <div class="col-md-6 mb-3">
+                            <h6>Populations Served</h6>
+                            <p class="mb-0">{{ resource.populations_served }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if resource.languages_available %}
+                        <div class="col-md-6 mb-3">
+                            <h6>Languages Available</h6>
+                            <p class="mb-0">{{ resource.languages_available }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if resource.insurance_accepted %}
+                        <div class="col-md-6 mb-3">
+                            <h6>Insurance Accepted</h6>
+                            <p class="mb-0">{{ resource.insurance_accepted }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if resource.cost_information %}
+                        <div class="col-md-6 mb-3">
+                            <h6>Cost Information</h6>
+                            <p class="mb-0">{{ resource.cost_information }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            {% if resource.notes %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Additional Information</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ resource.notes }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if resource.phone %}
+                        <a href="tel:{{ resource.phone }}" class="btn btn-primary">
+                            <i class="fas fa-phone"></i> Call Now
+                        </a>
+                        {% endif %}
+                        
+                        {% if resource.website %}
+                        <a href="{{ resource.website }}" target="_blank" class="btn btn-outline-primary">
+                            <i class="fas fa-external-link-alt"></i> Visit Website
+                        </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'directory:public_resource_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-list"></i> View All Resources
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Resources -->
+            {% if related_resources %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Related Resources</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for related in related_resources %}
+                        <a href="{% url 'directory:public_resource_detail' related.pk %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ related.name }}</h6>
+                                <div class="d-flex gap-1">
+                                    {% if related.is_emergency_service %}
+                                    <span class="badge bg-danger" title="Emergency Service">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </span>
+                                    {% endif %}
+                                    {% if related.is_24_hour_service %}
+                                    <span class="badge bg-success" title="24-Hour Service">
+                                        <i class="fas fa-clock"></i>
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if related.city and related.state %}
+                            <small class="text-muted">
+                                <i class="fas fa-map-marker-alt"></i> {{ related.city }}, {{ related.state }}
+                            </small>
+                            {% endif %}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Verification Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Information Quality</h5>
+                </div>
+                <div class="card-body">
+                    {% if resource.last_verified_at %}
+                    <p class="small text-muted mb-1">
+                        <i class="fas fa-check-circle text-success"></i> 
+                        Last verified: {{ resource.last_verified_at|date:"M j, Y" }}
+                    </p>
+                    {% endif %}
+                    
+                    {% if resource.source %}
+                    <p class="small text-muted mb-0">
+                        <i class="fas fa-source"></i> 
+                        Source: {{ resource.source }}
+                    </p>
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <p class="small text-muted mb-0">
+                        <i class="fas fa-info-circle"></i> 
+                        This information is maintained by community partners. 
+                        Please verify details before visiting.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -9,69 +9,76 @@ from . import views
 app_name = "directory"
 
 urlpatterns = [
-    # Dashboard
-    path("", views.dashboard, name="dashboard"),
-    # Resource views
-    path("resources/", views.ResourceListView.as_view(), name="resource_list"),
+    # Public views (no authentication required)
+    path("", views.public_home, name="public_home"),
+    path("resources/", views.public_resource_list, name="public_resource_list"),
+    path("resources/<int:pk>/", views.public_resource_detail, name="public_resource_detail"),
+    
+    # Admin views (authentication required)
+    path("manage/dashboard/", views.dashboard, name="dashboard"),
+    path("manage/resources/", views.ResourceListView.as_view(), name="resource_list"),
     path(
-        "resources/create/", views.ResourceCreateView.as_view(), name="resource_create"
+        "manage/resources/create/", views.ResourceCreateView.as_view(), name="resource_create"
     ),
     path(
-        "resources/<int:pk>/",
+        "manage/resources/<int:pk>/",
         views.ResourceDetailView.as_view(),
         name="resource_detail",
     ),
     path(
-        "resources/<int:pk>/edit/",
+        "manage/resources/<int:pk>/edit/",
         views.ResourceUpdateView.as_view(),
         name="resource_update",
     ),
     # Resource actions
     path(
-        "resources/<int:pk>/submit-review/",
+        "manage/resources/<int:pk>/submit-review/",
         views.submit_for_review,
         name="submit_for_review",
     ),
     path(
-        "resources/<int:pk>/publish/", views.publish_resource, name="publish_resource"
+        "manage/resources/<int:pk>/publish/", views.publish_resource, name="publish_resource"
     ),
     path(
-        "resources/<int:pk>/unpublish/",
+        "manage/resources/<int:pk>/unpublish/",
         views.unpublish_resource,
         name="unpublish_resource",
     ),
     # Version history and comparison
     path(
-        "resources/<int:resource_pk>/versions/",
+        "manage/resources/<int:resource_pk>/versions/",
         views.version_history,
         name="version_history",
     ),
     path(
-        "resources/<int:resource_pk>/versions/<int:version1_pk>/compare/",
+        "manage/resources/<int:resource_pk>/versions/<int:version1_pk>/compare/",
         views.version_comparison,
         name="version_comparison",
     ),
     path(
-        "resources/<int:resource_pk>/versions/<int:version1_pk>/compare/<int:version2_pk>/",
+        "manage/resources/<int:resource_pk>/versions/<int:version1_pk>/compare/<int:version2_pk>/",
         views.version_comparison,
         name="version_comparison_two",
     ),
     # Archive views
-    path("archives/", views.ArchiveListView.as_view(), name="archive_list"),
+    path("manage/archives/", views.ArchiveListView.as_view(), name="archive_list"),
     path(
-        "archives/<int:pk>/",
+        "manage/archives/<int:pk>/",
         views.ArchiveDetailView.as_view(),
         name="archive_detail",
     ),
     # Archive actions
     path(
-        "resources/<int:pk>/archive/",
+        "manage/resources/<int:pk>/archive/",
         views.archive_resource,
         name="archive_resource",
     ),
     path(
-        "resources/<int:pk>/unarchive/",
+        "manage/resources/<int:pk>/unarchive/",
         views.unarchive_resource,
         name="unarchive_resource",
     ),
+    
+    # Authentication
+    path("logout/", views.custom_logout, name="logout"),
 ]

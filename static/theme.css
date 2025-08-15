@@ -262,6 +262,85 @@ a:hover {
   color: #ffffff !important;
 }
 
+/* Fix bg-light cards in dark mode - using maximum specificity */
+[data-theme="dark"] .card.bg-light,
+[data-theme="dark"] .card.bg-light.help-info-card,
+[data-theme="dark"] div.card.bg-light,
+[data-theme="dark"] div.card.bg-light.help-info-card {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .card.bg-light .card-body,
+[data-theme="dark"] .card.bg-light.help-info-card .card-body,
+[data-theme="dark"] div.card.bg-light .card-body,
+[data-theme="dark"] div.card.bg-light.help-info-card .card-body {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .card.bg-light .card-title,
+[data-theme="dark"] .card.bg-light.help-info-card .card-title,
+[data-theme="dark"] div.card.bg-light .card-title,
+[data-theme="dark"] div.card.bg-light.help-info-card .card-title {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card.bg-light .text-muted,
+[data-theme="dark"] .card.bg-light.help-info-card .text-muted,
+[data-theme="dark"] div.card.bg-light .text-muted,
+[data-theme="dark"] div.card.bg-light.help-info-card .text-muted {
+  color: var(--text-muted) !important;
+}
+
+/* Maximum specificity for the help info card */
+[data-theme="dark"] .help-info-card,
+[data-theme="dark"] div.help-info-card {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .help-info-card .card-body,
+[data-theme="dark"] div.help-info-card .card-body {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .help-info-card .card-title,
+[data-theme="dark"] div.help-info-card .card-title {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .help-info-card .text-muted,
+[data-theme="dark"] div.help-info-card .text-muted {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .help-info-card strong,
+[data-theme="dark"] div.help-info-card strong {
+  color: var(--text-primary) !important;
+}
+
+/* Nuclear option - override any bg-light class in dark mode */
+[data-theme="dark"] .bg-light {
+  background-color: var(--bg-secondary) !important;
+}
+
+[data-theme="dark"] .bg-light * {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .bg-light h1,
+[data-theme="dark"] .bg-light h2,
+[data-theme="dark"] .bg-light h3,
+[data-theme="dark"] .bg-light h4,
+[data-theme="dark"] .bg-light h5,
+[data-theme="dark"] .bg-light h6 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .bg-light .text-muted {
+  color: var(--text-muted) !important;
+}
+
 /* Fix text visibility issues in dark mode */
 [data-theme="dark"] p {
   color: var(--text-secondary) !important;
@@ -320,6 +399,30 @@ a:hover {
   color: var(--text-secondary) !important;
 }
 
+/* Fix all headings in dark theme for better contrast */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+  color: var(--text-primary) !important;
+}
+
+/* Fix card body headings specifically */
+[data-theme="dark"] .card-body h1,
+[data-theme="dark"] .card-body h2,
+[data-theme="dark"] .card-body h3,
+[data-theme="dark"] .card-body h4,
+[data-theme="dark"] .card-body h5,
+[data-theme="dark"] .card-body h6 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-body label {
+  color: var(--text-primary) !important;
+}
+
 /* Fix metadata and source text */
 [data-theme="dark"] .metadata,
 [data-theme="dark"] .source,
@@ -342,4 +445,90 @@ a:hover {
 .badge,
 .btn {
   transition: none;
+}
+
+/* Fix list group items and their headings in dark theme */
+[data-theme="dark"] .list-group-item {
+  background-color: var(--card-bg) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .list-group-item h6 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .list-group-item-action:hover {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .list-group-item-action:hover h6 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .list-group-item small {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .list-group-item-action:hover small {
+  color: var(--text-secondary) !important;
+}
+
+/* Additional list group styling for better visibility */
+[data-theme="dark"] .list-group-flush .list-group-item {
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .list-group-item-action:focus {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .list-group-item-action:focus h6 {
+  color: var(--text-primary) !important;
+}
+
+/* Ensure all text in list groups is visible */
+[data-theme="dark"] .list-group-item * {
+  color: inherit !important;
+}
+
+[data-theme="dark"] .list-group-item h6 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .list-group-item small {
+  color: var(--text-muted) !important;
+}
+
+/* Fix card titles and other heading elements */
+[data-theme="dark"] .card-title {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-header h5 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .alert-heading {
+  color: var(--text-primary) !important;
+}
+
+/* Fix display headings */
+[data-theme="dark"] .display-4 {
+  color: var(--text-primary) !important;
+}
+
+/* Fix breadcrumb text */
+[data-theme="dark"] .breadcrumb-item {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .breadcrumb-item.active {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .breadcrumb-item a {
+  color: var(--link-color) !important;
 }

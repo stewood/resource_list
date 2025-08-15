@@ -43,7 +43,7 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get("DEBUG", "0") == "1"
 
 # Allow common dev/test hosts by default
-_default_hosts = ["localhost", "127.0.0.1", "0.0.0.0", "testserver"]
+_default_hosts = ["localhost", "127.0.0.1", "0.0.0.0", "testserver", "192.168.6.205", "100.93.223.61"]
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", ",".join(_default_hosts)).split(",")
 
 
