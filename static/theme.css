@@ -262,6 +262,44 @@ a:hover {
   color: #ffffff !important;
 }
 
+/* Fix warning badge text color for better visibility */
+.badge.bg-warning,
+span.badge.bg-warning,
+.badge.bg-warning * {
+  color: #000000 !important;
+}
+
+/* Ensure warning badge text is black in both light and dark themes */
+[data-theme="dark"] .badge.bg-warning,
+[data-theme="dark"] span.badge.bg-warning,
+[data-theme="dark"] .badge.bg-warning * {
+  color: #000000 !important;
+}
+
+/* Fix warning card text color for better visibility */
+.card.bg-warning,
+.card.bg-warning *,
+.card.bg-warning .card-title,
+.card.bg-warning .card-text,
+.card.text-white.bg-warning,
+.card.text-white.bg-warning *,
+.card.text-white.bg-warning .card-title,
+.card.text-white.bg-warning .card-text {
+  color: #000000 !important;
+}
+
+/* Ensure warning card text is black in both light and dark themes */
+[data-theme="dark"] .card.bg-warning,
+[data-theme="dark"] .card.bg-warning *,
+[data-theme="dark"] .card.bg-warning .card-title,
+[data-theme="dark"] .card.bg-warning .card-text,
+[data-theme="dark"] .card.text-white.bg-warning,
+[data-theme="dark"] .card.text-white.bg-warning *,
+[data-theme="dark"] .card.text-white.bg-warning .card-title,
+[data-theme="dark"] .card.text-white.bg-warning .card-text {
+  color: #000000 !important;
+}
+
 /* Fix bg-light cards in dark mode - using maximum specificity */
 [data-theme="dark"] .card.bg-light,
 [data-theme="dark"] .card.bg-light.help-info-card,
