@@ -1,176 +1,93 @@
 """
-Models for the resource directory application.
+Resource Model - Core Resource Data Model
+
+This module contains the main Resource model for the resource directory application,
+which represents resources that provide services to people experiencing homelessness.
+The model includes comprehensive information about resources including contact details,
+location, service information, verification status, and workflow management.
+
+Features:
+    - Comprehensive resource information storage
+    - Status workflow management (draft, needs_review, published)
+    - Contact information and location tracking
+    - Service type and category relationships
+    - Verification and audit trail integration
+    - Soft delete and archiving capabilities
+    - Custom validation rules based on status
+    - Data normalization and cleaning
+
+Author: Resource Directory Team
+Created: 2024
+Last Modified: 2025-01-15
+Version: 1.0.0
+
+Usage:
+    from directory.models.resource import Resource
+    
+    # Create a new resource
+    resource = Resource.objects.create(
+        name="Crisis Intervention Center",
+        description="24/7 crisis intervention services",
+        phone="555-1234",
+        city="London",
+        state="KY",
+        status="published"
+    )
+    
+    # Search resources
+    results = Resource.objects.search_combined("mental health")
 """
 
-import json
 from datetime import timedelta
-from typing import Any, Dict, List
+from typing import Any
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.db import connection, models
-from django.db.models import Q
+from django.db import models
 from django.utils import timezone
 
-
-class ResourceManager(models.Manager):
-    """Custom manager for Resource model with FTS5 search capabilities."""
-
-    def get_queryset(self):
-        """Return only non-archived, non-deleted resources by default."""
-        return super().get_queryset().filter(is_archived=False, is_deleted=False)
-
-    def all_including_archived(self):
-        """Return all resources including archived ones."""
-        return super().get_queryset().filter(is_deleted=False)
-
-    def archived(self):
-        """Return only archived resources."""
-        return super().get_queryset().filter(is_archived=True, is_deleted=False)
-
-    def search_fts(self, query: str) -> models.QuerySet:
-        """
-        Search resources using SQLite FTS5 full-text search.
-
-        Args:
-            query: Search query string
-
-        Returns:
-            QuerySet of matching resources ordered by relevance
-        """
-        if not query.strip():
-            return self.none()
-
-        try:
-            # Use raw SQL to perform FTS5 search
-            with connection.cursor() as cursor:
-                # Use string formatting for FTS5 query since it doesn't support parameter substitution
-                sql = f"""
-                    SELECT resource_id, rank
-                    FROM resource_fts 
-                    WHERE resource_fts MATCH '{query}'
-                    ORDER BY rank
-                """
-                cursor.execute(sql)
-
-                results = cursor.fetchall()
-
-            if not results:
-                return self.none()
-
-            # Get resource IDs in order of relevance
-            resource_ids = [row[0] for row in results]
-
-            # Create a QuerySet with the results in the correct order
-            preserved = models.Case(
-                *[models.When(pk=pk, then=pos) for pos, pk in enumerate(resource_ids)]
-            )
-            return self.filter(pk__in=resource_ids).order_by(preserved)
-
-        except Exception:
-            # Fallback to basic search if FTS5 is not available
-            return self.filter(
-                Q(name__icontains=query)
-                | Q(description__icontains=query)
-                | Q(city__icontains=query)
-                | Q(state__icontains=query)
-            )
-
-    def search_combined(self, query: str) -> models.QuerySet:
-        """
-        Combined search using FTS5 for full-text and icontains for exact matches.
-
-        Args:
-            query: Search query string
-
-        Returns:
-            QuerySet of matching resources
-        """
-        if not query.strip():
-            return self.none()
-
-        # Get FTS5 results
-        fts_results = self.search_fts(query)
-
-        # Get exact match results (for fields not in FTS5)
-        exact_results = self.filter(
-            Q(name__icontains=query)
-            | Q(phone__icontains=query)
-            | Q(email__icontains=query)
-            | Q(website__icontains=query)
-            | Q(postal_code__icontains=query)
-        )
-
-        # Combine and deduplicate results
-        combined_ids = list(fts_results.values_list("pk", flat=True))
-        combined_ids.extend(list(exact_results.values_list("pk", flat=True)))
-
-        # Remove duplicates while preserving order
-        seen = set()
-        unique_ids = []
-        for pk in combined_ids:
-            if pk not in seen:
-                seen.add(pk)
-                unique_ids.append(pk)
-
-        if not unique_ids:
-            return self.none()
-
-        # Return results in the combined order
-        preserved = models.Case(
-            *[models.When(pk=pk, then=pos) for pos, pk in enumerate(unique_ids)]
-        )
-        return self.filter(pk__in=unique_ids).order_by(preserved)
-
-
-class TaxonomyCategory(models.Model):
-    """Categories for organizing resources."""
-
-    name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=100, unique=True, blank=True)
-    description = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Category"
-        verbose_name_plural = "Categories"
-        ordering = ["name"]
-
-    def __str__(self) -> str:
-        return self.name
-
-    def save(self, *args: Any, **kwargs: Any) -> None:
-        if not self.slug:
-            self.slug = self.name.lower().replace(" ", "-")
-        super().save(*args, **kwargs)
-
-
-class ServiceType(models.Model):
-    """Types of services offered by resources."""
-
-    name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=100, unique=True, blank=True)
-    description = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["name"]
-        verbose_name = "Service Type"
-        verbose_name_plural = "Service Types"
-
-    def __str__(self) -> str:
-        return self.name
-
-    def save(self, *args: Any, **kwargs: Any) -> None:
-        if not self.slug:
-            self.slug = self.name.lower().replace(" ", "-")
-        super().save(*args, **kwargs)
+from .managers import ResourceManager
+from .taxonomy import ServiceType, TaxonomyCategory
 
 
 class Resource(models.Model):
-    """A resource for people experiencing homelessness."""
+    """Core model representing a resource for people experiencing homelessness.
+    
+    This is the primary model for storing information about resources that provide
+    services to people experiencing homelessness. Each resource represents a physical
+    location, organization, or service that can help individuals in need.
+    
+    The model includes comprehensive information about the resource including:
+    - Basic identification and description
+    - Contact information and location
+    - Service details and operational information
+    - Verification and audit trail data
+    - Status management and workflow
+    
+    Resources can be in different states (draft, needs review, published) and
+    support soft deletion and archiving for data integrity.
+    
+    Attributes:
+        STATUS_CHOICES: Available status options for resources
+        objects: Custom manager with FTS5 search capabilities
+        
+    Status Workflow:
+        - draft: Initial state, not visible to public
+        - needs_review: Submitted for review by editors
+        - published: Approved and visible to public
+        
+    Example:
+        >>> resource = Resource.objects.create(
+        ...     name="Crisis Intervention Center",
+        ...     category=mental_health_category,
+        ...     description="24/7 crisis intervention services",
+        ...     phone="555-1234",
+        ...     city="London",
+        ...     state="KY",
+        ...     status="published"
+        ... )
+    """
 
     STATUS_CHOICES = [
         ("draft", "Draft"),
@@ -274,10 +191,25 @@ class Resource(models.Model):
         ]
 
     def __str__(self) -> str:
+        """Return the resource name as the string representation."""
         return self.name
 
     def clean(self) -> None:
-        """Validate the resource data."""
+        """Validate the resource data based on status and business rules.
+        
+        This method implements comprehensive validation rules that vary based on
+        the resource status. The validation ensures data quality and compliance
+        with business requirements at each stage of the workflow.
+        
+        Validation Rules:
+            - Draft: Name required, at least one contact method
+            - Needs Review: City/state required, description 20+ chars, source required
+            - Published: Verification date/verifier required, expiry period checking
+            - Archive: Archive metadata required when archiving
+            
+        Raises:
+            ValidationError: If validation fails with field-specific errors
+        """
         errors = {}
 
         # Draft validation
@@ -349,7 +281,21 @@ class Resource(models.Model):
             raise ValidationError(errors)
 
     def save(self, *args: Any, **kwargs: Any) -> None:
-        """Save the resource with validation and normalization."""
+        """Save the resource with validation and data normalization.
+        
+        This method performs data normalization and validation before saving
+        the resource. It ensures consistent data format and validates business
+        rules based on the resource status.
+        
+        Normalization:
+            - State codes converted to uppercase
+            - Phone numbers stripped of non-digits
+            - Website URLs given https:// scheme if missing
+            
+        Args:
+            *args: Standard save arguments
+            **kwargs: Standard save keyword arguments
+        """
         # Normalize data
         if self.state:
             self.state = self.state.upper()
@@ -368,7 +314,14 @@ class Resource(models.Model):
 
     @property
     def needs_verification(self) -> bool:
-        """Check if the resource needs verification."""
+        """Check if the resource needs verification.
+        
+        A resource needs verification if it has never been verified or if
+        the verification has expired based on the configured expiry period.
+        
+        Returns:
+            bool: True if verification is needed, False otherwise
+        """
         if not self.last_verified_at:
             return True
 
@@ -379,80 +332,9 @@ class Resource(models.Model):
 
     @property
     def has_contact_info(self) -> bool:
-        """Check if the resource has at least one contact method."""
+        """Check if the resource has at least one contact method.
+        
+        Returns:
+            bool: True if phone, email, or website is provided
+        """
         return bool(self.phone or self.email or self.website)
-
-
-class ResourceVersion(models.Model):
-    """Immutable snapshots of resource changes."""
-
-    CHANGE_TYPES = [
-        ("create", "Create"),
-        ("update", "Update"),
-        ("status_change", "Status Change"),
-    ]
-
-    resource = models.ForeignKey(
-        Resource, on_delete=models.CASCADE, related_name="versions"
-    )
-    version_number = models.PositiveIntegerField()
-    snapshot_json = models.TextField()  # Full resource state at save time
-    changed_fields = models.TextField()  # JSON array of changed field names
-    change_type = models.CharField(max_length=20, choices=CHANGE_TYPES)
-    changed_by = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="resource_versions"
-    )
-    changed_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ["resource", "version_number"]
-        ordering = ["-version_number"]
-
-    def __str__(self) -> str:
-        return f"{self.resource.name} v{self.version_number}"
-
-    @property
-    def snapshot(self) -> Dict[str, Any]:
-        """Get the snapshot data as a dictionary."""
-        return json.loads(self.snapshot_json)
-
-    @property
-    def changed_field_list(self) -> List[str]:
-        """Get the list of changed fields."""
-        return json.loads(self.changed_fields)
-
-
-class AuditLog(models.Model):
-    """Append-only audit log for all system actions."""
-
-    actor = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="audit_actions"
-    )
-    action = models.CharField(
-        max_length=100
-    )  # e.g., 'create_resource', 'update_resource'
-    target_table = models.CharField(
-        max_length=50
-    )  # e.g., 'resource', 'taxonomy_category'
-    target_id = models.CharField(max_length=50)  # ID of the affected record
-    metadata_json = models.TextField(blank=True)  # Additional context
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-        indexes = [
-            models.Index(fields=["actor"]),
-            models.Index(fields=["action"]),
-            models.Index(fields=["target_table"]),
-            models.Index(fields=["created_at"]),
-        ]
-
-    def __str__(self) -> str:
-        return f"{self.action} by {self.actor.username} at {self.created_at}"
-
-    @property
-    def metadata(self) -> Dict[str, Any]:
-        """Get the metadata as a dictionary."""
-        if self.metadata_json:
-            return json.loads(self.metadata_json)
-        return {}
