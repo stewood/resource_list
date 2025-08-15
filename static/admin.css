@@ -1,18 +1,23 @@
-/* Basic admin styling */
+/* Basic admin styling with theme support */
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: #f5f5f5;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .login {
-    background: white;
+    background: var(--card-bg);
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px var(--shadow-color);
     max-width: 400px;
     margin: 50px auto;
+    border: 1px solid var(--card-border);
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .form-row {
@@ -23,13 +28,23 @@ body {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
+    color: var(--text-primary);
 }
 
 .form-row input {
     width: 100%;
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--form-border);
     border-radius: 3px;
+    background-color: var(--form-bg);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.form-row input:focus {
+    border-color: var(--form-focus-border);
+    box-shadow: 0 0 0 0.25rem var(--form-focus-shadow);
+    outline: none;
 }
 
 .submit-row {
@@ -44,8 +59,18 @@ body {
     border: none;
     border-radius: 3px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .submit-row input:hover {
     background: #005a87;
+}
+
+/* Dark mode specific overrides for admin */
+[data-theme="dark"] .submit-row input {
+    background: #4dabf7;
+}
+
+[data-theme="dark"] .submit-row input:hover {
+    background: #74c0fc;
 }

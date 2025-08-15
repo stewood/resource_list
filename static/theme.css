@@ -1,0 +1,345 @@
+/* Theme System for Resource Directory */
+
+/* Prevent flash during initial load */
+html.no-flash * {
+    transition: none !important;
+}
+
+:root {
+  /* Light theme variables */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-muted: #6c757d;
+  --border-color: #dee2e6;
+  --border-color-light: #e9ecef;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-color-hover: rgba(0, 0, 0, 0.15);
+  --link-color: #0d6efd;
+  --link-hover-color: #0a58ca;
+  --navbar-bg: #0d6efd;
+  --navbar-text: #ffffff;
+  --footer-bg: #f8f9fa;
+  --footer-text: #6c757d;
+  --card-bg: #ffffff;
+  --card-border: #dee2e6;
+  --form-bg: #ffffff;
+  --form-border: #ced4da;
+  --form-focus-border: #86b7fe;
+  --form-focus-shadow: rgba(13, 110, 253, 0.25);
+  --alert-bg: #f8f9fa;
+  --alert-border: #dee2e6;
+  --table-bg: #ffffff;
+  --table-border: #dee2e6;
+  --table-stripe: #f8f9fa;
+}
+
+[data-theme="dark"] {
+  /* Dark theme variables */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #b0b0b0;
+  --border-color: #404040;
+  --border-color-light: #505050;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-color-hover: rgba(0, 0, 0, 0.4);
+  --link-color: #4dabf7;
+  --link-hover-color: #74c0fc;
+  --navbar-bg: #2d2d2d;
+  --navbar-text: #ffffff;
+  --footer-bg: #2d2d2d;
+  --footer-text: #b0b0b0;
+  --card-bg: #2d2d2d;
+  --card-border: #404040;
+  --form-bg: #2d2d2d;
+  --form-border: #505050;
+  --form-focus-border: #4dabf7;
+  --form-focus-shadow: rgba(77, 171, 247, 0.25);
+  --alert-bg: #2d2d2d;
+  --alert-border: #404040;
+  --table-bg: #2d2d2d;
+  --table-border: #404040;
+  --table-stripe: #404040;
+}
+
+/* Apply theme variables to elements */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Navigation */
+.navbar {
+  background-color: var(--navbar-bg) !important;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-brand,
+.navbar-nav .nav-link {
+  color: var(--navbar-text) !important;
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--navbar-text) !important;
+  opacity: 0.8;
+}
+
+/* Cards */
+.card {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px var(--shadow-color-hover);
+}
+
+/* Forms */
+.form-control,
+.form-select {
+  background-color: var(--form-bg);
+  border-color: var(--form-border);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--form-bg);
+  border-color: var(--form-focus-border);
+  box-shadow: 0 0 0 0.25rem var(--form-focus-shadow);
+  color: var(--text-primary);
+}
+
+.form-label {
+  color: var(--text-primary);
+}
+
+.form-text {
+  color: var(--text-secondary);
+}
+
+/* Tables - Enhanced dark mode styling */
+.table {
+  background-color: var(--table-bg);
+  color: var(--text-primary);
+}
+
+.table th,
+.table td {
+  border-color: var(--table-border);
+  background-color: var(--table-bg);
+  color: var(--text-primary);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > td {
+  background-color: var(--table-stripe);
+}
+
+/* Dark mode table overrides */
+[data-theme="dark"] .table {
+  background-color: var(--table-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .table th {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--table-border) !important;
+}
+
+[data-theme="dark"] .table td {
+  background-color: var(--table-bg) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--table-border) !important;
+}
+
+[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > td {
+  background-color: var(--table-stripe) !important;
+}
+
+[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(even) > td {
+  background-color: var(--table-bg) !important;
+}
+
+[data-theme="dark"] .table-hover > tbody > tr:hover > td {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Table responsive wrapper */
+[data-theme="dark"] .table-responsive {
+  background-color: var(--card-bg) !important;
+}
+
+/* Alerts */
+.alert {
+  background-color: var(--alert-bg);
+  border-color: var(--alert-border);
+  color: var(--text-primary);
+}
+
+/* Footer */
+footer {
+  background-color: var(--footer-bg) !important;
+  color: var(--footer-text);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Links */
+a {
+  color: var(--link-color);
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--link-hover-color);
+}
+
+/* Dropdown menus */
+.dropdown-menu {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+.dropdown-item {
+  color: var(--text-primary);
+}
+
+.dropdown-item:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Modal */
+.modal-content {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--border-color);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  background: none;
+  border: none;
+  color: var(--navbar-text);
+  font-size: 1.2rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.theme-toggle:hover {
+  opacity: 0.8;
+}
+
+/* Override Bootstrap text colors for dark mode */
+[data-theme="dark"] .text-muted {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+/* Ensure Bootstrap badges work in dark mode */
+[data-theme="dark"] .badge.bg-secondary {
+  background-color: #6c757d !important;
+}
+
+[data-theme="dark"] .badge.bg-light {
+  background-color: #495057 !important;
+  color: #ffffff !important;
+}
+
+/* Fix text visibility issues in dark mode */
+[data-theme="dark"] p {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .card-body p {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .card-body strong {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .list-group-item {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .list-group-item strong {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .text-muted {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] small {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .form-text {
+  color: var(--text-muted) !important;
+}
+
+/* Improve contrast for specific content areas */
+[data-theme="dark"] .card-body {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .card-body h1,
+[data-theme="dark"] .card-body h2,
+[data-theme="dark"] .card-body h3,
+[data-theme="dark"] .card-body h4,
+[data-theme="dark"] .card-body h5,
+[data-theme="dark"] .card-body h6 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-body label {
+  color: var(--text-primary) !important;
+}
+
+/* Fix description and content text visibility */
+[data-theme="dark"] .description,
+[data-theme="dark"] .content,
+[data-theme="dark"] .resource-description {
+  color: var(--text-secondary) !important;
+}
+
+/* Fix metadata and source text */
+[data-theme="dark"] .metadata,
+[data-theme="dark"] .source,
+[data-theme="dark"] .version-info {
+  color: var(--text-secondary) !important;
+}
+
+/* Fix "no information available" text */
+[data-theme="dark"] .no-info,
+[data-theme="dark"] .empty-field {
+  color: var(--text-muted) !important;
+}
+
+/* Smooth transitions for all theme changes */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Disable transitions for specific elements that shouldn't animate */
+.badge,
+.btn {
+  transition: none;
+}
