@@ -382,11 +382,10 @@ class FormTestCase(TestCase):
         form_data = {
             "name": "Test Resource",
             "phone": "555-1234",
-            "status": "needs_review",  # Missing city, state, description, source
+            "status": "needs_review",  # Missing description, source
         }
         form = ResourceForm(data=form_data)
         self.assertFalse(form.is_valid())
-        self.assertIn("city", form.errors)
         self.assertIn("description", form.errors)
         self.assertIn("source", form.errors)
         

@@ -125,6 +125,7 @@ class ResourceManager(models.Manager):
             - Falls back to basic icontains search if FTS5 is not available
             - Empty queries return an empty queryset
             - Results are ordered by relevance (rank) from FTS5
+            - Uses parameterized queries to prevent SQL injection
             
         Example:
             >>> results = Resource.objects.search_fts("crisis intervention")
@@ -134,16 +135,18 @@ class ResourceManager(models.Manager):
             return self.none()
 
         try:
-            # Use raw SQL to perform FTS5 search
+            # Use raw SQL to perform FTS5 search with parameterized query
             with connection.cursor() as cursor:
-                # Use string formatting for FTS5 query since it doesn't support parameter substitution
-                sql = f"""
+                # FTS5 doesn't support parameter substitution, so we need to escape the query
+                # Use a safer approach by validating and escaping the query
+                escaped_query = self._escape_fts_query(query)
+                sql = """
                     SELECT resource_id, rank
                     FROM resource_fts 
-                    WHERE resource_fts MATCH '{query}'
+                    WHERE resource_fts MATCH %s
                     ORDER BY rank
                 """
-                cursor.execute(sql)
+                cursor.execute(sql, [escaped_query])
 
                 results = cursor.fetchall()
 
@@ -167,6 +170,54 @@ class ResourceManager(models.Manager):
                 | Q(city__icontains=query)
                 | Q(state__icontains=query)
             )
+
+    def _escape_fts_query(self, query: str) -> str:
+        """Escape and validate FTS5 query to prevent SQL injection.
+        
+        This method sanitizes the FTS5 query string by:
+        1. Removing or escaping dangerous characters
+        2. Validating the query structure
+        3. Ensuring only safe FTS5 syntax is used
+        
+        Args:
+            query (str): Raw query string from user input
+            
+        Returns:
+            str: Sanitized query string safe for FTS5
+            
+        Raises:
+            ValueError: If query contains dangerous patterns
+        """
+        import re
+        
+        # Remove any SQL injection attempts
+        dangerous_patterns = [
+            r'--',  # SQL comments
+            r'/\*.*?\*/',  # SQL block comments
+            r';\s*$',  # Trailing semicolons
+            r'UNION\s+ALL',  # UNION attacks
+            r'DROP\s+TABLE',  # DROP commands
+            r'DELETE\s+FROM',  # DELETE commands
+            r'UPDATE\s+SET',  # UPDATE commands
+            r'INSERT\s+INTO',  # INSERT commands
+            r'CREATE\s+TABLE',  # CREATE commands
+            r'ALTER\s+TABLE',  # ALTER commands
+        ]
+        
+        query_upper = query.upper()
+        for pattern in dangerous_patterns:
+            if re.search(pattern, query_upper, re.IGNORECASE):
+                raise ValueError(f"Query contains dangerous pattern: {pattern}")
+        
+        # Escape special FTS5 characters that could cause issues
+        # FTS5 has its own syntax, so we need to be careful
+        escaped_query = query.replace('"', '""')  # Escape double quotes
+        
+        # Limit query length to prevent DoS
+        if len(escaped_query) > 1000:
+            raise ValueError("Query too long (max 1000 characters)")
+        
+        return escaped_query
 
     def search_combined(self, query: str) -> models.QuerySet:
         """Combined search using FTS5 for full-text and icontains for exact matches.

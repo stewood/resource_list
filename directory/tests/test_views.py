@@ -45,6 +45,7 @@ class BaseTestCase(TestCase):
             password="testpass123",
             first_name="Test",
             last_name="Admin",
+            is_staff=True,  # Make admin staff so they appear in verifier dropdown
         )
 
         # Create groups
@@ -441,3 +442,54 @@ class ViewTestCase(BaseTestCase):
         url = reverse("directory:dashboard")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)  # Redirect to login
+
+    def test_published_resource_edit_moves_to_needs_review(self):
+        """Test that editing a published resource moves it to needs_review status."""
+        # Create a published resource
+        published_resource = self.create_test_resource(
+            status="published",
+            last_verified_at=timezone.now() - timedelta(days=30),
+            last_verified_by=self.admin,  # Use admin instead of reviewer
+            source="Test Source"
+        )
+        
+        # Verify it's published
+        self.assertEqual(published_resource.status, "published")
+        self.assertIsNotNone(published_resource.last_verified_at)
+        self.assertIsNotNone(published_resource.last_verified_by)
+        
+        # Login as editor and edit the resource
+        self.client.login(username="editor", password="testpass123")
+        url = reverse("directory:resource_update", args=[published_resource.pk])
+        
+        # Submit form with minimal changes (just update the name)
+        response = self.client.post(url, {
+            "name": "Updated Test Resource",
+            "description": published_resource.description,
+            "city": published_resource.city,
+            "state": published_resource.state,
+            "phone": published_resource.phone,
+            "source": published_resource.source,
+            "status": "published",  # Include status field
+            "last_verified_at": published_resource.last_verified_at.strftime("%Y-%m-%dT%H:%M"),
+            "last_verified_by": published_resource.last_verified_by.pk,
+        })
+        
+        # Should redirect to detail page (success)
+        self.assertEqual(response.status_code, 302)
+        
+        # Refresh the resource from database
+        published_resource.refresh_from_db()
+        
+        # Should now be in needs_review status
+        self.assertEqual(published_resource.status, "needs_review")
+        
+        # Verification data should be cleared
+        self.assertIsNone(published_resource.last_verified_at)
+        self.assertIsNone(published_resource.last_verified_by)
+        
+        # Name should be updated
+        self.assertEqual(published_resource.name, "Updated Test Resource")
+        
+        # Updated_by should be set to the editor
+        self.assertEqual(published_resource.updated_by, self.editor)

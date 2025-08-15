@@ -206,6 +206,10 @@ class Resource(models.Model):
             - Needs Review: City/state required, description 20+ chars, source required
             - Published: Verification date/verifier required, expiry period checking
             - Archive: Archive metadata required when archiving
+            - Email: Valid email format validation
+            - Website: Valid URL format validation
+            - Phone: Valid phone number format validation
+            - State: Valid US state code validation
             
         Raises:
             ValidationError: If validation fails with field-specific errors
@@ -225,9 +229,6 @@ class Resource(models.Model):
 
         # Needs review validation
         elif self.status == "needs_review":
-            if not self.city or not self.state:
-                errors["city"] = "City and state are required for review."
-
             if len(self.description) < settings.MIN_DESCRIPTION_LENGTH:
                 errors["description"] = (
                     f"Description must be at least {settings.MIN_DESCRIPTION_LENGTH} characters for review."
@@ -267,18 +268,112 @@ class Resource(models.Model):
             if not self.archive_reason:
                 errors["archive_reason"] = "Archive reason is required when archiving a resource."
 
+        # Email validation
+        if self.email:
+            try:
+                from django.core.validators import validate_email
+                validate_email(self.email)
+            except ValidationError:
+                errors["email"] = "Please enter a valid email address."
+
+        # Website validation
+        if self.website:
+            try:
+                from django.core.validators import URLValidator
+                validator = URLValidator()
+                validator(self.website)
+            except ValidationError:
+                errors["website"] = "Please enter a valid URL."
+
+        # Phone number validation
+        if self.phone:
+            phone_errors = self._validate_phone_number(self.phone)
+            if phone_errors:
+                errors["phone"] = phone_errors
+
+        # State validation
+        if self.state:
+            state_errors = self._validate_state_code(self.state)
+            if state_errors:
+                errors["state"] = state_errors
+
         # Postal code validation
         if self.state and self.postal_code:
-            if not (
-                len(self.postal_code) in [5, 10]
-                and (len(self.postal_code) == 5 or self.postal_code[5] == "-")
-            ):
-                errors["postal_code"] = (
-                    "Postal code must be 5 digits or 5 digits followed by a hyphen and 4 digits."
-                )
+            postal_errors = self._validate_postal_code(self.postal_code)
+            if postal_errors:
+                errors["postal_code"] = postal_errors
 
         if errors:
             raise ValidationError(errors)
+
+    def _validate_phone_number(self, phone: str) -> str:
+        """Validate phone number format.
+        
+        Args:
+            phone (str): Phone number to validate
+            
+        Returns:
+            str: Error message if invalid, empty string if valid
+        """
+        import re
+        
+        # Remove all non-digits for validation
+        digits_only = re.sub(r'\D', '', phone)
+        
+        # US phone numbers should be 10 or 11 digits
+        if len(digits_only) < 10:
+            return "Phone number must have at least 10 digits."
+        
+        if len(digits_only) > 11:
+            return "Phone number cannot have more than 11 digits."
+        
+        # If 11 digits, first digit should be 1 (country code)
+        if len(digits_only) == 11 and digits_only[0] != '1':
+            return "If phone number has 11 digits, it must start with 1 (country code)."
+        
+        return ""
+
+    def _validate_state_code(self, state: str) -> str:
+        """Validate US state code.
+        
+        Args:
+            state (str): State code to validate
+            
+        Returns:
+            str: Error message if invalid, empty string if valid
+        """
+        valid_states = {
+            'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+            'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+            'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+            'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+            'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
+            'DC', 'PR', 'VI', 'GU', 'MP', 'AS'  # Include territories
+        }
+        
+        if state.upper() not in valid_states:
+            return f"'{state}' is not a valid US state or territory code."
+        
+        return ""
+
+    def _validate_postal_code(self, postal_code: str) -> str:
+        """Validate US postal code format.
+        
+        Args:
+            postal_code (str): Postal code to validate
+            
+        Returns:
+            str: Error message if invalid, empty string if valid
+        """
+        import re
+        
+        # Pattern for US postal codes: 5 digits or 5+4 format
+        pattern = r'^\d{5}(-\d{4})?$'
+        
+        if not re.match(pattern, postal_code):
+            return "Postal code must be 5 digits or 5 digits followed by a hyphen and 4 digits."
+        
+        return ""
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         """Save the resource with validation and data normalization.

@@ -246,7 +246,7 @@ class ResourceUpdateView(LoginRequiredMixin, UpdateView):
         
         This method is called when the form is valid and ready to save.
         It automatically sets the updated_by field to the current user
-        before saving the resource.
+        and transitions published resources to needs_review status.
         
         Args:
             form: The validated ResourceForm instance
@@ -254,7 +254,19 @@ class ResourceUpdateView(LoginRequiredMixin, UpdateView):
         Returns:
             HttpResponse: Redirect response to the success URL
         """
+        # Capture original status before changes
+        original_status = form.instance.status
+        
+        # Set the user who is making the change
         form.instance.updated_by = self.request.user
+        
+        # If resource was published and is being edited, move to needs_review
+        if original_status == "published":
+            form.instance.status = "needs_review"
+            # Clear verification data since it needs re-verification
+            form.instance.last_verified_at = None
+            form.instance.last_verified_by = None
+        
         return super().form_valid(form)
 
     def get_success_url(self) -> str:

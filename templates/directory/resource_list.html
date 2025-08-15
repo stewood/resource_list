@@ -17,111 +17,217 @@
 <!-- Search and Filters -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Search & Filters</h5>
+        <div class="card filter-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-filter me-2"></i>Search & Filters
+                </h5>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="toggleFilters">
+                        <i class="fas fa-chevron-up" id="toggleIcon"></i> Hide Filters
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="resetFilters">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                </div>
             </div>
-            <div class="card-body">
-                <form method="get" hx-get="{% url 'directory:resource_list' %}" hx-target="#resource-list" hx-push-url="true">
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <label for="q" class="form-label">Search</label>
-                            <input type="text" class="form-control" id="q" name="q" 
-                                   value="{{ current_filters.q }}" placeholder="Search resources...">
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="status" class="form-label">Status</label>
-                            <select class="form-control" id="status" name="status">
-                                <option value="">All Statuses</option>
-                                {% for value, label in status_choices %}
-                                    <option value="{{ value }}" {% if current_filters.status == value %}selected{% endif %}>
-                                        {{ label }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="category" class="form-label">Category</label>
-                            <select class="form-control" id="category" name="category">
-                                <option value="">All Categories</option>
-                                {% for category in categories %}
-                                    <option value="{{ category.id }}" {% if current_filters.category == category.id|stringformat:"s" %}selected{% endif %}>
-                                        {{ category.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="service_type" class="form-label">Service Type</label>
-                            <select class="form-control" id="service_type" name="service_type">
-                                <option value="">All Service Types</option>
-                                {% for service_type in service_types %}
-                                    <option value="{{ service_type.id }}" {% if current_filters.service_type == service_type.id|stringformat:"s" %}selected{% endif %}>
-                                        {{ service_type.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="city" class="form-label">City</label>
-                            <input type="text" class="form-control" id="city" name="city" 
-                                   value="{{ current_filters.city }}" placeholder="Filter by city">
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="state" class="form-label">State</label>
-                            <input type="text" class="form-control" id="state" name="state" 
-                                   value="{{ current_filters.state }}" placeholder="Filter by state">
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="county" class="form-label">County</label>
-                            <input type="text" class="form-control" id="county" name="county" 
-                                   value="{{ current_filters.county }}" placeholder="Filter by county">
+            <div class="card-body" id="filterContent">
+                <form method="get" hx-get="{% url 'directory:resource_list' %}" hx-target="#resource-list" hx-push-url="true" id="filterForm">
+                    
+                    <!-- Primary Search Bar -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="search-container">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control form-control-lg" id="q" name="q" 
+                                           value="{{ current_filters.q }}" placeholder="Search resources by name, description, or keywords...">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> Search
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-2 mb-3">
-                            <label for="emergency" class="form-label">Emergency Service</label>
-                            <select class="form-control" id="emergency" name="emergency">
-                                <option value="">All Services</option>
-                                <option value="true" {% if current_filters.emergency == 'true' %}selected{% endif %}>Emergency Only</option>
-                                <option value="false" {% if current_filters.emergency == 'false' %}selected{% endif %}>Non-Emergency Only</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="hour24" class="form-label">24/7 Service</label>
-                            <select class="form-control" id="hour24" name="hour24">
-                                <option value="">All Services</option>
-                                <option value="true" {% if current_filters.hour24 == 'true' %}selected{% endif %}>24/7 Only</option>
-                                <option value="false" {% if current_filters.hour24 == 'false' %}selected{% endif %}>Non-24/7 Only</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="archive" class="form-label">Archive Status</label>
-                            <select class="form-control" id="archive" name="archive">
-                                <option value="">Active Only</option>
-                                <option value="archived" {% if current_filters.archive == 'archived' %}selected{% endif %}>Archived Only</option>
-                                <option value="active" {% if current_filters.archive == 'active' %}selected{% endif %}>Active Only</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="sort" class="form-label">Sort</label>
-                            <select class="form-control" id="sort" name="sort">
-                                <option value="-updated_at" {% if current_filters.sort == '-updated_at' %}selected{% endif %}>Recent</option>
-                                <option value="name" {% if current_filters.sort == 'name' %}selected{% endif %}>Name A-Z</option>
-                                <option value="-name" {% if current_filters.sort == '-name' %}selected{% endif %}>Name Z-A</option>
-                                <option value="city" {% if current_filters.sort == 'city' %}selected{% endif %}>City A-Z</option>
-                                <option value="-city" {% if current_filters.sort == '-city' %}selected{% endif %}>City Z-A</option>
-                            </select>
+
+                    <!-- Quick Filter Buttons -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="quick-filters">
+                                <label class="form-label fw-bold mb-2">
+                                    <i class="fas fa-bolt me-1"></i>Quick Filters
+                                </label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-outline-danger quick-filter-btn" data-filter="emergency" data-value="true">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>Emergency Services
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success quick-filter-btn" data-filter="hour24" data-value="true">
+                                        <i class="fas fa-clock me-1"></i>24/7 Services
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary quick-filter-btn" data-filter="status" data-value="published">
+                                        <i class="fas fa-check-circle me-1"></i>Published Only
+                                    </button>
+                                    <button type="button" class="btn btn-outline-warning quick-filter-btn" data-filter="needs_verification" data-value="true">
+                                        <i class="fas fa-exclamation-circle me-1"></i>Needs Verification
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Active Filters Display -->
+                    <div class="row mb-3" id="activeFiltersContainer" style="display: none;">
+                        <div class="col-12">
+                            <div class="active-filters">
+                                <label class="form-label fw-bold mb-2">
+                                    <i class="fas fa-tags me-1"></i>Active Filters
+                                </label>
+                                <div id="activeFilters" class="d-flex flex-wrap gap-2">
+                                    <!-- Active filters will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Filter Sections -->
+                    <div class="row">
+                        <!-- Service Information -->
+                        <div class="col-lg-4 mb-3">
+                            <div class="filter-section">
+                                <h6 class="filter-section-title">
+                                    <i class="fas fa-cogs me-2"></i>Service Information
+                                </h6>
+                                <div class="filter-group">
+                                    <label for="category" class="form-label">Category</label>
+                                    <select class="form-select" id="category" name="category">
+                                        <option value="">All Categories</option>
+                                        {% for category in categories %}
+                                            <option value="{{ category.id }}" {% if current_filters.category == category.id|stringformat:"s" %}selected{% endif %}>
+                                                {{ category.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="service_type" class="form-label">Service Type</label>
+                                    <select class="form-select" id="service_type" name="service_type">
+                                        <option value="">All Service Types</option>
+                                        {% for service_type in service_types %}
+                                            <option value="{{ service_type.id }}" {% if current_filters.service_type == service_type.id|stringformat:"s" %}selected{% endif %}>
+                                                {{ service_type.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="">All Statuses</option>
+                                        {% for value, label in status_choices %}
+                                            <option value="{{ value }}" {% if current_filters.status == value %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="col-lg-4 mb-3">
+                            <div class="filter-section">
+                                <h6 class="filter-section-title">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Location
+                                </h6>
+                                <div class="filter-group">
+                                    <label for="city" class="form-label">City</label>
+                                    <input type="text" class="form-control" id="city" name="city" 
+                                           value="{{ current_filters.city }}" placeholder="Enter city name">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="state" class="form-label">State</label>
+                                    <select class="form-select" id="state" name="state">
+                                        <option value="">All States</option>
+                                        <option value="KY" {% if current_filters.state == 'KY' %}selected{% endif %}>Kentucky</option>
+                                        <option value="TN" {% if current_filters.state == 'TN' %}selected{% endif %}>Tennessee</option>
+                                        <option value="OH" {% if current_filters.state == 'OH' %}selected{% endif %}>Ohio</option>
+                                        <option value="IN" {% if current_filters.state == 'IN' %}selected{% endif %}>Indiana</option>
+                                        <option value="WV" {% if current_filters.state == 'WV' %}selected{% endif %}>West Virginia</option>
+                                        <option value="VA" {% if current_filters.state == 'VA' %}selected{% endif %}>Virginia</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="county" class="form-label">County</label>
+                                    <input type="text" class="form-control" id="county" name="county" 
+                                           value="{{ current_filters.county }}" placeholder="Enter county name">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Service Availability -->
+                        <div class="col-lg-4 mb-3">
+                            <div class="filter-section">
+                                <h6 class="filter-section-title">
+                                    <i class="fas fa-clock me-2"></i>Service Availability
+                                </h6>
+                                <div class="filter-group">
+                                    <label for="emergency" class="form-label">Emergency Services</label>
+                                    <select class="form-select" id="emergency" name="emergency">
+                                        <option value="">All Services</option>
+                                        <option value="true" {% if current_filters.emergency == 'true' %}selected{% endif %}>Emergency Only</option>
+                                        <option value="false" {% if current_filters.emergency == 'false' %}selected{% endif %}>Non-Emergency Only</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="hour24" class="form-label">24/7 Services</label>
+                                    <select class="form-select" id="hour24" name="hour24">
+                                        <option value="">All Services</option>
+                                        <option value="true" {% if current_filters.hour24 == 'true' %}selected{% endif %}>24/7 Only</option>
+                                        <option value="false" {% if current_filters.hour24 == 'false' %}selected{% endif %}>Non-24/7 Only</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="archive" class="form-label">Archive Status</label>
+                                    <select class="form-select" id="archive" name="archive">
+                                        <option value="">Active Only</option>
+                                        <option value="archived" {% if current_filters.archive == 'archived' %}selected{% endif %}>Archived Only</option>
+                                        <option value="active" {% if current_filters.archive == 'active' %}selected{% endif %}>Active Only</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sort Options -->
                     <div class="row">
                         <div class="col-12">
-                            <button type="submit" class="btn btn-primary me-2">
-                                <i class="fas fa-search"></i> Search
-                            </button>
-                            <a href="{% url 'directory:resource_list' %}" class="btn btn-outline-secondary">
-                                <i class="fas fa-times"></i> Clear
-                            </a>
+                            <div class="sort-section">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <label for="sort" class="form-label me-2 mb-0">
+                                            <i class="fas fa-sort me-1"></i>Sort by:
+                                        </label>
+                                        <select class="form-select form-select-sm" id="sort" name="sort" style="width: auto;">
+                                            <option value="-updated_at" {% if current_filters.sort == '-updated_at' %}selected{% endif %}>Most Recent</option>
+                                            <option value="name" {% if current_filters.sort == 'name' %}selected{% endif %}>Name A-Z</option>
+                                            <option value="-name" {% if current_filters.sort == '-name' %}selected{% endif %}>Name Z-A</option>
+                                            <option value="city" {% if current_filters.sort == 'city' %}selected{% endif %}>City A-Z</option>
+                                            <option value="-city" {% if current_filters.sort == '-city' %}selected{% endif %}>City Z-A</option>
+                                            <option value="emergency_first" {% if current_filters.sort == 'emergency_first' %}selected{% endif %}>Emergency First</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-search"></i> Apply Filters
+                                        </button>
+                                        <a href="{% url 'directory:resource_list' %}" class="btn btn-outline-secondary">
+                                            <i class="fas fa-times"></i> Clear All
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -297,13 +403,235 @@
 
 {% block extra_js %}
 <script>
-    // Auto-submit form on filter changes
     document.addEventListener('DOMContentLoaded', function() {
-        const filterInputs = document.querySelectorAll('#status, #category, #sort');
+        // Filter toggle functionality
+        const toggleBtn = document.getElementById('toggleFilters');
+        const toggleIcon = document.getElementById('toggleIcon');
+        const filterContent = document.getElementById('filterContent');
+        const resetBtn = document.getElementById('resetFilters');
+        const filterForm = document.getElementById('filterForm');
+        const activeFiltersContainer = document.getElementById('activeFiltersContainer');
+        const activeFilters = document.getElementById('activeFilters');
+        
+        // Toggle filter visibility
+        toggleBtn.addEventListener('click', function() {
+            if (filterContent.style.display === 'none') {
+                filterContent.style.display = 'block';
+                toggleIcon.className = 'fas fa-chevron-up';
+                toggleBtn.innerHTML = '<i class="fas fa-chevron-up" id="toggleIcon"></i> Hide Filters';
+            } else {
+                filterContent.style.display = 'none';
+                toggleIcon.className = 'fas fa-chevron-down';
+                toggleBtn.innerHTML = '<i class="fas fa-chevron-down" id="toggleIcon"></i> Show Filters';
+            }
+        });
+        
+        // Reset filters
+        resetBtn.addEventListener('click', function() {
+            // Clear all form inputs
+            const inputs = filterForm.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                if (input.type === 'text') {
+                    input.value = '';
+                } else if (input.tagName === 'SELECT') {
+                    input.selectedIndex = 0;
+                }
+            });
+            
+            // Remove active filter tags
+            activeFilters.innerHTML = '';
+            activeFiltersContainer.style.display = 'none';
+            
+            // Remove active class from quick filter buttons
+            document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Submit form to refresh results
+            filterForm.submit();
+        });
+        
+        // Quick filter buttons
+        document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filterName = this.dataset.filter;
+                const filterValue = this.dataset.value;
+                
+                // Toggle active state
+                this.classList.toggle('active');
+                
+                // Update form field
+                const formField = document.getElementById(filterName);
+                if (formField) {
+                    if (this.classList.contains('active')) {
+                        formField.value = filterValue;
+                    } else {
+                        formField.value = '';
+                    }
+                }
+                
+                // Update active filters display
+                updateActiveFilters();
+                
+                // Submit form
+                filterForm.submit();
+            });
+        });
+        
+        // Auto-submit form on filter changes (with debounce)
+        let submitTimeout;
+        const filterInputs = document.querySelectorAll('#category, #service_type, #status, #emergency, #hour24, #archive, #sort');
         filterInputs.forEach(input => {
             input.addEventListener('change', function() {
-                this.closest('form').submit();
+                clearTimeout(submitTimeout);
+                submitTimeout = setTimeout(() => {
+                    updateActiveFilters();
+                    filterForm.submit();
+                }, 300);
             });
+        });
+        
+        // Update active filters display
+        function updateActiveFilters() {
+            activeFilters.innerHTML = '';
+            let hasActiveFilters = false;
+            
+            // Check each form field for values
+            const formData = new FormData(filterForm);
+            for (let [key, value] of formData.entries()) {
+                if (value && key !== 'q' && key !== 'page') {
+                    hasActiveFilters = true;
+                    const filterTag = createFilterTag(key, value);
+                    activeFilters.appendChild(filterTag);
+                }
+            }
+            
+            // Show/hide active filters container
+            activeFiltersContainer.style.display = hasActiveFilters ? 'block' : 'none';
+        }
+        
+        // Create filter tag element
+        function createFilterTag(filterName, filterValue) {
+            const tag = document.createElement('span');
+            tag.className = 'active-filter-tag';
+            
+            // Get display name for filter
+            const displayName = getFilterDisplayName(filterName, filterValue);
+            
+            tag.innerHTML = `
+                <span>${displayName}</span>
+                <button type="button" class="remove-filter" data-filter="${filterName}" data-value="${filterValue}">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            // Add remove functionality
+            tag.querySelector('.remove-filter').addEventListener('click', function() {
+                const filterField = document.getElementById(filterName);
+                if (filterField) {
+                    filterField.value = '';
+                }
+                
+                // Remove active class from quick filter button
+                const quickBtn = document.querySelector(`[data-filter="${filterName}"][data-value="${filterValue}"]`);
+                if (quickBtn) {
+                    quickBtn.classList.remove('active');
+                }
+                
+                updateActiveFilters();
+                filterForm.submit();
+            });
+            
+            return tag;
+        }
+        
+        // Get display name for filter
+        function getFilterDisplayName(filterName, filterValue) {
+            const filterLabels = {
+                'category': 'Category',
+                'service_type': 'Service Type',
+                'status': 'Status',
+                'emergency': 'Emergency Services',
+                'hour24': '24/7 Services',
+                'archive': 'Archive Status',
+                'city': 'City',
+                'state': 'State',
+                'county': 'County',
+                'sort': 'Sort'
+            };
+            
+            const valueLabels = {
+                'true': 'Yes',
+                'false': 'No',
+                'published': 'Published',
+                'draft': 'Draft',
+                'needs_review': 'Needs Review',
+                'archived': 'Archived',
+                'active': 'Active',
+                'KY': 'Kentucky',
+                'TN': 'Tennessee',
+                'OH': 'Ohio',
+                'IN': 'Indiana',
+                'WV': 'West Virginia',
+                'VA': 'Virginia',
+                '-updated_at': 'Most Recent',
+                'name': 'Name A-Z',
+                '-name': 'Name Z-A',
+                'city': 'City A-Z',
+                '-city': 'City Z-A',
+                'emergency_first': 'Emergency First'
+            };
+            
+            const label = filterLabels[filterName] || filterName;
+            const value = valueLabels[filterValue] || filterValue;
+            
+            return `${label}: ${value}`;
+        }
+        
+        // Initialize active filters on page load
+        updateActiveFilters();
+        
+        // Add loading state to form submission
+        filterForm.addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+                submitBtn.disabled = true;
+            }
+        });
+        
+        // Search input with debounce
+        const searchInput = document.getElementById('q');
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (this.value.length >= 3 || this.value.length === 0) {
+                    filterForm.submit();
+                }
+            }, 500);
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + F to focus search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+            
+            // Escape to clear search
+            if (e.key === 'Escape' && document.activeElement === searchInput) {
+                searchInput.value = '';
+                filterForm.submit();
+            }
+        });
+        
+        // Accessibility improvements
+        filterForm.querySelectorAll('input, select, button').forEach(element => {
+            if (!element.id) {
+                element.id = 'filter-' + Math.random().toString(36).substr(2, 9);
+            }
         });
     });
 </script>
