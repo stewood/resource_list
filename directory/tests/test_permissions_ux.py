@@ -41,7 +41,7 @@ class PermissionUXTestCase(BaseTestCase):
         # Try to submit for review (should be denied)
         resource = self.create_test_resource(
             name="Test Resource",
-            phone="5551234",
+            phone="5551234567",
             status="draft",
         )
         
@@ -128,7 +128,7 @@ class PermissionUXTestCase(BaseTestCase):
         # Create resources by different users
         resource1 = self.create_test_resource(
             name="Editor's Resource",
-            phone="5551111",
+            phone="5551111111",
             status="draft",
             created_by=self.editor,
             updated_by=self.editor,
@@ -136,7 +136,7 @@ class PermissionUXTestCase(BaseTestCase):
         
         resource2 = self.create_test_resource(
             name="Reviewer's Resource",
-            phone="5552222",
+            phone="5552222222",
             status="needs_review",
             created_by=self.reviewer,
             updated_by=self.reviewer,

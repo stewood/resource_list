@@ -77,7 +77,7 @@ class BaseTestCase(TestCase):
             "description": "This is a test resource with a description that meets the minimum length requirement of twenty characters.",
             "city": "Test City",
             "state": "CA",
-            "phone": "5551234",  # No dashes - will be normalized
+            "phone": "5551234567",  # No dashes - will be normalized
             "status": "draft",
             "created_by": self.user,
             "updated_by": self.user,
@@ -112,7 +112,7 @@ class SearchTestCase(BaseTestCase):
             description="Provides food assistance to families in need with comprehensive support services.",
             city="Test City",
             state="CA",
-            phone="5551234",
+            phone="5551234567",
             status="published",
             last_verified_at=timezone.now() - timedelta(days=30),
             last_verified_by=self.reviewer,
@@ -124,7 +124,7 @@ class SearchTestCase(BaseTestCase):
             description="Emergency shelter for homeless individuals with comprehensive support services.",
             city="Test City",
             state="CA",
-            phone="5555678",
+            phone="5555678901",
             status="published",
             last_verified_at=timezone.now() - timedelta(days=30),
             last_verified_by=self.reviewer,
@@ -136,7 +136,7 @@ class SearchTestCase(BaseTestCase):
             description="Mental health services and counseling with comprehensive support services.",
             city="Other City",
             state="CA",
-            phone="5559999",
+            phone="5559999999",
             status="published",
             last_verified_at=timezone.now() - timedelta(days=30),
             last_verified_by=self.reviewer,
@@ -247,7 +247,7 @@ class SearchTestCase(BaseTestCase):
 
     def test_search_by_phone(self):
         """Test search by phone number."""
-        results = Resource.objects.filter(phone__icontains="5551234")
+        results = Resource.objects.filter(phone__icontains="5551234567")
         self.assertEqual(results.count(), 1)
         self.assertEqual(results.first(), self.resource1)
 
@@ -312,7 +312,7 @@ class SearchTestCase(BaseTestCase):
         # Create a draft resource
         draft_resource = self.create_test_resource(
             name="Draft Resource",
-            phone="5550000",
+            phone="5550000000",
             status="draft",
         )
         
@@ -332,7 +332,7 @@ class SearchTestCase(BaseTestCase):
         # Create resources with different verification statuses
         verified_resource = self.create_test_resource(
             name="Recently Verified",
-            phone="5551111",
+            phone="5551111111",
             status="published",
             last_verified_at=timezone.now() - timedelta(days=30),
             last_verified_by=self.reviewer,
@@ -345,7 +345,7 @@ class SearchTestCase(BaseTestCase):
             description="This is a test resource with a description that meets the minimum length requirement.",
             city="Test City",
             state="CA",
-            phone="5552222",
+            phone="5552222222",
             status="published",
             last_verified_at=timezone.now() - timedelta(days=200),
             last_verified_by=self.reviewer,
@@ -402,7 +402,7 @@ class SearchTestCase(BaseTestCase):
         # Create resource with specific creation date
         old_resource = self.create_test_resource(
             name="Old Resource",
-            phone="5553333",
+            phone="5553333333",
             status="draft",
         )
         

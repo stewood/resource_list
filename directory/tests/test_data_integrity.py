@@ -38,7 +38,7 @@ class DataIntegrityTestCase(BaseTestCase):
             state="CA",
             county="Test County",
             postal_code="12345",
-            phone="5551234",
+            phone="5551234567",
             email="test@example.com",
             website="https://example.com",
             status="draft",
@@ -57,7 +57,7 @@ class DataIntegrityTestCase(BaseTestCase):
         
         # Verify data integrity
         self.assertEqual(resource.name, "Complete Test Resource")
-        self.assertEqual(resource.phone, "5551234")  # Normalized phone number
+        self.assertEqual(resource.phone, "5551234567")  # Normalized phone number
         self.assertEqual(resource.website, "https://example.com")  # Normalized URL
         self.assertEqual(resource.state, "CA")  # Normalized state
         
@@ -73,7 +73,7 @@ class DataIntegrityTestCase(BaseTestCase):
         self.assertEqual(resource.state, "CA")
         self.assertEqual(resource.county, "Test County")
         self.assertEqual(resource.postal_code, "12345")
-        self.assertEqual(resource.phone, "5551234")  # Normalized phone number
+        self.assertEqual(resource.phone, "5551234567")  # Normalized phone number
         self.assertEqual(resource.email, "test@example.com")
         self.assertEqual(resource.website, "https://example.com")
         self.assertEqual(resource.category, self.category)

@@ -98,7 +98,7 @@ class BaseTestCase(TestCase):
             "description": "This is a test resource with a description that meets the minimum length requirement of twenty characters.",
             "city": "Test City",
             "state": "CA",
-            "phone": "5551234",  # No dashes - will be normalized
+            "phone": "5551234567",  # Valid 10-digit phone number
             "status": "draft",
             "created_by": self.user,
             "updated_by": self.user,

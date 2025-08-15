@@ -79,7 +79,7 @@ class BaseTestCase(TestCase):
             "description": "This is a test resource with a description that meets the minimum length requirement of twenty characters.",
             "city": "Test City",
             "state": "CA",
-            "phone": "5551234",  # No dashes - will be normalized
+            "phone": "5551234567",  # Valid 10-digit phone number
             "status": "draft",
             "created_by": self.user,
             "updated_by": self.user,
@@ -114,7 +114,7 @@ class ViewTestCase(BaseTestCase):
             description="This is a test resource with a description that meets the minimum length requirement.",
             city="Test City",
             state="CA",
-            phone="5551234",
+            phone="5551234567",
             status="draft",
         )
 
@@ -272,7 +272,7 @@ class ViewTestCase(BaseTestCase):
         # Create additional resources for testing counts
         self.create_test_resource(
             name="Published Resource",
-            phone="5555678",
+            phone="5555678901",
             status="published",
             last_verified_at=timezone.now() - timedelta(days=30),
             last_verified_by=self.reviewer,
@@ -281,7 +281,7 @@ class ViewTestCase(BaseTestCase):
         
         self.create_test_resource(
             name="Review Resource",
-            phone="5559999",
+            phone="5559999999",
             status="needs_review",
             source="Test Source",
         )
@@ -303,7 +303,7 @@ class ViewTestCase(BaseTestCase):
         for i in range(25):
             self.create_test_resource(
                 name=f"Resource {i}",
-                phone=f"555{i:04d}",
+                phone=f"555{i:04d}000",
                 status="draft",
             )
         
@@ -322,13 +322,13 @@ class ViewTestCase(BaseTestCase):
         # Create resources with different names for sorting
         alpha_resource = self.create_test_resource(
             name="Alpha Resource",
-            phone="5551111",
+            phone="5551111111",
             status="draft",
         )
         
         beta_resource = self.create_test_resource(
             name="Beta Resource",
-            phone="5552222",
+            phone="5552222222",
             status="draft",
         )
         

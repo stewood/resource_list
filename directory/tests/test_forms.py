@@ -71,7 +71,7 @@ class FormTestCase(TestCase):
         """Test ResourceForm with valid draft data."""
         form_data = {
             "name": "Test Resource",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "draft",
         }
         
@@ -97,7 +97,7 @@ class FormTestCase(TestCase):
             "city": "Test City",
             "state": "CA",
             "source": "Test Source",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "needs_review",
         }
         
@@ -112,7 +112,7 @@ class FormTestCase(TestCase):
             "city": "Test City",
             "state": "CA",
             "source": "Test Source",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "needs_review",
         }
         
@@ -128,7 +128,7 @@ class FormTestCase(TestCase):
             "city": "Test City",
             "state": "CA",
             "source": "Test Source",
-            "phone": "5551234",  # No dashes - will be normalized
+            "phone": "5551234567",  # No dashes - will be normalized
             "status": "published",
             "last_verified_at": timezone.now().strftime("%Y-%m-%dT%H:%M"),
             "last_verified_by": self.reviewer.pk,
@@ -145,7 +145,7 @@ class FormTestCase(TestCase):
             "city": "Test City",
             "state": "CA",
             "source": "Test Source",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "published",
         }
         
@@ -157,7 +157,7 @@ class FormTestCase(TestCase):
         """Test ResourceForm with category selection."""
         form_data = {
             "name": "Test Resource",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "draft",
             "category": self.category.pk,
         }
@@ -169,7 +169,7 @@ class FormTestCase(TestCase):
         """Test ResourceForm with service type selection."""
         form_data = {
             "name": "Test Resource",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "draft",
             "service_types": [self.service_type.pk],
         }
@@ -182,7 +182,7 @@ class FormTestCase(TestCase):
         # Test with phone
         form_data = {
             "name": "Test Resource",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "draft",
         }
         form = ResourceForm(data=form_data)
@@ -209,7 +209,7 @@ class FormTestCase(TestCase):
         # Test with multiple contact methods
         form_data = {
             "name": "Test Resource",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "email": "test@example.com",
             "website": "https://example.com",
             "status": "draft",
@@ -224,7 +224,7 @@ class FormTestCase(TestCase):
         for code in valid_codes:
             form_data = {
                 "name": "Test Resource",
-                "phone": "555-1234",
+                "phone": "555-123-4567",
                 "state": "CA",
                 "postal_code": code,
                 "status": "draft",
@@ -237,7 +237,7 @@ class FormTestCase(TestCase):
         for code in invalid_codes:
             form_data = {
                 "name": "Test Resource",
-                "phone": "555-1234",
+                "phone": "555-123-4567",
                 "state": "CA",
                 "postal_code": code,
                 "status": "draft",
@@ -255,7 +255,7 @@ class FormTestCase(TestCase):
         """Test ResourceForm field required validation."""
         # Test without name
         form_data = {
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "draft",
         }
         form = ResourceForm(data=form_data)
@@ -309,7 +309,7 @@ class FormTestCase(TestCase):
         # Valid state
         form_data = {
             "name": "Test Resource",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "state": "CA",
             "status": "draft",
         }
@@ -319,7 +319,7 @@ class FormTestCase(TestCase):
         # Invalid state (too long)
         form_data = {
             "name": "Test Resource",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "state": "CALIFORNIA",
             "status": "draft",
         }
@@ -332,7 +332,7 @@ class FormTestCase(TestCase):
         # Valid phone
         form_data = {
             "name": "Test Resource",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "draft",
         }
         form = ResourceForm(data=form_data)
@@ -356,7 +356,7 @@ class FormTestCase(TestCase):
             "city": "Test City",
             "state": "CA",
             "source": "Test Source",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "needs_review",
         }
         form = ResourceForm(data=form_data)
@@ -370,7 +370,7 @@ class FormTestCase(TestCase):
             "city": "Test City",
             "state": "CA",
             "source": "Test Source",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "needs_review",
         }
         form = ResourceForm(data=form_data)
@@ -381,7 +381,7 @@ class FormTestCase(TestCase):
         # Draft to needs_review without required fields
         form_data = {
             "name": "Test Resource",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "needs_review",  # Missing description, source
         }
         form = ResourceForm(data=form_data)
@@ -396,7 +396,7 @@ class FormTestCase(TestCase):
             "city": "Test City",
             "state": "CA",
             "source": "Test Source",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "published",  # Missing verification
         }
         form = ResourceForm(data=form_data)

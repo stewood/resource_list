@@ -66,7 +66,7 @@ class VersionTestCase(TestCase):
         """Test that versions are created when resources are saved."""
         resource = Resource.objects.create(
             name="Test Resource",
-            phone="555-1234",
+            phone="555-123-4567",
             status="draft",
             created_by=self.user,
             updated_by=self.user,
@@ -81,7 +81,7 @@ class VersionTestCase(TestCase):
         """Test that new versions are created when resources are updated."""
         resource = Resource.objects.create(
             name="Test Resource",
-            phone="555-1234",
+            phone="555-123-4567",
             status="draft",
             created_by=self.user,
             updated_by=self.user,
@@ -105,7 +105,7 @@ class VersionTestCase(TestCase):
             description="Test description",
             city="Test City",
             state="CA",
-            phone="5551234",
+            phone="5551234567",
             status="draft",
             created_by=self.user,
             updated_by=self.user,
@@ -120,7 +120,7 @@ class VersionTestCase(TestCase):
         self.assertEqual(snapshot["description"], "Test description")
         self.assertEqual(snapshot["city"], "Test City")
         self.assertEqual(snapshot["state"], "CA")
-        self.assertEqual(snapshot["phone"], "5551234")  # Normalized phone number
+        self.assertEqual(snapshot["phone"], "5551234567")  # Normalized phone number
         self.assertEqual(snapshot["status"], "draft")
 
     def test_version_comparison_utility(self):
@@ -224,7 +224,7 @@ class VersionTestCase(TestCase):
         """Test that versions are ordered correctly."""
         resource = Resource.objects.create(
             name="Test Resource",
-            phone="555-1234",
+            phone="555-123-4567",
             status="draft",
             created_by=self.user,
             updated_by=self.user,
@@ -256,7 +256,7 @@ class VersionTestCase(TestCase):
             description="Test description",
             city="Test City",
             state="CA",
-            phone="5551234",
+            phone="5551234567",
             status="draft",
             created_by=self.user,
             updated_by=self.user,
@@ -282,7 +282,7 @@ class VersionTestCase(TestCase):
             description="Test description",
             city="Test City",
             state="CA",
-            phone="5551234",
+            phone="5551234567",
             status="draft",
             created_by=self.user,
             updated_by=self.user,
@@ -303,7 +303,7 @@ class VersionTestCase(TestCase):
             description="Test description",
             city="Test City",
             state="CA",
-            phone="5551234",
+            phone="5551234567",
             status="draft",
             category=self.category,
             created_by=self.user,
@@ -327,7 +327,7 @@ class VersionTestCase(TestCase):
         resource = Resource.objects.create(
             name="Test Resource",
             description="Test description",
-            phone="5551234",  # Required for draft
+            phone="5551234567",  # Required for draft
             status="draft",
             created_by=self.user,
             updated_by=self.user,

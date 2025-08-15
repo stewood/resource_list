@@ -110,7 +110,7 @@ class ResourceModelTestCase(BaseTestCase):
     def test_draft_validation_failure_no_name(self):
         """Test draft validation fails without name."""
         resource = Resource(
-            phone="555-1234",
+            phone="555-123-4567",
             status="draft",
             created_by=self.user,
             updated_by=self.user,
@@ -143,7 +143,7 @@ class ResourceModelTestCase(BaseTestCase):
             city="Test City",
             state="CA",
             source="Test Source",
-            phone="555-1234",
+            phone="555-123-4567",
             status="needs_review",
             created_by=self.user,
             updated_by=self.user,
@@ -158,7 +158,7 @@ class ResourceModelTestCase(BaseTestCase):
             name="Test Resource",
             description="This is a detailed description with enough characters",
             source="Test Source",
-            phone="555-1234",
+            phone="555-123-4567",
             status="needs_review",
             created_by=self.user,
             updated_by=self.user,
@@ -175,7 +175,7 @@ class ResourceModelTestCase(BaseTestCase):
             city="Test City",
             state="CA",
             source="Test Source",
-            phone="555-1234",
+            phone="555-123-4567",
             status="needs_review",
             created_by=self.user,
             updated_by=self.user,
@@ -194,7 +194,7 @@ class ResourceModelTestCase(BaseTestCase):
             city="Test City",
             state="CA",
             source="Test Source",
-            phone="555-1234",
+            phone="555-123-4567",
             status="published",
             last_verified_at=timezone.now(),
             last_verified_by=self.user,
@@ -423,7 +423,7 @@ class ResourceModelTestCase(BaseTestCase):
         # Create resource with valid verification date
         resource = Resource.objects.create(
             name="Test Resource",
-            phone="5551234",
+            phone="5551234567",
             status="published",
             last_verified_at=timezone.now() - timedelta(days=30),  # Valid
             last_verified_by=self.reviewer,
@@ -452,7 +452,7 @@ class ResourceModelTestCase(BaseTestCase):
         # Create a resource with contact info
         resource = Resource.objects.create(
             name="Test Resource",
-            phone="5551234",  # Need at least one contact method for draft
+            phone="5551234567",  # Need at least one contact method for draft
             status="draft",
             created_by=self.user,
             updated_by=self.user,
@@ -475,7 +475,7 @@ class ResourceModelTestCase(BaseTestCase):
         # Test with phone
         resource_with_phone = Resource(
             name="Test Resource",
-            phone="5551234",
+            phone="5551234567",
             email="",
             website="",
             status="draft",
@@ -533,7 +533,7 @@ class ServiceTypeModelTestCase(BaseTestCase):
         
         resource = Resource.objects.create(
             name="Food Bank",
-            phone="555-1234",
+            phone="555-123-4567",
             status="draft",
             created_by=self.user,
             updated_by=self.user,
@@ -690,7 +690,7 @@ class TaxonomyCategoryModelTestCase(BaseTestCase):
         resource = Resource.objects.create(
             name="Emergency Shelter",
             category=category,
-            phone="555-1234",
+            phone="555-123-4567",
             status="draft",
             created_by=self.user,
             updated_by=self.user,

@@ -39,7 +39,7 @@ class WorkflowTestCase(BaseTestCase):
         create_url = reverse("directory:resource_create")
         create_data = {
             "name": "Integration Test Resource",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "draft",
         }
         
@@ -58,7 +58,7 @@ class WorkflowTestCase(BaseTestCase):
             "city": "Test City",
             "state": "CA",
             "source": "Test Source",
-            "phone": "555-1234",
+            "phone": "555-123-4567",
             "status": "draft",
         }
         
@@ -92,7 +92,7 @@ class WorkflowTestCase(BaseTestCase):
         # Create a resource
         resource = self.create_test_resource(
             name="Validation Test Resource",
-            phone="5551234",
+            phone="5551234567",
             status="draft",
         )
         
