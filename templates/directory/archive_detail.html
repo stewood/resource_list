@@ -272,7 +272,7 @@
                 <small class="text-muted">by {{ resource.updated_by.get_full_name|default:resource.updated_by.username }}</small>
                 </p>
                 
-                {% if resource.notes %}
+                {% if resource.notes and can_view_notes %}
                     <p><strong>Notes:</strong></p>
                     <p>{{ resource.notes|linebreaks }}</p>
                 {% endif %}

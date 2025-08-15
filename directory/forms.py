@@ -156,7 +156,7 @@ class ResourceForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "rows": 4,
-                    "placeholder": "Verification notes: Include contact person, phone numbers, websites, dates contacted, and any other verification details. Example: 'Contacted Jane Smith (502-555-1234) on 8/15/2024. Hours confirmed via website: www.example.org/hours. Eligibility requirements verified by phone call.'",
+                    "placeholder": "INTERNAL USE ONLY - Verification details: Include contact person, phone numbers, websites, dates contacted, and verification methods. Example: 'Contacted Jane Smith (502-555-1234) on 8/15/2024. Hours confirmed via website: www.example.org/hours. Eligibility requirements verified by phone call.'",
                 }
             ),
             "last_verified_at": forms.DateTimeInput(
@@ -176,11 +176,21 @@ class ResourceForm(forms.ModelForm):
                 is_staff=True
             )
 
+        # Hide notes field for non-editor users
+        if self.user and not self._user_can_edit_notes(self.user):
+            if "notes" in self.fields:
+                del self.fields["notes"]
+
         # Set initial values
         if not self.instance.pk:  # New resource
             self.fields["status"].initial = "draft"
             if self.user:
                 self.fields["last_verified_by"].initial = self.user
+
+    def _user_can_edit_notes(self, user: User) -> bool:
+        """Check if user can edit notes field (Editor role or higher)."""
+        from .permissions import user_has_role
+        return user_has_role(user, "Editor") or user_has_role(user, "Reviewer") or user_has_role(user, "Admin")
 
     def clean(self) -> Dict[str, Any]:
         """Custom validation for the form."""

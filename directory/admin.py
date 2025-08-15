@@ -137,6 +137,7 @@ class ResourceAdmin(admin.ModelAdmin):
         "city",
         "state",
         "county",
+        "source",
         "hours_of_operation",
         "eligibility_requirements",
         "populations_served",
@@ -159,13 +160,20 @@ class ResourceAdmin(admin.ModelAdmin):
     fieldsets = (
         (
             "Basic Information",
-            {"fields": ("name", "category", "service_types", "description", "status", "source")},
+            {"fields": ("name", "category", "service_types", "description", "status")},
         ),
         (
-            "Verification Notes",
+            "Source Information",
+            {
+                "fields": ("source",),
+                "description": "Public source attribution for this information (e.g., 'Kentucky Cabinet for Health and Family Services', 'Organization Website'). This will be displayed to the public.",
+            },
+        ),
+        (
+            "Verification Notes (Internal)",
             {
                 "fields": ("notes",),
-                "description": "Use this field to track verification sources, contact information, and verification details. Include contact person, phone numbers, websites, dates contacted, and any other verification details.",
+                "description": "INTERNAL USE ONLY - Verification details, contact information, and audit trail. This field is NOT visible to the public and should only be used by editors for tracking verification sources, contact person details, dates contacted, and verification methods.",
             },
         ),
         ("Contact Information", {"fields": ("phone", "email", "website")}),

@@ -25,6 +25,7 @@ from .permissions import (
     user_can_publish,
     user_can_submit_for_review,
     user_can_hard_delete,
+    user_has_role,
 )
 from .utils import compare_versions
 
@@ -159,7 +160,7 @@ class ResourceListView(LoginRequiredMixin, ListView):
 
 
 class ResourceDetailView(LoginRequiredMixin, DetailView):
-    """Detail view for a single resource."""
+    """Detail view for resources."""
 
     model = Resource
     template_name = "directory/resource_detail.html"
@@ -172,16 +173,15 @@ class ResourceDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         """Add additional context data."""
         context = super().get_context_data(**kwargs)
-
-        # Add permission context
-        context["user_can_publish"] = user_can_publish(self.request.user)
-        context["user_can_submit_review"] = user_can_submit_for_review(
-            self.request.user
-        )
-
-        # Add version history
-        context["versions"] = self.object.versions.all()[:10]  # Last 10 versions
-
+        
+        # Add permission context for notes field
+        context['can_view_notes'] = user_has_role(self.request.user, "Editor") or user_has_role(self.request.user, "Reviewer") or user_has_role(self.request.user, "Admin")
+        
+        # Get recent versions
+        context["versions"] = ResourceVersion.objects.filter(
+            resource=self.object
+        ).order_by("-changed_at")[:5]
+        
         return context
 
 
@@ -358,6 +358,9 @@ class ArchiveDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         """Add additional context."""
         context = super().get_context_data(**kwargs)
+        
+        # Add permission context for notes field
+        context['can_view_notes'] = user_has_role(self.request.user, "Editor") or user_has_role(self.request.user, "Reviewer") or user_has_role(self.request.user, "Admin")
         
         # Get version history
         context["versions"] = self.object.versions.all()[:10]
