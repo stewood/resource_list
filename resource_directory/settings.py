@@ -125,9 +125,7 @@ if GIS_ENABLED:
         }
     }
     
-    # Configure SpatiaLite library path if provided
-    if SPATIALITE_LIBRARY_PATH:
-        DATABASES["default"]["OPTIONS"]["spatialite_library"] = SPATIALITE_LIBRARY_PATH
+    # Note: SpatiaLite library path is auto-detected by Django GIS
 else:
     # Use regular SQLite when GIS is disabled
     DATABASES = {

@@ -35,7 +35,10 @@ from typing import Any, Dict, Optional
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.contrib.gis.db import models as gis_models
 from django.utils import timezone
+
+
 
 
 class CoverageArea(models.Model):
@@ -96,9 +99,9 @@ class CoverageArea(models.Model):
         help_text="Human-readable name for the coverage area"
     )
 
-    # Geometry fields (will be added when GIS is enabled)
-    # geom = models.MultiPolygonField(srid=4326, null=True, blank=True)
-    # center = models.PointField(srid=4326, null=True, blank=True)
+    # Geometry fields (GIS-enabled)
+    geom = gis_models.MultiPolygonField(srid=4326, null=True, blank=True)
+    center = gis_models.PointField(srid=4326, null=True, blank=True)
     
     # Radius information (for radius-based areas)
     radius_m = models.IntegerField(
