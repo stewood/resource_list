@@ -3,7 +3,7 @@
 ## Phase 1: Foundation & Dependencies
 
 ### 1.1 Environment Setup
-- [ ] **Task 1.1.1**: Add GIS dependencies to requirements.txt
+- [x] **Task 1.1.1**: Add GIS dependencies to requirements.txt
   - Add `django.contrib.gis` to INSTALLED_APPS
   - Add `shapely` for geometry utilities
   - Add `geopy` for geocoding abstraction
