@@ -46,7 +46,7 @@
   - Add `coverage_areas` field to Resource model
   - Create through model for audit trail
   - Add proper related_name and through table
-- [ ] **Task 2.2.2**: Update Resource manager
+- [x] **Task 2.2.2**: Update Resource manager
   - Add spatial query methods to ResourceManager
   - Add `filter_by_location()` method
   - Add `annotate_coverage_specificity()` method
@@ -63,7 +63,7 @@
 ## Phase 3: Data Import & Management Commands
 
 ### 3.1 TIGER/Line Import Commands
-- [ ] **Task 3.1.1**: Create import_counties command
+- [x] **Task 3.1.1**: Create import_counties command
   - Download TIGER county shapefiles
   - Convert to WGS84 coordinate system
   - Create CoverageArea records with proper ext_ids
