@@ -951,14 +951,27 @@
             // Show loading
             showLoading(true);
             
+            // Build search URL
+            let searchUrl = `/api/areas/search/?q=${encodeURIComponent(query)}`;
+            if (kind) {
+                searchUrl += `&kind=${kind}`;
+            }
+            
+            console.log('Searching boundaries with URL:', searchUrl);
+            
             // Make API call to search boundaries
-            fetch(`/api/areas/search/?kind=${kind}&q=${encodeURIComponent(query)}`)
-                .then(response => response.json())
+            fetch(searchUrl)
+                .then(response => {
+                    console.log('Search response status:', response.status);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('Search response data:', data);
                     showLoading(false);
-                    displayBoundaryResults(data.results);
+                    displayBoundaryResults(data.results || []);
                 })
                 .catch(error => {
+                    console.error('Search error:', error);
                     showLoading(false);
                     showToast('Error searching boundaries: ' + error.message, 'error');
                 });
