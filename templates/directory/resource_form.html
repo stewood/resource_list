@@ -527,6 +527,16 @@
         // Store selected service areas
         let selectedServiceAreas = [];
         
+        // Map instances for each tab
+        let boundaryMap = null;
+        let radiusMap = null;
+        let polygonMap = null;
+        let uploadMap = null;
+        
+        // Drawing layers
+        let drawingLayer = null;
+        let drawnItems = null;
+        
         // Initialize radius slider
         const radiusSlider = document.getElementById('radiusMiles');
         const radiusValue = document.getElementById('radiusValue');
@@ -535,6 +545,27 @@
                 radiusValue.textContent = this.value + ' miles';
             });
         }
+        
+        // Initialize maps when modal is shown
+        const serviceAreaModal = document.getElementById('serviceAreaModal');
+        if (serviceAreaModal) {
+            serviceAreaModal.addEventListener('shown.bs.modal', function() {
+                initializeMaps();
+            });
+            
+            serviceAreaModal.addEventListener('hidden.bs.modal', function() {
+                cleanupMaps();
+            });
+        }
+        
+        // Tab change event to initialize maps
+        const tabButtons = document.querySelectorAll('[data-bs-toggle="tab"]');
+        tabButtons.forEach(button => {
+            button.addEventListener('shown.bs.tab', function(e) {
+                const targetId = e.target.getAttribute('data-bs-target');
+                initializeMapForTab(targetId);
+            });
+        });
         
         // Handle boundary search form
         const boundarySearchForm = document.getElementById('boundarySearchForm');
@@ -578,6 +609,215 @@
             saveBtn.addEventListener('click', function() {
                 saveServiceAreas();
             });
+        }
+        
+        // Map initialization functions
+        function initializeMaps() {
+            // Initialize the first tab (boundary) by default
+            initializeMapForTab('#boundary');
+        }
+        
+        function initializeMapForTab(tabId) {
+            switch(tabId) {
+                case '#boundary':
+                    if (!boundaryMap) {
+                        boundaryMap = createMap('boundaryMapPreview', [37.1283, -84.0836], 8);
+                    }
+                    break;
+                case '#radius':
+                    if (!radiusMap) {
+                        radiusMap = createMap('radiusMapPreview', [37.1283, -84.0836], 10);
+                        setupRadiusMap(radiusMap);
+                    }
+                    break;
+                case '#polygon':
+                    if (!polygonMap) {
+                        polygonMap = createMap('polygonMapCanvas', [37.1283, -84.0836], 10);
+                        setupPolygonMap(polygonMap);
+                    }
+                    break;
+                case '#upload':
+                    if (!uploadMap) {
+                        uploadMap = createMap('uploadPreview', [37.1283, -84.0836], 8);
+                    }
+                    break;
+            }
+        }
+        
+        function createMap(containerId, center, zoom) {
+            const container = document.getElementById(containerId);
+            if (!container) return null;
+            
+            // Create map instance
+            const map = L.map(containerId, {
+                center: center,
+                zoom: zoom,
+                zoomControl: true,
+                attributionControl: true
+            });
+            
+            // Add OpenStreetMap tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+            
+            // Force map resize after initialization
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 100);
+            
+            return map;
+        }
+        
+        function setupRadiusMap(map) {
+            let centerMarker = null;
+            let radiusCircle = null;
+            
+            // Add click handler to set center point
+            map.on('click', function(e) {
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+                
+                // Update center input
+                document.getElementById('radiusCenter').value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                
+                // Remove existing marker and circle
+                if (centerMarker) map.removeLayer(centerMarker);
+                if (radiusCircle) map.removeLayer(radiusCircle);
+                
+                // Add new marker
+                centerMarker = L.marker([lat, lng]).addTo(map);
+                
+                // Add radius circle
+                const radiusMiles = parseFloat(document.getElementById('radiusMiles').value);
+                const radiusMeters = radiusMiles * 1609.34;
+                radiusCircle = L.circle([lat, lng], {
+                    radius: radiusMeters,
+                    color: '#007bff',
+                    fillColor: '#007bff',
+                    fillOpacity: 0.2,
+                    weight: 2
+                }).addTo(map);
+                
+                // Fit map to circle
+                map.fitBounds(radiusCircle.getBounds());
+            });
+            
+            // Update radius circle when slider changes
+            document.getElementById('radiusMiles').addEventListener('input', function() {
+                if (centerMarker && radiusCircle) {
+                    const radiusMiles = parseFloat(this.value);
+                    const radiusMeters = radiusMiles * 1609.34;
+                    const center = centerMarker.getLatLng();
+                    
+                    map.removeLayer(radiusCircle);
+                    radiusCircle = L.circle([center.lat, center.lng], {
+                        radius: radiusMeters,
+                        color: '#007bff',
+                        fillColor: '#007bff',
+                        fillOpacity: 0.2,
+                        weight: 2
+                    }).addTo(map);
+                }
+            });
+        }
+        
+        function setupPolygonMap(map) {
+            // Initialize drawing layer
+            drawnItems = new L.FeatureGroup();
+            map.addLayer(drawnItems);
+            
+            // Initialize draw control
+            drawingLayer = new L.Control.Draw({
+                draw: {
+                    polygon: {
+                        allowIntersection: false,
+                        drawError: {
+                            color: '#e1e100',
+                            message: '<strong>Error:</strong> Shape edges cannot cross!'
+                        },
+                        shapeOptions: {
+                            color: '#007bff',
+                            fillColor: '#007bff',
+                            fillOpacity: 0.2,
+                            weight: 2
+                        }
+                    },
+                    circle: false,
+                    rectangle: false,
+                    polyline: false,
+                    marker: false,
+                    circlemarker: false
+                },
+                edit: {
+                    featureGroup: drawnItems,
+                    remove: true
+                }
+            });
+            
+            map.addControl(drawingLayer);
+            
+            // Handle drawing events
+            map.on('draw:created', function(e) {
+                const layer = e.layer;
+                drawnItems.addLayer(layer);
+                
+                // Update polygon info
+                updatePolygonInfo(layer);
+                
+                // Enable create button
+                document.getElementById('createPolygonBtn').disabled = false;
+            });
+            
+            map.on('draw:edited', function(e) {
+                const layers = e.layers;
+                layers.eachLayer(function(layer) {
+                    updatePolygonInfo(layer);
+                });
+            });
+            
+            map.on('draw:deleted', function(e) {
+                document.getElementById('createPolygonBtn').disabled = true;
+                document.getElementById('vertexCount').textContent = '0';
+                document.getElementById('polygonArea').textContent = '0';
+            });
+        }
+        
+        function updatePolygonInfo(layer) {
+            if (layer instanceof L.Polygon) {
+                const coords = layer.getLatLngs()[0];
+                const vertexCount = coords.length;
+                const area = L.GeometryUtil.geodesicArea(coords);
+                const areaSqMiles = area * 0.000000386102; // Convert square meters to square miles
+                
+                document.getElementById('vertexCount').textContent = vertexCount;
+                document.getElementById('polygonArea').textContent = areaSqMiles.toFixed(2);
+            }
+        }
+        
+        function cleanupMaps() {
+            // Clean up map instances to prevent memory leaks
+            if (boundaryMap) {
+                boundaryMap.remove();
+                boundaryMap = null;
+            }
+            if (radiusMap) {
+                radiusMap.remove();
+                radiusMap = null;
+            }
+            if (polygonMap) {
+                polygonMap.remove();
+                polygonMap = null;
+            }
+            if (uploadMap) {
+                uploadMap.remove();
+                uploadMap = null;
+            }
+            
+            // Reset drawing layers
+            drawingLayer = null;
+            drawnItems = null;
         }
         
         // Search boundaries function
@@ -695,9 +935,71 @@
             });
         }
         
-        // Create polygon area (placeholder)
+        // Create polygon area
         function createPolygonArea() {
-            showToast('Polygon creation will be implemented in the next phase', 'info');
+            const name = document.getElementById('polygonName').value;
+            
+            if (!name) {
+                showToast('Please enter an area name', 'warning');
+                return;
+            }
+            
+            if (!drawnItems || drawnItems.getLayers().length === 0) {
+                showToast('Please draw a polygon first', 'warning');
+                return;
+            }
+            
+            const layer = drawnItems.getLayers()[0];
+            if (!(layer instanceof L.Polygon)) {
+                showToast('Please draw a valid polygon', 'warning');
+                return;
+            }
+            
+            showLoading(true);
+            
+            // Convert Leaflet polygon to GeoJSON
+            const geojson = layer.toGeoJSON();
+            
+            // Make API call to create polygon area
+            fetch('/api/areas/search/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    type: 'polygon',
+                    name: name,
+                    geometry: geojson
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                if (data.id) {
+                    selectedServiceAreas.push({
+                        id: data.id,
+                        name: data.name,
+                        type: 'polygon',
+                        source: 'new'
+                    });
+                    showToast('Polygon area created successfully', 'success');
+                    updateServiceAreasList();
+                    document.getElementById('polygonForm').reset();
+                    
+                    // Clear the drawn polygon
+                    drawnItems.clearLayers();
+                    document.getElementById('createPolygonBtn').disabled = true;
+                    document.getElementById('vertexCount').textContent = '0';
+                    document.getElementById('polygonArea').textContent = '0';
+                } else {
+                    showToast('Error creating polygon area: ' + (data.error || 'Unknown error'), 'error');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                showToast('Error creating polygon area: ' + error.message, 'error');
+            });
         }
         
         // Upload GeoJSON (placeholder)
