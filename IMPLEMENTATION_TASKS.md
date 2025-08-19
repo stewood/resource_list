@@ -52,7 +52,7 @@
   - Add `annotate_coverage_specificity()` method
 
 ### 2.3 Database Indexes
-- [ ] **Task 2.3.1**: Create spatial indexes
+- [x] **Task 2.3.1**: Create spatial indexes
   - Add spatial index on CoverageArea.geom
   - Add B-tree indexes on kind and ext_ids
   - Verify R-Tree spatial indexing is working
