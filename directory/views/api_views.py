@@ -206,6 +206,178 @@ class AreaSearchView(View):
                 {'error': f'Internal server error: {str(e)}'}, 
                 status=500
             )
+    
+    def post(self, request: HttpRequest) -> JsonResponse:
+        """Handle POST requests for radius creation.
+        
+        This method creates a new radius-based coverage area from a center point
+        and radius. It generates a buffer polygon and stores it in the database.
+        
+        Request Body:
+            {
+                "center": [latitude, longitude],
+                "radius_miles": 10.0,
+                "name": "Custom Service Area"
+            }
+            
+        Response Format:
+            {
+                "id": 1,
+                "name": "Custom Service Area",
+                "kind": "RADIUS",
+                "center": [37.1283, -84.0836],
+                "radius_miles": 10.0,
+                "ext_ids": {},
+                "bounds": {"north": 37.2, "south": 37.0, "east": -84.0, "west": -84.2}
+            }
+        """
+        try:
+            # Parse JSON request body
+            try:
+                data = json.loads(request.body)
+            except json.JSONDecodeError:
+                return JsonResponse(
+                    {'error': 'Invalid JSON in request body'}, 
+                    status=400
+                )
+            
+            # Extract and validate parameters
+            center = data.get('center')
+            radius_miles = data.get('radius_miles')
+            name = data.get('name', '').strip()
+            
+            # Validate required parameters
+            if not center or not isinstance(center, list) or len(center) != 2:
+                return JsonResponse(
+                    {'error': 'center must be a list with [latitude, longitude]'}, 
+                    status=400
+                )
+            
+            if not radius_miles or not isinstance(radius_miles, (int, float)):
+                return JsonResponse(
+                    {'error': 'radius_miles must be a number'}, 
+                    status=400
+                )
+            
+            if not name:
+                return JsonResponse(
+                    {'error': 'name is required'}, 
+                    status=400
+                )
+            
+            # Extract coordinates
+            lat, lon = center
+            
+            # Validate coordinates
+            if not (-90 <= lat <= 90) or not (-180 <= lon <= 180):
+                return JsonResponse(
+                    {'error': 'Invalid coordinates: latitude must be -90 to 90, longitude must be -180 to 180'}, 
+                    status=400
+                )
+            
+            # Validate radius
+            if radius_miles < 0.5 or radius_miles > 100:
+                return JsonResponse(
+                    {'error': 'radius_miles must be between 0.5 and 100 miles'}, 
+                    status=400
+                )
+            
+            # Check if GIS is enabled
+            if not getattr(settings, 'GIS_ENABLED', False):
+                return JsonResponse(
+                    {'error': 'GIS functionality is not enabled'}, 
+                    status=503
+                )
+            
+            # Create radius-based coverage area
+            try:
+                from django.contrib.gis.geos import Point
+                from django.contrib.gis.geos import GEOSGeometry
+                
+                # Create center point
+                center_point = Point(lon, lat, srid=4326)
+                
+                # Convert radius to meters
+                radius_meters = radius_miles * 1609.34
+                
+                # Create buffer polygon
+                buffer_polygon = center_point.buffer(radius_meters / 111320.0)  # Approximate degrees
+                
+                # Convert to MultiPolygon if needed
+                if buffer_polygon.geom_type == 'Polygon':
+                    from django.contrib.gis.geos import MultiPolygon
+                    buffer_polygon = MultiPolygon([buffer_polygon])
+                
+                # Get or create default user for API operations
+                from django.contrib.auth.models import User
+                default_user, created = User.objects.get_or_create(
+                    username="api_user",
+                    defaults={
+                        "email": "api@example.com",
+                        "first_name": "API",
+                        "last_name": "User",
+                    }
+                )
+                
+                # Create CoverageArea record
+                coverage_area = CoverageArea.objects.create(
+                    kind="RADIUS",
+                    name=name,
+                    geom=buffer_polygon,
+                    center=center_point,
+                    radius_m=radius_meters,
+                    ext_ids={
+                        "center_lat": lat,
+                        "center_lon": lon,
+                        "radius_miles": radius_miles,
+                        "created_via": "api"
+                    },
+                    created_by=request.user if request.user.is_authenticated else default_user,
+                    updated_by=request.user if request.user.is_authenticated else default_user,
+                )
+                
+                # Build response data
+                response_data = {
+                    'id': coverage_area.id,
+                    'name': coverage_area.name,
+                    'kind': coverage_area.kind,
+                    'center': [lat, lon],
+                    'radius_miles': radius_miles,
+                    'ext_ids': coverage_area.ext_ids,
+                }
+                
+                # Add bounds if geometry is available
+                if coverage_area.geom:
+                    try:
+                        bounds = coverage_area.geom.extent
+                        response_data['bounds'] = {
+                            'west': bounds[0],
+                            'south': bounds[1],
+                            'east': bounds[2],
+                            'north': bounds[3]
+                        }
+                    except Exception:
+                        # If bounds calculation fails, omit bounds
+                        pass
+                
+                return JsonResponse(response_data, status=201)
+                
+            except ImportError:
+                return JsonResponse(
+                    {'error': 'GIS libraries not available'}, 
+                    status=503
+                )
+            except Exception as e:
+                return JsonResponse(
+                    {'error': f'Error creating coverage area: {str(e)}'}, 
+                    status=500
+                )
+            
+        except Exception as e:
+            return JsonResponse(
+                {'error': f'Internal server error: {str(e)}'}, 
+                status=500
+            )
 
 
 @method_decorator(csrf_exempt, name='dispatch')
