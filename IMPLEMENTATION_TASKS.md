@@ -132,7 +132,7 @@
   - `POST /areas/radius` with center and radius
   - Generate buffer polygon and store in geom
   - Return created CoverageArea
-- [ ] **Task 5.1.3**: Create polygon creation endpoint
+- [x] **Task 5.1.3**: Create polygon creation endpoint
   - `POST /areas/polygon` with GeoJSON Feature
   - Validate and store custom polygon
   - Return created CoverageArea
