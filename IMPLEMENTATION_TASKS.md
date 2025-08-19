@@ -68,7 +68,7 @@
   - Convert to WGS84 coordinate system
   - Create CoverageArea records with proper ext_ids
   - Add progress tracking and error handling
-- [ ] **Task 3.1.2**: Create import_states command
+- [x] **Task 3.1.2**: Create import_states command
   - Similar to counties but for state boundaries
   - Handle state FIPS codes properly
 - [ ] **Task 3.1.3**: Create import_places command (optional)
