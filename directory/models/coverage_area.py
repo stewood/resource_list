@@ -132,10 +132,19 @@ class CoverageArea(models.Model):
     )
 
     class Meta:
+        """Meta options for CoverageArea model.
+        
+        Indexes:
+            - Spatial index on geom field for efficient spatial queries (auto-created by Django GIS)
+            - B-tree index on kind field for filtering by area type
+            - B-tree index on name field for name-based lookups
+            - Composite index on kind + name for common filtering patterns
+        """
         ordering = ["name"]
         indexes = [
-            models.Index(fields=["kind"]),
-            models.Index(fields=["name"]),
+            models.Index(fields=["kind"], name="coverage_area_kind_idx"),
+            models.Index(fields=["name"], name="coverage_area_name_idx"),
+            models.Index(fields=["kind", "name"], name="coverage_area_kind_name_idx"),
         ]
         verbose_name = "Coverage Area"
         verbose_name_plural = "Coverage Areas"
