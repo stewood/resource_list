@@ -113,6 +113,13 @@ class Resource(models.Model):
         related_name="resources",
         help_text="Types of services offered by this resource",
     )
+    coverage_areas = models.ManyToManyField(
+        "CoverageArea",
+        blank=True,
+        related_name="resources",
+        through="ResourceCoverage",
+        help_text="Geographic areas where this resource provides services",
+    )
     description = models.TextField(blank=True)
 
     # Contact information

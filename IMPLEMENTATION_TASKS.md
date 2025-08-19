@@ -32,11 +32,11 @@
   - Implement all fields: id, kind, name, geom, center, radius_m, ext_ids
   - Add proper field types and constraints
   - Add created_by, updated_by, timestamps
-- [ ] **Task 2.1.2**: Add model validation
+- [x] **Task 2.1.2**: Add model validation
   - Validate geometry SRID (must be 4326)
   - Validate radius_m constraints (0.5-100 miles)
   - Validate ext_ids JSON structure
-- [ ] **Task 2.1.3**: Add model methods
+- [x] **Task 2.1.3**: Add model methods
   - `save()` method to handle radius buffer creation
   - `clean()` method for validation
   - `__str__()` method for admin display

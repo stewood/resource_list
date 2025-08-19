@@ -35,6 +35,7 @@ from .audit import AuditLog, ResourceVersion
 from .resource import Resource
 from .taxonomy import ServiceType, TaxonomyCategory
 from .coverage_area import CoverageArea
+from .resource_coverage import ResourceCoverage
 
 # Import managers for direct access
 from .managers import ResourceManager
@@ -47,5 +48,6 @@ __all__ = [
     "ResourceVersion",
     "AuditLog",
     "CoverageArea",
+    "ResourceCoverage",
     "ResourceManager",
 ]
