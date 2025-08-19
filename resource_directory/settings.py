@@ -12,12 +12,16 @@ Key Features:
 - FTS5 full-text search capabilities
 - CSV import/export functionality
 - Verification workflow for resource accuracy
+- Spatial service areas with GIS support (when enabled)
 
 Environment Variables:
 - DJANGO_SECRET_KEY: Secret key for Django (defaults to insecure dev key)
 - DEBUG: Enable debug mode (defaults to 0/False)
 - ALLOWED_HOSTS: Comma-separated list of allowed hosts
 - DATABASE_PATH: Path to SQLite database file
+- GIS_ENABLED: Enable GIS features (defaults to 0/False)
+- SPATIALITE_LIBRARY_PATH: Path to SpatiaLite library (optional)
+- GDAL_LIBRARY_PATH: Path to GDAL library (optional)
 
 For more information on Django settings, see:
 https://docs.djangoproject.com/en/5.0/topics/settings/
@@ -42,6 +46,11 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "0") == "1"
 
+# GIS Configuration
+GIS_ENABLED = os.environ.get("GIS_ENABLED", "0") == "1"
+SPATIALITE_LIBRARY_PATH = os.environ.get("SPATIALITE_LIBRARY_PATH", "")
+GDAL_LIBRARY_PATH = os.environ.get("GDAL_LIBRARY_PATH", "")
+
 # Allow common dev/test hosts by default
 _default_hosts = ["localhost", "127.0.0.1", "0.0.0.0", "testserver", "192.168.6.205", "100.93.223.61"]
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", ",".join(_default_hosts)).split(",")
@@ -62,6 +71,10 @@ INSTALLED_APPS = [
     "audit",
     "importer",
 ]
+
+# Add GIS apps when GIS is enabled
+if GIS_ENABLED:
+    INSTALLED_APPS.append("django.contrib.gis")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -99,15 +112,33 @@ WSGI_APPLICATION = "resource_directory.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.environ.get("DATABASE_PATH", BASE_DIR / "data" / "db.sqlite3"),
-        "OPTIONS": {
-            "timeout": 20,
-        },
+# Database configuration
+if GIS_ENABLED:
+    # Use SpatiaLite when GIS is enabled
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.contrib.gis.db.backends.spatialite",
+            "NAME": os.environ.get("DATABASE_PATH", BASE_DIR / "data" / "db.sqlite3"),
+            "OPTIONS": {
+                "timeout": 20,
+            },
+        }
     }
-}
+    
+    # Configure SpatiaLite library path if provided
+    if SPATIALITE_LIBRARY_PATH:
+        DATABASES["default"]["OPTIONS"]["spatialite_library"] = SPATIALITE_LIBRARY_PATH
+else:
+    # Use regular SQLite when GIS is disabled
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.environ.get("DATABASE_PATH", BASE_DIR / "data" / "db.sqlite3"),
+            "OPTIONS": {
+                "timeout": 20,
+            },
+        }
+    }
 
 
 # Password validation
@@ -194,3 +225,18 @@ RESOURCE_STATUS_CHOICES = [
 # Validation settings
 MIN_DESCRIPTION_LENGTH = 20
 VERIFICATION_EXPIRY_DAYS = 180
+
+# GIS-specific settings
+if GIS_ENABLED:
+    # Coordinate system for spatial data (WGS84)
+    SPATIAL_REFERENCE_SYSTEM = 4326
+    
+    # Geometry simplification tolerance for display (in degrees)
+    GEOMETRY_SIMPLIFICATION_TOLERANCE = 0.001
+    
+    # Maximum vertices for uploaded polygons
+    MAX_POLYGON_VERTICES = 10000
+    
+    # Geocoding settings
+    GEOCODING_CACHE_EXPIRY_DAYS = 30
+    GEOCODING_RATE_LIMIT_PER_MINUTE = 60
