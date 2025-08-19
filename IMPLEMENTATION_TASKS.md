@@ -28,7 +28,7 @@
 ## Phase 2: Data Models
 
 ### 2.1 CoverageArea Model
-- [ ] **Task 2.1.1**: Create CoverageArea model
+- [x] **Task 2.1.1**: Create CoverageArea model
   - Implement all fields: id, kind, name, geom, center, radius_m, ext_ids
   - Add proper field types and constraints
   - Add created_by, updated_by, timestamps
