@@ -71,7 +71,18 @@
 - [x] **Task 3.1.2**: Create import_states command
   - Similar to counties but for state boundaries
   - Handle state FIPS codes properly
-- [ ] **Task 3.1.3**: Create import_places command (optional)
+  - ⚠️ **ISSUE**: Segmentation fault during geometry processing with Fiona
+  - ✅ **WORKAROUND**: Created create_test_boundaries command for development
+- [x] **Task 3.1.3**: Create test boundary data command
+  - Generate test data for Kentucky state and counties
+  - Use Django's built-in geometry creation (no Fiona dependency)
+  - Create proper MultiPolygon geometries with bounds
+  - ✅ **COMPLETED**: Test data working, search functionality verified
+- [ ] **Task 3.1.4**: Fix TIGER/Line import segmentation fault
+  - Investigate Fiona/GDAL compatibility issues
+  - Try alternative geometry processing approaches
+  - Consider using different libraries or manual import process
+- [ ] **Task 3.1.5**: Create import_places command (optional)
   - Import city/place boundaries from OSM or TIGER
   - Handle place name variations and aliases
 
