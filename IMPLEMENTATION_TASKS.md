@@ -112,7 +112,7 @@
   - Add fallback to text-based location matching
 
 ### 4.2 Location Query Engine
-- [ ] **Task 4.2.1**: Implement spatial query logic
+- [x] **Task 4.2.1**: Implement spatial query logic
   - Create `find_resources_by_location()` function
   - Handle point-in-polygon queries efficiently
   - Add specificity ranking (RADIUS > CITY > COUNTY > STATE)
