@@ -42,7 +42,7 @@
   - `__str__()` method for admin display
 
 ### 2.2 Resource Model Integration
-- [ ] **Task 2.2.1**: Add M2M relationship to Resource
+- [x] **Task 2.2.1**: Add M2M relationship to Resource
   - Add `coverage_areas` field to Resource model
   - Create through model for audit trail
   - Add proper related_name and through table
