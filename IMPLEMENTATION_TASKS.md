@@ -7,7 +7,7 @@
   - Add `django.contrib.gis` to INSTALLED_APPS
   - Add `shapely` for geometry utilities
   - Add `geopy` for geocoding abstraction
-- [ ] **Task 1.1.2**: Configure Django settings for GIS
+- [x] **Task 1.1.2**: Configure Django settings for GIS
   - Add `GIS_ENABLED` environment variable toggle
   - Configure database engine for SpatiaLite when GIS_ENABLED=True
   - Add `SPATIALITE_LIBRARY_PATH` configuration
