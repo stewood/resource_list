@@ -228,6 +228,41 @@ class CoverageArea(models.Model):
         if errors:
             raise ValidationError(errors)
 
+    def _process_geometry(self) -> None:
+        """Process geometry fields when GIS is enabled.
+        
+        This method handles geometry processing:
+        - Create buffer polygon for radius-based areas
+        - Ensure proper SRID for all geometries
+        - Simplify geometries for performance if needed
+        """
+        try:
+            from django.contrib.gis.geos import Point, MultiPolygon
+            from django.conf import settings
+            
+            # Process radius-based areas
+            if self.kind == "RADIUS" and hasattr(self, 'center') and self.center and self.radius_m:
+                # Create buffer polygon from center point
+                buffer_geom = self.center.buffer(self.radius_m)
+                
+                # Convert to MultiPolygon if needed
+                if hasattr(self, 'geom'):
+                    if buffer_geom.geom_type == 'Polygon':
+                        self.geom = MultiPolygon([buffer_geom], srid=4326)
+                    else:
+                        self.geom = buffer_geom
+                        
+            # Ensure proper SRID for all geometries
+            if hasattr(self, 'geom') and self.geom and self.geom.srid != 4326:
+                self.geom.transform(4326)
+                
+            if hasattr(self, 'center') and self.center and self.center.srid != 4326:
+                self.center.transform(4326)
+                
+        except ImportError:
+            # GIS not available, skip geometry processing
+            pass
+
     def save(self, *args: Any, **kwargs: Any) -> None:
         """Save the coverage area with validation and geometry processing.
         
@@ -239,6 +274,16 @@ class CoverageArea(models.Model):
             **kwargs: Standard save keyword arguments
         """
         self.full_clean()
+        
+        # Process geometry when GIS is enabled
+        try:
+            from django.conf import settings
+            if hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
+                self._process_geometry()
+        except ImportError:
+            # GIS not available, skip geometry processing
+            pass
+        
         super().save(*args, **kwargs)
 
     @property
@@ -299,6 +344,114 @@ class CoverageArea(models.Model):
         """
         if self.kind == "RADIUS":
             self.radius_m = int(miles * 1609.34)  # Convert miles to meters
+
+    def get_area_sq_meters(self) -> Optional[float]:
+        """Get the area in square meters (when geometry is available).
+        
+        Returns:
+            Optional[float]: Area in square meters, or None if not available
+        """
+        try:
+            if hasattr(self, 'geom') and self.geom:
+                return self.geom.area
+        except (ImportError, AttributeError):
+            pass
+        return None
+
+    def get_area_sq_miles(self) -> Optional[float]:
+        """Get the area in square miles (when geometry is available).
+        
+        Returns:
+            Optional[float]: Area in square miles, or None if not available
+        """
+        sq_meters = self.get_area_sq_meters()
+        if sq_meters:
+            return sq_meters / 2589988.11  # Convert square meters to square miles
+        return None
+
+    def get_perimeter_meters(self) -> Optional[float]:
+        """Get the perimeter in meters (when geometry is available).
+        
+        Returns:
+            Optional[float]: Perimeter in meters, or None if not available
+        """
+        try:
+            if hasattr(self, 'geom') and self.geom:
+                return self.geom.length
+        except (ImportError, AttributeError):
+            pass
+        return None
+
+    def get_perimeter_miles(self) -> Optional[float]:
+        """Get the perimeter in miles (when geometry is available).
+        
+        Returns:
+            Optional[float]: Perimeter in miles, or None if not available
+        """
+        meters = self.get_perimeter_meters()
+        if meters:
+            return meters / 1609.34  # Convert meters to miles
+        return None
+
+    def get_bounds(self) -> Optional[Dict[str, float]]:
+        """Get the bounding box coordinates (when geometry is available).
+        
+        Returns:
+            Optional[Dict[str, float]]: Dictionary with min/max lat/lon, or None if not available
+        """
+        try:
+            if hasattr(self, 'geom') and self.geom:
+                bounds = self.geom.extent
+                return {
+                    'min_lon': bounds[0],
+                    'min_lat': bounds[1],
+                    'max_lon': bounds[2],
+                    'max_lat': bounds[3],
+                }
+        except (ImportError, AttributeError):
+            pass
+        return None
+
+    def contains_point(self, lat: float, lon: float) -> bool:
+        """Check if a point is within this coverage area.
+        
+        Args:
+            lat: Latitude of the point
+            lon: Longitude of the point
+            
+        Returns:
+            bool: True if the point is within the coverage area
+        """
+        try:
+            if hasattr(self, 'geom') and self.geom:
+                from django.contrib.gis.geos import Point
+                point = Point(lon, lat, srid=4326)
+                return self.geom.contains(point)
+        except (ImportError, AttributeError):
+            pass
+        return False
+
+    def get_center_coordinates(self) -> Optional[Dict[str, float]]:
+        """Get the center coordinates of the coverage area.
+        
+        Returns:
+            Optional[Dict[str, float]]: Dictionary with lat/lon, or None if not available
+        """
+        try:
+            if hasattr(self, 'center') and self.center:
+                return {
+                    'lat': self.center.y,
+                    'lon': self.center.x,
+                }
+            elif hasattr(self, 'geom') and self.geom:
+                centroid = self.geom.centroid
+                return {
+                    'lat': centroid.y,
+                    'lon': centroid.x,
+                }
+        except (ImportError, AttributeError):
+            pass
+        return None
 
     def _validate_geometry(self) -> None:
         """Validate geometry fields when GIS is enabled.
