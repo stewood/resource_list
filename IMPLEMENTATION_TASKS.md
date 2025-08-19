@@ -128,7 +128,7 @@
   - `GET /areas/search?kind=COUNTY&q=laurel`
   - Return JSON with id, name, kind, ext_ids, bounds
   - Add pagination and filtering
-- [ ] **Task 5.1.2**: Create radius creation endpoint
+- [x] **Task 5.1.2**: Create radius creation endpoint
   - `POST /areas/radius` with center and radius
   - Generate buffer polygon and store in geom
   - Return created CoverageArea
