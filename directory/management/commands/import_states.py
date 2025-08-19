@@ -251,11 +251,33 @@ class Command(BaseCommand):
         extract_path = os.path.join(temp_dir, f"tl_{year}_us_state")
         
         try:
-            # Download the file
+            # Download the file with progress tracking
             self.stdout.write(f"Downloading {url}...")
-            urllib.request.urlretrieve(url, zip_path)
+            self.stdout.write(f"File will be saved to: {zip_path}")
+            
+            # Use a more robust download approach
+            import requests
+            import urllib3
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+            response = requests.get(url, stream=True, verify=False)
+            response.raise_for_status()
+            
+            total_size = int(response.headers.get('content-length', 0))
+            downloaded = 0
+            
+            with open(zip_path, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
+                        downloaded += len(chunk)
+                        if total_size > 0:
+                            percent = (downloaded / total_size) * 100
+                            self.stdout.write(f"\rDownload progress: {percent:.1f}%", ending='')
+            
+            self.stdout.write("\nDownload completed!")
             
             # Extract the zip file
+            self.stdout.write(f"Extracting to {extract_path}...")
             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                 zip_ref.extractall(extract_path)
             
@@ -267,7 +289,10 @@ class Command(BaseCommand):
                 )
                 return None
             
-            return os.path.join(extract_path, shp_files[0])
+            shapefile_path = os.path.join(extract_path, shp_files[0])
+            self.stdout.write(f"Found shapefile: {shapefile_path}")
+            
+            return shapefile_path
             
         except Exception as e:
             self.stdout.write(
@@ -301,99 +326,166 @@ class Command(BaseCommand):
             import fiona
             from django.contrib.gis.geos import GEOSGeometry
             from django.contrib.gis.gdal import SpatialReference
+            import gc
             
             imported_count = 0
             error_count = 0
             
-            # Open the shapefile
-            with fiona.open(shapefile_path) as src:
-                # Get the coordinate reference system
-                crs = SpatialReference(src.crs)
-                
-                # Check if we need to transform coordinates
-                needs_transform = crs.srid != 4326
-                
-                self.stdout.write(f"Processing {len(src)} state features...")
-                
-                for feature in src:
+            self.stdout.write(f"Opening shapefile: {shapefile_path}")
+            
+            # Open the shapefile with explicit error handling
+            try:
+                with fiona.open(shapefile_path) as src:
+                    self.stdout.write(f"Successfully opened shapefile with {len(src)} features")
+                    
+                    # Get the coordinate reference system
                     try:
-                        # Extract state data
-                        properties = feature['properties']
-                        state_name = properties.get('NAME', '')
-                        feature_state_fips = properties.get('STATEFP', '')
-                        
-                        # Filter for the specific state we want
-                        if feature_state_fips != state_fips:
-                            continue
-                        
-                        if not state_name:
-                            self.stdout.write(
-                                self.style.WARNING(
-                                    f"Skipping state with missing name: {properties}"
+                        crs = SpatialReference(src.crs)
+                        needs_transform = crs.srid != 4326
+                        self.stdout.write(f"CRS: {src.crs}, needs_transform: {needs_transform}")
+                    except Exception as e:
+                        self.stdout.write(f"Warning: Could not determine CRS: {e}")
+                        needs_transform = False
+                    
+                    # Process features with better error handling
+                    for i, feature in enumerate(src):
+                        try:
+                            # Extract state data
+                            properties = feature.get('properties', {})
+                            state_name = properties.get('NAME', '')
+                            feature_state_fips = properties.get('STATEFP', '')
+                            
+                            # Filter for the specific state we want
+                            if feature_state_fips != state_fips:
+                                continue
+                            
+                            if not state_name:
+                                self.stdout.write(
+                                    self.style.WARNING(
+                                        f"Skipping state with missing name: {properties}"
+                                    )
                                 )
+                                error_count += 1
+                                continue
+                            
+                            # Check if state already exists
+                            if CoverageArea.objects.filter(
+                                kind="STATE",
+                                ext_ids__state_fips=state_fips
+                            ).exists():
+                                self.stdout.write(
+                                    self.style.WARNING(
+                                        f"State {state_name} ({state_fips}) already exists, skipping"
+                                    )
+                                )
+                                continue
+                            
+                            # Process geometry with explicit error handling
+                            try:
+                                geometry_data = feature.get('geometry')
+                                if not geometry_data:
+                                    self.stdout.write(
+                                        self.style.WARNING(f"No geometry data for state {state_name}")
+                                    )
+                                    error_count += 1
+                                    continue
+                                
+                                # Convert geometry to string safely
+                                if isinstance(geometry_data, dict):
+                                    import json
+                                    geometry_str = json.dumps(geometry_data)
+                                else:
+                                    geometry_str = str(geometry_data)
+                                
+                                # Create GEOS geometry
+                                geometry = GEOSGeometry(geometry_str)
+                                
+                                # Transform to WGS84 if needed
+                                if needs_transform:
+                                    geometry.transform(4326)
+                                
+                                # Validate geometry
+                                if not geometry.valid:
+                                    self.stdout.write(
+                                        self.style.WARNING(f"Invalid geometry for state {state_name}, attempting to fix...")
+                                    )
+                                    try:
+                                        geometry = geometry.buffer(0)  # Fix self-intersections
+                                    except Exception as fix_error:
+                                        self.stdout.write(
+                                            self.style.ERROR(f"Could not fix geometry for {state_name}: {fix_error}")
+                                        )
+                                        error_count += 1
+                                        continue
+                                
+                            except Exception as geom_error:
+                                self.stdout.write(
+                                    self.style.ERROR(f"Error processing geometry for {state_name}: {geom_error}")
+                                )
+                                error_count += 1
+                                continue
+                            
+                            # Create ext_ids structure
+                            ext_ids = {
+                                "state_fips": state_fips,
+                                "state_name": state_name,
+                                "state_abbr": self._get_state_abbreviation(state_fips),
+                            }
+                            
+                            # Create CoverageArea record
+                            try:
+                                with transaction.atomic():
+                                    coverage_area = CoverageArea.objects.create(
+                                        kind="STATE",
+                                        name=f"{state_name}",
+                                        geom=geometry,
+                                        center=geometry.centroid,
+                                        ext_ids=ext_ids,
+                                        created_by=default_user,
+                                        updated_by=default_user,
+                                    )
+                                
+                                imported_count += 1
+                                self.stdout.write(f"Successfully imported state: {state_name}")
+                                
+                                # Force garbage collection to prevent memory issues
+                                del geometry
+                                gc.collect()
+                                
+                            except Exception as db_error:
+                                self.stdout.write(
+                                    self.style.ERROR(f"Database error for {state_name}: {db_error}")
+                                )
+                                error_count += 1
+                                continue
+                                
+                        except Exception as feature_error:
+                            self.stdout.write(
+                                self.style.ERROR(f"Error processing feature {i}: {feature_error}")
                             )
                             error_count += 1
                             continue
                         
-                        # Check if state already exists
-                        if CoverageArea.objects.filter(
-                            kind="STATE",
-                            ext_ids__state_fips=state_fips
-                        ).exists():
-                            self.stdout.write(
-                                self.style.WARNING(
-                                    f"State {state_name} ({state_fips}) already exists, skipping"
-                                )
-                            )
-                            continue
-                        
-                        # Process geometry
-                        geometry = GEOSGeometry(str(feature['geometry']))
-                        
-                        # Transform to WGS84 if needed
-                        if needs_transform:
-                            geometry.transform(4326)
-                        
-                        # Create ext_ids structure
-                        ext_ids = {
-                            "state_fips": state_fips,
-                            "state_name": state_name,
-                            "state_abbr": self._get_state_abbreviation(state_fips),
-                        }
-                        
-                        # Create CoverageArea record
-                        with transaction.atomic():
-                            coverage_area = CoverageArea.objects.create(
-                                kind="STATE",
-                                name=f"{state_name}",
-                                geom=geometry,
-                                center=geometry.centroid,
-                                ext_ids=ext_ids,
-                                created_by=default_user,
-                                updated_by=default_user,
-                            )
-                        
-                        imported_count += 1
-                        self.stdout.write(f"Imported state: {state_name}")
+                        # Periodic garbage collection
+                        if i % 10 == 0:
+                            gc.collect()
                             
-                    except Exception as e:
-                        self.stdout.write(
-                            self.style.ERROR(
-                                f"Error processing state {properties.get('NAME', 'Unknown')}: {str(e)}"
-                            )
-                        )
-                        error_count += 1
+            except Exception as fiona_error:
+                self.stdout.write(
+                    self.style.ERROR(f"Error opening shapefile with fiona: {fiona_error}")
+                )
+                return 0, 1
             
             return imported_count, error_count
             
-        except ImportError:
+        except ImportError as import_error:
             self.stdout.write(
-                self.style.ERROR("Fiona library not available for shapefile processing")
+                self.style.ERROR(f"Required library not available: {import_error}")
             )
             return 0, 1
         except Exception as e:
             self.stdout.write(
-                self.style.ERROR(f"Error processing shapefile: {str(e)}")
+                self.style.ERROR(f"Unexpected error processing shapefile: {str(e)}")
             )
             return 0, 1
 
