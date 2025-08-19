@@ -124,7 +124,7 @@
 ## Phase 5: API Endpoints
 
 ### 5.1 Coverage Area Management APIs
-- [ ] **Task 5.1.1**: Create area search endpoint
+- [x] **Task 5.1.1**: Create area search endpoint
   - `GET /areas/search?kind=COUNTY&q=laurel`
   - Return JSON with id, name, kind, ext_ids, bounds
   - Add pagination and filtering
