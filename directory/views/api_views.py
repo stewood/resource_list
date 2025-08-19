@@ -208,25 +208,40 @@ class AreaSearchView(View):
             )
     
     def post(self, request: HttpRequest) -> JsonResponse:
-        """Handle POST requests for radius creation.
+        """Handle POST requests for coverage area creation.
         
-        This method creates a new radius-based coverage area from a center point
-        and radius. It generates a buffer polygon and stores it in the database.
+        This method creates new coverage areas from either:
+        1. Radius-based areas: center point and radius
+        2. Polygon-based areas: GeoJSON Feature with polygon geometry
         
-        Request Body:
+        Request Body for Radius:
             {
+                "type": "radius",
                 "center": [latitude, longitude],
                 "radius_miles": 10.0,
                 "name": "Custom Service Area"
+            }
+            
+        Request Body for Polygon:
+            {
+                "type": "polygon",
+                "name": "Custom Polygon Area",
+                "geometry": {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [[[lon1, lat1], [lon2, lat2], ...]]
+                    }
+                }
             }
             
         Response Format:
             {
                 "id": 1,
                 "name": "Custom Service Area",
-                "kind": "RADIUS",
+                "kind": "RADIUS" or "POLYGON",
                 "center": [37.1283, -84.0836],
-                "radius_miles": 10.0,
+                "radius_miles": 10.0,  # Only for radius
                 "ext_ids": {},
                 "bounds": {"north": 37.2, "south": 37.0, "east": -84.0, "west": -84.2}
             }
@@ -241,10 +256,51 @@ class AreaSearchView(View):
                     status=400
                 )
             
-            # Extract and validate parameters
+            # Extract and validate common parameters
+            area_type = data.get('type', 'radius').lower()
+            name = data.get('name', '').strip()
+            
+            # Validate required parameters
+            if not name:
+                return JsonResponse(
+                    {'error': 'name is required'}, 
+                    status=400
+                )
+            
+            # Validate area type
+            if area_type not in ['radius', 'polygon']:
+                return JsonResponse(
+                    {'error': 'type must be either "radius" or "polygon"'}, 
+                    status=400
+                )
+            
+            # Handle radius-based area creation
+            if area_type == 'radius':
+                return self._create_radius_area(data, name)
+            # Handle polygon-based area creation
+            elif area_type == 'polygon':
+                return self._create_polygon_area(data, name)
+            
+        except Exception as e:
+            return JsonResponse(
+                {'error': f'Internal server error: {str(e)}'}, 
+                status=500
+            )
+    
+    def _create_radius_area(self, data: Dict, name: str) -> JsonResponse:
+        """Create a radius-based coverage area.
+        
+        Args:
+            data: Request data containing center and radius
+            name: Area name
+            
+        Returns:
+            JsonResponse: Created area data or error
+        """
+        try:
+            # Extract radius-specific parameters
             center = data.get('center')
             radius_miles = data.get('radius_miles')
-            name = data.get('name', '').strip()
             
             # Validate required parameters
             if not center or not isinstance(center, list) or len(center) != 2:
@@ -256,12 +312,6 @@ class AreaSearchView(View):
             if not radius_miles or not isinstance(radius_miles, (int, float)):
                 return JsonResponse(
                     {'error': 'radius_miles must be a number'}, 
-                    status=400
-                )
-            
-            if not name:
-                return JsonResponse(
-                    {'error': 'name is required'}, 
                     status=400
                 )
             
@@ -332,8 +382,8 @@ class AreaSearchView(View):
                         "radius_miles": radius_miles,
                         "created_via": "api"
                     },
-                    created_by=request.user if request.user.is_authenticated else default_user,
-                    updated_by=request.user if request.user.is_authenticated else default_user,
+                    created_by=default_user,
+                    updated_by=default_user,
                 )
                 
                 # Build response data
@@ -372,10 +422,159 @@ class AreaSearchView(View):
                     {'error': f'Error creating coverage area: {str(e)}'}, 
                     status=500
                 )
-            
+                
         except Exception as e:
             return JsonResponse(
-                {'error': f'Internal server error: {str(e)}'}, 
+                {'error': f'Error creating radius area: {str(e)}'}, 
+                status=500
+            )
+    
+    def _create_polygon_area(self, data: Dict, name: str) -> JsonResponse:
+        """Create a polygon-based coverage area.
+        
+        Args:
+            data: Request data containing GeoJSON geometry
+            name: Area name
+            
+        Returns:
+            JsonResponse: Created area data or error
+        """
+        try:
+            # Extract polygon-specific parameters
+            geometry_data = data.get('geometry')
+            
+            # Validate required parameters
+            if not geometry_data:
+                return JsonResponse(
+                    {'error': 'geometry is required for polygon areas'}, 
+                    status=400
+                )
+            
+            # Check if GIS is enabled
+            if not getattr(settings, 'GIS_ENABLED', False):
+                return JsonResponse(
+                    {'error': 'GIS functionality is not enabled'}, 
+                    status=503
+                )
+            
+            # Create polygon-based coverage area
+            try:
+                from django.contrib.gis.geos import GEOSGeometry, Point
+                
+                # Parse GeoJSON geometry
+                if isinstance(geometry_data, str):
+                    # If geometry is a string, parse it as GeoJSON
+                    geojson_str = geometry_data
+                elif isinstance(geometry_data, dict):
+                    # If geometry is a dict, convert to GeoJSON string
+                    import json
+                    geojson_str = json.dumps(geometry_data)
+                else:
+                    return JsonResponse(
+                        {'error': 'geometry must be a GeoJSON string or object'}, 
+                        status=400
+                    )
+                
+                # Create GEOS geometry from GeoJSON
+                try:
+                    geos_geometry = GEOSGeometry(geojson_str)
+                except Exception as e:
+                    return JsonResponse(
+                        {'error': f'Invalid GeoJSON geometry: {str(e)}'}, 
+                        status=400
+                    )
+                
+                # Validate geometry type
+                if geos_geometry.geom_type not in ['Polygon', 'MultiPolygon']:
+                    return JsonResponse(
+                        {'error': f'Geometry must be Polygon or MultiPolygon, got {geos_geometry.geom_type}'}, 
+                        status=400
+                    )
+                
+                # Validate geometry
+                if not geos_geometry.valid:
+                    return JsonResponse(
+                        {'error': 'Invalid geometry: self-intersecting or malformed polygon'}, 
+                        status=400
+                    )
+                
+                # Ensure SRID is 4326 (WGS84)
+                if geos_geometry.srid != 4326:
+                    geos_geometry.srid = 4326
+                
+                # Convert to MultiPolygon if needed
+                if geos_geometry.geom_type == 'Polygon':
+                    from django.contrib.gis.geos import MultiPolygon
+                    geos_geometry = MultiPolygon([geos_geometry])
+                
+                # Calculate center point
+                center_point = geos_geometry.centroid
+                
+                # Get or create default user for API operations
+                from django.contrib.auth.models import User
+                default_user, created = User.objects.get_or_create(
+                    username="api_user",
+                    defaults={
+                        "email": "api@example.com",
+                        "first_name": "API",
+                        "last_name": "User",
+                    }
+                )
+                
+                # Create CoverageArea record
+                coverage_area = CoverageArea.objects.create(
+                    kind="POLYGON",
+                    name=name,
+                    geom=geos_geometry,
+                    center=center_point,
+                    ext_ids={
+                        "created_via": "api",
+                        "geometry_type": geos_geometry.geom_type,
+                        "vertex_count": len(geos_geometry.coords[0]) if geos_geometry.geom_type == 'Polygon' else sum(len(poly.coords[0]) for poly in geos_geometry)
+                    },
+                    created_by=default_user,
+                    updated_by=default_user,
+                )
+                
+                # Build response data
+                response_data = {
+                    'id': coverage_area.id,
+                    'name': coverage_area.name,
+                    'kind': coverage_area.kind,
+                    'center': [center_point.y, center_point.x],  # lat, lon
+                    'ext_ids': coverage_area.ext_ids,
+                }
+                
+                # Add bounds if geometry is available
+                if coverage_area.geom:
+                    try:
+                        bounds = coverage_area.geom.extent
+                        response_data['bounds'] = {
+                            'west': bounds[0],
+                            'south': bounds[1],
+                            'east': bounds[2],
+                            'north': bounds[3]
+                        }
+                    except Exception:
+                        # If bounds calculation fails, omit bounds
+                        pass
+                
+                return JsonResponse(response_data, status=201)
+                
+            except ImportError:
+                return JsonResponse(
+                    {'error': 'GIS libraries not available'}, 
+                    status=503
+                )
+            except Exception as e:
+                return JsonResponse(
+                    {'error': f'Error creating coverage area: {str(e)}'}, 
+                    status=500
+                )
+                
+        except Exception as e:
+            return JsonResponse(
+                {'error': f'Error creating polygon area: {str(e)}'}, 
                 status=500
             )
 
