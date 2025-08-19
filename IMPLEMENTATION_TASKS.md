@@ -12,7 +12,7 @@
   - Configure database engine for SpatiaLite when GIS_ENABLED=True
   - Add `SPATIALITE_LIBRARY_PATH` configuration
   - Add fallback to regular SQLite when GIS_ENABLED=False
-- [ ] **Task 1.1.3**: Update Docker configuration
+- [x] **Task 1.1.3**: Update Docker configuration
   - Add GDAL/GEOS dependencies to Dockerfile
   - Configure SpatiaLite in docker-compose.yml
   - Add environment variables for GIS configuration
