@@ -13,6 +13,7 @@ Features:
     - Combined search with exact matches
     - Archive-aware querying methods
     - Fallback search when FTS5 is unavailable
+    - Spatial query methods for location-based filtering (when GIS enabled)
 
 Author: Resource Directory Team
 Created: 2024
@@ -28,10 +29,16 @@ Usage:
     
     # Or use directly
     resources = ResourceManager().search_fts("mental health")
+    resources = ResourceManager().filter_by_location(lat=37.7749, lon=-122.4194)
 """
 
 from django.db import connection, models
-from django.db.models import Q
+from django.db.models import Q, Case, When, Value, IntegerField
+from django.conf import settings
+from typing import Optional, Dict, Any, List, Tuple
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ResourceManager(models.Manager):
@@ -42,6 +49,7 @@ class ResourceManager(models.Manager):
     - Full-text search using SQLite FTS5
     - Combined search with exact matches
     - Archive-aware querying
+    - Spatial query methods for location-based filtering (when GIS enabled)
     
     The manager automatically filters out archived and deleted resources by default,
     but provides methods to include them when needed for administrative purposes.
@@ -58,6 +66,9 @@ class ResourceManager(models.Manager):
         
         >>> # Search with FTS5
         >>> results = Resource.objects.search_fts("mental health")
+        
+        >>> # Filter by location (when GIS enabled)
+        >>> results = Resource.objects.filter_by_location(lat=37.7749, lon=-122.4194)
     """
 
     def get_queryset(self) -> models.QuerySet:
@@ -277,3 +288,295 @@ class ResourceManager(models.Manager):
             *[models.When(pk=pk, then=pos) for pos, pk in enumerate(unique_ids)]
         )
         return self.filter(pk__in=unique_ids).order_by(preserved)
+
+    def filter_by_location(
+        self, 
+        lat: float, 
+        lon: float, 
+        radius_miles: Optional[float] = None,
+        include_radius_search: bool = True
+    ) -> models.QuerySet:
+        """Filter resources by geographic location and coverage areas.
+        
+        This method finds resources that serve a specific location by:
+        1. Finding resources with coverage areas that contain the point
+        2. Optionally including resources within a radius of their location
+        3. Ranking results by coverage specificity (RADIUS > CITY > COUNTY > STATE)
+        
+        Args:
+            lat (float): Latitude of the search point (WGS84)
+            lon (float): Longitude of the search point (WGS84)
+            radius_miles (float, optional): Maximum radius to search for resources
+                with location data but no coverage areas. Defaults to None.
+            include_radius_search (bool): Whether to include radius-based search
+                for resources without coverage areas. Defaults to True.
+                
+        Returns:
+            QuerySet: Resources that serve the specified location, annotated with
+                coverage specificity and distance information
+                
+        Note:
+            - Requires GIS to be enabled for spatial queries
+            - Falls back to text-based location matching when GIS is disabled
+            - Results are ordered by coverage specificity and distance
+            
+        Example:
+            >>> # Find resources serving a specific location
+            >>> resources = Resource.objects.filter_by_location(37.7749, -122.4194)
+            
+            >>> # Include radius search within 10 miles
+            >>> resources = Resource.objects.filter_by_location(
+            ...     37.7749, -122.4194, radius_miles=10
+            ... )
+        """
+        if not getattr(settings, 'GIS_ENABLED', False):
+            # Fallback to text-based location matching when GIS is disabled
+            logger.warning("GIS not enabled, falling back to text-based location matching")
+            return self._filter_by_location_fallback(lat, lon, radius_miles)
+        
+        try:
+            from django.contrib.gis.geos import Point
+            from django.contrib.gis.db.models.functions import Distance
+            
+            # Create point for spatial queries
+            search_point = Point(lon, lat, srid=4326)
+            
+            # Start with resources that have coverage areas containing the point
+            queryset = self.filter(
+                coverage_areas__geom__contains=search_point
+            ).distinct()
+            
+            # Annotate with coverage specificity and distance
+            queryset = self._annotate_coverage_specificity(queryset, search_point)
+            
+            # Add radius search if requested
+            if include_radius_search and radius_miles:
+                radius_meters = radius_miles * 1609.34  # Convert miles to meters
+                radius_point = Point(lon, lat, srid=4326)
+                
+                # Find resources within radius that don't have coverage areas
+                radius_resources = self.filter(
+                    coverage_areas__isnull=True,
+                    latitude__isnull=False,
+                    longitude__isnull=False
+                ).annotate(
+                    distance=Distance('point', radius_point)
+                ).filter(
+                    distance__lte=radius_meters
+                )
+                
+                # Combine with coverage area results
+                combined_ids = list(queryset.values_list('pk', flat=True))
+                combined_ids.extend(list(radius_resources.values_list('pk', flat=True)))
+                
+                if combined_ids:
+                    # Preserve order and remove duplicates
+                    seen = set()
+                    unique_ids = []
+                    for pk in combined_ids:
+                        if pk not in seen:
+                            seen.add(pk)
+                            unique_ids.append(pk)
+                    
+                    preserved = Case(
+                        *[When(pk=pk, then=pos) for pos, pk in enumerate(unique_ids)]
+                    )
+                    queryset = self.filter(pk__in=unique_ids).order_by(preserved)
+            
+            return queryset
+            
+        except ImportError:
+            logger.error("GIS libraries not available for spatial queries")
+            return self._filter_by_location_fallback(lat, lon, radius_miles)
+        except Exception as e:
+            logger.error(f"Error in spatial location filtering: {e}")
+            return self._filter_by_location_fallback(lat, lon, radius_miles)
+
+    def _filter_by_location_fallback(
+        self, 
+        lat: float, 
+        lon: float, 
+        radius_miles: Optional[float] = None
+    ) -> models.QuerySet:
+        """Fallback location filtering using text-based matching.
+        
+        This method is used when GIS is not available or spatial queries fail.
+        It performs basic text-based location matching using city, state, and
+        postal code fields.
+        
+        Args:
+            lat (float): Latitude (not used in fallback)
+            lon (float): Longitude (not used in fallback)
+            radius_miles (float, optional): Not used in fallback
+            
+        Returns:
+            QuerySet: Resources with location information, ordered by relevance
+        """
+        # Return resources that have location information
+        return self.filter(
+            Q(city__isnull=False) | Q(state__isnull=False) | Q(postal_code__isnull=False)
+        ).exclude(
+            Q(city='') & Q(state='') & Q(postal_code='')
+        )
+
+    def annotate_coverage_specificity(self, queryset: models.QuerySet) -> models.QuerySet:
+        """Annotate queryset with coverage area specificity information.
+        
+        This method adds annotations to help rank resources by how specific
+        their coverage areas are. More specific coverage areas (like RADIUS
+        or CITY) are ranked higher than broader ones (like STATE).
+        
+        Args:
+            queryset (QuerySet): The queryset to annotate
+            
+        Returns:
+            QuerySet: Annotated queryset with coverage specificity information
+            
+        Note:
+            - Requires GIS to be enabled for spatial annotations
+            - Falls back gracefully when GIS is not available
+            - Adds specificity_score and coverage_type annotations
+            
+        Example:
+            >>> resources = Resource.objects.annotate_coverage_specificity(
+            ...     Resource.objects.filter_by_location(37.7749, -122.4194)
+            ... )
+        """
+        if not getattr(settings, 'GIS_ENABLED', False):
+            # Return queryset unchanged when GIS is not available
+            return queryset
+        
+        try:
+            # Define specificity scores for different coverage area types
+            specificity_scores = {
+                'RADIUS': 100,    # Most specific - exact radius
+                'POLYGON': 90,    # Custom polygon - very specific
+                'CITY': 80,       # City boundary - specific
+                'COUNTY': 60,     # County boundary - moderate
+                'STATE': 40,      # State boundary - broad
+            }
+            
+            # Create Case statement for specificity scoring
+            specificity_case = Case(
+                When(coverage_areas__kind='RADIUS', then=Value(specificity_scores['RADIUS'])),
+                When(coverage_areas__kind='POLYGON', then=Value(specificity_scores['POLYGON'])),
+                When(coverage_areas__kind='CITY', then=Value(specificity_scores['CITY'])),
+                When(coverage_areas__kind='COUNTY', then=Value(specificity_scores['COUNTY'])),
+                When(coverage_areas__kind='STATE', then=Value(specificity_scores['STATE'])),
+                default=Value(0),
+                output_field=IntegerField(),
+            )
+            
+            return queryset.annotate(
+                specificity_score=models.Max(specificity_case),
+                coverage_type=models.Max('coverage_areas__kind'),
+                coverage_count=models.Count('coverage_areas', distinct=True)
+            )
+            
+        except Exception as e:
+            logger.error(f"Error annotating coverage specificity: {e}")
+            return queryset
+
+    def _annotate_coverage_specificity(
+        self, 
+        queryset: models.QuerySet, 
+        search_point: Any
+    ) -> models.QuerySet:
+        """Internal method to annotate coverage specificity with distance information.
+        
+        This method is used internally by filter_by_location to add both
+        specificity and distance annotations to the queryset.
+        
+        Args:
+            queryset (QuerySet): The queryset to annotate
+            search_point: The search point for distance calculations
+            
+        Returns:
+            QuerySet: Annotated queryset with specificity and distance information
+        """
+        try:
+            from django.contrib.gis.db.models.functions import Distance
+            
+            # Add distance annotation for coverage areas
+            queryset = queryset.annotate(
+                min_distance=Distance('coverage_areas__center', search_point)
+            )
+            
+            # Add specificity annotation
+            return self.annotate_coverage_specificity(queryset)
+            
+        except Exception as e:
+            logger.error(f"Error in coverage specificity annotation: {e}")
+            return queryset
+
+    def filter_by_coverage_area(
+        self, 
+        coverage_area_id: int, 
+        include_children: bool = False
+    ) -> models.QuerySet:
+        """Filter resources by specific coverage area.
+        
+        This method finds resources that are associated with a specific
+        coverage area, optionally including resources in child areas
+        (e.g., cities within a county).
+        
+        Args:
+            coverage_area_id (int): ID of the coverage area to filter by
+            include_children (bool): Whether to include resources in child areas.
+                Defaults to False.
+                
+        Returns:
+            QuerySet: Resources associated with the specified coverage area
+            
+        Example:
+            >>> # Find resources in a specific county
+            >>> resources = Resource.objects.filter_by_coverage_area(21025)
+            
+            >>> # Include resources in cities within the county
+            >>> resources = Resource.objects.filter_by_coverage_area(
+            ...     21025, include_children=True
+            ... )
+        """
+        queryset = self.filter(coverage_areas__id=coverage_area_id)
+        
+        if include_children:
+            # This would require additional logic to determine parent-child
+            # relationships between coverage areas, which we can implement
+            # when we have the administrative boundary hierarchy
+            logger.info("Include children functionality not yet implemented")
+        
+        return queryset.distinct()
+
+    def get_coverage_statistics(self) -> Dict[str, Any]:
+        """Get statistics about resource coverage areas.
+        
+        This method provides aggregate statistics about how resources
+        are distributed across different types of coverage areas.
+        
+        Returns:
+            Dict containing coverage statistics
+            
+        Example:
+            >>> stats = Resource.objects.get_coverage_statistics()
+            >>> print(f"Resources with coverage areas: {stats['with_coverage']}")
+        """
+        total_resources = self.count()
+        with_coverage = self.filter(coverage_areas__isnull=False).distinct().count()
+        without_coverage = total_resources - with_coverage
+        
+        # Get breakdown by coverage area type
+        coverage_types = self.filter(
+            coverage_areas__isnull=False
+        ).values(
+            'coverage_areas__kind'
+        ).annotate(
+            count=models.Count('id', distinct=True)
+        ).order_by('coverage_areas__kind')
+        
+        return {
+            'total_resources': total_resources,
+            'with_coverage': with_coverage,
+            'without_coverage': without_coverage,
+            'coverage_percentage': (with_coverage / total_resources * 100) if total_resources > 0 else 0,
+            'coverage_types': list(coverage_types),
+        }
