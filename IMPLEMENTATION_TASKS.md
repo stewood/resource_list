@@ -164,19 +164,19 @@
   - Implement Bootstrap modal with tabs
   - Add responsive design for mobile
   - Include accessibility features
-- [ ] **Task 6.1.2**: Implement "Find Boundary" tab
+- [x] **Task 6.1.2**: Implement "Find Boundary" tab
   - Add autocomplete for county/city/state names
   - Display FIPS codes and boundaries
   - Add map preview of selected boundaries
-- [ ] **Task 6.1.3**: Implement "Radius" tab
+- [x] **Task 6.1.3**: Implement "Radius" tab
   - Add map click to set center point
   - Add radius slider (0.5-100 miles)
   - Show preview circle on map
-- [ ] **Task 6.1.4**: Implement "Custom Polygon" tab
+- [x] **Task 6.1.4**: Implement "Custom Polygon" tab
   - Integrate Leaflet.draw for polygon creation
   - Add polygon validation and editing
   - Show vertex count and area calculations
-- [ ] **Task 6.1.5**: Implement "Upload" tab
+- [x] **Task 6.1.5**: Implement "Upload" tab
   - Add drag-and-drop GeoJSON upload
   - Show file validation and preview
   - Handle upload errors gracefully
