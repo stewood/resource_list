@@ -1,0 +1,349 @@
+{% comment %}
+Service Area Manager Modal Template
+
+This template provides a Bootstrap modal with tabs for managing service areas.
+It includes responsive design and accessibility features for creating and managing
+coverage areas for resources.
+
+Features:
+- Bootstrap modal with tabbed interface
+- Responsive design for mobile and desktop
+- Accessibility features (ARIA labels, keyboard navigation)
+- Four tabs: Find Boundary, Radius, Custom Polygon, Upload
+- Integration with existing API endpoints
+
+Usage:
+- Include this template in resource forms
+- Trigger modal with data-bs-toggle="modal" data-bs-target="#serviceAreaModal"
+- Handle form submissions with JavaScript/HTMX
+
+Author: Resource Directory Team
+Created: 2025-01-15
+Version: 1.0.0
+{% endcomment %}
+
+<!-- Service Area Manager Modal -->
+<div class="modal fade" id="serviceAreaModal" tabindex="-1" aria-labelledby="serviceAreaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="serviceAreaModalLabel">
+                    <i class="fas fa-map-marked-alt me-2"></i>Service Area Manager
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs" id="serviceAreaTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="boundary-tab" data-bs-toggle="tab" data-bs-target="#boundary" 
+                                type="button" role="tab" aria-controls="boundary" aria-selected="true">
+                            <i class="fas fa-search me-1"></i>Find Boundary
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="radius-tab" data-bs-toggle="tab" data-bs-target="#radius" 
+                                type="button" role="tab" aria-controls="radius" aria-selected="false">
+                            <i class="fas fa-circle me-1"></i>Radius
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="polygon-tab" data-bs-toggle="tab" data-bs-target="#polygon" 
+                                type="button" role="tab" aria-controls="polygon" aria-selected="false">
+                            <i class="fas fa-draw-polygon me-1"></i>Custom Polygon
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" 
+                                type="button" role="tab" aria-controls="upload" aria-selected="false">
+                            <i class="fas fa-upload me-1"></i>Upload
+                        </button>
+                    </li>
+                </ul>
+                
+                <!-- Tab Content -->
+                <div class="tab-content mt-3" id="serviceAreaTabContent">
+                    <!-- Find Boundary Tab -->
+                    <div class="tab-pane fade show active" id="boundary" role="tabpanel" aria-labelledby="boundary-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-search me-2"></i>Search for Administrative Boundaries
+                                </h6>
+                                <p class="text-muted small mb-3">
+                                    Search for counties, cities, and states to use their official boundaries as service areas.
+                                </p>
+                                
+                                <!-- Search Form -->
+                                <form id="boundarySearchForm">
+                                    <div class="mb-3">
+                                        <label for="boundaryKind" class="form-label">Boundary Type</label>
+                                        <select class="form-select" id="boundaryKind" name="kind">
+                                            <option value="">All Types</option>
+                                            <option value="STATE">State</option>
+                                            <option value="COUNTY">County</option>
+                                            <option value="CITY">City</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="boundarySearch" class="form-label">Search Term</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="boundarySearch" 
+                                                   name="q" placeholder="e.g., Kentucky, Laurel County">
+                                            <button class="btn btn-outline-primary" type="submit">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                                
+                                <!-- Search Results -->
+                                <div id="boundaryResults" class="mt-3" style="display: none;">
+                                    <h6>Search Results</h6>
+                                    <div class="list-group" id="boundaryResultsList">
+                                        <!-- Results will be populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-map me-2"></i>Map Preview
+                                </h6>
+                                <div id="boundaryMapPreview" class="border rounded" style="height: 300px; background-color: #f8f9fa;">
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                        <div class="text-center">
+                                            <i class="fas fa-map fa-3x mb-2"></i>
+                                            <p>Select a boundary to see preview</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Radius Tab -->
+                    <div class="tab-pane fade" id="radius" role="tabpanel" aria-labelledby="radius-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-circle me-2"></i>Create Radius-Based Service Area
+                                </h6>
+                                <p class="text-muted small mb-3">
+                                    Define a circular service area by specifying a center point and radius.
+                                </p>
+                                
+                                <!-- Radius Form -->
+                                <form id="radiusForm">
+                                    <div class="mb-3">
+                                        <label for="radiusName" class="form-label">Area Name</label>
+                                        <input type="text" class="form-control" id="radiusName" name="name" 
+                                               placeholder="e.g., Downtown Service Area" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="radiusCenter" class="form-label">Center Point</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="radiusCenter" 
+                                                   placeholder="Enter address or coordinates" required>
+                                            <button class="btn btn-outline-secondary" type="button" id="geocodeBtn">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                            </button>
+                                        </div>
+                                        <div class="form-text">Enter an address or click on the map to set center point</div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="radiusMiles" class="form-label">Radius (miles)</label>
+                                        <input type="range" class="form-range" id="radiusMiles" name="radius_miles" 
+                                               min="0.5" max="100" step="0.5" value="5">
+                                        <div class="d-flex justify-content-between">
+                                            <small class="text-muted">0.5 miles</small>
+                                            <small class="text-muted" id="radiusValue">5 miles</small>
+                                            <small class="text-muted">100 miles</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-plus me-1"></i>Create Radius Area
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-map me-2"></i>Map Preview
+                                </h6>
+                                <div id="radiusMapPreview" class="border rounded" style="height: 300px; background-color: #f8f9fa;">
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                        <div class="text-center">
+                                            <i class="fas fa-map fa-3x mb-2"></i>
+                                            <p>Set center point to see preview</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Custom Polygon Tab -->
+                    <div class="tab-pane fade" id="polygon" role="tabpanel" aria-labelledby="polygon-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-draw-polygon me-2"></i>Create Custom Polygon
+                                </h6>
+                                <p class="text-muted small mb-3">
+                                    Draw a custom polygon on the map to define your service area boundaries.
+                                </p>
+                                
+                                <!-- Polygon Form -->
+                                <form id="polygonForm">
+                                    <div class="mb-3">
+                                        <label for="polygonName" class="form-label">Area Name</label>
+                                        <input type="text" class="form-control" id="polygonName" name="name" 
+                                               placeholder="e.g., Custom Service Area" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <div class="d-flex gap-2 mb-2">
+                                            <button type="button" class="btn btn-outline-primary btn-sm" id="startDrawingBtn">
+                                                <i class="fas fa-pencil-alt me-1"></i>Start Drawing
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" id="clearDrawingBtn">
+                                                <i class="fas fa-eraser me-1"></i>Clear
+                                            </button>
+                                        </div>
+                                        <div class="form-text">Click "Start Drawing" then click on the map to create polygon vertices</div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Polygon Info</label>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <small class="text-muted">Vertices: <span id="vertexCount">0</span></small>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted">Area: <span id="polygonArea">0</span> sq mi</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary" id="createPolygonBtn" disabled>
+                                        <i class="fas fa-plus me-1"></i>Create Polygon Area
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-map me-2"></i>Drawing Canvas
+                                </h6>
+                                <div id="polygonMapCanvas" class="border rounded" style="height: 300px; background-color: #f8f9fa;">
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                        <div class="text-center">
+                                            <i class="fas fa-draw-polygon fa-3x mb-2"></i>
+                                            <p>Click "Start Drawing" to begin</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Upload Tab -->
+                    <div class="tab-pane fade" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-upload me-2"></i>Upload GeoJSON File
+                                </h6>
+                                <p class="text-muted small mb-3">
+                                    Upload a GeoJSON file containing polygon geometry for your service area.
+                                </p>
+                                
+                                <!-- Upload Form -->
+                                <form id="uploadForm">
+                                    <div class="mb-3">
+                                        <label for="uploadName" class="form-label">Area Name</label>
+                                        <input type="text" class="form-control" id="uploadName" name="name" 
+                                               placeholder="e.g., Uploaded Service Area" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="geojsonFile" class="form-label">GeoJSON File</label>
+                                        <input type="file" class="form-control" id="geojsonFile" name="file" 
+                                               accept=".json,.geojson" required>
+                                        <div class="form-text">Upload a .json or .geojson file with polygon geometry</div>
+                                    </div>
+                                    
+                                    <div class="mb-3" id="fileValidation" style="display: none;">
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            <span id="validationMessage">Validating file...</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary" id="uploadBtn" disabled>
+                                        <i class="fas fa-upload me-1"></i>Upload and Create Area
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-map me-2"></i>File Preview
+                                </h6>
+                                <div id="uploadPreview" class="border rounded" style="height: 300px; background-color: #f8f9fa;">
+                                    <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                        <div class="text-center">
+                                            <i class="fas fa-file-upload fa-3x mb-2"></i>
+                                            <p>Select a GeoJSON file to preview</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Close
+                </button>
+                <button type="button" class="btn btn-primary" id="saveServiceAreasBtn">
+                    <i class="fas fa-save me-1"></i>Save to Resource
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="modal-backdrop fade d-none" id="loadingOverlay">
+    <div class="d-flex align-items-center justify-content-center h-100">
+        <div class="spinner-border text-light" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Messages -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="serviceAreaToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong class="me-auto" id="toastTitle">Service Area Manager</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            <!-- Message content will be set by JavaScript -->
+        </div>
+    </div>
+</div>

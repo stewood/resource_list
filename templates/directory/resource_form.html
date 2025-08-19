@@ -445,6 +445,40 @@
                         </div>
                     </div>
                     
+                    <!-- Service Areas -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="fas fa-map-marked-alt"></i> Service Areas
+                            </h5>
+                            <p class="text-muted small mb-3">
+                                Define the geographic areas where this resource provides services. You can use administrative boundaries, 
+                                create custom radius areas, or draw custom polygons.
+                            </p>
+                            
+                            <!-- Current Service Areas Display -->
+                            <div id="currentServiceAreas" class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">Current Service Areas</h6>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#serviceAreaModal">
+                                        <i class="fas fa-plus me-1"></i>Add Service Area
+                                    </button>
+                                </div>
+                                <div id="serviceAreasList" class="list-group">
+                                    <!-- Service areas will be populated by JavaScript -->
+                                    <div class="text-muted small">No service areas defined yet. Click "Add Service Area" to get started.</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Service Areas Summary -->
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Service Areas Help:</strong> Define where your resource operates to help people find services in their area. 
+                                You can add multiple service areas of different types.
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Form Actions -->
                     <div class="row">
                         <div class="col-12">
@@ -466,6 +500,9 @@
         </div>
     </div>
 </div>
+
+<!-- Include Service Area Manager Modal -->
+{% include 'directory/service_area_manager_modal.html' %}
 {% endblock %}
 
 {% block extra_js %}
@@ -480,6 +517,264 @@
                 }
             }
         });
+        
+        // Initialize Service Area Manager
+        initializeServiceAreaManager();
     });
+    
+    // Service Area Manager functionality
+    function initializeServiceAreaManager() {
+        // Store selected service areas
+        let selectedServiceAreas = [];
+        
+        // Initialize radius slider
+        const radiusSlider = document.getElementById('radiusMiles');
+        const radiusValue = document.getElementById('radiusValue');
+        if (radiusSlider && radiusValue) {
+            radiusSlider.addEventListener('input', function() {
+                radiusValue.textContent = this.value + ' miles';
+            });
+        }
+        
+        // Handle boundary search form
+        const boundarySearchForm = document.getElementById('boundarySearchForm');
+        if (boundarySearchForm) {
+            boundarySearchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                searchBoundaries();
+            });
+        }
+        
+        // Handle radius form
+        const radiusForm = document.getElementById('radiusForm');
+        if (radiusForm) {
+            radiusForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                createRadiusArea();
+            });
+        }
+        
+        // Handle polygon form
+        const polygonForm = document.getElementById('polygonForm');
+        if (polygonForm) {
+            polygonForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                createPolygonArea();
+            });
+        }
+        
+        // Handle upload form
+        const uploadForm = document.getElementById('uploadForm');
+        if (uploadForm) {
+            uploadForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                uploadGeoJSON();
+            });
+        }
+        
+        // Handle save button
+        const saveBtn = document.getElementById('saveServiceAreasBtn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', function() {
+                saveServiceAreas();
+            });
+        }
+        
+        // Search boundaries function
+        function searchBoundaries() {
+            const kind = document.getElementById('boundaryKind').value;
+            const query = document.getElementById('boundarySearch').value;
+            
+            if (!query.trim()) {
+                showToast('Please enter a search term', 'warning');
+                return;
+            }
+            
+            // Show loading
+            showLoading(true);
+            
+            // Make API call to search boundaries
+            fetch(`/api/areas/search/?kind=${kind}&q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    showLoading(false);
+                    displayBoundaryResults(data.results);
+                })
+                .catch(error => {
+                    showLoading(false);
+                    showToast('Error searching boundaries: ' + error.message, 'error');
+                });
+        }
+        
+        // Display boundary search results
+        function displayBoundaryResults(results) {
+            const resultsContainer = document.getElementById('boundaryResults');
+            const resultsList = document.getElementById('boundaryResultsList');
+            
+            if (results.length === 0) {
+                resultsList.innerHTML = '<div class="text-muted small">No boundaries found matching your search.</div>';
+            } else {
+                resultsList.innerHTML = results.map(area => `
+                    <div class="list-group-item list-group-item-action" onclick="selectBoundary(${area.id})">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">${area.name}</h6>
+                                <small class="text-muted">${area.kind}</small>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm" onclick="event.stopPropagation(); selectBoundary(${area.id})">
+                                <i class="fas fa-plus"></i> Select
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            resultsContainer.style.display = 'block';
+        }
+        
+        // Select a boundary
+        window.selectBoundary = function(areaId) {
+            // Add to selected areas
+            selectedServiceAreas.push({
+                id: areaId,
+                type: 'boundary',
+                source: 'existing'
+            });
+            
+            showToast('Boundary selected successfully', 'success');
+            updateServiceAreasList();
+        };
+        
+        // Create radius area
+        function createRadiusArea() {
+            const name = document.getElementById('radiusName').value;
+            const center = document.getElementById('radiusCenter').value;
+            const radiusMiles = document.getElementById('radiusMiles').value;
+            
+            if (!name || !center) {
+                showToast('Please fill in all required fields', 'warning');
+                return;
+            }
+            
+            showLoading(true);
+            
+            // Make API call to create radius area
+            fetch('/api/areas/search/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    type: 'radius',
+                    name: name,
+                    center: [37.1283, -84.0836], // Default to London, KY for now
+                    radius_miles: parseFloat(radiusMiles)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                if (data.id) {
+                    selectedServiceAreas.push({
+                        id: data.id,
+                        name: data.name,
+                        type: 'radius',
+                        source: 'new'
+                    });
+                    showToast('Radius area created successfully', 'success');
+                    updateServiceAreasList();
+                    document.getElementById('radiusForm').reset();
+                } else {
+                    showToast('Error creating radius area: ' + (data.error || 'Unknown error'), 'error');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                showToast('Error creating radius area: ' + error.message, 'error');
+            });
+        }
+        
+        // Create polygon area (placeholder)
+        function createPolygonArea() {
+            showToast('Polygon creation will be implemented in the next phase', 'info');
+        }
+        
+        // Upload GeoJSON (placeholder)
+        function uploadGeoJSON() {
+            showToast('GeoJSON upload will be implemented in the next phase', 'info');
+        }
+        
+        // Save service areas to resource
+        function saveServiceAreas() {
+            // This will be implemented when we add the resource-coverage association API
+            showToast('Service areas will be saved to the resource in the next phase', 'info');
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('serviceAreaModal'));
+            if (modal) {
+                modal.hide();
+            }
+        }
+        
+        // Update service areas list display
+        function updateServiceAreasList() {
+            const listContainer = document.getElementById('serviceAreasList');
+            
+            if (selectedServiceAreas.length === 0) {
+                listContainer.innerHTML = '<div class="text-muted small">No service areas defined yet. Click "Add Service Area" to get started.</div>';
+            } else {
+                listContainer.innerHTML = selectedServiceAreas.map(area => `
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">${area.name || 'Area ' + area.id}</h6>
+                            <small class="text-muted">${area.type} • ${area.source === 'new' ? 'New' : 'Existing'}</small>
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm" onclick="removeServiceArea(${area.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        // Remove service area
+        window.removeServiceArea = function(areaId) {
+            selectedServiceAreas = selectedServiceAreas.filter(area => area.id !== areaId);
+            updateServiceAreasList();
+            showToast('Service area removed', 'success');
+        };
+        
+        // Utility functions
+        function showLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.toggle('d-none', !show);
+            }
+        }
+        
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('serviceAreaToast');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            if (toast && toastTitle && toastMessage) {
+                // Set icon and title based on type
+                const icons = {
+                    'success': 'fas fa-check-circle text-success',
+                    'error': 'fas fa-exclamation-circle text-danger',
+                    'warning': 'fas fa-exclamation-triangle text-warning',
+                    'info': 'fas fa-info-circle text-info'
+                };
+                
+                toastTitle.innerHTML = `<i class="${icons[type] || icons.info} me-2"></i>Service Area Manager`;
+                toastMessage.textContent = message;
+                
+                // Show toast
+                const bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
+            }
+        }
+    }
 </script>
 {% endblock %}
