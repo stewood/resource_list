@@ -182,7 +182,7 @@
   - Handle upload errors gracefully
 
 ### 6.2 Map Integration
-- [ ] **Task 6.2.1**: Set up Leaflet map
+- [x] **Task 6.2.1**: Set up Leaflet map
   - Configure Leaflet with proper tile layers
   - Add Leaflet.draw plugin for polygon editing
   - Implement map controls and interactions
