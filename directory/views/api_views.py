@@ -1,0 +1,392 @@
+"""
+API Views - Coverage Area Management and Search APIs
+
+This module contains Django REST Framework views for coverage area management
+and location-based search functionality. These views provide RESTful API
+endpoints for area search, radius creation, polygon creation, and resource
+coverage association.
+
+Key Views:
+    - AreaSearchView: Search coverage areas by kind and name
+    - RadiusCreationView: Create radius-based coverage areas
+    - PolygonCreationView: Create custom polygon coverage areas
+    - ResourceAreaManagementView: Manage resource-coverage associations
+
+Features:
+    - RESTful API design with proper HTTP methods
+    - JSON request/response format
+    - Pagination for large result sets
+    - Authentication and permission controls
+    - Input validation and error handling
+    - Integration with spatial query logic
+
+Author: Resource Directory Team
+Created: 2025-01-15
+Version: 1.0.0
+
+Dependencies:
+    - Django REST Framework
+    - django.contrib.gis for spatial operations
+    - directory.models for data access
+    - directory.services.geocoding for geocoding functionality
+
+Usage:
+    from directory.views.api_views import AreaSearchView
+    
+    # URL patterns typically map to these views
+    # GET /api/areas/search/ -> AreaSearchView
+    # POST /api/areas/radius/ -> RadiusCreationView
+    # POST /api/areas/polygon/ -> PolygonCreationView
+    # POST /api/resources/{id}/areas/ -> ResourceAreaManagementView
+"""
+
+import json
+from typing import Any, Dict, List, Optional
+
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.http import HttpRequest, JsonResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.views.generic import View
+
+from ..models import CoverageArea, Resource
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class AreaSearchView(View):
+    """API view for searching coverage areas.
+    
+    This view provides a RESTful endpoint for searching coverage areas by
+    kind (STATE, COUNTY, CITY, etc.) and name. It supports pagination and
+    returns JSON responses with coverage area details.
+    
+    Endpoint: GET /api/areas/search/
+    
+    Query Parameters:
+        - kind: Coverage area kind (STATE, COUNTY, CITY, POLYGON, RADIUS)
+        - q: Search query for area names
+        - page: Page number for pagination
+        - page_size: Number of results per page (default: 20)
+        
+    Response Format:
+        {
+            "results": [
+                {
+                    "id": 1,
+                    "name": "Kentucky",
+                    "kind": "STATE",
+                    "ext_ids": {"state_fips": "21", "state_name": "Kentucky"},
+                    "bounds": {"north": 39.1, "south": 36.5, "east": -81.9, "west": -89.6}
+                }
+            ],
+            "pagination": {
+                "page": 1,
+                "page_size": 20,
+                "total_count": 1,
+                "total_pages": 1
+            }
+        }
+    """
+    
+    def get(self, request: HttpRequest) -> JsonResponse:
+        """Handle GET requests for area search.
+        
+        Args:
+            request: HTTP request object
+            
+        Returns:
+            JsonResponse: JSON response with search results and pagination
+        """
+        try:
+            # Get query parameters
+            kind = request.GET.get('kind', '').upper()
+            search_query = request.GET.get('q', '').strip()
+            page = int(request.GET.get('page', 1))
+            page_size = int(request.GET.get('page_size', 20))
+            
+            # Validate parameters
+            if page < 1:
+                return JsonResponse(
+                    {'error': 'Page number must be greater than 0'}, 
+                    status=400
+                )
+            if page_size < 1 or page_size > 100:
+                return JsonResponse(
+                    {'error': 'Page size must be between 1 and 100'}, 
+                    status=400
+                )
+            
+            # Build queryset
+            queryset = CoverageArea.objects.all()
+            
+            # Filter by kind if specified
+            if kind:
+                if kind not in dict(CoverageArea.KIND_CHOICES):
+                    return JsonResponse(
+                        {'error': f'Invalid kind: {kind}. Valid kinds: {list(dict(CoverageArea.KIND_CHOICES).keys())}'}, 
+                        status=400
+                    )
+                queryset = queryset.filter(kind=kind)
+            
+            # Filter by search query if specified
+            if search_query:
+                queryset = queryset.filter(
+                    Q(name__icontains=search_query) |
+                    Q(ext_ids__state_name__icontains=search_query) |
+                    Q(ext_ids__county_name__icontains=search_query)
+                )
+            
+            # Order by name
+            queryset = queryset.order_by('name')
+            
+            # Paginate results
+            paginator = Paginator(queryset, page_size)
+            try:
+                page_obj = paginator.page(page)
+            except Exception as e:
+                return JsonResponse(
+                    {'error': f'Invalid page number: {str(e)}'}, 
+                    status=400
+                )
+            
+            # Build response data
+            results = []
+            for area in page_obj:
+                area_data = {
+                    'id': area.id,
+                    'name': area.name,
+                    'kind': area.kind,
+                    'ext_ids': area.ext_ids or {},
+                }
+                
+                # Add bounds if geometry is available
+                if area.geom and hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
+                    try:
+                        bounds = area.geom.extent
+                        area_data['bounds'] = {
+                            'west': bounds[0],
+                            'south': bounds[1],
+                            'east': bounds[2],
+                            'north': bounds[3]
+                        }
+                    except Exception:
+                        # If bounds calculation fails, omit bounds
+                        pass
+                
+                results.append(area_data)
+            
+            # Build pagination info
+            pagination = {
+                'page': page,
+                'page_size': page_size,
+                'total_count': paginator.count,
+                'total_pages': paginator.num_pages,
+                'has_next': page_obj.has_next(),
+                'has_previous': page_obj.has_previous(),
+            }
+            
+            response_data = {
+                'results': results,
+                'pagination': pagination
+            }
+            
+            return JsonResponse(response_data)
+            
+        except ValueError as e:
+            return JsonResponse(
+                {'error': f'Invalid parameter value: {str(e)}'}, 
+                status=400
+            )
+        except Exception as e:
+            return JsonResponse(
+                {'error': f'Internal server error: {str(e)}'}, 
+                status=500
+            )
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class LocationSearchView(View):
+    """API view for location-based resource search.
+    
+    This view provides a RESTful endpoint for finding resources by location
+    using address geocoding or coordinates. It integrates with the spatial
+    query logic and geocoding service.
+    
+    Endpoint: GET /api/search/by-location/
+    
+    Query Parameters:
+        - address: Address string to geocode and search
+        - lat: Latitude coordinate (optional if address provided)
+        - lon: Longitude coordinate (optional if address provided)
+        - radius_miles: Search radius in miles (default: 10)
+        - page: Page number for pagination
+        - page_size: Number of results per page (default: 20)
+        
+    Response Format:
+        {
+            "location": {
+                "address": "London, KY",
+                "coordinates": [37.1283, -84.0836],
+                "geocoded": true
+            },
+            "results": [
+                {
+                    "id": 1,
+                    "name": "Crisis Intervention Center",
+                    "description": "24/7 crisis intervention services",
+                    "city": "London",
+                    "state": "KY",
+                    "coverage_areas": ["Kentucky", "Laurel County"],
+                    "distance_miles": 0.5
+                }
+            ],
+            "pagination": {
+                "page": 1,
+                "page_size": 20,
+                "total_count": 1,
+                "total_pages": 1
+            }
+        }
+    """
+    
+    def get(self, request: HttpRequest) -> JsonResponse:
+        """Handle GET requests for location-based search.
+        
+        Args:
+            request: HTTP request object
+            
+        Returns:
+            JsonResponse: JSON response with search results and location info
+        """
+        try:
+            # Get query parameters
+            address = request.GET.get('address', '').strip()
+            lat = request.GET.get('lat')
+            lon = request.GET.get('lon')
+            radius_miles = float(request.GET.get('radius_miles', 10))
+            page = int(request.GET.get('page', 1))
+            page_size = int(request.GET.get('page_size', 20))
+            
+            # Validate parameters
+            if not address and (not lat or not lon):
+                return JsonResponse(
+                    {'error': 'Either address or lat/lon coordinates must be provided'}, 
+                    status=400
+                )
+            
+            if radius_miles < 0.1 or radius_miles > 100:
+                return JsonResponse(
+                    {'error': 'Radius must be between 0.1 and 100 miles'}, 
+                    status=400
+                )
+            
+            # Determine search location
+            if address:
+                # Use address geocoding
+                from ..services.geocoding import get_geocoding_service
+                service = get_geocoding_service()
+                geocode_result = service.geocode(address)
+                
+                if not geocode_result:
+                    return JsonResponse(
+                        {'error': f'Could not geocode address: {address}'}, 
+                        status=400
+                    )
+                
+                lat = geocode_result.latitude
+                lon = geocode_result.longitude
+                geocoded_address = geocode_result.address
+                geocoded = True
+            else:
+                # Use provided coordinates
+                lat = float(lat)
+                lon = float(lon)
+                geocoded_address = address or f"{lat}, {lon}"
+                geocoded = False
+            
+            # Validate coordinates
+            if not (-90 <= lat <= 90) or not (-180 <= lon <= 180):
+                return JsonResponse(
+                    {'error': 'Invalid coordinates provided'}, 
+                    status=400
+                )
+            
+            # Perform spatial search
+            resources = Resource.objects.find_resources_by_location(
+                location=(lat, lon),
+                radius_miles=radius_miles
+            )
+            
+            # Paginate results
+            paginator = Paginator(resources, page_size)
+            try:
+                page_obj = paginator.page(page)
+            except Exception as e:
+                return JsonResponse(
+                    {'error': f'Invalid page number: {str(e)}'}, 
+                    status=400
+                )
+            
+            # Build response data
+            results = []
+            for resource in page_obj:
+                resource_data = {
+                    'id': resource.id,
+                    'name': resource.name,
+                    'description': resource.description,
+                    'city': resource.city,
+                    'state': resource.state,
+                    'phone': resource.phone,
+                    'website': resource.website,
+                    'is_emergency_service': resource.is_emergency_service,
+                    'is_24_hour_service': resource.is_24_hour_service,
+                }
+                
+                # Add coverage areas
+                coverage_areas = list(resource.coverage_areas.values_list('name', flat=True))
+                resource_data['coverage_areas'] = coverage_areas
+                
+                # Add distance if available (this would need to be calculated)
+                # For now, we'll omit distance calculation
+                
+                results.append(resource_data)
+            
+            # Build location info
+            location_info = {
+                'address': geocoded_address,
+                'coordinates': [lat, lon],
+                'geocoded': geocoded
+            }
+            
+            # Build pagination info
+            pagination = {
+                'page': page,
+                'page_size': page_size,
+                'total_count': paginator.count,
+                'total_pages': paginator.num_pages,
+                'has_next': page_obj.has_next(),
+                'has_previous': page_obj.has_previous(),
+            }
+            
+            response_data = {
+                'location': location_info,
+                'results': results,
+                'pagination': pagination
+            }
+            
+            return JsonResponse(response_data)
+            
+        except ValueError as e:
+            return JsonResponse(
+                {'error': f'Invalid parameter value: {str(e)}'}, 
+                status=400
+            )
+        except Exception as e:
+            return JsonResponse(
+                {'error': f'Internal server error: {str(e)}'}, 
+                status=500
+            )

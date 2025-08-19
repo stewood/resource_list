@@ -53,6 +53,10 @@ from .public_views import (
     public_resource_detail,
     custom_logout,
 )
+from .api_views import (
+    AreaSearchView,
+    LocationSearchView,
+)
 
 # Export all views for easy importing
 __all__ = [
@@ -83,4 +87,8 @@ __all__ = [
     "public_resource_list",
     "public_resource_detail",
     "custom_logout",
+    
+    # API views
+    "AreaSearchView",
+    "LocationSearchView",
 ]

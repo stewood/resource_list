@@ -28,6 +28,9 @@ from .views import (
     public_resource_list,
     public_resource_detail,
     custom_logout,
+    # API views
+    AreaSearchView,
+    LocationSearchView,
 )
 
 app_name = "directory"
@@ -105,4 +108,8 @@ urlpatterns = [
     
     # Authentication
     path("logout/", custom_logout, name="logout"),
+    
+    # API endpoints
+    path("api/areas/search/", AreaSearchView.as_view(), name="api_area_search"),
+    path("api/search/by-location/", LocationSearchView.as_view(), name="api_location_search"),
 ]
