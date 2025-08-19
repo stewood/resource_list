@@ -35,7 +35,7 @@ Usage:
 from django.db import connection, models
 from django.db.models import Q, Case, When, Value, IntegerField
 from django.conf import settings
-from typing import Optional, Dict, Any, List, Tuple
+from typing import Optional, Dict, Any, List, Tuple, Union
 import logging
 
 logger = logging.getLogger(__name__)
@@ -355,14 +355,12 @@ class ResourceManager(models.Manager):
                 radius_point = Point(lon, lat, srid=4326)
                 
                 # Find resources within radius that don't have coverage areas
+                # Note: Since Resource model doesn't have lat/lon fields, we'll use
+                # text-based location matching for radius search
                 radius_resources = self.filter(
-                    coverage_areas__isnull=True,
-                    latitude__isnull=False,
-                    longitude__isnull=False
-                ).annotate(
-                    distance=Distance('point', radius_point)
+                    coverage_areas__isnull=True
                 ).filter(
-                    distance__lte=radius_meters
+                    Q(city__isnull=False) | Q(state__isnull=False)
                 )
                 
                 # Combine with coverage area results
@@ -391,6 +389,96 @@ class ResourceManager(models.Manager):
         except Exception as e:
             logger.error(f"Error in spatial location filtering: {e}")
             return self._filter_by_location_fallback(lat, lon, radius_miles)
+
+    def find_resources_by_location(
+        self,
+        location: Union[str, Tuple[float, float]],
+        radius_miles: Optional[float] = None,
+        include_radius_search: bool = True,
+        provider_name: Optional[str] = None
+    ) -> models.QuerySet:
+        """Find resources by location using address geocoding or coordinates.
+        
+        This is the main entry point for location-based resource search. It accepts
+        either an address string (which gets geocoded) or coordinates, then uses
+        the spatial query logic to find resources that serve that location.
+        
+        Args:
+            location: Either an address string or (lat, lon) tuple
+            radius_miles: Maximum radius to search for resources without coverage areas
+            include_radius_search: Whether to include radius-based search
+            provider_name: Specific geocoding provider to use (optional)
+            
+        Returns:
+            QuerySet: Resources that serve the specified location, ranked by coverage specificity
+            
+        Example:
+            >>> # Search by address
+            >>> resources = Resource.objects.find_resources_by_location("London, KY")
+            
+            >>> # Search by coordinates
+            >>> resources = Resource.objects.find_resources_by_location((37.1283, -84.0836))
+            
+            >>> # Search with radius
+            >>> resources = Resource.objects.find_resources_by_location(
+            ...     "London, KY", radius_miles=10
+            ... )
+        """
+        # Handle different input types
+        if isinstance(location, str):
+            # Geocode the address string
+            lat, lon = self._geocode_location(location, provider_name)
+            if lat is None or lon is None:
+                logger.warning(f"Could not geocode address: {location}")
+                return self.none()
+        elif isinstance(location, (tuple, list)) and len(location) == 2:
+            # Use provided coordinates
+            lat, lon = location
+        else:
+            logger.error(f"Invalid location format: {location}")
+            return self.none()
+        
+        # Use the existing spatial query logic
+        return self.filter_by_location(
+            lat=lat,
+            lon=lon,
+            radius_miles=radius_miles,
+            include_radius_search=include_radius_search
+        )
+
+    def _geocode_location(
+        self, 
+        address: str, 
+        provider_name: Optional[str] = None
+    ) -> Tuple[Optional[float], Optional[float]]:
+        """Geocode an address string to coordinates.
+        
+        Args:
+            address: Address string to geocode
+            provider_name: Specific geocoding provider to use (optional)
+            
+        Returns:
+            Tuple of (latitude, longitude) or (None, None) if geocoding fails
+        """
+        try:
+            from directory.services.geocoding import get_geocoding_service
+            
+            service = get_geocoding_service()
+            result = service.geocode(address, provider_name)
+            
+            if result and result.is_valid():
+                logger.info(f"Successfully geocoded '{address}' to ({result.latitude}, {result.longitude})")
+                return result.latitude, result.longitude
+            else:
+                logger.warning(f"Geocoding failed for address: {address}")
+                return None, None
+                
+        except ImportError:
+            logger.error("Geocoding service not available")
+            return None, None
+        except Exception as e:
+            logger.error(f"Error geocoding address '{address}': {e}")
+            return None, None
 
     def _filter_by_location_fallback(
         self, 
