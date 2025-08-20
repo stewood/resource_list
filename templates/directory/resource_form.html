@@ -480,6 +480,9 @@
                                         <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#serviceAreaModal">
                                             <i class="fas fa-edit me-1"></i>Manage Areas
                                         </button>
+                                        <button type="button" class="btn btn-success btn-sm me-2" id="saveServiceAreasOnlyBtn" onclick="saveServiceAreasOnly()">
+                                            <i class="fas fa-save me-1"></i>Save Service Areas
+                                        </button>
                                         {% else %}
                                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#serviceAreaModal">
                                             <i class="fas fa-plus me-1"></i>Configure Service Areas
@@ -646,17 +649,124 @@
             }
         });
         
-        // Initialize Service Area Manager
-        initializeServiceAreaManager();
-        
-        // Load initial service areas data if available
-        loadInitialServiceAreas();
+            // Initialize Service Area Manager
+    initializeServiceAreaManager();
+    
     });
+    
+    // Function to save only service areas (defined early so button can call it)
+    function saveServiceAreasOnly() {
+        const resourceId = getResourceId();
+        if (!resourceId) {
+            showToast('Could not determine resource ID', 'error');
+            return;
+        }
+        
+        showLoading(true);
+        
+        // Prepare the data
+        const coverageAreaIds = selectedServiceAreas.map(area => area.id);
+        const requestData = {
+            action: 'replace', // Use 'replace' to clear existing and add new
+            coverage_area_ids: coverageAreaIds,
+            notes: 'Updated via Save Service Areas button'
+        };
+        
+        // Make API call to save areas
+        fetch(`/api/resources/${resourceId}/areas/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            showLoading(false);
+            
+            if (data.success) {
+                const message = coverageAreaIds.length > 0 
+                    ? `Successfully saved ${data.attached_count} service areas`
+                    : 'Successfully cleared all service areas';
+                showToast(message, 'success');
+                
+                // Refresh the page to show updated state
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                const errorMessage = data.errors && data.errors.length > 0 
+                    ? data.errors.join(', ') 
+                    : (data.error || 'Unknown error occurred');
+                showToast('Error saving service areas: ' + errorMessage, 'error');
+            }
+        })
+        .catch(error => {
+            showLoading(false);
+            showToast('Error saving service areas: ' + error.message, 'error');
+        });
+    }
+    
+    // Get resource ID from the current page (defined early so other functions can call it)
+    function getResourceId() {
+        // Try to get from URL first
+        const urlMatch = window.location.pathname.match(/\/manage\/resources\/(\d+)/);
+        if (urlMatch) {
+            return urlMatch[1];
+        }
+        
+        // Try to get from form data
+        const resourceIdInput = document.querySelector('input[name="resource_id"]');
+        if (resourceIdInput) {
+            return resourceIdInput.value;
+        }
+        
+        // Try to get from hidden field
+        const hiddenResourceId = document.querySelector('input[name="id"]');
+        if (hiddenResourceId) {
+            return hiddenResourceId.value;
+        }
+        
+        return null;
+    }
+    
+    // Utility functions (defined early so other functions can call them)
+    function showLoading(show) {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) {
+            overlay.classList.toggle('d-none', !show);
+        }
+    }
+    
+    function showToast(message, type = 'info') {
+        const toast = document.getElementById('serviceAreaToast');
+        const toastTitle = document.getElementById('toastTitle');
+        const toastMessage = document.getElementById('toastMessage');
+        
+        if (toast && toastTitle && toastMessage) {
+            // Set icon and title based on type
+            const icons = {
+                'success': 'fas fa-check-circle text-success',
+                'error': 'fas fa-exclamation-circle text-danger',
+                'warning': 'fas fa-exclamation-triangle text-warning',
+                'info': 'fas fa-info-circle text-info'
+            };
+            
+            toastTitle.innerHTML = `<i class="${icons[type] || icons.info} me-2"></i>Service Area Manager`;
+            toastMessage.textContent = message;
+            
+            // Show toast
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+    }
+    
+    // Global variables for service areas
+    let selectedServiceAreas = [];
     
     // Service Area Manager functionality
     function initializeServiceAreaManager() {
-        // Store selected service areas
-        let selectedServiceAreas = [];
         
         // Store search results for map display
         let currentSearchResults = [];
@@ -670,6 +780,9 @@
         // Drawing layers
         let drawingLayer = null;
         let drawnItems = null;
+        
+        // Load initial service areas data if available
+        loadInitialServiceAreas();
         
         // Initialize radius slider
         const radiusSlider = document.getElementById('radiusMiles');
@@ -1156,6 +1269,13 @@
         
         // Select a boundary
         window.selectBoundary = function(areaId, areaName, areaKind) {
+            // Check if area is already selected
+            const isAlreadySelected = selectedServiceAreas.some(area => area.id === areaId);
+            if (isAlreadySelected) {
+                showToast(`${areaName} is already selected`, 'warning');
+                return;
+            }
+            
             // Add to selected areas
             selectedServiceAreas.push({
                 id: areaId,
@@ -1779,28 +1899,7 @@
             });
         }
         
-        // Get resource ID from the current page
-        function getResourceId() {
-            // Try to get from URL first
-            const urlMatch = window.location.pathname.match(/\/manage\/resources\/(\d+)/);
-            if (urlMatch) {
-                return urlMatch[1];
-            }
-            
-            // Try to get from form data
-            const resourceIdInput = document.querySelector('input[name="resource_id"]');
-            if (resourceIdInput) {
-                return resourceIdInput.value;
-            }
-            
-            // Try to get from hidden field
-            const hiddenResourceId = document.querySelector('input[name="id"]');
-            if (hiddenResourceId) {
-                return hiddenResourceId.value;
-            }
-            
-            return null;
-        }
+
         
         // Load initial service areas data from context
         function loadInitialServiceAreas() {
@@ -1811,7 +1910,12 @@
                     if (initialData && initialData.length > 0) {
                         selectedServiceAreas = initialData;
                         updateServiceAreasList();
-                        console.log(`Loaded ${initialData.length} initial service areas`);
+                        
+                        // Update the status badge to show configured
+                        const statusBadge = document.getElementById('serviceAreasStatus');
+                        if (statusBadge) {
+                            statusBadge.innerHTML = `<span class="badge bg-success">Configured (${initialData.length})</span>`;
+                        }
                     }
                 } catch (error) {
                     console.error('Error parsing initial service areas data:', error);
@@ -1852,6 +1956,19 @@
         function loadExistingServiceAreas() {
             const resourceId = getResourceId();
             if (!resourceId) {
+                return;
+            }
+            
+            // Check if we already have service areas loaded
+            if (selectedServiceAreas.length > 0) {
+                console.log('Service areas already loaded, skipping API call');
+                // Display existing areas on the map
+                displayExistingAreasOnMap(selectedServiceAreas.map(area => ({
+                    id: area.id,
+                    name: area.name,
+                    kind: area.type.toUpperCase(),
+                    bounds: null // We'll get bounds from the preview API
+                })));
                 return;
             }
             
@@ -1958,6 +2075,9 @@
                     });
                     
                     rectangle.getElement().style.cursor = 'pointer';
+                } else {
+                    // For areas without bounds, just show a message
+                    console.log(`Area ${area.name} has no bounds data`);
                 }
             });
             
@@ -2167,48 +2287,34 @@
         const resourceForm = document.querySelector('form[method="post"]');
         if (resourceForm) {
             resourceForm.addEventListener('submit', function(e) {
-                // Add service areas to form data before submission
-                if (selectedServiceAreas.length > 0) {
-                    // Create hidden input for service areas
-                    const serviceAreasInput = document.createElement('input');
-                    serviceAreasInput.type = 'hidden';
-                    serviceAreasInput.name = 'service_areas';
-                    serviceAreasInput.value = JSON.stringify(selectedServiceAreas.map(area => area.id));
-                    resourceForm.appendChild(serviceAreasInput);
+                // Always add service areas to form data before submission
+                // This ensures that even empty service areas are processed (to clear existing associations)
+                
+                // Remove any existing service_areas input to avoid duplicates
+                const existingInput = resourceForm.querySelector('input[name="service_areas"]');
+                if (existingInput) {
+                    existingInput.remove();
                 }
+                
+                // Create hidden input for service areas
+                const serviceAreasInput = document.createElement('input');
+                serviceAreasInput.type = 'hidden';
+                serviceAreasInput.name = 'service_areas';
+                
+                if (selectedServiceAreas.length > 0) {
+                    serviceAreasInput.value = JSON.stringify(selectedServiceAreas.map(area => area.id));
+                } else {
+                    serviceAreasInput.value = '[]'; // Empty array to clear existing associations
+                }
+                
+                resourceForm.appendChild(serviceAreasInput);
             });
         }
         
-        // Utility functions
-        function showLoading(show) {
-            const overlay = document.getElementById('loadingOverlay');
-            if (overlay) {
-                overlay.classList.toggle('d-none', !show);
-            }
-        }
         
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('serviceAreaToast');
-            const toastTitle = document.getElementById('toastTitle');
-            const toastMessage = document.getElementById('toastMessage');
-            
-            if (toast && toastTitle && toastMessage) {
-                // Set icon and title based on type
-                const icons = {
-                    'success': 'fas fa-check-circle text-success',
-                    'error': 'fas fa-exclamation-circle text-danger',
-                    'warning': 'fas fa-exclamation-triangle text-warning',
-                    'info': 'fas fa-info-circle text-info'
-                };
-                
-                toastTitle.innerHTML = `<i class="${icons[type] || icons.info} me-2"></i>Service Area Manager`;
-                toastMessage.textContent = message;
-                
-                // Show toast
-                const bsToast = new bootstrap.Toast(toast);
-                bsToast.show();
-            }
-        }
+
+        
+
     }
 </script>
 {% endblock %}

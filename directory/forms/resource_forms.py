@@ -433,15 +433,16 @@ class ResourceForm(forms.ModelForm):
         Args:
             resource: The resource instance to associate service areas with
         """
+        # Always clear existing associations first
+        from ..models import ResourceCoverage
+        ResourceCoverage.objects.filter(resource=resource).delete()
+        
+        # Then add new associations if any are provided
         service_areas_data = self.data.get('service_areas')
         if service_areas_data:
             try:
                 import json
                 coverage_area_ids = json.loads(service_areas_data)
-                
-                # Clear existing associations using the through model
-                from ..models import ResourceCoverage
-                ResourceCoverage.objects.filter(resource=resource).delete()
                 
                 # Add new associations
                 if coverage_area_ids:

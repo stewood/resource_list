@@ -1065,9 +1065,9 @@ class ResourceAreaManagementView(View):
             notes = data.get('notes', '')
             
             # Validate action
-            if action not in ['attach', 'detach']:
+            if action not in ['attach', 'detach', 'replace']:
                 return JsonResponse(
-                    {'error': 'Action must be "attach" or "detach"'}, 
+                    {'error': 'Action must be "attach", "detach", or "replace"'}, 
                     status=400
                 )
             
@@ -1078,28 +1078,31 @@ class ResourceAreaManagementView(View):
                     status=400
                 )
             
-            if not coverage_area_ids:
+            # Allow empty list for 'replace' action (to clear all associations)
+            if not coverage_area_ids and action != 'replace':
                 return JsonResponse(
-                    {'error': 'coverage_area_ids cannot be empty'}, 
+                    {'error': 'coverage_area_ids cannot be empty for attach/detach actions'}, 
                     status=400
                 )
             
-            # Get coverage areas
-            try:
-                coverage_areas = CoverageArea.objects.filter(id__in=coverage_area_ids)
-                found_ids = set(coverage_areas.values_list('id', flat=True))
-                missing_ids = set(coverage_area_ids) - found_ids
-                
-                if missing_ids:
+            # Get coverage areas (skip for replace with empty list)
+            coverage_areas = []
+            if coverage_area_ids:
+                try:
+                    coverage_areas = CoverageArea.objects.filter(id__in=coverage_area_ids)
+                    found_ids = set(coverage_areas.values_list('id', flat=True))
+                    missing_ids = set(coverage_area_ids) - found_ids
+                    
+                    if missing_ids:
+                        return JsonResponse(
+                            {'error': f'Coverage areas not found: {list(missing_ids)}'}, 
+                            status=404
+                        )
+                except Exception as e:
                     return JsonResponse(
-                        {'error': f'Coverage areas not found: {list(missing_ids)}'}, 
-                        status=404
+                        {'error': f'Error fetching coverage areas: {str(e)}'}, 
+                        status=400
                     )
-            except Exception as e:
-                return JsonResponse(
-                    {'error': f'Error fetching coverage areas: {str(e)}'}, 
-                    status=400
-                )
             
             # Perform the action
             attached_count = 0
@@ -1141,6 +1144,28 @@ class ResourceAreaManagementView(View):
                             errors.append(f'Area {coverage_area.name} was not attached')
                     except Exception as e:
                         errors.append(f'Error detaching {coverage_area.name}: {str(e)}')
+            
+            elif action == 'replace':
+                try:
+                    # Clear all existing associations
+                    from ..models import ResourceCoverage
+                    deleted_count, _ = ResourceCoverage.objects.filter(resource=resource).delete()
+                    detached_count = deleted_count
+                    
+                    # Add new associations if any
+                    for coverage_area in coverage_areas:
+                        try:
+                            ResourceCoverage.objects.create(
+                                resource=resource,
+                                coverage_area=coverage_area,
+                                created_by=request.user,
+                                notes=notes
+                            )
+                            attached_count += 1
+                        except Exception as e:
+                            errors.append(f'Error attaching {coverage_area.name}: {str(e)}')
+                except Exception as e:
+                    errors.append(f'Error replacing associations: {str(e)}')
             
             # Build response
             response_data = {
