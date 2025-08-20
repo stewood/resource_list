@@ -1,0 +1,23 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Test Custom Area",
+        "description": "A test custom area for load_geojson command",
+        "test_property": "test_value"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-84.0, 37.0],
+          [-84.0, 37.1],
+          [-83.9, 37.1],
+          [-83.9, 37.0],
+          [-84.0, 37.0]
+        ]]
+      }
+    }
+  ]
+}
