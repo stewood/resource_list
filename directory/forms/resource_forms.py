@@ -439,14 +439,27 @@ class ResourceForm(forms.ModelForm):
                 import json
                 coverage_area_ids = json.loads(service_areas_data)
                 
-                # Clear existing associations
-                resource.coverage_areas.clear()
+                # Clear existing associations using the through model
+                from ..models import ResourceCoverage
+                ResourceCoverage.objects.filter(resource=resource).delete()
                 
                 # Add new associations
                 if coverage_area_ids:
                     from ..models import CoverageArea
                     coverage_areas = CoverageArea.objects.filter(id__in=coverage_area_ids)
-                    resource.coverage_areas.add(*coverage_areas)
+                    
+                    # Create associations through the through model
+                    associations = []
+                    for coverage_area in coverage_areas:
+                        associations.append(ResourceCoverage(
+                            resource=resource,
+                            coverage_area=coverage_area,
+                            created_by=self.user if self.user else None,
+                            notes='Added via resource form'
+                        ))
+                    
+                    if associations:
+                        ResourceCoverage.objects.bulk_create(associations)
                     
             except (json.JSONDecodeError, ValueError) as e:
                 # Log error but don't fail the form save

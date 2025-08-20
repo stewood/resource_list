@@ -247,16 +247,22 @@ class ResourceUpdateView(LoginRequiredMixin, UpdateView):
         import json
         service_areas = []
         if self.object and hasattr(self.object, 'coverage_areas'):
+            # Get coverage areas through the ResourceCoverage through model
+            from ..models import ResourceCoverage
+            resource_coverage_associations = ResourceCoverage.objects.filter(
+                resource=self.object
+            ).select_related('coverage_area', 'created_by')
+            
             service_areas = [
                 {
-                    'id': area.id,
-                    'name': area.name,
-                    'type': area.kind.lower(),
+                    'id': association.coverage_area.id,
+                    'name': association.coverage_area.name,
+                    'type': association.coverage_area.kind.lower(),
                     'source': 'existing',
-                    'attached_at': area.created_at.isoformat() if area.created_at else None,
-                    'attached_by': area.created_by.username if area.created_by else None
+                    'attached_at': association.created_at.isoformat() if association.created_at else None,
+                    'attached_by': association.created_by.username if association.created_by else None
                 }
-                for area in self.object.coverage_areas.all()
+                for association in resource_coverage_associations
             ]
         context["service_areas_data"] = json.dumps(service_areas)
         
