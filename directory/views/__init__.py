@@ -56,6 +56,7 @@ from .public_views import (
 from .api_views import (
     AreaSearchView,
     LocationSearchView,
+    ResourceAreaManagementView,
 )
 
 # Export all views for easy importing
@@ -91,4 +92,5 @@ __all__ = [
     # API views
     "AreaSearchView",
     "LocationSearchView",
+    "ResourceAreaManagementView",
 ]

@@ -31,6 +31,7 @@ from .views import (
     # API views
     AreaSearchView,
     LocationSearchView,
+    ResourceAreaManagementView,
 )
 
 app_name = "directory"
@@ -112,4 +113,5 @@ urlpatterns = [
     # API endpoints
     path("api/areas/search/", AreaSearchView.as_view(), name="api_area_search"),
     path("api/search/by-location/", LocationSearchView.as_view(), name="api_location_search"),
+    path("api/resources/<int:resource_id>/areas/", ResourceAreaManagementView.as_view(), name="api_resource_areas"),
 ]

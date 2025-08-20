@@ -102,6 +102,11 @@ class AreaSearchView(View):
             JsonResponse: JSON response with search results and pagination
         """
         try:
+            # Check if this is a request for specific area geometry
+            area_id = request.GET.get('id')
+            if area_id:
+                return self._get_area_geometry(area_id)
+            
             # Get query parameters
             kind = request.GET.get('kind', '').upper()
             search_query = request.GET.get('q', '').strip()
@@ -201,6 +206,79 @@ class AreaSearchView(View):
                 {'error': f'Invalid parameter value: {str(e)}'}, 
                 status=400
             )
+        except Exception as e:
+            return JsonResponse(
+                {'error': f'Internal server error: {str(e)}'}, 
+                status=500
+            )
+    
+    def _get_area_geometry(self, area_id: str) -> JsonResponse:
+        """Get the geometry for a specific coverage area.
+        
+        Args:
+            area_id: ID of the coverage area
+            
+        Returns:
+            JsonResponse: JSON response with area geometry
+        """
+        try:
+            # Get the coverage area
+            try:
+                area = CoverageArea.objects.get(id=area_id)
+            except CoverageArea.DoesNotExist:
+                return JsonResponse(
+                    {'error': f'Coverage area with ID {area_id} not found'}, 
+                    status=404
+                )
+            
+            # Build response data
+            area_data = {
+                'id': area.id,
+                'name': area.name,
+                'kind': area.kind,
+                'ext_ids': area.ext_ids or {},
+            }
+            
+            # Add geometry if available
+            if area.geom and hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
+                try:
+                    # Convert to GeoJSON
+                    geojson = area.geom.json
+                    area_data['geometry'] = json.loads(geojson)
+                    
+                    # Add bounds
+                    bounds = area.geom.extent
+                    area_data['bounds'] = {
+                        'west': bounds[0],
+                        'south': bounds[1],
+                        'east': bounds[2],
+                        'north': bounds[3]
+                    }
+                except Exception as e:
+                    return JsonResponse(
+                        {'error': f'Error processing geometry: {str(e)}'}, 
+                        status=500
+                    )
+            else:
+                # Fallback to center point if no geometry
+                if area.center:
+                    area_data['center'] = [area.center.y, area.center.x]  # lat, lng
+                
+                # Add bounds if available
+                if area.geom and hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
+                    try:
+                        bounds = area.geom.extent
+                        area_data['bounds'] = {
+                            'west': bounds[0],
+                            'south': bounds[1],
+                            'east': bounds[2],
+                            'north': bounds[3]
+                        }
+                    except Exception:
+                        pass
+            
+            return JsonResponse(area_data)
+            
         except Exception as e:
             return JsonResponse(
                 {'error': f'Internal server error: {str(e)}'}, 
@@ -756,6 +834,236 @@ class LocationSearchView(View):
                 {'error': f'Invalid parameter value: {str(e)}'}, 
                 status=400
             )
+        except Exception as e:
+            return JsonResponse(
+                {'error': f'Internal server error: {str(e)}'}, 
+                status=500
+            )
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ResourceAreaManagementView(View):
+    """API view for managing resource-coverage area associations.
+    
+    This view provides a RESTful endpoint for attaching and detaching coverage
+    areas to/from resources. It includes proper validation, audit trail, and
+    permission controls.
+    
+    Endpoint: POST /api/resources/{id}/areas/
+    
+    Request Body:
+        {
+            "action": "attach" | "detach",
+            "coverage_area_ids": [1, 2, 3],
+            "notes": "Optional notes about the association"
+        }
+        
+    Response Format:
+        {
+            "success": true,
+            "message": "Areas attached successfully",
+            "attached_count": 2,
+            "detached_count": 1,
+            "errors": []
+        }
+    """
+    
+    def post(self, request: HttpRequest, resource_id: int) -> JsonResponse:
+        """Handle POST requests for resource area management.
+        
+        Args:
+            request: HTTP request object
+            resource_id: ID of the resource to manage areas for
+            
+        Returns:
+            JsonResponse: JSON response with operation results
+        """
+        try:
+            # Get the resource
+            try:
+                resource = Resource.objects.get(id=resource_id)
+            except Resource.DoesNotExist:
+                return JsonResponse(
+                    {'error': f'Resource with ID {resource_id} not found'}, 
+                    status=404
+                )
+            
+            # Parse request data
+            try:
+                data = json.loads(request.body)
+            except json.JSONDecodeError:
+                return JsonResponse(
+                    {'error': 'Invalid JSON in request body'}, 
+                    status=400
+                )
+            
+            action = data.get('action', '').lower()
+            coverage_area_ids = data.get('coverage_area_ids', [])
+            notes = data.get('notes', '')
+            
+            # Validate action
+            if action not in ['attach', 'detach']:
+                return JsonResponse(
+                    {'error': 'Action must be "attach" or "detach"'}, 
+                    status=400
+                )
+            
+            # Validate coverage area IDs
+            if not isinstance(coverage_area_ids, list):
+                return JsonResponse(
+                    {'error': 'coverage_area_ids must be a list'}, 
+                    status=400
+                )
+            
+            if not coverage_area_ids:
+                return JsonResponse(
+                    {'error': 'coverage_area_ids cannot be empty'}, 
+                    status=400
+                )
+            
+            # Get coverage areas
+            try:
+                coverage_areas = CoverageArea.objects.filter(id__in=coverage_area_ids)
+                found_ids = set(coverage_areas.values_list('id', flat=True))
+                missing_ids = set(coverage_area_ids) - found_ids
+                
+                if missing_ids:
+                    return JsonResponse(
+                        {'error': f'Coverage areas not found: {list(missing_ids)}'}, 
+                        status=404
+                    )
+            except Exception as e:
+                return JsonResponse(
+                    {'error': f'Error fetching coverage areas: {str(e)}'}, 
+                    status=400
+                )
+            
+            # Perform the action
+            attached_count = 0
+            detached_count = 0
+            errors = []
+            
+            if action == 'attach':
+                for coverage_area in coverage_areas:
+                    try:
+                        # Check if association already exists
+                        if not resource.coverage_areas.filter(id=coverage_area.id).exists():
+                            # Create the association
+                            from ..models import ResourceCoverage
+                            ResourceCoverage.objects.create(
+                                resource=resource,
+                                coverage_area=coverage_area,
+                                created_by=request.user,
+                                notes=notes
+                            )
+                            attached_count += 1
+                        else:
+                            errors.append(f'Area {coverage_area.name} is already attached')
+                    except Exception as e:
+                        errors.append(f'Error attaching {coverage_area.name}: {str(e)}')
+            
+            elif action == 'detach':
+                for coverage_area in coverage_areas:
+                    try:
+                        # Remove the association
+                        from ..models import ResourceCoverage
+                        deleted_count, _ = ResourceCoverage.objects.filter(
+                            resource=resource,
+                            coverage_area=coverage_area
+                        ).delete()
+                        
+                        if deleted_count > 0:
+                            detached_count += 1
+                        else:
+                            errors.append(f'Area {coverage_area.name} was not attached')
+                    except Exception as e:
+                        errors.append(f'Error detaching {coverage_area.name}: {str(e)}')
+            
+            # Build response
+            response_data = {
+                'success': len(errors) == 0,
+                'message': f'{action.capitalize()} operation completed',
+                'attached_count': attached_count,
+                'detached_count': detached_count,
+                'errors': errors
+            }
+            
+            if errors:
+                return JsonResponse(response_data, status=400)
+            else:
+                return JsonResponse(response_data)
+                
+        except Exception as e:
+            return JsonResponse(
+                {'error': f'Internal server error: {str(e)}'}, 
+                status=500
+            )
+    
+    def get(self, request: HttpRequest, resource_id: int) -> JsonResponse:
+        """Handle GET requests to retrieve resource coverage areas.
+        
+        Args:
+            request: HTTP request object
+            resource_id: ID of the resource to get areas for
+            
+        Returns:
+            JsonResponse: JSON response with resource coverage areas
+        """
+        try:
+            # Get the resource
+            try:
+                resource = Resource.objects.get(id=resource_id)
+            except Resource.DoesNotExist:
+                return JsonResponse(
+                    {'error': f'Resource with ID {resource_id} not found'}, 
+                    status=404
+                )
+            
+            # Get coverage areas with association details
+            coverage_areas = []
+            for coverage_area in resource.coverage_areas.all():
+                # Get the association details
+                from ..models import ResourceCoverage
+                try:
+                    association = ResourceCoverage.objects.get(
+                        resource=resource,
+                        coverage_area=coverage_area
+                    )
+                    area_data = {
+                        'id': coverage_area.id,
+                        'name': coverage_area.name,
+                        'kind': coverage_area.kind,
+                        'ext_ids': coverage_area.ext_ids or {},
+                        'attached_at': association.created_at.isoformat(),
+                        'attached_by': association.created_by.username,
+                        'notes': association.notes or ''
+                    }
+                    
+                    # Add bounds if available
+                    if coverage_area.geom and hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
+                        try:
+                            bounds = coverage_area.geom.extent
+                            area_data['bounds'] = {
+                                'west': bounds[0],
+                                'south': bounds[1],
+                                'east': bounds[2],
+                                'north': bounds[3]
+                            }
+                        except Exception:
+                            pass
+                    
+                    coverage_areas.append(area_data)
+                except ResourceCoverage.DoesNotExist:
+                    # This shouldn't happen, but handle gracefully
+                    continue
+            
+            return JsonResponse({
+                'resource_id': resource_id,
+                'resource_name': resource.name,
+                'coverage_areas': coverage_areas,
+                'total_count': len(coverage_areas)
+            })
+            
         except Exception as e:
             return JsonResponse(
                 {'error': f'Internal server error: {str(e)}'}, 

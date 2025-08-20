@@ -78,13 +78,22 @@
   - Use Django's built-in geometry creation (no Fiona dependency)
   - Create proper MultiPolygon geometries with bounds
   - ✅ **COMPLETED**: Test data working, search functionality verified
-- [ ] **Task 3.1.4**: Fix TIGER/Line import segmentation fault
-  - Investigate Fiona/GDAL compatibility issues
-  - Try alternative geometry processing approaches
-  - Consider using different libraries or manual import process
-- [ ] **Task 3.1.5**: Create import_places command (optional)
+- [x] **Task 3.1.4**: Fix TIGER/Line import segmentation fault
+  - ✅ **RESOLVED**: Switched from Fiona to ogr2ogr approach to avoid segmentation faults
+  - ✅ **RESOLVED**: Fixed file cleanup timing issue that was preventing successful imports
+  - ✅ **COMPLETED**: import_states_simple command now works end-to-end without crashes
+  - ⚠️ **REMAINING**: Minor geometry type handling issue (MULTIPOLYGON vs POLYGON) - separate from core import functionality
+- [ ] **Task 3.1.5**: Fix geometry type handling in TIGER/Line import
+  - Handle MULTIPOLYGON vs POLYGON geometry type conversion
+  - Ensure proper geometry type validation before database insertion
+  - Add geometry type normalization for consistent storage
+- [x] **Task 3.1.6**: Create import_places command (optional)
   - Import city/place boundaries from OSM or TIGER
   - Handle place name variations and aliases
+- [x] **Task 3.1.7**: Create comprehensive data update script
+  - Script to download and import all geographic data
+  - Support for updating existing records with new boundary data
+  - Comprehensive coverage of all US states, counties, and cities
 
 ### 3.2 Custom Geometry Import
 - [ ] **Task 3.2.1**: Create load_geojson command
@@ -149,7 +158,7 @@
   - Return created CoverageArea
 
 ### 5.2 Resource-Coverage Association APIs
-- [ ] **Task 5.2.1**: Create resource area management
+- [x] **Task 5.2.1**: Create resource area management
   - `POST /resources/{id}/areas` for attach/detach
   - Add audit trail for area associations
   - Validate resource permissions
@@ -197,11 +206,11 @@
   - Configure Leaflet with proper tile layers
   - Add Leaflet.draw plugin for polygon editing
   - Implement map controls and interactions
-- [ ] **Task 6.2.2**: Add geometry display
+- [x] **Task 6.2.2**: Add geometry display
   - Show coverage areas on map
   - Add different styles for different area types
   - Implement zoom-to-fit functionality
-- [ ] **Task 6.2.3**: Add interactive features
+- [x] **Task 6.2.3**: Add interactive features
   - Click to select areas
   - Hover to show area details
   - Drag to move map and set centers

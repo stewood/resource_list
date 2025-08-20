@@ -506,6 +506,47 @@
 {% endblock %}
 
 {% block extra_js %}
+<style>
+    /* Custom tooltip styles */
+    .custom-tooltip {
+        background: rgba(0, 0, 0, 0.8);
+        border: none;
+        border-radius: 6px;
+        color: white;
+        font-size: 12px;
+        padding: 8px 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .custom-tooltip::before {
+        border-top-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    /* Custom marker styles */
+    .custom-marker {
+        background: transparent;
+        border: none;
+    }
+    
+    .custom-marker.selected {
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+    
+    /* Map interaction hints */
+    .map-hint {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #666;
+        z-index: 1000;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
 <script>
     // Add Bootstrap classes to form fields
     document.addEventListener('DOMContentLoaded', function() {
@@ -526,6 +567,9 @@
     function initializeServiceAreaManager() {
         // Store selected service areas
         let selectedServiceAreas = [];
+        
+        // Store search results for map display
+        let currentSearchResults = [];
         
         // Map instances for each tab
         let boundaryMap = null;
@@ -551,6 +595,7 @@
         if (serviceAreaModal) {
             serviceAreaModal.addEventListener('shown.bs.modal', function() {
                 initializeMaps();
+                loadExistingServiceAreas(); // Load existing areas when modal opens
             });
             
             serviceAreaModal.addEventListener('hidden.bs.modal', function() {
@@ -780,6 +825,17 @@
                 maxZoom: 19
             }).addTo(map);
             
+            // Add interaction hint for boundary map
+            if (containerId === 'boundaryMapPreview') {
+                const hint = L.control({position: 'topleft'});
+                hint.onAdd = function() {
+                    const div = L.DomUtil.create('div', 'map-hint');
+                    div.innerHTML = '<i class="fas fa-info-circle"></i> Click areas to select';
+                    return div;
+                };
+                hint.addTo(map);
+            }
+            
             // Force map resize after initialization
             setTimeout(() => {
                 map.invalidateSize();
@@ -982,6 +1038,9 @@
             const resultsContainer = document.getElementById('boundaryResults');
             const resultsList = document.getElementById('boundaryResultsList');
             
+            // Store the search results for map display
+            currentSearchResults = results;
+            
             if (results.length === 0) {
                 resultsList.innerHTML = '<div class="text-muted small">No boundaries found matching your search.</div>';
             } else {
@@ -1032,37 +1091,269 @@
                 }
             });
             
-            // Fetch boundary geometry and display
+            // Fetch the actual geometry for this area
             fetch(`/api/areas/search/?id=${areaId}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.results && data.results.length > 0) {
-                        const area = data.results[0];
+                    if (data.geometry) {
+                        // Display the actual geometry with interactive features
+                        const geoJsonLayer = L.geoJSON(data.geometry, {
+                            style: {
+                                color: '#007bff',
+                                fillColor: '#007bff',
+                                fillOpacity: 0.2,
+                                weight: 2
+                            }
+                        }).addTo(boundaryMap);
                         
-                        // Create a temporary marker for center if no geometry
-                        if (area.center) {
-                            const center = L.latLng(area.center[0], area.center[1]);
-                            L.marker(center).addTo(boundaryMap);
+                        // Add interactive features to the geometry
+                        geoJsonLayer.eachLayer(layer => {
+                            // Add hover effects
+                            layer.on('mouseover', function(e) {
+                                this.setStyle({
+                                    fillOpacity: 0.4,
+                                    weight: 3
+                                });
+                                
+                                // Show tooltip with area details
+                                const tooltipContent = `
+                                    <div class="text-center">
+                                        <strong>${data.name}</strong><br>
+                                        <small>${data.kind}</small><br>
+                                        <small>Click to select</small>
+                                    </div>
+                                `;
+                                this.bindTooltip(tooltipContent, {
+                                    permanent: false,
+                                    direction: 'top',
+                                    className: 'custom-tooltip'
+                                }).openTooltip();
+                            });
                             
-                            // Fit map to center with some padding
-                            boundaryMap.setView(center, 10);
-                        }
+                            layer.on('mouseout', function(e) {
+                                this.setStyle({
+                                    fillOpacity: 0.2,
+                                    weight: 2
+                                });
+                                this.closeTooltip();
+                            });
+                            
+                            // Add click handler for selection
+                            layer.on('click', function(e) {
+                                // Check if this area is already selected
+                                const isSelected = selectedServiceAreas.some(area => area.id === data.id);
+                                
+                                if (!isSelected) {
+                                    // Add to selected areas
+                                    selectedServiceAreas.push({
+                                        id: data.id,
+                                        name: data.name,
+                                        type: data.kind.toLowerCase(),
+                                        source: 'existing'
+                                    });
+                                    
+                                    // Update visual style to show selection
+                                    this.setStyle({
+                                        color: '#28a745',
+                                        fillColor: '#28a745',
+                                        fillOpacity: 0.3,
+                                        weight: 3
+                                    });
+                                    
+                                    showToast(`Selected ${data.name} (${data.kind})`, 'success');
+                                    updateServiceAreasList();
+                                } else {
+                                    // Remove from selected areas
+                                    selectedServiceAreas = selectedServiceAreas.filter(area => area.id !== data.id);
+                                    
+                                    // Reset visual style
+                                    this.setStyle({
+                                        color: '#007bff',
+                                        fillColor: '#007bff',
+                                        fillOpacity: 0.2,
+                                        weight: 2
+                                    });
+                                    
+                                    showToast(`Deselected ${data.name}`, 'info');
+                                    updateServiceAreasList();
+                                }
+                            });
+                            
+                            // Add cursor pointer to indicate clickable
+                            layer.getElement().style.cursor = 'pointer';
+                        });
                         
-                        // If we have bounds, fit to them
-                        if (area.bounds) {
-                            const bounds = [
-                                [area.bounds.south, area.bounds.west],
-                                [area.bounds.north, area.bounds.east]
-                            ];
-                            boundaryMap.fitBounds(bounds);
-                        }
+                        // Fit map to geometry bounds
+                        boundaryMap.fitBounds(geoJsonLayer.getBounds());
                         
-                        showToast('Boundary displayed on map', 'info');
+                        showToast('Boundary geometry displayed on map (click to select)', 'info');
+                    } else if (data.bounds) {
+                        // Fallback to bounds rectangle with interactive features
+                        const bounds = [
+                            [data.bounds.south, data.bounds.west],
+                            [data.bounds.north, data.bounds.east]
+                        ];
+                        boundaryMap.fitBounds(bounds);
+                        
+                        const rectangle = L.rectangle(bounds, {
+                            color: '#007bff',
+                            fillColor: '#007bff',
+                            fillOpacity: 0.2,
+                            weight: 2
+                        }).addTo(boundaryMap);
+                        
+                        // Add interactive features to rectangle
+                        rectangle.on('mouseover', function(e) {
+                            this.setStyle({
+                                fillOpacity: 0.4,
+                                weight: 3
+                            });
+                            
+                            const tooltipContent = `
+                                <div class="text-center">
+                                    <strong>${data.name}</strong><br>
+                                    <small>${data.kind}</small><br>
+                                    <small>Click to select</small>
+                                </div>
+                            `;
+                            this.bindTooltip(tooltipContent, {
+                                permanent: false,
+                                direction: 'top',
+                                className: 'custom-tooltip'
+                            }).openTooltip();
+                        });
+                        
+                        rectangle.on('mouseout', function(e) {
+                            this.setStyle({
+                                fillOpacity: 0.2,
+                                weight: 2
+                            });
+                            this.closeTooltip();
+                        });
+                        
+                        rectangle.on('click', function(e) {
+                            const isSelected = selectedServiceAreas.some(area => area.id === data.id);
+                            
+                            if (!isSelected) {
+                                selectedServiceAreas.push({
+                                    id: data.id,
+                                    name: data.name,
+                                    type: data.kind.toLowerCase(),
+                                    source: 'existing'
+                                });
+                                
+                                this.setStyle({
+                                    color: '#28a745',
+                                    fillColor: '#28a745',
+                                    fillOpacity: 0.3,
+                                    weight: 3
+                                });
+                                
+                                showToast(`Selected ${data.name} (${data.kind})`, 'success');
+                                updateServiceAreasList();
+                            } else {
+                                selectedServiceAreas = selectedServiceAreas.filter(area => area.id !== data.id);
+                                
+                                this.setStyle({
+                                    color: '#007bff',
+                                    fillColor: '#007bff',
+                                    fillOpacity: 0.2,
+                                    weight: 2
+                                });
+                                
+                                showToast(`Deselected ${data.name}`, 'info');
+                                updateServiceAreasList();
+                            }
+                        });
+                        
+                        rectangle.getElement().style.cursor = 'pointer';
+                        showToast('Boundary bounds displayed on map (click to select)', 'info');
+                    } else if (data.center) {
+                        // Fallback to center point if no geometry or bounds
+                        const center = L.latLng(data.center[0], data.center[1]);
+                        const marker = L.marker(center).addTo(boundaryMap);
+                        
+                        // Add interactive features to marker
+                        marker.bindTooltip(`
+                            <div class="text-center">
+                                <strong>${data.name}</strong><br>
+                                <small>${data.kind}</small><br>
+                                <small>Click to select</small>
+                            </div>
+                        `, {
+                            permanent: false,
+                            direction: 'top',
+                            className: 'custom-tooltip'
+                        });
+                        
+                        marker.on('click', function(e) {
+                            const isSelected = selectedServiceAreas.some(area => area.id === data.id);
+                            
+                            if (!isSelected) {
+                                selectedServiceAreas.push({
+                                    id: data.id,
+                                    name: data.name,
+                                    type: data.kind.toLowerCase(),
+                                    source: 'existing'
+                                });
+                                
+                                this.setIcon(L.divIcon({
+                                    className: 'custom-marker selected',
+                                    html: '<i class="fas fa-map-marker-alt" style="color: #28a745; font-size: 24px;"></i>',
+                                    iconSize: [24, 24],
+                                    iconAnchor: [12, 24]
+                                }));
+                                
+                                showToast(`Selected ${data.name} (${data.kind})`, 'success');
+                                updateServiceAreasList();
+                            } else {
+                                selectedServiceAreas = selectedServiceAreas.filter(area => area.id !== data.id);
+                                
+                                this.setIcon(L.divIcon({
+                                    className: 'custom-marker',
+                                    html: '<i class="fas fa-map-marker-alt" style="color: #007bff; font-size: 24px;"></i>',
+                                    iconSize: [24, 24],
+                                    iconAnchor: [12, 24]
+                                }));
+                                
+                                showToast(`Deselected ${data.name}`, 'info');
+                                updateServiceAreasList();
+                            }
+                        });
+                        
+                        marker.getElement().style.cursor = 'pointer';
+                        boundaryMap.setView(center, 10);
+                        showToast('Boundary center displayed on map (click to select)', 'info');
+                    } else {
+                        // Default to Kentucky coordinates
+                        const center = L.latLng(37.1283, -84.0836);
+                        boundaryMap.setView(center, 8);
+                        showToast('No geometry available, showing default location', 'warning');
                     }
                 })
                 .catch(error => {
-                    console.error('Error fetching boundary details:', error);
-                    showToast('Error displaying boundary on map', 'error');
+                    console.error('Error fetching boundary geometry:', error);
+                    
+                    // Fallback: try to use data from search results
+                    const area = currentSearchResults.find(r => r.id === areaId);
+                    if (area && area.bounds) {
+                        const bounds = [
+                            [area.bounds.south, area.bounds.west],
+                            [area.bounds.north, area.bounds.east]
+                        ];
+                        boundaryMap.fitBounds(bounds);
+                        
+                        L.rectangle(bounds, {
+                            color: '#007bff',
+                            fillColor: '#007bff',
+                            fillOpacity: 0.2,
+                            weight: 2
+                        }).addTo(boundaryMap);
+                        
+                        showToast('Boundary displayed on map (fallback)', 'info');
+                    } else {
+                        showToast('Error displaying boundary on map', 'error');
+                    }
                 });
         }
         
@@ -1341,13 +1632,212 @@
         
         // Save service areas to resource
         function saveServiceAreas() {
-            // This will be implemented when we add the resource-coverage association API
-            showToast('Service areas will be saved to the resource in the next phase', 'info');
+            if (selectedServiceAreas.length === 0) {
+                showToast('No service areas selected to save', 'warning');
+                return;
+            }
             
-            // Close modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('serviceAreaModal'));
-            if (modal) {
-                modal.hide();
+            // Get the resource ID from the current page
+            const resourceId = getResourceId();
+            if (!resourceId) {
+                showToast('Could not determine resource ID', 'error');
+                return;
+            }
+            
+            showLoading(true);
+            
+            // Prepare the data to send
+            const coverageAreaIds = selectedServiceAreas.map(area => area.id);
+            const requestData = {
+                action: 'attach',
+                coverage_area_ids: coverageAreaIds,
+                notes: 'Added via Service Area Manager'
+            };
+            
+            // Make API call to save areas
+            fetch(`/api/resources/${resourceId}/areas/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                
+                if (data.success) {
+                    showToast(`Successfully saved ${data.attached_count} service areas to resource`, 'success');
+                    
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('serviceAreaModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                } else {
+                    const errorMessage = data.errors && data.errors.length > 0 
+                        ? data.errors.join(', ') 
+                        : (data.error || 'Unknown error occurred');
+                    showToast('Error saving service areas: ' + errorMessage, 'error');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                showToast('Error saving service areas: ' + error.message, 'error');
+            });
+        }
+        
+        // Get resource ID from the current page
+        function getResourceId() {
+            // Try to get from URL first
+            const urlMatch = window.location.pathname.match(/\/manage\/resources\/(\d+)/);
+            if (urlMatch) {
+                return urlMatch[1];
+            }
+            
+            // Try to get from form data
+            const resourceIdInput = document.querySelector('input[name="resource_id"]');
+            if (resourceIdInput) {
+                return resourceIdInput.value;
+            }
+            
+            // Try to get from hidden field
+            const hiddenResourceId = document.querySelector('input[name="id"]');
+            if (hiddenResourceId) {
+                return hiddenResourceId.value;
+            }
+            
+            return null;
+        }
+        
+        // Load existing service areas when modal opens
+        function loadExistingServiceAreas() {
+            const resourceId = getResourceId();
+            if (!resourceId) {
+                return;
+            }
+            
+            showLoading(true);
+            
+            fetch(`/api/resources/${resourceId}/areas/`)
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                
+                if (data.coverage_areas && data.coverage_areas.length > 0) {
+                    // Convert to the format expected by selectedServiceAreas
+                    selectedServiceAreas = data.coverage_areas.map(area => ({
+                        id: area.id,
+                        name: area.name,
+                        type: area.kind.toLowerCase(),
+                        source: 'existing',
+                        attached_at: area.attached_at,
+                        attached_by: area.attached_by
+                    }));
+                    
+                    updateServiceAreasList();
+                    showToast(`Loaded ${data.coverage_areas.length} existing service areas`, 'info');
+                    
+                    // Display all existing areas on the map
+                    displayExistingAreasOnMap(data.coverage_areas);
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                console.error('Error loading existing service areas:', error);
+                // Don't show error toast for this - it's not critical
+            });
+        }
+        
+        // Display existing service areas on the map
+        function displayExistingAreasOnMap(areas) {
+            if (!boundaryMap) return;
+            
+            // Clear existing display
+            boundaryMap.eachLayer(layer => {
+                if (layer instanceof L.Polygon || layer instanceof L.Marker) {
+                    boundaryMap.removeLayer(layer);
+                }
+            });
+            
+            // Display each area with interactive features
+            areas.forEach(area => {
+                if (area.bounds) {
+                    const bounds = [
+                        [area.bounds.south, area.bounds.west],
+                        [area.bounds.north, area.bounds.east]
+                    ];
+                    
+                    // Add a rectangle for each area with different colors
+                    const colors = ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1'];
+                    const color = colors[area.id % colors.length];
+                    
+                    const rectangle = L.rectangle(bounds, {
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: 0.2,
+                        weight: 2
+                    }).addTo(boundaryMap);
+                    
+                    // Add interactive features
+                    rectangle.on('mouseover', function(e) {
+                        this.setStyle({
+                            fillOpacity: 0.4,
+                            weight: 3
+                        });
+                        
+                        const tooltipContent = `
+                            <div class="text-center">
+                                <strong>${area.name}</strong><br>
+                                <small>${area.kind} • Existing</small><br>
+                                <small>Click to remove</small>
+                            </div>
+                        `;
+                        this.bindTooltip(tooltipContent, {
+                            permanent: false,
+                            direction: 'top',
+                            className: 'custom-tooltip'
+                        }).openTooltip();
+                    });
+                    
+                    rectangle.on('mouseout', function(e) {
+                        this.setStyle({
+                            fillOpacity: 0.2,
+                            weight: 2
+                        });
+                        this.closeTooltip();
+                    });
+                    
+                    rectangle.on('click', function(e) {
+                        // Remove from selected areas
+                        selectedServiceAreas = selectedServiceAreas.filter(selectedArea => selectedArea.id !== area.id);
+                        
+                        // Remove from map
+                        boundaryMap.removeLayer(this);
+                        
+                        showToast(`Removed ${area.name} from selection`, 'info');
+                        updateServiceAreasList();
+                    });
+                    
+                    rectangle.getElement().style.cursor = 'pointer';
+                }
+            });
+            
+            // Fit map to show all areas
+            if (areas.length > 0 && areas[0].bounds) {
+                const allBounds = areas.map(area => [
+                    [area.bounds.south, area.bounds.west],
+                    [area.bounds.north, area.bounds.east]
+                ]);
+                
+                // Create a combined bounds object
+                let combinedBounds = L.latLngBounds(allBounds[0]);
+                allBounds.forEach(bounds => {
+                    combinedBounds.extend(bounds);
+                });
+                
+                boundaryMap.fitBounds(combinedBounds);
             }
         }
         
