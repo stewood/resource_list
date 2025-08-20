@@ -269,13 +269,21 @@
                                                     {{ resource.name }}
                                                 </a>
                                             </h6>
-                                            {% if resource.status == 'draft' %}
-                                                <span class="badge bg-secondary status-badge">Draft</span>
-                                            {% elif resource.status == 'needs_review' %}
-                                                <span class="badge bg-warning status-badge">Review</span>
-                                            {% elif resource.status == 'published' %}
-                                                <span class="badge bg-success status-badge">Published</span>
-                                            {% endif %}
+                                            <div class="d-flex gap-1">
+                                                {% if resource.status == 'draft' %}
+                                                    <span class="badge bg-secondary status-badge">Draft</span>
+                                                {% elif resource.status == 'needs_review' %}
+                                                    <span class="badge bg-warning status-badge">Review</span>
+                                                {% elif resource.status == 'published' %}
+                                                    <span class="badge bg-success status-badge">Published</span>
+                                                {% endif %}
+                                                {% if resource.coverage_areas.exists %}
+                                                <span class="badge bg-info service-area-badge" title="Service Areas Available">
+                                                    <i class="fas fa-map-marked-alt"></i>
+                                                    {{ resource.coverage_areas.count }}
+                                                </span>
+                                                {% endif %}
+                                            </div>
                                         </div>
                                         
                                         {% if resource.category %}

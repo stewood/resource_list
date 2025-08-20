@@ -97,6 +97,38 @@ body {
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
+/* Coverage Badges */
+.badge.bg-info {
+  background-color: #17a2b8 !important;
+  color: white;
+  font-size: 0.75em;
+  padding: 0.25em 0.5em;
+  border-radius: 0.375rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+}
+
+.badge.bg-info i {
+  font-size: 0.875em;
+}
+
+.badge.bg-info:hover {
+  background-color: #138496 !important;
+  text-decoration: none;
+}
+
+/* Service Area Badge Animation */
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 0 0 rgba(23, 162, 184, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(23, 162, 184, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(23, 162, 184, 0); }
+}
+
+.badge.bg-info.service-area-badge {
+  animation: pulse-glow 2s infinite;
+}
+
 .card:hover {
   box-shadow: 0 4px 8px var(--shadow-color-hover);
 }

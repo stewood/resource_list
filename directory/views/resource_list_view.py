@@ -110,14 +110,14 @@ class ResourceListView(LoginRequiredMixin, ListView):
             6. Sorting
         """
         # Start with non-archived resources by default
-        queryset = Resource.objects.all()
+        queryset = Resource.objects.all().select_related('category').prefetch_related('service_types', 'coverage_areas')
 
         # Check if user wants to see archived resources
         show_archived = self.request.GET.get("show_archived", "").lower() == "true"
         if show_archived:
-            queryset = Resource.objects.all_including_archived()
+            queryset = Resource.objects.all_including_archived().select_related('category').prefetch_related('service_types', 'coverage_areas')
         else:
-            queryset = Resource.objects.all()  # This uses the manager's default filter
+            queryset = Resource.objects.all().select_related('category').prefetch_related('service_types', 'coverage_areas')  # This uses the manager's default filter
 
         # Search using FTS5
         search_query = self.request.GET.get("q", "").strip()
@@ -127,9 +127,9 @@ class ResourceListView(LoginRequiredMixin, ListView):
             if search_results.exists():
                 # Apply archive filter to search results
                 if show_archived:
-                    queryset = search_results.filter(is_deleted=False)
+                    queryset = search_results.filter(is_deleted=False).select_related('category').prefetch_related('service_types', 'coverage_areas')
                 else:
-                    queryset = search_results
+                    queryset = search_results.select_related('category').prefetch_related('service_types', 'coverage_areas')
             else:
                 # Fallback to basic search if FTS5 fails
                 queryset = queryset.filter(

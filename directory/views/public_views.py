@@ -183,7 +183,7 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
         status="published", 
         is_deleted=False, 
         is_archived=False
-    ).select_related('category').prefetch_related('service_types')
+    ).select_related('category').prefetch_related('service_types', 'coverage_areas')
     
     # Search functionality
     search_query = request.GET.get("q", "").strip()
@@ -194,7 +194,7 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
                 status="published", 
                 is_deleted=False, 
                 is_archived=False
-            )
+            ).select_related('category').prefetch_related('service_types', 'coverage_areas')
         else:
             queryset = queryset.filter(
                 Q(name__icontains=search_query)

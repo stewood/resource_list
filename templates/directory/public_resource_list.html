@@ -219,6 +219,12 @@
                                         <i class="fas fa-clock"></i>
                                     </span>
                                     {% endif %}
+                                    {% if resource.coverage_areas.exists %}
+                                    <span class="badge bg-info service-area-badge" title="Service Areas Available">
+                                        <i class="fas fa-map-marked-alt"></i>
+                                        {{ resource.coverage_areas.count }}
+                                    </span>
+                                    {% endif %}
                                 </div>
                             </div>
                             
