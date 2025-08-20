@@ -925,67 +925,61 @@ class LocationSearchView(View):
                     status=400
                 )
             
-            # Perform spatial search
+            # Find resources by location
             resources = Resource.objects.find_resources_by_location(
                 location=(lat, lon),
                 radius_miles=radius_miles
             )
             
-            # Paginate results
+            # Apply pagination
             paginator = Paginator(resources, page_size)
             try:
                 page_obj = paginator.page(page)
-            except Exception as e:
+            except:
                 return JsonResponse(
-                    {'error': f'Invalid page number: {str(e)}'}, 
+                    {'error': f'Invalid page number: {page}'}, 
                     status=400
                 )
             
             # Build response data
             results = []
             for resource in page_obj:
-                resource_data = {
+                # Get coverage areas for this resource
+                coverage_areas = []
+                for area in resource.coverage_areas.all():
+                    coverage_areas.append(area.name)
+                
+                # Calculate distance if available
+                distance_miles = None
+                if hasattr(resource, 'distance_miles'):
+                    distance_miles = resource.distance_miles
+                
+                result_data = {
                     'id': resource.id,
                     'name': resource.name,
                     'description': resource.description,
                     'city': resource.city,
                     'state': resource.state,
-                    'phone': resource.phone,
-                    'website': resource.website,
-                    'is_emergency_service': resource.is_emergency_service,
-                    'is_24_hour_service': resource.is_24_hour_service,
+                    'coverage_areas': coverage_areas,
+                    'distance_miles': distance_miles,
+                    'status': resource.status
                 }
-                
-                # Add coverage areas
-                coverage_areas = list(resource.coverage_areas.values_list('name', flat=True))
-                resource_data['coverage_areas'] = coverage_areas
-                
-                # Add distance if available (this would need to be calculated)
-                # For now, we'll omit distance calculation
-                
-                results.append(resource_data)
+                results.append(result_data)
             
-            # Build location info
-            location_info = {
-                'address': geocoded_address,
-                'coordinates': [lat, lon],
-                'geocoded': geocoded
-            }
-            
-            # Build pagination info
-            pagination = {
-                'page': page,
-                'page_size': page_size,
-                'total_count': paginator.count,
-                'total_pages': paginator.num_pages,
-                'has_next': page_obj.has_next(),
-                'has_previous': page_obj.has_previous(),
-            }
-            
+            # Build response
             response_data = {
-                'location': location_info,
+                'location': {
+                    'address': geocoded_address,
+                    'coordinates': [lat, lon],
+                    'geocoded': geocoded
+                },
                 'results': results,
-                'pagination': pagination
+                'pagination': {
+                    'page': page,
+                    'page_size': page_size,
+                    'total_count': paginator.count,
+                    'total_pages': paginator.num_pages
+                }
             }
             
             return JsonResponse(response_data)
@@ -1010,7 +1004,8 @@ class ResourceAreaManagementView(View):
     areas to/from resources. It includes proper validation, audit trail, and
     permission controls.
     
-    Endpoint: POST /api/resources/{id}/areas/
+    Endpoint: POST /api/resources/{id}/areas/ (requires authentication)
+    Endpoint: GET /api/resources/{id}/areas/ (public read access)
     
     Request Body:
         {
@@ -1039,6 +1034,13 @@ class ResourceAreaManagementView(View):
         Returns:
             JsonResponse: JSON response with operation results
         """
+        # Check authentication for POST operations
+        if not request.user.is_authenticated:
+            return JsonResponse(
+                {'error': 'Authentication required for this operation'}, 
+                status=401
+            )
+        
         try:
             # Get the resource
             try:
