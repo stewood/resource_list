@@ -112,6 +112,7 @@ urlpatterns = [
     
     # API endpoints
     path("api/areas/search/", AreaSearchView.as_view(), name="api_area_search"),
+    path("api/areas/<int:area_id>/preview/", AreaSearchView.as_view(), name="api_area_preview"),
     path("api/search/by-location/", LocationSearchView.as_view(), name="api_location_search"),
     path("api/resources/<int:resource_id>/areas/", ResourceAreaManagementView.as_view(), name="api_resource_areas"),
 ]

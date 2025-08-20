@@ -92,20 +92,29 @@ class AreaSearchView(View):
         }
     """
     
-    def get(self, request: HttpRequest) -> JsonResponse:
-        """Handle GET requests for area search.
+    def get(self, request: HttpRequest, area_id: int = None) -> JsonResponse:
+        """Handle GET requests for area search and preview.
         
         Args:
             request: HTTP request object
+            area_id: Optional area ID from URL pattern
             
         Returns:
             JsonResponse: JSON response with search results and pagination
         """
         try:
-            # Check if this is a request for specific area geometry
-            area_id = request.GET.get('id')
+            # Check if this is a request for specific area geometry or preview
+            area_id = area_id or request.GET.get('id')
             if area_id:
-                return self._get_area_geometry(area_id)
+                # Check if this is a preview request (either by URL or parameter)
+                is_preview = (
+                    request.GET.get('preview', 'false').lower() == 'true' or
+                    'preview' in request.path
+                )
+                if is_preview:
+                    return self._get_area_preview(str(area_id))
+                else:
+                    return self._get_area_geometry(str(area_id))
             
             # Get query parameters
             kind = request.GET.get('kind', '').upper()
@@ -211,6 +220,113 @@ class AreaSearchView(View):
                 {'error': f'Internal server error: {str(e)}'}, 
                 status=500
             )
+
+    def _get_area_preview(self, area_id: str) -> JsonResponse:
+        """Get simplified preview data for a coverage area.
+        
+        This endpoint returns optimized data for map display including:
+        - Simplified geometry for performance
+        - Bounds for map fitting
+        - Center point for map positioning
+        - Basic area information
+        
+        Args:
+            area_id: ID of the coverage area
+            
+        Returns:
+            JsonResponse: JSON response with preview data
+        """
+        try:
+            # Get the coverage area
+            try:
+                area = CoverageArea.objects.get(id=area_id)
+            except CoverageArea.DoesNotExist:
+                return JsonResponse(
+                    {'error': f'Coverage area with ID {area_id} not found'}, 
+                    status=404
+                )
+            
+            # Build preview data
+            preview_data = {
+                'id': area.id,
+                'name': area.name,
+                'kind': area.kind,
+                'type': area.kind.lower(),  # For frontend compatibility
+            }
+            
+            # Add geometry and spatial data if available
+            if area.geom and hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
+                try:
+                    # Get simplified geometry
+                    simplified_geom = self._get_simplified_geometry(area.geom)
+                    preview_data['geometry'] = simplified_geom
+                    
+                    # Add bounds for map fitting
+                    bounds = area.geom.extent
+                    preview_data['bounds'] = {
+                        'west': bounds[0],
+                        'south': bounds[1],
+                        'east': bounds[2],
+                        'north': bounds[3]
+                    }
+                    
+                    # Add center point for map positioning
+                    center = area.geom.centroid
+                    preview_data['center'] = [center.y, center.x]  # lat, lng
+                    
+                    # Add area statistics
+                    preview_data['area_sq_miles'] = self._calculate_area_sq_miles(area.geom)
+                    
+                except Exception as e:
+                    return JsonResponse(
+                        {'error': f'Error processing geometry: {str(e)}'}, 
+                        status=500
+                    )
+            else:
+                # Fallback to center point if no geometry
+                if area.center:
+                    preview_data['center'] = [area.center.y, area.center.x]  # lat, lng
+                
+                # Add bounds if available
+                if area.geom and hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
+                    try:
+                        bounds = area.geom.extent
+                        preview_data['bounds'] = {
+                            'west': bounds[0],
+                            'south': bounds[1],
+                            'east': bounds[2],
+                            'north': bounds[3]
+                        }
+                    except Exception:
+                        pass
+            
+            return JsonResponse(preview_data)
+            
+        except Exception as e:
+            return JsonResponse(
+                {'error': f'Internal server error: {str(e)}'}, 
+                status=500
+            )
+
+    def _calculate_area_sq_miles(self, geometry) -> float:
+        """Calculate area in square miles.
+        
+        Args:
+            geometry: Django GEOS geometry object
+            
+        Returns:
+            float: Area in square miles
+        """
+        try:
+            # Calculate area in square meters
+            area_sq_meters = geometry.area
+            
+            # Convert to square miles (1 sq mile = 2,589,988.11 sq meters)
+            area_sq_miles = area_sq_meters / 2589988.11
+            
+            return round(area_sq_miles, 2)
+        except Exception:
+            return 0.0
     
     def _get_area_geometry(self, area_id: str) -> JsonResponse:
         """Get the geometry for a specific coverage area.
@@ -231,6 +347,9 @@ class AreaSearchView(View):
                     status=404
                 )
             
+            # Check if this is a preview request
+            is_preview = request.GET.get('preview', 'false').lower() == 'true'
+            
             # Build response data
             area_data = {
                 'id': area.id,
@@ -242,9 +361,14 @@ class AreaSearchView(View):
             # Add geometry if available
             if area.geom and hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
                 try:
-                    # Convert to GeoJSON
-                    geojson = area.geom.json
-                    area_data['geometry'] = json.loads(geojson)
+                    if is_preview:
+                        # Return simplified geometry for preview
+                        simplified_geom = self._get_simplified_geometry(area.geom)
+                        area_data['geometry'] = simplified_geom
+                    else:
+                        # Return full geometry
+                        geojson = area.geom.json
+                        area_data['geometry'] = json.loads(geojson)
                     
                     # Add bounds
                     bounds = area.geom.extent
@@ -254,6 +378,11 @@ class AreaSearchView(View):
                         'east': bounds[2],
                         'north': bounds[3]
                     }
+                    
+                    # Add center point for map fitting
+                    center = area.geom.centroid
+                    area_data['center'] = [center.y, center.x]  # lat, lng
+                    
                 except Exception as e:
                     return JsonResponse(
                         {'error': f'Error processing geometry: {str(e)}'}, 
@@ -284,6 +413,37 @@ class AreaSearchView(View):
                 {'error': f'Internal server error: {str(e)}'}, 
                 status=500
             )
+
+    def _get_simplified_geometry(self, geometry) -> dict:
+        """Get simplified geometry for preview display.
+        
+        This method simplifies complex geometries to improve performance
+        for map display while maintaining visual accuracy.
+        
+        Args:
+            geometry: Django GEOS geometry object
+            
+        Returns:
+            dict: Simplified GeoJSON geometry
+        """
+        try:
+            # Simplify geometry based on complexity
+            if geometry.num_coords > 100:
+                # Use tolerance-based simplification for complex geometries
+                tolerance = 0.001  # Adjust based on coordinate system
+                simplified = geometry.simplify(tolerance, preserve_topology=True)
+            else:
+                # Keep original geometry for simple shapes
+                simplified = geometry
+            
+            # Convert to GeoJSON
+            geojson = simplified.json
+            return json.loads(geojson)
+            
+        except Exception:
+            # Fallback to original geometry if simplification fails
+            geojson = geometry.json
+            return json.loads(geojson)
     
     def post(self, request: HttpRequest) -> JsonResponse:
         """Handle POST requests for coverage area creation.

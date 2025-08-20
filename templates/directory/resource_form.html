@@ -1183,7 +1183,7 @@
             });
             
             // Fetch the actual geometry for this area
-            fetch(`/api/areas/search/?id=${areaId}`)
+            fetch(`/api/areas/${areaId}/preview/`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.geometry) {
