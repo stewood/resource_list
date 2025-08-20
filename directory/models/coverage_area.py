@@ -35,10 +35,19 @@ from typing import Any, Dict, Optional
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.contrib.gis.db import models as gis_models
 from django.utils import timezone
+from django.conf import settings
 
-
+# Conditionally import GIS models only when GIS is enabled
+if getattr(settings, 'GIS_ENABLED', False):
+    from django.contrib.gis.db import models as gis_models
+    # Use GIS fields when GIS is enabled
+    GeometryField = gis_models.MultiPolygonField
+    PointField = gis_models.PointField
+else:
+    # Use regular fields when GIS is disabled
+    GeometryField = models.TextField
+    PointField = models.TextField
 
 
 class CoverageArea(models.Model):
@@ -99,9 +108,9 @@ class CoverageArea(models.Model):
         help_text="Human-readable name for the coverage area"
     )
 
-    # Geometry fields (GIS-enabled)
-    geom = gis_models.MultiPolygonField(srid=4326, null=True, blank=True)
-    center = gis_models.PointField(srid=4326, null=True, blank=True)
+    # Geometry fields (GIS-enabled when available, otherwise text fields)
+    geom = GeometryField(srid=4326, null=True, blank=True) if getattr(settings, 'GIS_ENABLED', False) else models.TextField(null=True, blank=True)
+    center = PointField(srid=4326, null=True, blank=True) if getattr(settings, 'GIS_ENABLED', False) else models.TextField(null=True, blank=True)
     
     # Radius information (for radius-based areas)
     radius_m = models.IntegerField(
@@ -229,8 +238,8 @@ class CoverageArea(models.Model):
 
         # Geometry validation (when GIS is enabled)
         try:
-            from django.conf import settings
-            if hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
+            from django.contrib.gis.geos import Point, MultiPolygon
+            if getattr(settings, 'GIS_ENABLED', False):
                 # Import GIS-specific validation when available
                 self._validate_geometry()
         except ImportError:
@@ -290,7 +299,7 @@ class CoverageArea(models.Model):
         # Process geometry when GIS is enabled
         try:
             from django.conf import settings
-            if hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
+            if getattr(settings, 'GIS_ENABLED', False):
                 self._process_geometry()
         except ImportError:
             # GIS not available, skip geometry processing

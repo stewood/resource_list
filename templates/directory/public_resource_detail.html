@@ -404,38 +404,81 @@
                 .then(data => {
                     if (data.coverage_areas && data.coverage_areas.length > 0) {
                         let bounds = [];
+                        let loadedAreas = 0;
                         
                         data.coverage_areas.forEach(area => {
-                            if (area.bounds) {
-                                // Add rectangle for coverage area bounds
-                                const rectangle = L.rectangle([
-                                    [area.bounds.south, area.bounds.west],
-                                    [area.bounds.north, area.bounds.east]
-                                ], {
-                                    color: '#007bff',
-                                    weight: 2,
-                                    fillColor: '#007bff',
-                                    fillOpacity: 0.2
-                                }).addTo(map);
-                                
-                                // Add popup with area details
-                                rectangle.bindPopup(`
-                                    <strong>${area.name}</strong><br>
-                                    Type: ${area.kind}<br>
-                                    <small class="text-muted">Click to view details</small>
-                                `);
-                                
-                                bounds.push([
-                                    [area.bounds.south, area.bounds.west],
-                                    [area.bounds.north, area.bounds.east]
-                                ]);
-                            }
+                            // Fetch actual geometry for each area
+                            fetch(`/api/areas/${area.id}/preview/`)
+                                .then(response => response.json())
+                                .then(areaData => {
+                                    if (areaData.geometry) {
+                                        // Display actual geometry using GeoJSON
+                                        const geoJsonLayer = L.geoJSON(areaData.geometry, {
+                                            style: {
+                                                color: '#007bff',
+                                                weight: 2,
+                                                fillColor: '#007bff',
+                                                fillOpacity: 0.2
+                                            }
+                                        }).addTo(map);
+                                        
+                                        // Add popup with area details
+                                        geoJsonLayer.eachLayer(layer => {
+                                            layer.bindPopup(`
+                                                <strong>${area.name}</strong><br>
+                                                Type: ${area.kind}<br>
+                                                <small class="text-muted">Click to view details</small>
+                                            `);
+                                        });
+                                        
+                                        // Add to bounds for map fitting
+                                        if (areaData.bounds) {
+                                            bounds.push([
+                                                [areaData.bounds.south, areaData.bounds.west],
+                                                [areaData.bounds.north, areaData.bounds.east]
+                                            ]);
+                                        }
+                                    } else if (area.bounds) {
+                                        // Fallback to rectangle if no geometry
+                                        const rectangle = L.rectangle([
+                                            [area.bounds.south, area.bounds.west],
+                                            [area.bounds.north, area.bounds.east]
+                                        ], {
+                                            color: '#007bff',
+                                            weight: 2,
+                                            fillColor: '#007bff',
+                                            fillOpacity: 0.2
+                                        }).addTo(map);
+                                        
+                                        rectangle.bindPopup(`
+                                            <strong>${area.name}</strong><br>
+                                            Type: ${area.kind}<br>
+                                            <small class="text-muted">Click to view details</small>
+                                        `);
+                                        
+                                        bounds.push([
+                                            [area.bounds.south, area.bounds.west],
+                                            [area.bounds.north, area.bounds.east]
+                                        ]);
+                                    }
+                                    
+                                    loadedAreas++;
+                                    
+                                    // Fit map when all areas are loaded
+                                    if (loadedAreas === data.coverage_areas.length && bounds.length > 0) {
+                                        map.fitBounds(bounds);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error(`Error loading geometry for area ${area.id}:`, error);
+                                    loadedAreas++;
+                                    
+                                    // Try to fit map even if some areas failed
+                                    if (loadedAreas === data.coverage_areas.length && bounds.length > 0) {
+                                        map.fitBounds(bounds);
+                                    }
+                                });
                         });
-                        
-                        // Fit map to show all coverage areas
-                        if (bounds.length > 0) {
-                            map.fitBounds(bounds);
-                        }
                     } else {
                         // Show message if no coverage areas
                         mapContainer.innerHTML = '<div class="text-center text-muted p-4">No coverage area data available for map display</div>';

@@ -34,6 +34,13 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv(BASE_DIR / '.env')
+except ImportError:
+    pass
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -54,6 +61,10 @@ GDAL_LIBRARY_PATH = os.environ.get("GDAL_LIBRARY_PATH", "")
 # Allow common dev/test hosts by default
 _default_hosts = ["localhost", "127.0.0.1", "0.0.0.0", "testserver", "192.168.6.205", "100.93.223.61"]
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", ",".join(_default_hosts)).split(",")
+
+# For development, allow all hosts if DEBUG is True
+if DEBUG:
+    ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
