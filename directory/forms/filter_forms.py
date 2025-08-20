@@ -48,12 +48,16 @@ Usage:
         queryset = filter_form.get_filtered_queryset()
 """
 
+import logging
 from typing import Any
 
 from django import forms
+from django.db import models
 from django.db.models import Q
 
 from ..models import Resource, TaxonomyCategory
+
+logger = logging.getLogger(__name__)
 
 
 class ResourceFilterForm(forms.Form):
@@ -131,6 +135,38 @@ class ResourceFilterForm(forms.Form):
         ),
     )
 
+    # Location-based search fields
+    address = forms.CharField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={"class": "form-control", "placeholder": "Enter address or location"}
+        ),
+        help_text="Enter an address to find resources serving that location"
+    )
+
+    lat = forms.FloatField(
+        required=False,
+        widget=forms.HiddenInput(),
+        help_text="Latitude coordinate (auto-filled when address is geocoded)"
+    )
+
+    lon = forms.FloatField(
+        required=False,
+        widget=forms.HiddenInput(),
+        help_text="Longitude coordinate (auto-filled when address is geocoded)"
+    )
+
+    radius_miles = forms.FloatField(
+        required=False,
+        initial=10.0,
+        min_value=0.5,
+        max_value=100.0,
+        widget=forms.NumberInput(
+            attrs={"class": "form-control", "step": "0.5", "min": "0.5", "max": "100"}
+        ),
+        help_text="Search radius in miles (0.5-100 miles)"
+    )
+
     sort = forms.ChoiceField(
         choices=[
             ("-updated_at", "Recently Updated"),
@@ -140,6 +176,9 @@ class ResourceFilterForm(forms.Form):
             ("-city", "City Z-A"),
             ("status", "Status"),
             ("-status", "Status (Reverse)"),
+            ("distance", "Distance (when location specified)"),
+            ("coverage_specificity", "Coverage Specificity"),
+            ("proximity", "Proximity (Distance + Coverage)"),
         ],
         required=False,
         initial="-updated_at",
@@ -196,13 +235,98 @@ class ResourceFilterForm(forms.Form):
         if state:
             queryset = queryset.filter(state__icontains=state)
 
-        # Sorting
+        # Location-based filtering
+        address = self.cleaned_data.get("address")
+        lat = self.cleaned_data.get("lat")
+        lon = self.cleaned_data.get("lon")
+        radius_miles = self.cleaned_data.get("radius_miles", 10.0)
+
+        if address and lat and lon:
+            # Use spatial filtering when coordinates are available
+            try:
+                # Use proximity-based filtering for better ranking
+                spatial_queryset = Resource.objects.filter_by_location_with_proximity(
+                    lat=float(lat),
+                    lon=float(lon),
+                    radius_miles=float(radius_miles) if radius_miles else None,
+                    sort_by_proximity=True
+                )
+                # Combine with existing filters
+                spatial_ids = list(spatial_queryset.values_list('pk', flat=True))
+                if spatial_ids:
+                    queryset = queryset.filter(pk__in=spatial_ids)
+                    # Preserve spatial ordering when proximity-based sorting is requested
+                    if self.cleaned_data.get("sort") in ["distance", "proximity"]:
+                        from django.db.models import Case, When
+                        preserved = Case(
+                            *[When(pk=pk, then=pos) for pos, pk in enumerate(spatial_ids)]
+                        )
+                        queryset = queryset.order_by(preserved)
+                else:
+                    # No spatial results, return empty queryset
+                    queryset = Resource.objects.none()
+            except (ValueError, TypeError) as e:
+                # Fallback to text-based search if spatial filtering fails
+                logger.warning(f"Spatial filtering failed for {address}: {e}")
+                queryset = queryset.filter(
+                    Q(city__icontains=address) | 
+                    Q(state__icontains=address) |
+                    Q(county__icontains=address)
+                )
+        elif address:
+            # Text-based location search when no coordinates
+            queryset = queryset.filter(
+                Q(city__icontains=address) | 
+                Q(state__icontains=address) |
+                Q(county__icontains=address)
+            )
+
+        # Enhanced Location-Based Result Ranking
         sort = self.cleaned_data.get("sort")
-        if sort:
-            queryset = queryset.order_by(sort)
+        
+        # Handle location-based sorting when coordinates are available
+        if (lat and lon) and sort in ["distance", "proximity", "coverage_specificity"]:
+            try:
+                # Apply proximity ranking annotations
+                queryset = Resource.objects.annotate_proximity_ranking(
+                    queryset, float(lat), float(lon)
+                )
+                
+                if sort == "proximity":
+                    # Sort by proximity score (combines distance and coverage specificity)
+                    queryset = queryset.order_by('-proximity_score', '-specificity_score', 'distance_miles', 'name')
+                elif sort == "distance":
+                    # Sort by distance only
+                    queryset = queryset.order_by('distance_miles', '-specificity_score', 'name')
+                elif sort == "coverage_specificity":
+                    # Sort by coverage specificity first, then by proximity
+                    queryset = queryset.order_by('-specificity_score', '-proximity_score', 'distance_miles', 'name')
+                
+            except Exception as e:
+                logger.warning(f"Proximity ranking failed: {e}")
+                # Fallback to basic coverage specificity sorting
+                queryset = queryset.annotate(
+                    coverage_count=models.Count('coverage_areas')
+                ).order_by('-coverage_count', 'name')
+        
+        # Handle non-location-based sorting or when coordinates are not available
+        elif sort:
+            if sort == "coverage_specificity":
+                # Sort by coverage area count (more specific = higher priority)
+                queryset = queryset.annotate(
+                    coverage_count=models.Count('coverage_areas')
+                ).order_by('-coverage_count', 'name')
+            elif sort in ["distance", "proximity"]:
+                # Fallback to default sorting if proximity requested but no coordinates
+                logger.info("Location-based sorting requested but no coordinates available, using default sorting")
+                queryset = queryset.order_by("-updated_at")
+            else:
+                queryset = queryset.order_by(sort)
         else:
-            # Default sorting
-            queryset = queryset.order_by("-updated_at")
+            # Default sorting - prioritize resources with coverage areas
+            queryset = queryset.annotate(
+                coverage_count=models.Count('coverage_areas')
+            ).order_by('-coverage_count', '-updated_at')
 
         return queryset
 
@@ -243,11 +367,17 @@ class ResourceFilterForm(forms.Form):
         location_parts = []
         city = self.cleaned_data.get("city")
         state = self.cleaned_data.get("state")
+        address = self.cleaned_data.get("address")
+        radius_miles = self.cleaned_data.get("radius_miles")
         
         if city:
             location_parts.append(city)
         if state:
             location_parts.append(state)
+        if address:
+            location_parts.append(f"near '{address}'")
+            if radius_miles:
+                location_parts.append(f"within {radius_miles} miles")
             
         if location_parts:
             filters.append(f"location: {', '.join(location_parts)}")

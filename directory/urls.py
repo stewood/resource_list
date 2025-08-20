@@ -32,6 +32,7 @@ from .views import (
     AreaSearchView,
     LocationSearchView,
     ResourceAreaManagementView,
+    ResourceEligibilityView,
 )
 
 app_name = "directory"
@@ -115,4 +116,5 @@ urlpatterns = [
     path("api/areas/<int:area_id>/preview/", AreaSearchView.as_view(), name="api_area_preview"),
     path("api/search/by-location/", LocationSearchView.as_view(), name="api_location_search"),
     path("api/resources/<int:resource_id>/areas/", ResourceAreaManagementView.as_view(), name="api_resource_areas"),
+    path("api/resources/<int:resource_id>/eligibility/", ResourceEligibilityView.as_view(), name="api_resource_eligibility"),
 ]

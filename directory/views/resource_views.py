@@ -37,7 +37,7 @@ from django.db import models
 from django.views.generic import DetailView
 
 from ..models import Resource, ResourceVersion
-from ..permissions import user_has_role
+from ..permissions import user_has_role, user_can_publish
 
 
 class ResourceDetailView(LoginRequiredMixin, DetailView):
@@ -106,6 +106,9 @@ class ResourceDetailView(LoginRequiredMixin, DetailView):
         
         # Add permission context for notes field
         context['can_view_notes'] = user_has_role(self.request.user, "Editor") or user_has_role(self.request.user, "Reviewer") or user_has_role(self.request.user, "Admin")
+        
+        # Add permission context for publishing
+        context['user_can_publish'] = user_can_publish(self.request.user)
         
         # Get recent versions
         context["versions"] = ResourceVersion.objects.filter(

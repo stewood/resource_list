@@ -24,6 +24,7 @@ Usage:
     # /resources/ -> ResourceListView
 """
 
+import logging
 from typing import Any, Dict
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -33,6 +34,8 @@ from django.views.generic import ListView
 
 from ..models import Resource, ServiceType, TaxonomyCategory
 from ..permissions import user_can_publish, user_can_submit_for_review
+
+logger = logging.getLogger(__name__)
 
 
 class ResourceListView(LoginRequiredMixin, ListView):
@@ -164,6 +167,52 @@ class ResourceListView(LoginRequiredMixin, ListView):
         if county_filter:
             queryset = queryset.filter(county__icontains=county_filter)
 
+        # Location-based filtering
+        address_filter = self.request.GET.get("address", "").strip()
+        lat_filter = self.request.GET.get("lat", "")
+        lon_filter = self.request.GET.get("lon", "")
+        radius_miles = self.request.GET.get("radius_miles", "10.0")
+
+        if address_filter and lat_filter and lon_filter:
+            # Use spatial filtering when coordinates are available
+            try:
+                # Use proximity-based filtering for better ranking
+                spatial_queryset = Resource.objects.filter_by_location_with_proximity(
+                    lat=float(lat_filter),
+                    lon=float(lon_filter),
+                    radius_miles=float(radius_miles) if radius_miles else None,
+                    sort_by_proximity=True
+                )
+                # Combine with existing filters
+                spatial_ids = list(spatial_queryset.values_list('pk', flat=True))
+                if spatial_ids:
+                    queryset = queryset.filter(pk__in=spatial_ids)
+                    # Preserve spatial ordering when proximity-based sorting is requested
+                    if self.request.GET.get("sort") in ["distance", "proximity"]:
+                        from django.db.models import Case, When
+                        preserved = Case(
+                            *[When(pk=pk, then=pos) for pos, pk in enumerate(spatial_ids)]
+                        )
+                        queryset = queryset.order_by(preserved)
+                else:
+                    # No spatial results, return empty queryset
+                    queryset = Resource.objects.none()
+            except (ValueError, TypeError) as e:
+                # Fallback to text-based search if spatial filtering fails
+                logger.warning(f"Spatial filtering failed for {address_filter}: {e}")
+                queryset = queryset.filter(
+                    Q(city__icontains=address_filter) | 
+                    Q(state__icontains=address_filter) |
+                    Q(county__icontains=address_filter)
+                )
+        elif address_filter:
+            # Text-based location search when no coordinates
+            queryset = queryset.filter(
+                Q(city__icontains=address_filter) | 
+                Q(state__icontains=address_filter) |
+                Q(county__icontains=address_filter)
+            )
+
         emergency_filter = self.request.GET.get("emergency", "")
         if emergency_filter == "true":
             queryset = queryset.filter(is_emergency_service=True)
@@ -183,19 +232,63 @@ class ResourceListView(LoginRequiredMixin, ListView):
         elif archive_filter == "active":
             queryset = Resource.objects.all()  # Non-archived only
 
-        # Sorting
+        # Enhanced Location-Based Result Ranking
         sort_by = self.request.GET.get("sort", "-updated_at")
-        if sort_by in [
-            "name",
-            "-name",
-            "city",
-            "-city",
-            "status",
-            "-status",
-            "updated_at",
-            "-updated_at",
-        ]:
-            queryset = queryset.order_by(sort_by)
+        
+        # Handle location-based sorting when coordinates are available
+        if (lat_filter and lon_filter) and sort_by in ["distance", "proximity", "coverage_specificity"]:
+            try:
+                # Apply proximity ranking annotations
+                queryset = Resource.objects.annotate_proximity_ranking(
+                    queryset, float(lat_filter), float(lon_filter)
+                )
+                
+                if sort_by == "proximity":
+                    # Sort by proximity score (combines distance and coverage specificity)
+                    queryset = queryset.order_by('-proximity_score', '-specificity_score', 'distance_miles', 'name')
+                elif sort_by == "distance":
+                    # Sort by distance only
+                    queryset = queryset.order_by('distance_miles', '-specificity_score', 'name')
+                elif sort_by == "coverage_specificity":
+                    # Sort by coverage specificity first, then by proximity
+                    queryset = queryset.order_by('-specificity_score', '-proximity_score', 'distance_miles', 'name')
+                
+            except Exception as e:
+                logger.warning(f"Proximity ranking failed: {e}")
+                # Fallback to basic coverage specificity sorting
+                queryset = queryset.annotate(
+                    coverage_count=models.Count('coverage_areas')
+                ).order_by('-coverage_count', 'name')
+        
+        # Handle non-location-based sorting or when coordinates are not available
+        elif sort_by:
+            if sort_by in [
+                "name",
+                "-name",
+                "city",
+                "-city",
+                "status",
+                "-status",
+                "updated_at",
+                "-updated_at",
+            ]:
+                queryset = queryset.order_by(sort_by)
+            elif sort_by == "coverage_specificity":
+                # Sort by coverage area count (more specific = higher priority)
+                queryset = queryset.annotate(
+                    coverage_count=models.Count('coverage_areas')
+                ).order_by('-coverage_count', 'name')
+            elif sort_by in ["distance", "proximity"]:
+                # Fallback to default sorting if location-based sorting requested but no coordinates
+                logger.info("Location-based sorting requested but no coordinates available, using default sorting")
+                queryset = queryset.order_by("-updated_at")
+            else:
+                queryset = queryset.order_by(sort_by)
+        else:
+            # Default sorting - prioritize resources with coverage areas
+            queryset = queryset.annotate(
+                coverage_count=models.Count('coverage_areas')
+            ).order_by('-coverage_count', '-updated_at')
 
         return queryset
 
@@ -238,6 +331,10 @@ class ResourceListView(LoginRequiredMixin, ListView):
             "service_type": self.request.GET.get("service_type", ""),
             "city": self.request.GET.get("city", ""),
             "state": self.request.GET.get("state", ""),
+            "address": self.request.GET.get("address", ""),
+            "lat": self.request.GET.get("lat", ""),
+            "lon": self.request.GET.get("lon", ""),
+            "radius_miles": self.request.GET.get("radius_miles", "10.0"),
             "sort": self.request.GET.get("sort", "-updated_at"),
         }
 

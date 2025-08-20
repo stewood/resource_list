@@ -57,6 +57,7 @@ from .api_views import (
     AreaSearchView,
     LocationSearchView,
     ResourceAreaManagementView,
+    ResourceEligibilityView,
 )
 
 # Export all views for easy importing
@@ -93,4 +94,5 @@ __all__ = [
     "AreaSearchView",
     "LocationSearchView",
     "ResourceAreaManagementView",
+    "ResourceEligibilityView",
 ]

@@ -395,7 +395,8 @@ class ResourceManager(models.Manager):
         location: Union[str, Tuple[float, float]],
         radius_miles: Optional[float] = None,
         include_radius_search: bool = True,
-        provider_name: Optional[str] = None
+        provider_name: Optional[str] = None,
+        sort_by_proximity: bool = True
     ) -> models.QuerySet:
         """Find resources by location using address geocoding or coordinates.
         
@@ -408,9 +409,11 @@ class ResourceManager(models.Manager):
             radius_miles: Maximum radius to search for resources without coverage areas
             include_radius_search: Whether to include radius-based search
             provider_name: Specific geocoding provider to use (optional)
+            sort_by_proximity: Whether to sort results by proximity score (default: True)
             
         Returns:
-            QuerySet: Resources that serve the specified location, ranked by coverage specificity
+            QuerySet: Resources that serve the specified location, ranked by proximity
+                and coverage specificity
             
         Example:
             >>> # Search by address
@@ -438,12 +441,13 @@ class ResourceManager(models.Manager):
             logger.error(f"Invalid location format: {location}")
             return self.none()
         
-        # Use the existing spatial query logic
-        return self.filter_by_location(
+        # Use proximity-based spatial query logic
+        return self.filter_by_location_with_proximity(
             lat=lat,
             lon=lon,
             radius_miles=radius_miles,
-            include_radius_search=include_radius_search
+            include_radius_search=include_radius_search,
+            sort_by_proximity=sort_by_proximity
         )
 
     def _geocode_location(
@@ -597,6 +601,163 @@ class ResourceManager(models.Manager):
             logger.error(f"Error in coverage specificity annotation: {e}")
             return queryset
 
+    def annotate_proximity_ranking(
+        self, 
+        queryset: models.QuerySet, 
+        lat: float, 
+        lon: float
+    ) -> models.QuerySet:
+        """Annotate queryset with comprehensive proximity ranking information.
+        
+        This method adds distance and proximity-based ranking annotations to help
+        sort resources by their proximity to a given location. It combines coverage
+        area distance, resource location distance, and coverage specificity.
+        
+        Args:
+            queryset (QuerySet): The queryset to annotate
+            lat (float): Latitude of the search point
+            lon (float): Longitude of the search point
+            
+        Returns:
+            QuerySet: Annotated queryset with proximity ranking information
+            
+        Note:
+            - Requires GIS to be enabled for spatial annotations
+            - Falls back gracefully when GIS is not available
+            - Adds distance_miles, proximity_score, and ranking annotations
+            
+        Example:
+            >>> resources = Resource.objects.annotate_proximity_ranking(
+            ...     Resource.objects.all(), 37.7749, -122.4194
+            ... ).order_by('proximity_score')
+        """
+        if not getattr(settings, 'GIS_ENABLED', False):
+            # Return queryset unchanged when GIS is not available
+            return queryset
+        
+        try:
+            from django.contrib.gis.geos import Point
+            from django.contrib.gis.db.models.functions import Distance
+            
+            search_point = Point(lon, lat, srid=4326)
+            
+            # Define specificity scores for different coverage area types
+            specificity_scores = {
+                'RADIUS': 100,    # Most specific - exact radius
+                'POLYGON': 90,    # Custom polygon - very specific
+                'CITY': 80,       # City boundary - specific
+                'COUNTY': 60,     # County boundary - moderate
+                'STATE': 40,      # State boundary - broad
+            }
+            
+            # Create Case statement for specificity scoring
+            specificity_case = Case(
+                When(coverage_areas__kind='RADIUS', then=Value(specificity_scores['RADIUS'])),
+                When(coverage_areas__kind='POLYGON', then=Value(specificity_scores['POLYGON'])),
+                When(coverage_areas__kind='CITY', then=Value(specificity_scores['CITY'])),
+                When(coverage_areas__kind='COUNTY', then=Value(specificity_scores['COUNTY'])),
+                When(coverage_areas__kind='STATE', then=Value(specificity_scores['STATE'])),
+                default=Value(0),
+                output_field=IntegerField(),
+            )
+            
+            # Annotate with distance and specificity information
+            queryset = queryset.annotate(
+                # Distance to coverage area centers (in meters)
+                coverage_distance_m=Distance('coverage_areas__center', search_point),
+                # Coverage specificity score
+                specificity_score=models.Max(specificity_case),
+                # Coverage type and count
+                coverage_type=models.Max('coverage_areas__kind'),
+                coverage_count=models.Count('coverage_areas', distinct=True)
+            )
+            
+            # Convert distance to miles and create proximity score
+            # Proximity score combines distance and specificity
+            # Lower distance = higher score, higher specificity = higher score
+            queryset = queryset.annotate(
+                # Convert meters to miles
+                distance_miles=models.ExpressionWrapper(
+                    models.F('coverage_distance_m') / 1609.34,  # Convert meters to miles
+                    output_field=models.FloatField()
+                ),
+                # Calculate proximity score (higher = better)
+                # Formula: specificity_score * (1 / (1 + distance_miles))
+                # This gives higher scores for closer, more specific coverage areas
+                proximity_score=models.ExpressionWrapper(
+                    models.F('specificity_score') * (1.0 / (1.0 + models.F('distance_miles'))),
+                    output_field=models.FloatField()
+                )
+            )
+            
+            return queryset
+            
+        except Exception as e:
+            logger.error(f"Error in proximity ranking annotation: {e}")
+            return queryset
+
+    def filter_by_location_with_proximity(
+        self, 
+        lat: float, 
+        lon: float, 
+        radius_miles: Optional[float] = None,
+        include_radius_search: bool = True,
+        sort_by_proximity: bool = True
+    ) -> models.QuerySet:
+        """Filter resources by location with proximity-based ranking.
+        
+        This method extends filter_by_location with comprehensive proximity calculations
+        and ranking. It finds resources that serve a specific location and ranks them
+        by proximity and coverage specificity.
+        
+        Args:
+            lat (float): Latitude of the search point (WGS84)
+            lon (float): Longitude of the search point (WGS84)
+            radius_miles (float, optional): Maximum radius to search for resources
+                with location data but no coverage areas. Defaults to None.
+            include_radius_search (bool): Whether to include radius-based search
+                for resources without coverage areas. Defaults to True.
+            sort_by_proximity (bool): Whether to sort results by proximity score.
+                Defaults to True.
+                
+        Returns:
+            QuerySet: Resources that serve the specified location, ranked by proximity
+                and coverage specificity
+            
+        Example:
+            >>> # Find resources serving a location, ranked by proximity
+            >>> resources = Resource.objects.filter_by_location_with_proximity(
+            ...     37.7749, -122.4194, radius_miles=10
+            ... )
+        """
+        # Check if GIS is enabled for proximity calculations
+        if not getattr(settings, 'GIS_ENABLED', False):
+            # Fallback to basic location filtering when GIS is not available
+            logger.warning("GIS not enabled, using basic location filtering without proximity ranking")
+            return self.filter_by_location(
+                lat=lat,
+                lon=lon,
+                radius_miles=radius_miles,
+                include_radius_search=include_radius_search
+            )
+        
+        # First, get resources using the existing spatial query logic
+        queryset = self.filter_by_location(
+            lat=lat,
+            lon=lon,
+            radius_miles=radius_miles,
+            include_radius_search=include_radius_search
+        )
+        
+        # Add proximity ranking annotations
+        queryset = self.annotate_proximity_ranking(queryset, lat, lon)
+        
+        # Sort by proximity score if requested
+        if sort_by_proximity:
+            queryset = queryset.order_by('-proximity_score', '-specificity_score', 'distance_miles')
+        
+        return queryset
+
     def filter_by_coverage_area(
         self, 
         coverage_area_id: int, 
@@ -668,3 +829,227 @@ class ResourceManager(models.Manager):
             'coverage_percentage': (with_coverage / total_resources * 100) if total_resources > 0 else 0,
             'coverage_types': list(coverage_types),
         }
+
+    def calculate_resource_distance(
+        self, 
+        resource_id: int, 
+        lat: float, 
+        lon: float
+    ) -> Dict[str, Any]:
+        """Calculate distance from a location to a specific resource.
+        
+        This method calculates the distance from a given location to a specific
+        resource, including distance to the resource's physical location and
+        coverage area information.
+        
+        Args:
+            resource_id (int): ID of the resource to calculate distance for
+            lat (float): Latitude of the query location
+            lon (float): Longitude of the query location
+            
+        Returns:
+            Dict containing distance and eligibility information
+            
+        Example:
+            >>> distance_info = Resource.objects.calculate_resource_distance(
+            ...     123, 37.7749, -122.4194
+            ... )
+            >>> print(f"Distance: {distance_info['distance_miles']} miles")
+        """
+        try:
+            resource = self.get(id=resource_id)
+            
+            result = {
+                'resource_id': resource_id,
+                'resource_name': resource.name,
+                'serves_location': False,
+                'distance_miles': None,
+                'coverage_areas': [],
+                'eligibility_reason': 'Unknown',
+            }
+            
+            # Check if GIS is enabled for distance calculations
+            if not getattr(settings, 'GIS_ENABLED', False):
+                result['eligibility_reason'] = 'GIS not enabled for distance calculations'
+                return result
+            
+            from django.contrib.gis.geos import Point
+            from django.contrib.gis.db.models.functions import Distance
+            
+            query_point = Point(lon, lat, srid=4326)
+            
+            # Calculate distance to resource's physical location if available
+            # Note: Resource model doesn't have lat/lon fields, so we'll use coverage area centers
+            # For now, we'll calculate distance to the closest coverage area center
+            
+            # Check coverage areas
+            coverage_areas = resource.coverage_areas.all()
+            if not coverage_areas.exists():
+                result['eligibility_reason'] = 'Resource has no defined coverage areas'
+                return result
+            
+            # Track the closest coverage area for distance calculation
+            closest_distance = float('inf')
+            closest_area = None
+            
+            # Check if location is within any coverage area
+            for coverage_area in coverage_areas:
+                if coverage_area.geom:
+                    # Check if query point is within the coverage area geometry
+                    if coverage_area.geom.contains(query_point):
+                        result['serves_location'] = True
+                        result['eligibility_reason'] = f'Location is within {coverage_area.name} ({coverage_area.kind})'
+                        
+                        # Set distance to 0 for areas that contain the location
+                        area_info = {
+                            'id': coverage_area.id,
+                            'name': coverage_area.name,
+                            'kind': coverage_area.kind,
+                            'distance_miles': 0.0,
+                            'contains_location': True
+                        }
+                        result['coverage_areas'].append(area_info)
+                        result['distance_miles'] = 0.0
+                        break
+                    else:
+                        # Calculate distance to coverage area boundary
+                        distance_to_area = coverage_area.geom.distance(query_point)
+                        distance_miles = round(distance_to_area / 1609.34, 2)
+                        
+                        # Track closest area
+                        if distance_miles < closest_distance:
+                            closest_distance = distance_miles
+                            closest_area = coverage_area
+                        
+                        # Add coverage area info
+                        area_info = {
+                            'id': coverage_area.id,
+                            'name': coverage_area.name,
+                            'kind': coverage_area.kind,
+                            'distance_miles': distance_miles,
+                            'contains_location': False
+                        }
+                        result['coverage_areas'].append(area_info)
+                else:
+                    # No geometry available, use center point if available
+                    if coverage_area.center:
+                        center_distance = query_point.distance(coverage_area.center)
+                        distance_miles = round(center_distance / 1609.34, 2)
+                        
+                        # Track closest area
+                        if distance_miles < closest_distance:
+                            closest_distance = distance_miles
+                            closest_area = coverage_area
+                        
+                        area_info = {
+                            'id': coverage_area.id,
+                            'name': coverage_area.name,
+                            'kind': coverage_area.kind,
+                            'distance_miles': distance_miles,
+                            'contains_location': False,
+                            'note': 'Using center point (no boundary geometry)'
+                        }
+                        result['coverage_areas'].append(area_info)
+            
+            # Set the overall distance to the closest coverage area
+            if closest_area and not result['serves_location']:
+                result['distance_miles'] = closest_distance
+            
+            # If no coverage area contains the location, provide closest area info
+            if not result['serves_location'] and result['coverage_areas']:
+                closest_area = min(result['coverage_areas'], key=lambda x: x['distance_miles'])
+                result['eligibility_reason'] = f'Location not served. Closest area: {closest_area["name"]} ({closest_area["distance_miles"]} miles away)'
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error calculating resource distance: {e}")
+            return {
+                'resource_id': resource_id,
+                'error': str(e),
+                'serves_location': False,
+                'eligibility_reason': 'Error calculating distance'
+            }
+
+    def check_location_eligibility(
+        self, 
+        lat: float, 
+        lon: float, 
+        radius_miles: float = 50
+    ) -> Dict[str, Any]:
+        """Check which resources serve a specific location.
+        
+        This method finds all resources that serve a given location and provides
+        detailed eligibility information for each resource.
+        
+        Args:
+            lat (float): Latitude of the location to check
+            lon (float): Longitude of the location to check
+            radius_miles (float): Search radius in miles (default: 50)
+            
+        Returns:
+            Dict containing eligibility information for all resources
+            
+        Example:
+            >>> eligibility = Resource.objects.check_location_eligibility(
+            ...     37.7749, -122.4194, radius_miles=25
+            ... )
+            >>> print(f"Resources serving location: {len(eligibility['serving_resources'])}")
+        """
+        try:
+            # Get resources within the search radius
+            nearby_resources = self.filter_by_location(
+                lat=lat, 
+                lon=lon, 
+                radius_miles=radius_miles
+            )
+            
+            serving_resources = []
+            nearby_resources_list = []
+            
+            for resource in nearby_resources:
+                # Calculate detailed distance and eligibility info
+                distance_info = self.calculate_resource_distance(
+                    resource.id, lat, lon
+                )
+                
+                resource_info = {
+                    'id': resource.id,
+                    'name': resource.name,
+                    'description': resource.description,
+                    'city': resource.city,
+                    'state': resource.state,
+                    'phone': resource.phone,
+                    'website': resource.website,
+                    'is_emergency_service': resource.is_emergency_service,
+                    'is_24_hour_service': resource.is_24_hour_service,
+                    'serves_location': distance_info['serves_location'],
+                    'distance_miles': distance_info['distance_miles'],
+                    'eligibility_reason': distance_info['eligibility_reason'],
+                    'coverage_areas': distance_info['coverage_areas']
+                }
+                
+                if distance_info['serves_location']:
+                    serving_resources.append(resource_info)
+                else:
+                    nearby_resources_list.append(resource_info)
+            
+            return {
+                'location': {
+                    'lat': lat,
+                    'lon': lon,
+                    'radius_miles': radius_miles
+                },
+                'serving_resources': serving_resources,
+                'nearby_resources': nearby_resources_list,
+                'total_serving': len(serving_resources),
+                'total_nearby': len(nearby_resources_list)
+            }
+            
+        except Exception as e:
+            logger.error(f"Error checking location eligibility: {e}")
+            return {
+                'error': str(e),
+                'serving_resources': [],
+                'nearby_resources': []
+            }

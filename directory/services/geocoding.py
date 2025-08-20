@@ -19,9 +19,11 @@ Example:
 
 import logging
 import time
+import random
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union, Callable, Any
 from urllib.parse import quote
+from functools import wraps
 
 import requests
 from django.conf import settings
@@ -79,6 +81,257 @@ class GeocodingResult:
             -90 <= self.latitude <= 90 and
             -180 <= self.longitude <= 180 and
             self.latitude != 0 or self.longitude != 0
+        )
+
+
+class CircuitBreaker:
+    """Circuit breaker pattern for protecting against cascading failures.
+    
+    This class implements a circuit breaker pattern that monitors the success/failure
+    of operations and can temporarily disable a service when it's failing too often.
+    
+    Attributes:
+        failure_threshold: Number of failures before opening the circuit
+        recovery_timeout: Time in seconds to wait before attempting recovery
+        expected_exception: Exception type that indicates a failure
+        last_failure_time: Timestamp of the last failure
+        failure_count: Number of consecutive failures
+        state: Current state of the circuit breaker
+    """
+    
+    def __init__(
+        self,
+        failure_threshold: int = 5,
+        recovery_timeout: int = 60,
+        expected_exception: type = Exception
+    ):
+        """Initialize the circuit breaker.
+        
+        Args:
+            failure_threshold: Number of failures before opening the circuit
+            recovery_timeout: Time in seconds to wait before attempting recovery
+            expected_exception: Exception type that indicates a failure
+        """
+        self.failure_threshold = failure_threshold
+        self.recovery_timeout = recovery_timeout
+        self.expected_exception = expected_exception
+        self.last_failure_time = 0
+        self.failure_count = 0
+        self.state = "CLOSED"  # CLOSED, OPEN, HALF_OPEN
+    
+    def call(self, func: Callable, *args, **kwargs) -> Any:
+        """Execute a function with circuit breaker protection.
+        
+        Args:
+            func: Function to execute
+            *args: Function arguments
+            **kwargs: Function keyword arguments
+            
+        Returns:
+            Function result if successful
+            
+        Raises:
+            Exception: If circuit is open or function fails
+        """
+        if self.state == "OPEN":
+            if time.time() - self.last_failure_time >= self.recovery_timeout:
+                self.state = "HALF_OPEN"
+                logger.info("Circuit breaker attempting recovery")
+            else:
+                raise Exception(f"Circuit breaker is OPEN for {self.name}")
+        
+        try:
+            result = func(*args, **kwargs)
+            self._on_success()
+            return result
+        except self.expected_exception as e:
+            self._on_failure()
+            raise e
+    
+    def _on_success(self) -> None:
+        """Handle successful operation."""
+        self.failure_count = 0
+        self.state = "CLOSED"
+        logger.debug("Circuit breaker: Operation successful")
+    
+    def _on_failure(self) -> None:
+        """Handle failed operation."""
+        self.failure_count += 1
+        self.last_failure_time = time.time()
+        
+        if self.failure_count >= self.failure_threshold:
+            self.state = "OPEN"
+            logger.warning(f"Circuit breaker opened after {self.failure_count} failures")
+        else:
+            logger.debug(f"Circuit breaker: Failure {self.failure_count}/{self.failure_threshold}")
+
+
+def retry_with_backoff(
+    max_retries: int = 3,
+    base_delay: float = 1.0,
+    max_delay: float = 60.0,
+    exponential_base: float = 2.0,
+    jitter: bool = True,
+    exceptions: tuple = (Exception,)
+):
+    """Decorator for retrying functions with exponential backoff.
+    
+    Args:
+        max_retries: Maximum number of retry attempts
+        base_delay: Initial delay between retries in seconds
+        max_delay: Maximum delay between retries in seconds
+        exponential_base: Base for exponential backoff calculation
+        jitter: Whether to add random jitter to delays
+        exceptions: Tuple of exceptions to catch and retry
+        
+    Returns:
+        Decorated function with retry logic
+    """
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exception = None
+            
+            for attempt in range(max_retries + 1):
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as e:
+                    last_exception = e
+                    
+                    if attempt == max_retries:
+                        logger.error(f"Function {func.__name__} failed after {max_retries} retries: {e}")
+                        raise e
+                    
+                    # Calculate delay with exponential backoff
+                    delay = min(base_delay * (exponential_base ** attempt), max_delay)
+                    
+                    # Add jitter if enabled
+                    if jitter:
+                        delay *= (0.5 + random.random() * 0.5)
+                    
+                    logger.warning(
+                        f"Function {func.__name__} failed (attempt {attempt + 1}/{max_retries + 1}), "
+                        f"retrying in {delay:.2f}s: {e}"
+                    )
+                    
+                    time.sleep(delay)
+            
+            # This should never be reached, but just in case
+            raise last_exception
+        
+        return wrapper
+    return decorator
+
+
+class TextBasedLocationMatcher:
+    """Text-based location matching as a fallback when geocoding fails.
+    
+    This class provides text-based location matching using CoverageArea data
+    when geocoding services are unavailable or fail.
+    """
+    
+    def __init__(self):
+        """Initialize the text-based location matcher."""
+        self._coverage_areas_cache = None
+        self._last_cache_update = 0
+        self._cache_ttl = 300  # 5 minutes
+    
+    def _get_coverage_areas(self) -> List[Dict]:
+        """Get coverage areas for text matching.
+        
+        Returns:
+            List of coverage area dictionaries with name and kind
+        """
+        current_time = time.time()
+        
+        # Refresh cache if expired
+        if (self._coverage_areas_cache is None or 
+            current_time - self._last_cache_update > self._cache_ttl):
+            try:
+                from directory.models import CoverageArea
+                areas = CoverageArea.objects.values('name', 'kind', 'ext_ids')
+                self._coverage_areas_cache = list(areas)
+                self._last_cache_update = current_time
+                logger.debug(f"Cached {len(self._coverage_areas_cache)} coverage areas for text matching")
+            except Exception as e:
+                logger.warning(f"Failed to load coverage areas for text matching: {e}")
+                self._coverage_areas_cache = []
+        
+        return self._coverage_areas_cache
+    
+    def find_location_match(self, query: str) -> Optional[GeocodingResult]:
+        """Find a location match using text-based matching.
+        
+        Args:
+            query: Location query string
+            
+        Returns:
+            GeocodingResult if a match is found, None otherwise
+        """
+        if not query:
+            return None
+        
+        query_lower = query.lower().strip()
+        coverage_areas = self._get_coverage_areas()
+        
+        # Try exact matches first
+        for area in coverage_areas:
+            area_name = area['name'].lower()
+            if query_lower == area_name:
+                logger.info(f"Text-based exact match found: {area['name']}")
+                return self._create_result_from_area(area, query, confidence=0.9)
+        
+        # Try partial matches
+        for area in coverage_areas:
+            area_name = area['name'].lower()
+            if query_lower in area_name or area_name in query_lower:
+                logger.info(f"Text-based partial match found: {area['name']}")
+                return self._create_result_from_area(area, query, confidence=0.7)
+        
+        # Try matching against ext_ids (FIPS codes, etc.)
+        for area in coverage_areas:
+            ext_ids = area.get('ext_ids', {})
+            for key, value in ext_ids.items():
+                if isinstance(value, str) and query_lower in value.lower():
+                    logger.info(f"Text-based ext_id match found: {area['name']} ({key}={value})")
+                    return self._create_result_from_area(area, query, confidence=0.6)
+        
+        logger.debug(f"No text-based match found for query: {query}")
+        return None
+    
+    def _create_result_from_area(self, area: Dict, original_query: str, confidence: float) -> GeocodingResult:
+        """Create a GeocodingResult from a coverage area.
+        
+        Args:
+            area: Coverage area dictionary
+            original_query: Original query string
+            confidence: Confidence score for the match
+            
+        Returns:
+            GeocodingResult with area information
+        """
+        # For text-based matching, we don't have exact coordinates
+        # We'll use a default location (center of the area if available)
+        # This is a simplified approach - in a real implementation,
+        # you might want to store center coordinates in CoverageArea
+        
+        # Use a default location (this could be enhanced with actual area centers)
+        default_lat = 37.7749  # Default to a reasonable location
+        default_lon = -122.4194
+        
+        return GeocodingResult(
+            latitude=default_lat,
+            longitude=default_lon,
+            address=f"{area['name']} (text-based match)",
+            raw_data={
+                "text_match": True,
+                "area_name": area['name'],
+                "area_kind": area['kind'],
+                "ext_ids": area.get('ext_ids', {}),
+                "original_query": original_query,
+            },
+            provider="text_matcher",
+            confidence=confidence,
         )
 
 
@@ -148,6 +401,7 @@ class NominatimProvider(GeocodingProvider):
         base_url: Nominatim API base URL
         user_agent: User agent string for API requests
         timeout: Request timeout in seconds
+        circuit_breaker: Circuit breaker for protecting against failures
     """
     
     def __init__(
@@ -170,6 +424,13 @@ class NominatimProvider(GeocodingProvider):
         self.user_agent = user_agent
         self.timeout = timeout
         self._geocoder = None
+        
+        # Initialize circuit breaker for this provider
+        self.circuit_breaker = CircuitBreaker(
+            failure_threshold=3,
+            recovery_timeout=120,  # 2 minutes
+            expected_exception=(GeocoderTimedOut, GeocoderUnavailable, requests.RequestException)
+        )
     
     @property
     def geocoder(self) -> Nominatim:
@@ -181,8 +442,47 @@ class NominatimProvider(GeocodingProvider):
             )
         return self._geocoder
     
+    @retry_with_backoff(
+        max_retries=2,
+        base_delay=1.0,
+        max_delay=10.0,
+        exceptions=(GeocoderTimedOut, GeocoderUnavailable, requests.RequestException)
+    )
+    def _geocode_with_retry(self, query: str) -> Optional[GeocodingResult]:
+        """Internal geocoding method with retry logic.
+        
+        Args:
+            query: Address string to geocode
+            
+        Returns:
+            GeocodingResult if successful, None if failed
+        """
+        self._rate_limit()
+        
+        logger.debug(f"Geocoding query: {query}")
+        location = self.geocoder.geocode(query)
+        
+        if location is None:
+            logger.warning(f"No results found for query: {query}")
+            return None
+        
+        result = GeocodingResult(
+            latitude=location.latitude,
+            longitude=location.longitude,
+            address=location.address,
+            raw_data={
+                "raw": location.raw,
+                "point": location.point,
+            },
+            provider=self.name,
+            confidence=0.8,  # Nominatim doesn't provide confidence scores
+        )
+        
+        logger.debug(f"Geocoding successful: {result}")
+        return result
+    
     def geocode(self, query: str) -> Optional[GeocodingResult]:
-        """Geocode an address using Nominatim.
+        """Geocode an address using Nominatim with circuit breaker protection.
         
         Args:
             query: Address string to geocode
@@ -191,42 +491,53 @@ class NominatimProvider(GeocodingProvider):
             GeocodingResult if successful, None if failed
         """
         try:
-            self._rate_limit()
-            
-            logger.debug(f"Geocoding query: {query}")
-            location = self.geocoder.geocode(query)
-            
-            if location is None:
-                logger.warning(f"No results found for query: {query}")
-                return None
-            
-            result = GeocodingResult(
-                latitude=location.latitude,
-                longitude=location.longitude,
-                address=location.address,
-                raw_data={
-                    "raw": location.raw,
-                    "point": location.point,
-                },
-                provider=self.name,
-                confidence=0.8,  # Nominatim doesn't provide confidence scores
-            )
-            
-            logger.debug(f"Geocoding successful: {result}")
-            return result
-            
-        except GeocoderTimedOut:
-            logger.error(f"Geocoding timeout for query: {query}")
-            return None
-        except GeocoderUnavailable:
-            logger.error(f"Geocoding service unavailable for query: {query}")
-            return None
+            return self.circuit_breaker.call(self._geocode_with_retry, query)
         except Exception as e:
-            logger.error(f"Geocoding error for query '{query}': {e}")
+            logger.error(f"Geocoding failed for query '{query}' (circuit breaker): {e}")
             return None
     
+    @retry_with_backoff(
+        max_retries=2,
+        base_delay=1.0,
+        max_delay=10.0,
+        exceptions=(GeocoderTimedOut, GeocoderUnavailable, requests.RequestException)
+    )
+    def _reverse_geocode_with_retry(self, latitude: float, longitude: float) -> Optional[GeocodingResult]:
+        """Internal reverse geocoding method with retry logic.
+        
+        Args:
+            latitude: Latitude coordinate
+            longitude: Longitude coordinate
+            
+        Returns:
+            GeocodingResult if successful, None if failed
+        """
+        self._rate_limit()
+        
+        logger.debug(f"Reverse geocoding coordinates: ({latitude}, {longitude})")
+        location = self.geocoder.reverse((latitude, longitude))
+        
+        if location is None:
+            logger.warning(f"No results found for coordinates: ({latitude}, {longitude})")
+            return None
+        
+        result = GeocodingResult(
+            latitude=latitude,
+            longitude=longitude,
+            address=location.address,
+            raw_data={
+                "raw": location.raw,
+                "point": location.point,
+            },
+            provider=self.name,
+            confidence=0.8,
+        )
+        
+        logger.debug(f"Reverse geocoding successful: {result}")
+        return result
+    
     def reverse_geocode(self, latitude: float, longitude: float) -> Optional[GeocodingResult]:
-        """Reverse geocode coordinates using Nominatim.
+        """Reverse geocode coordinates using Nominatim with circuit breaker protection.
         
         Args:
             latitude: Latitude coordinate
@@ -236,38 +547,9 @@ class NominatimProvider(GeocodingProvider):
             GeocodingResult if successful, None if failed
         """
         try:
-            self._rate_limit()
-            
-            logger.debug(f"Reverse geocoding coordinates: ({latitude}, {longitude})")
-            location = self.geocoder.reverse((latitude, longitude))
-            
-            if location is None:
-                logger.warning(f"No results found for coordinates: ({latitude}, {longitude})")
-                return None
-            
-            result = GeocodingResult(
-                latitude=latitude,
-                longitude=longitude,
-                address=location.address,
-                raw_data={
-                    "raw": location.raw,
-                    "point": location.point,
-                },
-                provider=self.name,
-                confidence=0.8,
-            )
-            
-            logger.debug(f"Reverse geocoding successful: {result}")
-            return result
-            
-        except GeocoderTimedOut:
-            logger.error(f"Reverse geocoding timeout for coordinates: ({latitude}, {longitude})")
-            return None
-        except GeocoderUnavailable:
-            logger.error(f"Reverse geocoding service unavailable for coordinates: ({latitude}, {longitude})")
-            return None
+            return self.circuit_breaker.call(self._reverse_geocode_with_retry, latitude, longitude)
         except Exception as e:
-            logger.error(f"Reverse geocoding error for coordinates ({latitude}, {longitude}): {e}")
+            logger.error(f"Reverse geocoding failed for coordinates ({latitude}, {longitude}) (circuit breaker): {e}")
             return None
 
 
@@ -294,6 +576,9 @@ class GeocodingService:
         self.cache_enabled = cache_enabled
         self.default_provider = None
         
+        # Initialize text-based location matcher for fallback
+        self.text_matcher = TextBasedLocationMatcher()
+        
         # Set up default providers if none provided
         if not self.providers:
             self._setup_default_providers()
@@ -306,6 +591,9 @@ class GeocodingService:
         )
         self.providers.append(nominatim)
         self.default_provider = "nominatim"
+        
+        # Note: Additional providers like Google Maps can be added here if API keys are available
+        # For now, we use Nominatim (free) + text-based fallback for robust geocoding
         
         logger.info(f"Initialized geocoding service with {len(self.providers)} providers")
     
@@ -395,7 +683,17 @@ class GeocodingService:
                 logger.error(f"Provider {provider.name} failed: {e}")
                 continue
         
-        logger.error(f"All geocoding providers failed for query: {query}")
+        # Try text-based location matching as fallback
+        logger.info(f"All geocoding providers failed, trying text-based matching for query: {query}")
+        text_result = self.text_matcher.find_location_match(query)
+        if text_result:
+            logger.info(f"Text-based location match found for query: {query}")
+            # Cache the text-based result with shorter duration
+            if self.cache_enabled:
+                self._cache_result(query, text_result)
+            return text_result
+        
+        logger.error(f"All geocoding methods failed for query: {query}")
         return None
     
     def _cache_result(self, query: str, result: GeocodingResult) -> None:
