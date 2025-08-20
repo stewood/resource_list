@@ -48,6 +48,14 @@ class GeometryProcessor:
     MAX_VERTICES_DISPLAY = 1000         # Maximum vertices for display geometries
     MAX_VERTICES_STORAGE = 10000        # Maximum vertices for storage
     
+    # Validation limits
+    MIN_VERTICES_POLYGON = 4            # Minimum vertices for a valid polygon (including closure)
+    MAX_VERTICES_POLYGON = 50000        # Maximum vertices for a single polygon
+    MIN_AREA_SQ_DEGREES = 1e-10         # Minimum area in square degrees (very small but not zero)
+    MAX_AREA_SQ_DEGREES = 10000         # Maximum area in square degrees (covers most of Earth)
+    MIN_COORDINATE = -180               # Minimum valid coordinate value
+    MAX_COORDINATE = 180                # Maximum valid coordinate value
+    
     @classmethod
     def simplify_for_display(
         cls, 
@@ -315,6 +323,16 @@ class GeometryProcessor:
     def validate_geometry(cls, geometry: GEOSGeometry) -> Tuple[bool, List[str]]:
         """Comprehensive geometry validation.
         
+        This method performs extensive validation of geometry data including:
+        - Basic validity (self-intersections, topology)
+        - Coordinate system validation
+        - Geometry type validation
+        - Vertex count limits
+        - Area validation
+        - Coordinate bounds validation
+        - Self-intersection detection
+        - Hole validation
+        
         Args:
             geometry: Geometry to validate
             
@@ -339,22 +357,153 @@ class GeometryProcessor:
         if geometry.geom_type not in ["Polygon", "MultiPolygon"]:
             errors.append(f"Unsupported geometry type: {geometry.geom_type}")
         
-        # Check vertex count
-        vertex_count = cls.count_vertices(geometry)
-        if vertex_count > cls.MAX_VERTICES_STORAGE:
-            errors.append(
-                f"Too many vertices: {vertex_count}, maximum allowed: {cls.MAX_VERTICES_STORAGE}"
-            )
-        
         # Check for empty geometry
         if geometry.empty:
             errors.append("Geometry is empty")
         
-        # Check area (should be > 0 for polygons)
-        if geometry.area <= 0:
-            errors.append(f"Invalid area: {geometry.area}")
+        # Perform detailed validation if geometry is not empty
+        if not geometry.empty:
+            # Check vertex count
+            vertex_count = cls.count_vertices(geometry)
+            if vertex_count < cls.MIN_VERTICES_POLYGON:
+                errors.append(
+                    f"Too few vertices: {vertex_count}, minimum required: {cls.MIN_VERTICES_POLYGON}"
+                )
+            if vertex_count > cls.MAX_VERTICES_POLYGON:
+                errors.append(
+                    f"Too many vertices: {vertex_count}, maximum allowed: {cls.MAX_VERTICES_POLYGON}"
+                )
+            
+            # Check area
+            area = geometry.area
+            if area <= 0:
+                errors.append(f"Invalid area: {area}, must be greater than 0")
+            elif area < cls.MIN_AREA_SQ_DEGREES:
+                errors.append(
+                    f"Area too small: {area}, minimum allowed: {cls.MIN_AREA_SQ_DEGREES}"
+                )
+            elif area > cls.MAX_AREA_SQ_DEGREES:
+                errors.append(
+                    f"Area too large: {area}, maximum allowed: {cls.MAX_AREA_SQ_DEGREES}"
+                )
+            
+            # Check coordinate bounds
+            bounds_errors = cls._validate_coordinate_bounds(geometry)
+            errors.extend(bounds_errors)
+            
+            # Check for self-intersections
+            if cls._has_self_intersections(geometry):
+                errors.append("Geometry contains self-intersections")
+            
+            # Check hole validity
+            hole_errors = cls._validate_holes(geometry)
+            errors.extend(hole_errors)
         
         return len(errors) == 0, errors
+    
+    @classmethod
+    def _validate_coordinate_bounds(cls, geometry: GEOSGeometry) -> List[str]:
+        """Validate that all coordinates are within valid bounds.
+        
+        Args:
+            geometry: Geometry to validate
+            
+        Returns:
+            List of validation errors
+        """
+        errors = []
+        
+        try:
+            # Get all coordinates
+            coords = []
+            if geometry.geom_type == "Polygon":
+                coords.extend(geometry.exterior.coords)
+                for hole in geometry.holes:
+                    coords.extend(hole.coords)
+            elif geometry.geom_type == "MultiPolygon":
+                for polygon in geometry:
+                    coords.extend(polygon.exterior.coords)
+                    for hole in polygon.holes:
+                        coords.extend(hole.coords)
+            
+            # Check each coordinate
+            for i, (lon, lat) in enumerate(coords):
+                if not (cls.MIN_COORDINATE <= lon <= cls.MAX_COORDINATE):
+                    errors.append(
+                        f"Invalid longitude at vertex {i}: {lon}, "
+                        f"must be between {cls.MIN_COORDINATE} and {cls.MAX_COORDINATE}"
+                    )
+                if not (cls.MIN_COORDINATE <= lat <= cls.MAX_COORDINATE):
+                    errors.append(
+                        f"Invalid latitude at vertex {i}: {lat}, "
+                        f"must be between {cls.MIN_COORDINATE} and {cls.MAX_COORDINATE}"
+                    )
+        
+        except Exception as e:
+            errors.append(f"Error validating coordinate bounds: {str(e)}")
+        
+        return errors
+    
+    @classmethod
+    def _has_self_intersections(cls, geometry: GEOSGeometry) -> bool:
+        """Check if geometry has self-intersections.
+        
+        Args:
+            geometry: Geometry to check
+            
+        Returns:
+            True if geometry has self-intersections
+        """
+        try:
+            # Use GEOS validity check which includes self-intersection detection
+            return not geometry.valid
+        except Exception:
+            # If we can't check validity, assume it might have issues
+            return True
+    
+    @classmethod
+    def _validate_holes(cls, geometry: GEOSGeometry) -> List[str]:
+        """Validate holes in polygons.
+        
+        Args:
+            geometry: Geometry to validate
+            
+        Returns:
+            List of validation errors
+        """
+        errors = []
+        
+        try:
+            if geometry.geom_type == "Polygon":
+                # Check that holes are inside the exterior ring
+                for i, hole in enumerate(geometry.holes):
+                    if not geometry.exterior.contains(hole):
+                        errors.append(f"Hole {i} is not contained within exterior ring")
+                    
+                    # Check hole area
+                    hole_area = hole.area
+                    if hole_area <= 0:
+                        errors.append(f"Hole {i} has invalid area: {hole_area}")
+            
+            elif geometry.geom_type == "MultiPolygon":
+                for poly_idx, polygon in enumerate(geometry):
+                    for hole_idx, hole in enumerate(polygon.holes):
+                        if not polygon.exterior.contains(hole):
+                            errors.append(
+                                f"Hole {hole_idx} in polygon {poly_idx} is not contained within exterior ring"
+                            )
+                        
+                        # Check hole area
+                        hole_area = hole.area
+                        if hole_area <= 0:
+                            errors.append(
+                                f"Hole {hole_idx} in polygon {poly_idx} has invalid area: {hole_area}"
+                            )
+        
+        except Exception as e:
+            errors.append(f"Error validating holes: {str(e)}")
+        
+        return errors
     
     @classmethod
     def repair_geometry(cls, geometry: GEOSGeometry) -> GEOSGeometry:

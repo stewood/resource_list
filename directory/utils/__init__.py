@@ -22,6 +22,13 @@ from .geometry import (
 from .export_utils import export_resources_to_csv
 from .version_utils import compare_versions, generate_diff_html
 from .formatting_utils import escape_html, format_field_name, get_field_display_value
+from .data_quality import (
+    DataQualityChecker,
+    validate_fips_codes,
+    check_duplicate_coverage_areas,
+    validate_name_consistency,
+    comprehensive_quality_check,
+)
 
 __all__ = [
     "GeometryProcessor",
@@ -35,4 +42,9 @@ __all__ = [
     "escape_html",
     "format_field_name",
     "get_field_display_value",
+    "DataQualityChecker",
+    "validate_fips_codes",
+    "check_duplicate_coverage_areas",
+    "validate_name_consistency",
+    "comprehensive_quality_check",
 ]
