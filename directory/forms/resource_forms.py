@@ -418,4 +418,38 @@ class ResourceForm(forms.ModelForm):
 
         if commit:
             resource.save()
+            
+            # Handle service areas if provided
+            self._save_service_areas(resource)
+            
         return resource
+
+    def _save_service_areas(self, resource: Resource) -> None:
+        """Save service areas for the resource.
+        
+        This method handles the association of coverage areas with the resource
+        based on the service_areas data provided in the form.
+        
+        Args:
+            resource: The resource instance to associate service areas with
+        """
+        service_areas_data = self.data.get('service_areas')
+        if service_areas_data:
+            try:
+                import json
+                coverage_area_ids = json.loads(service_areas_data)
+                
+                # Clear existing associations
+                resource.coverage_areas.clear()
+                
+                # Add new associations
+                if coverage_area_ids:
+                    from ..models import CoverageArea
+                    coverage_areas = CoverageArea.objects.filter(id__in=coverage_area_ids)
+                    resource.coverage_areas.add(*coverage_areas)
+                    
+            except (json.JSONDecodeError, ValueError) as e:
+                # Log error but don't fail the form save
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.warning(f"Error processing service areas for resource {resource.id}: {e}")

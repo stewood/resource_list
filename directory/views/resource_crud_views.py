@@ -125,7 +125,7 @@ class ResourceCreateView(LoginRequiredMixin, CreateView):
         """Add additional context data for the template.
         
         This method provides additional context data to support the template's
-        display and form handling, including an action indicator.
+        display and form handling, including an action indicator and service areas data.
         
         Args:
             **kwargs: Additional keyword arguments passed to the parent method
@@ -134,9 +134,11 @@ class ResourceCreateView(LoginRequiredMixin, CreateView):
             Dict[str, Any]: Context dictionary containing:
                 - form: The ResourceForm instance
                 - action: String indicating the action ("Create")
+                - service_areas_data: JSON string of existing service areas (empty for new resources)
         """
         context = super().get_context_data(**kwargs)
         context["action"] = "Create"
+        context["service_areas_data"] = "[]"  # Empty for new resources
         return context
 
 
@@ -226,7 +228,7 @@ class ResourceUpdateView(LoginRequiredMixin, UpdateView):
         """Add additional context data for the template.
         
         This method provides additional context data to support the template's
-        display and form handling, including an edit mode indicator.
+        display and form handling, including an edit mode indicator and service areas data.
         
         Args:
             **kwargs: Additional keyword arguments passed to the parent method
@@ -236,9 +238,28 @@ class ResourceUpdateView(LoginRequiredMixin, UpdateView):
                 - form: The ResourceForm instance
                 - resource: The resource object being edited
                 - is_edit: Boolean flag indicating edit mode (True)
+                - service_areas_data: JSON string of existing service areas
         """
         context = super().get_context_data(**kwargs)
         context["is_edit"] = True
+        
+        # Add existing service areas data
+        import json
+        service_areas = []
+        if self.object and hasattr(self.object, 'coverage_areas'):
+            service_areas = [
+                {
+                    'id': area.id,
+                    'name': area.name,
+                    'type': area.kind.lower(),
+                    'source': 'existing',
+                    'attached_at': area.created_at.isoformat() if area.created_at else None,
+                    'attached_by': area.created_by.username if area.created_by else None
+                }
+                for area in self.object.coverage_areas.all()
+            ]
+        context["service_areas_data"] = json.dumps(service_areas)
+        
         return context
 
     def form_valid(self, form: ResourceForm) -> HttpResponse:

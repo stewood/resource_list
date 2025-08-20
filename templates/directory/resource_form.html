@@ -21,6 +21,9 @@
                 <form method="post" novalidate>
                     {% csrf_token %}
                     
+                    <!-- Hidden input for service areas data -->
+                    <input type="hidden" id="initialServiceAreasData" value="{{ service_areas_data|default:'[]' }}">
+                    
                     <!-- Basic Information -->
                     <div class="row mb-4">
                         <div class="col-12">
@@ -450,31 +453,115 @@
                         <div class="col-12">
                             <h5 class="border-bottom pb-2 mb-3">
                                 <i class="fas fa-map-marked-alt"></i> Service Areas
+                                <span class="badge bg-primary ms-2">Step 4 of 4</span>
                             </h5>
                             <p class="text-muted small mb-3">
-                                Define the geographic areas where this resource provides services. You can use administrative boundaries, 
-                                create custom radius areas, or draw custom polygons.
+                                <strong>Important:</strong> Define the geographic areas where this resource provides services. 
+                                This helps people find services in their area and improves search results.
                             </p>
+                            
+                            <!-- Service Areas Progress Indicator -->
+                            <div class="alert alert-info mb-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <div class="flex-grow-1">
+                                        <strong>Service Areas Status:</strong>
+                                        <span id="serviceAreasStatus" class="ms-2">
+                                            <span class="badge bg-warning">Not configured</span>
+                                        </span>
+                                        {% if is_edit %}
+                                        <div class="small text-muted mt-1">
+                                            <i class="fas fa-edit me-1"></i>Edit mode: You can modify existing service areas or add new ones
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        {% if is_edit %}
+                                        <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#serviceAreaModal">
+                                            <i class="fas fa-edit me-1"></i>Manage Areas
+                                        </button>
+                                        {% else %}
+                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#serviceAreaModal">
+                                            <i class="fas fa-plus me-1"></i>Configure Service Areas
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
                             
                             <!-- Current Service Areas Display -->
                             <div id="currentServiceAreas" class="mb-3">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h6 class="mb-0">Current Service Areas</h6>
-                                    <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#serviceAreaModal">
-                                        <i class="fas fa-plus me-1"></i>Add Service Area
-                                    </button>
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-list me-1"></i>Current Service Areas
+                                        <span id="serviceAreasCount" class="badge bg-secondary ms-2">0</span>
+                                        {% if is_edit %}
+                                        <span class="badge bg-info ms-1">Editing</span>
+                                        {% endif %}
+                                    </h6>
+                                    <div>
+                                        {% if is_edit %}
+                                        <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#serviceAreaModal">
+                                            <i class="fas fa-edit me-1"></i>Edit Areas
+                                        </button>
+                                        {% else %}
+                                        <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#serviceAreaModal">
+                                            <i class="fas fa-plus me-1"></i>Add More
+                                        </button>
+                                        {% endif %}
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearAllServiceAreas()">
+                                            <i class="fas fa-trash me-1"></i>Clear All
+                                        </button>
+                                    </div>
                                 </div>
                                 <div id="serviceAreasList" class="list-group">
                                     <!-- Service areas will be populated by JavaScript -->
-                                    <div class="text-muted small">No service areas defined yet. Click "Add Service Area" to get started.</div>
+                                    <div class="text-muted small p-3 text-center">
+                                        <i class="fas fa-map-marker-alt fa-2x mb-2 text-muted"></i>
+                                        <div>No service areas defined yet.</div>
+                                        <div class="small">
+                                            {% if is_edit %}
+                                            Click "Edit Areas" to manage service areas for this resource.
+                                            {% else %}
+                                            Click "Configure Service Areas" to get started.
+                                            {% endif %}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
                             <!-- Service Areas Summary -->
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>
-                                <strong>Service Areas Help:</strong> Define where your resource operates to help people find services in their area. 
-                                You can add multiple service areas of different types.
+                            <div class="alert alert-success" id="serviceAreasSummary" style="display: none;">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <div class="flex-grow-1">
+                                        <strong>Service Areas Configured!</strong>
+                                        <div class="small">Your resource will now appear in location-based searches for the selected areas.</div>
+                                        <div class="small mt-1">
+                                            <strong>Search Impact:</strong> 
+                                            <span id="searchImpactText">Users searching in these areas will find your resource.</span>
+                                        </div>
+                                    </div>
+                                    <div class="ms-3">
+                                        <button type="button" class="btn btn-outline-success btn-sm" onclick="showSearchPreview()">
+                                            <i class="fas fa-search me-1"></i>Preview Search
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Service Areas Help -->
+                            <div class="alert alert-light">
+                                <h6 class="alert-heading">
+                                    <i class="fas fa-question-circle me-1"></i>Service Areas Help
+                                </h6>
+                                <p class="mb-2">Service areas define where your resource operates and help people find services in their area:</p>
+                                <ul class="mb-0 small">
+                                    <li><strong>Administrative Boundaries:</strong> Counties, cities, and states (e.g., "Laurel County, KY")</li>
+                                    <li><strong>Radius Areas:</strong> Custom circular areas around a specific location</li>
+                                    <li><strong>Custom Polygons:</strong> Draw custom shapes for specific service areas</li>
+                                    <li><strong>Upload GeoJSON:</strong> Import complex boundaries from external files</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -561,6 +648,9 @@
         
         // Initialize Service Area Manager
         initializeServiceAreaManager();
+        
+        // Load initial service areas data if available
+        loadInitialServiceAreas();
     });
     
     // Service Area Manager functionality
@@ -596,6 +686,7 @@
             serviceAreaModal.addEventListener('shown.bs.modal', function() {
                 initializeMaps();
                 loadExistingServiceAreas(); // Load existing areas when modal opens
+                updateModalContext(); // Update modal for edit mode
             });
             
             serviceAreaModal.addEventListener('hidden.bs.modal', function() {
@@ -1711,6 +1802,52 @@
             return null;
         }
         
+        // Load initial service areas data from context
+        function loadInitialServiceAreas() {
+            const initialDataInput = document.getElementById('initialServiceAreasData');
+            if (initialDataInput && initialDataInput.value) {
+                try {
+                    const initialData = JSON.parse(initialDataInput.value);
+                    if (initialData && initialData.length > 0) {
+                        selectedServiceAreas = initialData;
+                        updateServiceAreasList();
+                        console.log(`Loaded ${initialData.length} initial service areas`);
+                    }
+                } catch (error) {
+                    console.error('Error parsing initial service areas data:', error);
+                }
+            }
+        }
+
+        // Update modal context for edit mode
+        function updateModalContext() {
+            const isEditMode = document.querySelector('input[name="is_edit"]') || 
+                              window.location.pathname.includes('/edit/');
+            
+            const modalTitle = document.getElementById('modalTitle');
+            const editIndicator = document.getElementById('editModeIndicator');
+            
+            if (isEditMode || window.location.pathname.includes('/edit/')) {
+                if (modalTitle) modalTitle.textContent = 'Edit Service Areas';
+                if (editIndicator) editIndicator.style.display = 'inline';
+                
+                // Update save button text
+                const saveBtn = document.getElementById('saveServiceAreasBtn');
+                if (saveBtn) {
+                    saveBtn.innerHTML = '<i class="fas fa-save me-1"></i>Update Service Areas';
+                }
+            } else {
+                if (modalTitle) modalTitle.textContent = 'Service Area Manager';
+                if (editIndicator) editIndicator.style.display = 'none';
+                
+                // Update save button text
+                const saveBtn = document.getElementById('saveServiceAreasBtn');
+                if (saveBtn) {
+                    saveBtn.innerHTML = '<i class="fas fa-save me-1"></i>Save Service Areas';
+                }
+            }
+        }
+
         // Load existing service areas when modal opens
         function loadExistingServiceAreas() {
             const resourceId = getResourceId();
@@ -1844,19 +1981,82 @@
         // Update service areas list display
         function updateServiceAreasList() {
             const listContainer = document.getElementById('serviceAreasList');
+            const countBadge = document.getElementById('serviceAreasCount');
+            const statusBadge = document.getElementById('serviceAreasStatus');
+            const summaryDiv = document.getElementById('serviceAreasSummary');
+            const searchImpactText = document.getElementById('searchImpactText');
+            
+            // Update count badge
+            if (countBadge) {
+                countBadge.textContent = selectedServiceAreas.length;
+                countBadge.className = selectedServiceAreas.length > 0 ? 'badge bg-success ms-2' : 'badge bg-secondary ms-2';
+            }
+            
+            // Update status badge
+            if (statusBadge) {
+                if (selectedServiceAreas.length === 0) {
+                    statusBadge.innerHTML = '<span class="badge bg-warning">Not configured</span>';
+                } else if (selectedServiceAreas.length === 1) {
+                    statusBadge.innerHTML = '<span class="badge bg-info">1 area configured</span>';
+                } else {
+                    statusBadge.innerHTML = `<span class="badge bg-success">${selectedServiceAreas.length} areas configured</span>`;
+                }
+            }
+            
+            // Update search impact text
+            if (searchImpactText) {
+                if (selectedServiceAreas.length === 0) {
+                    searchImpactText.textContent = 'No service areas configured.';
+                } else if (selectedServiceAreas.length === 1) {
+                    const area = selectedServiceAreas[0];
+                    searchImpactText.textContent = `Users searching in ${area.name} will find your resource.`;
+                } else {
+                    const areaNames = selectedServiceAreas.slice(0, 2).map(a => a.name).join(', ');
+                    const remaining = selectedServiceAreas.length - 2;
+                    if (remaining > 0) {
+                        searchImpactText.textContent = `Users searching in ${areaNames} and ${remaining} other areas will find your resource.`;
+                    } else {
+                        searchImpactText.textContent = `Users searching in ${areaNames} will find your resource.`;
+                    }
+                }
+            }
+            
+            // Show/hide summary
+            if (summaryDiv) {
+                summaryDiv.style.display = selectedServiceAreas.length > 0 ? 'block' : 'none';
+            }
             
             if (selectedServiceAreas.length === 0) {
-                listContainer.innerHTML = '<div class="text-muted small">No service areas defined yet. Click "Add Service Area" to get started.</div>';
+                listContainer.innerHTML = '<div class="text-muted small p-3 text-center">\n' +
+                    '                                        <i class="fas fa-map-marker-alt fa-2x mb-2 text-muted"></i>\n' +
+                    '                                        <div>No service areas defined yet.</div>\n' +
+                    '                                        <div class="small">Click "Configure Service Areas" to get started.</div>\n' +
+                    '                                    </div>';
             } else {
                 listContainer.innerHTML = selectedServiceAreas.map(area => `
                     <div class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">${area.name || 'Area ' + area.id}</h6>
-                            <small class="text-muted">${area.type} • ${area.source === 'new' ? 'New' : 'Existing'}</small>
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                <div>
+                                    <h6 class="mb-1">${area.name || 'Area ' + area.id}</h6>
+                                    <small class="text-muted">
+                                        <span class="badge bg-light text-dark me-1">${area.type}</span>
+                                        ${area.source === 'new' ? 'New' : 'Existing'}
+                                        ${area.attached_at ? `• Added ${new Date(area.attached_at).toLocaleDateString()}` : ''}
+                                        ${area.attached_by ? `• by ${area.attached_by}` : ''}
+                                    </small>
+                                </div>
+                            </div>
                         </div>
-                        <button class="btn btn-outline-danger btn-sm" onclick="removeServiceArea(${area.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-outline-info btn-sm me-1" onclick="previewServiceArea(${area.id})" title="Preview this area on map">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="removeServiceArea(${area.id})" title="Remove this service area">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
                 `).join('');
             }
@@ -1868,6 +2068,116 @@
             updateServiceAreasList();
             showToast('Service area removed', 'success');
         };
+
+        // Preview service area on map
+        window.previewServiceArea = function(areaId) {
+            const area = selectedServiceAreas.find(a => a.id === areaId);
+            if (!area) {
+                showToast('Area not found', 'error');
+                return;
+            }
+            
+            // Switch to boundary tab and display the area
+            const boundaryTab = document.getElementById('boundary-tab');
+            if (boundaryTab) {
+                boundaryTab.click();
+            }
+            
+            // Display the area on the map
+            setTimeout(() => {
+                displayBoundaryOnMap(areaId);
+                showToast(`Previewing ${area.name}`, 'info');
+            }, 100);
+        };
+
+        // Clear all service areas
+        window.clearAllServiceAreas = function() {
+            if (confirm('Are you sure you want to clear all service areas? This action cannot be undone.')) {
+                selectedServiceAreas = [];
+                updateServiceAreasList();
+                showToast('All service areas cleared', 'info');
+            }
+        };
+
+        // Show search preview
+        window.showSearchPreview = function() {
+            if (selectedServiceAreas.length === 0) {
+                showToast('No service areas configured to preview', 'warning');
+                return;
+            }
+            
+            const areaNames = selectedServiceAreas.map(a => a.name).join(', ');
+            const message = `Search Preview: Your resource will appear when users search for services in: ${areaNames}`;
+            
+            // Create a modal to show the preview
+            const previewModal = document.createElement('div');
+            previewModal.className = 'modal fade';
+            previewModal.id = 'searchPreviewModal';
+            previewModal.innerHTML = `
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fas fa-search me-2"></i>Search Preview
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>How your resource will appear in searches:</strong>
+                            </div>
+                            <div class="mb-3">
+                                <h6>Service Areas:</h6>
+                                <ul class="list-group">
+                                    ${selectedServiceAreas.map(area => `
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>${area.name}</strong>
+                                                <br><small class="text-muted">${area.type} • ${area.source === 'new' ? 'New' : 'Existing'}</small>
+                                            </div>
+                                            <span class="badge bg-primary">${area.type.toUpperCase()}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <strong>Search Impact:</strong> Users searching for services in these areas will see your resource in their results.
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(previewModal);
+            const modal = new bootstrap.Modal(previewModal);
+            modal.show();
+            
+            // Clean up modal after it's hidden
+            previewModal.addEventListener('hidden.bs.modal', function() {
+                document.body.removeChild(previewModal);
+            });
+        };
+
+        // Handle form submission to include service areas
+        const resourceForm = document.querySelector('form[method="post"]');
+        if (resourceForm) {
+            resourceForm.addEventListener('submit', function(e) {
+                // Add service areas to form data before submission
+                if (selectedServiceAreas.length > 0) {
+                    // Create hidden input for service areas
+                    const serviceAreasInput = document.createElement('input');
+                    serviceAreasInput.type = 'hidden';
+                    serviceAreasInput.name = 'service_areas';
+                    serviceAreasInput.value = JSON.stringify(selectedServiceAreas.map(area => area.id));
+                    resourceForm.appendChild(serviceAreasInput);
+                }
+            });
+        }
         
         // Utility functions
         function showLoading(show) {
