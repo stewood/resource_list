@@ -279,18 +279,19 @@ class GeocodingService:
     
     Attributes:
         providers: List of available geocoding providers
-        cache: Optional caching layer (to be implemented)
+        cache_enabled: Whether caching is enabled
         default_provider: Name of the default provider
     """
     
-    def __init__(self, providers: Optional[List[GeocodingProvider]] = None):
+    def __init__(self, providers: Optional[List[GeocodingProvider]] = None, cache_enabled: bool = True):
         """Initialize the geocoding service.
         
         Args:
             providers: List of geocoding providers to use
+            cache_enabled: Whether to enable caching (default: True)
         """
         self.providers = providers or []
-        self.cache = None  # TODO: Implement caching in Task 4.1.2
+        self.cache_enabled = cache_enabled
         self.default_provider = None
         
         # Set up default providers if none provided
@@ -345,12 +346,38 @@ class GeocodingService:
             logger.error("No geocoding providers available")
             return None
         
+        # Check cache first if enabled
+        if self.cache_enabled:
+            try:
+                from directory.models import GeocodingCache
+                cached_result = GeocodingCache.get_cached_result(query, provider_name)
+                if cached_result:
+                    logger.info(f"Cache hit for query: {query}")
+                    return GeocodingResult(
+                        latitude=cached_result.latitude,
+                        longitude=cached_result.longitude,
+                        address=cached_result.address,
+                        raw_data={
+                            "cached": True,
+                            "provider": cached_result.provider,
+                            "confidence": cached_result.confidence,
+                        },
+                        provider=cached_result.provider,
+                        confidence=cached_result.confidence,
+                        cache_hit=True,
+                    )
+            except Exception as e:
+                logger.warning(f"Cache lookup failed for query '{query}': {e}")
+        
         # Try to get the specified provider
         if provider_name:
             provider = self.get_provider(provider_name)
             if provider:
                 result = provider.geocode(query)
                 if result:
+                    # Cache the result if caching is enabled
+                    if self.cache_enabled:
+                        self._cache_result(query, result)
                     return result
                 logger.warning(f"Provider {provider_name} failed, trying others")
         
@@ -360,6 +387,9 @@ class GeocodingService:
                 result = provider.geocode(query)
                 if result and result.is_valid():
                     logger.info(f"Geocoding successful with provider {provider.name}")
+                    # Cache the result if caching is enabled
+                    if self.cache_enabled:
+                        self._cache_result(query, result)
                     return result
             except Exception as e:
                 logger.error(f"Provider {provider.name} failed: {e}")
@@ -367,6 +397,41 @@ class GeocodingService:
         
         logger.error(f"All geocoding providers failed for query: {query}")
         return None
+    
+    def _cache_result(self, query: str, result: GeocodingResult) -> None:
+        """Cache a geocoding result.
+        
+        Args:
+            query: The original geocoding query
+            result: The geocoding result to cache
+        """
+        try:
+            from directory.models import GeocodingCache
+            
+            # Determine cache duration based on confidence
+            cache_duration_hours = 24  # Default 24 hours
+            if result.confidence:
+                if result.confidence >= 0.9:
+                    cache_duration_hours = 168  # 1 week for high confidence
+                elif result.confidence >= 0.7:
+                    cache_duration_hours = 72   # 3 days for medium confidence
+                else:
+                    cache_duration_hours = 12   # 12 hours for low confidence
+            
+            GeocodingCache.store_result(
+                query=query,
+                latitude=result.latitude,
+                longitude=result.longitude,
+                address=result.address,
+                provider=result.provider,
+                confidence=result.confidence,
+                cache_duration_hours=cache_duration_hours
+            )
+            
+            logger.debug(f"Cached geocoding result for query: {query}")
+            
+        except Exception as e:
+            logger.warning(f"Failed to cache geocoding result for query '{query}': {e}")
     
     def reverse_geocode(self, latitude: float, longitude: float, provider_name: Optional[str] = None) -> Optional[GeocodingResult]:
         """Reverse geocode coordinates using the specified or default provider.

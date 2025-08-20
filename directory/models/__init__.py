@@ -36,6 +36,7 @@ from .resource import Resource
 from .taxonomy import ServiceType, TaxonomyCategory
 from .coverage_area import CoverageArea
 from .resource_coverage import ResourceCoverage
+from .geocoding_cache import GeocodingCache
 
 # Import managers for direct access
 from .managers import ResourceManager
@@ -49,5 +50,6 @@ __all__ = [
     "AuditLog",
     "CoverageArea",
     "ResourceCoverage",
+    "GeocodingCache",
     "ResourceManager",
 ]
