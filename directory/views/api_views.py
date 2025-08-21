@@ -255,8 +255,21 @@ class AreaSearchView(View):
                 'type': area.kind.lower(),  # For frontend compatibility
             }
             
+            # Handle national coverage areas specially
+            if area.name in ['National (Lower 48 States)', 'United States (All States and Territories)']:
+                # Provide appropriate bounds and center for United States
+                preview_data['bounds'] = {
+                    'west': -125.0,  # West coast
+                    'south': 24.0,   # Southern border
+                    'east': -66.0,   # East coast
+                    'north': 49.0    # Northern border
+                }
+                preview_data['center'] = [39.8283, -98.5795]  # Center of continental US
+                preview_data['is_national'] = True
+                preview_data['description'] = 'National coverage area - serves entire United States'
+                
             # Add geometry and spatial data if available
-            if area.geom and hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
+            elif area.geom and hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
                 try:
                     # Get simplified geometry
                     simplified_geom = self._get_simplified_geometry(area.geom)

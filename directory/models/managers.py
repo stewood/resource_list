@@ -346,6 +346,32 @@ class ResourceManager(models.Manager):
                 coverage_areas__geom__contains=search_point
             ).distinct()
             
+            # Also include resources with national coverage areas
+            national_resources = self.filter(
+                coverage_areas__name__in=[
+                    'National (Lower 48 States)',
+                    'United States (All States and Territories)'
+                ]
+            ).distinct()
+            
+            # Combine the results
+            combined_ids = list(queryset.values_list('pk', flat=True))
+            combined_ids.extend(list(national_resources.values_list('pk', flat=True)))
+            
+            # Remove duplicates while preserving order
+            seen = set()
+            unique_ids = []
+            for pk in combined_ids:
+                if pk not in seen:
+                    seen.add(pk)
+                    unique_ids.append(pk)
+            
+            if unique_ids:
+                preserved = Case(
+                    *[When(pk=pk, then=pos) for pos, pk in enumerate(unique_ids)]
+                )
+                queryset = self.filter(pk__in=unique_ids).order_by(preserved)
+            
             # Annotate with coverage specificity and distance
             queryset = self._annotate_coverage_specificity(queryset, search_point)
             

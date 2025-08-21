@@ -174,6 +174,9 @@ class GeographicDataUpdater:
             # Import cities
             self._import_cities(states_to_process)
             
+            # Maintain national coverage areas
+            self._maintain_national_coverage_areas()
+            
             # Print summary
             self._print_summary()
             
@@ -263,6 +266,87 @@ class GeographicDataUpdater:
             logger.error(f"❌ Error importing cities: {str(e)}")
             self.stats['errors'] += 1
 
+    def _maintain_national_coverage_areas(self):
+        """Maintain national coverage areas after importing individual states.
+        
+        This method ensures that national coverage areas are properly maintained
+        and updated when the underlying state data changes.
+        """
+        logger.info("\n" + "=" * 40)
+        logger.info("MAINTAINING NATIONAL COVERAGE AREAS")
+        logger.info("=" * 40)
+        
+        try:
+            from directory.models import CoverageArea
+            from django.contrib.auth.models import User
+            
+            # Get or create default user for maintenance
+            default_user, created = User.objects.get_or_create(
+                username="tiger_importer_simple",
+                defaults={
+                    "email": "tiger_simple@example.com",
+                    "first_name": "TIGER",
+                    "last_name": "Importer Simple",
+                }
+            )
+            
+            # Check if national coverage areas exist
+            national_lower_48 = CoverageArea.objects.filter(
+                name='National (Lower 48 States)',
+                kind='POLYGON'
+            ).first()
+            
+            national_all = CoverageArea.objects.filter(
+                name='United States (All States and Territories)',
+                kind='POLYGON'
+            ).first()
+            
+            # Count available states to determine what national areas should cover
+            available_states = CoverageArea.objects.filter(kind='STATE').count()
+            logger.info(f"Available states in database: {available_states}")
+            
+            # Update or create National (Lower 48) coverage area
+            if national_lower_48:
+                logger.info("✅ National (Lower 48 States) coverage area exists")
+                # Update the external IDs to reflect current state count
+                national_lower_48.ext_ids.update({
+                    'last_updated': datetime.now().isoformat(),
+                    'available_states': available_states,
+                    'update_source': 'geographic_data_update'
+                })
+                national_lower_48.updated_by = default_user
+                national_lower_48.save()
+                logger.info("   Updated metadata")
+            else:
+                logger.info("⚠️  National (Lower 48 States) coverage area not found")
+                logger.info("   Run the create_national_coverage.py script to create it")
+            
+            # Update or create United States (All States and Territories) coverage area
+            if national_all:
+                logger.info("✅ United States (All States and Territories) coverage area exists")
+                # Update the external IDs to reflect current state count
+                national_all.ext_ids.update({
+                    'last_updated': datetime.now().isoformat(),
+                    'available_states': available_states,
+                    'update_source': 'geographic_data_update'
+                })
+                national_all.updated_by = default_user
+                national_all.save()
+                logger.info("   Updated metadata")
+            else:
+                logger.info("⚠️  United States (All States and Territories) coverage area not found")
+                logger.info("   Run the create_national_coverage.py script to create it")
+            
+            # Log summary
+            if national_lower_48 and national_all:
+                logger.info("✅ All national coverage areas maintained successfully")
+            else:
+                logger.warning("⚠️  Some national coverage areas missing - consider creating them")
+            
+        except Exception as e:
+            logger.error(f"❌ Error maintaining national coverage areas: {str(e)}")
+            self.stats['errors'] += 1
+
     def _print_summary(self):
         """Print a summary of the import process."""
         logger.info("\n" + "=" * 60)
@@ -273,6 +357,22 @@ class GeographicDataUpdater:
         logger.info(f"Cities imported: ~{self.stats['cities_imported']}")
         logger.info(f"Errors encountered: {self.stats['errors']}")
         logger.info(f"Completed at: {datetime.now()}")
+        
+        # Check national coverage area status
+        from directory.models import CoverageArea
+        national_lower_48 = CoverageArea.objects.filter(
+            name='National (Lower 48 States)',
+            kind='POLYGON'
+        ).first()
+        national_all = CoverageArea.objects.filter(
+            name='United States (All States and Territories)',
+            kind='POLYGON'
+        ).first()
+        
+        if national_lower_48 and national_all:
+            logger.info("✅ National coverage areas maintained")
+        else:
+            logger.warning("⚠️  National coverage areas may need attention")
         
         if self.stats['errors'] == 0:
             logger.info("🎉 All imports completed successfully!")
@@ -291,17 +391,52 @@ class GeographicDataUpdater:
             states = CoverageArea.objects.filter(kind='STATE').count()
             counties = CoverageArea.objects.filter(kind='COUNTY').count()
             cities = CoverageArea.objects.filter(kind='CITY').count()
+            polygons = CoverageArea.objects.filter(kind='POLYGON').count()
+            radius_areas = CoverageArea.objects.filter(kind='RADIUS').count()
+            
+            # Check for national coverage areas
+            national_lower_48 = CoverageArea.objects.filter(
+                name='National (Lower 48 States)',
+                kind='POLYGON'
+            ).first()
+            
+            national_all = CoverageArea.objects.filter(
+                name='United States (All States and Territories)',
+                kind='POLYGON'
+            ).first()
             
             logger.info(f"States in database: {states}")
             logger.info(f"Counties in database: {counties}")
             logger.info(f"Cities in database: {cities}")
-            logger.info(f"Total coverage areas: {states + counties + cities}")
+            logger.info(f"Custom polygons: {polygons}")
+            logger.info(f"Radius areas: {radius_areas}")
+            logger.info(f"Total coverage areas: {states + counties + cities + polygons + radius_areas}")
+            
+            # National coverage area status
+            logger.info("\nNational Coverage Areas:")
+            if national_lower_48:
+                logger.info(f"✅ National (Lower 48 States): ID {national_lower_48.id}")
+                if national_lower_48.ext_ids.get('last_updated'):
+                    logger.info(f"   Last updated: {national_lower_48.ext_ids['last_updated']}")
+            else:
+                logger.warning("⚠️  National (Lower 48 States): Not found")
+                
+            if national_all:
+                logger.info(f"✅ United States (All States and Territories): ID {national_all.id}")
+                if national_all.ext_ids.get('last_updated'):
+                    logger.info(f"   Last updated: {national_all.ext_ids['last_updated']}")
+            else:
+                logger.warning("⚠️  United States (All States and Territories): Not found")
             
             return {
                 'states': states,
                 'counties': counties,
                 'cities': cities,
-                'total': states + counties + cities
+                'polygons': polygons,
+                'radius_areas': radius_areas,
+                'total': states + counties + cities + polygons + radius_areas,
+                'national_lower_48': national_lower_48 is not None,
+                'national_all': national_all is not None
             }
             
         except Exception as e:

@@ -438,6 +438,28 @@
                                                 [areaData.bounds.north, areaData.bounds.east]
                                             ]);
                                         }
+                                    } else if (areaData.bounds) {
+                                        // Use bounds from API response (for national coverage areas)
+                                        const rectangle = L.rectangle([
+                                            [areaData.bounds.south, areaData.bounds.west],
+                                            [areaData.bounds.north, areaData.bounds.east]
+                                        ], {
+                                            color: '#007bff',
+                                            weight: 2,
+                                            fillColor: '#007bff',
+                                            fillOpacity: 0.2
+                                        }).addTo(map);
+                                        
+                                        rectangle.bindPopup(`
+                                            <strong>${area.name}</strong><br>
+                                            Type: ${area.kind}<br>
+                                            <small class="text-muted">Click to view details</small>
+                                        `);
+                                        
+                                        bounds.push([
+                                            [areaData.bounds.south, areaData.bounds.west],
+                                            [areaData.bounds.north, areaData.bounds.east]
+                                        ]);
                                     } else if (area.bounds) {
                                         // Fallback to rectangle if no geometry
                                         const rectangle = L.rectangle([
