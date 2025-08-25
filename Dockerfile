@@ -3,7 +3,6 @@ FROM python:3.12-slim
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV DJANGO_SETTINGS_MODULE=resource_directory.production_settings
 
 # Set work directory
 WORKDIR /app
@@ -27,9 +26,6 @@ COPY . .
 
 # Create data directory for SQLite
 RUN mkdir -p /data
-
-# Collect static files
-RUN python manage.py collectstatic --noinput
 
 # Expose port
 EXPOSE 8000
