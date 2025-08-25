@@ -2,7 +2,7 @@
 /* Based on https://is5810.com/main/ design and values */
 
 :root {
-  /* Isaiah 58:10 Color Palette */
+  /* Isaiah 58:10 Color Palette - Light Mode */
   --isaiah-primary: #192a3d;      /* Deep navy blue from their site */
   --isaiah-secondary: #202124;    /* Dark gray from their site */
   --isaiah-accent: #e67e22;       /* Warm orange for compassion */
@@ -11,6 +11,20 @@
   --isaiah-white: #ffffff;        /* Pure white */
   --isaiah-text: #2c3e50;         /* Dark blue-gray text */
   --isaiah-text-light: #7f8c8d;   /* Light text for secondary info */
+  
+  /* Light Mode Backgrounds */
+  --isaiah-bg-primary: #ffffff;
+  --isaiah-bg-secondary: #f8f9fa;
+  --isaiah-bg-tertiary: #ecf0f1;
+  
+  /* Light Mode Text Colors */
+  --isaiah-text-primary: #2c3e50;
+  --isaiah-text-secondary: #6c757d;
+  --isaiah-text-muted: #7f8c8d;
+  
+  /* Light Mode Borders */
+  --isaiah-border-color: #dee2e6;
+  --isaiah-border-light: #e9ecef;
   
   /* Compassionate Gradients */
   --isaiah-gradient-primary: linear-gradient(135deg, var(--isaiah-primary) 0%, var(--isaiah-secondary) 100%);
@@ -31,15 +45,47 @@
   --isaiah-shadow-hover: 0 8px 24px rgba(25, 42, 61, 0.15);
   --isaiah-transition: all 0.3s ease;
   
-  /* Component Colors */
+  /* Component Colors - Light Mode */
   --isaiah-navbar-bg: var(--isaiah-gradient-primary);
   --isaiah-navbar-text: var(--isaiah-white);
   --isaiah-card-bg: var(--isaiah-white);
-  --isaiah-card-border: #e9ecef;
+  --isaiah-card-border: var(--isaiah-border-color);
   --isaiah-button-primary: var(--isaiah-gradient-warm);
-  --isaiah-button-secondary: var(--isaiah-light);
+  --isaiah-button-secondary: var(--isaiah-bg-secondary);
   --isaiah-link-color: var(--isaiah-accent);
   --isaiah-link-hover: var(--isaiah-warm);
+  --isaiah-form-bg: var(--isaiah-white);
+  --isaiah-form-border: var(--isaiah-border-color);
+  --isaiah-form-text: var(--isaiah-text-primary);
+}
+
+/* Dark Mode Variables */
+[data-theme="dark"] {
+  /* Dark Mode Backgrounds */
+  --isaiah-bg-primary: #1a1a1a;
+  --isaiah-bg-secondary: #2d2d2d;
+  --isaiah-bg-tertiary: #404040;
+  
+  /* Dark Mode Text Colors */
+  --isaiah-text-primary: #ffffff;
+  --isaiah-text-secondary: #e0e0e0;
+  --isaiah-text-muted: #b0b0b0;
+  
+  /* Dark Mode Borders */
+  --isaiah-border-color: #404040;
+  --isaiah-border-light: #505050;
+  
+  /* Dark Mode Component Colors */
+  --isaiah-card-bg: var(--isaiah-bg-secondary);
+  --isaiah-card-border: var(--isaiah-border-color);
+  --isaiah-button-secondary: var(--isaiah-bg-tertiary);
+  --isaiah-form-bg: var(--isaiah-bg-secondary);
+  --isaiah-form-border: var(--isaiah-border-color);
+  --isaiah-form-text: var(--isaiah-text-primary);
+  
+  /* Dark Mode Shadows */
+  --isaiah-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --isaiah-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 /* Base Typography */
@@ -47,8 +93,9 @@ body {
   font-family: var(--isaiah-font-family);
   font-size: var(--isaiah-font-size-base);
   line-height: 1.6;
-  color: var(--isaiah-text);
-  background-color: var(--isaiah-light);
+  color: var(--isaiah-text-primary);
+  background-color: var(--isaiah-bg-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Isaiah 58:10 Inspired Navigation */
@@ -100,15 +147,16 @@ body {
 }
 
 .card-header {
-  background: var(--isaiah-gradient-light);
+  background: var(--isaiah-bg-secondary);
   border-bottom: 1px solid var(--isaiah-card-border);
   padding: 1.25rem;
   font-weight: 600;
-  color: var(--isaiah-text);
+  color: var(--isaiah-text-primary);
 }
 
 .card-body {
   padding: 1.5rem;
+  color: var(--isaiah-text-primary);
 }
 
 /* Isaiah 58:10 Inspired Buttons */
@@ -147,7 +195,7 @@ body {
 
 /* Isaiah 58:10 Inspired Search & Filters */
 .search-container {
-  background: var(--isaiah-gradient-light);
+  background: var(--isaiah-bg-secondary);
   border-radius: var(--isaiah-border-radius);
   padding: 2rem;
   margin-bottom: 2rem;
@@ -155,22 +203,30 @@ body {
 }
 
 .search-container h3 {
-  color: var(--isaiah-text);
+  color: var(--isaiah-text-primary);
   font-weight: 600;
   margin-bottom: 1rem;
 }
 
 .form-control {
-  border: 1px solid var(--isaiah-card-border);
+  background: var(--isaiah-form-bg);
+  border: 1px solid var(--isaiah-form-border);
   border-radius: var(--isaiah-border-radius-sm);
   padding: 0.75rem 1rem;
   font-family: var(--isaiah-font-family);
+  color: var(--isaiah-form-text);
   transition: var(--isaiah-transition);
 }
 
 .form-control:focus {
   border-color: var(--isaiah-accent);
   box-shadow: 0 0 0 0.2rem rgba(230, 126, 34, 0.25);
+  background: var(--isaiah-form-bg);
+  color: var(--isaiah-form-text);
+}
+
+.form-control::placeholder {
+  color: var(--isaiah-text-muted);
 }
 
 /* Isaiah 58:10 Inspired Resource Cards */
@@ -200,13 +256,13 @@ body {
 }
 
 .resource-card .card-header {
-  background: var(--isaiah-gradient-light);
+  background: var(--isaiah-bg-secondary);
   border-bottom: 1px solid var(--isaiah-card-border);
   padding: 1.25rem;
 }
 
 .resource-card .card-title {
-  color: var(--isaiah-text);
+  color: var(--isaiah-text-primary);
   font-weight: 600;
   font-size: var(--isaiah-font-size-lg);
   margin: 0;
@@ -214,6 +270,7 @@ body {
 
 .resource-card .card-body {
   padding: 1.5rem;
+  color: var(--isaiah-text-primary);
 }
 
 /* Isaiah 58:10 Inspired Badges */
@@ -250,7 +307,7 @@ a:hover {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--isaiah-font-family);
   font-weight: 600;
-  color: var(--isaiah-text);
+  color: var(--isaiah-text-primary);
   margin-bottom: 1rem;
 }
 
@@ -269,7 +326,7 @@ h3 {
 
 /* Isaiah 58:10 Inspired Mission Statement */
 .mission-statement {
-  background: var(--isaiah-gradient-light);
+  background: var(--isaiah-bg-secondary);
   border-radius: var(--isaiah-border-radius);
   padding: 2rem;
   margin: 2rem 0;
@@ -284,7 +341,7 @@ h3 {
 }
 
 .mission-statement p {
-  color: var(--isaiah-text-light);
+  color: var(--isaiah-text-secondary);
   font-size: var(--isaiah-font-size-lg);
   font-style: italic;
   margin: 0;
@@ -355,9 +412,9 @@ h3 {
 }
 
 .table thead th {
-  background: var(--isaiah-gradient-light);
+  background: var(--isaiah-bg-secondary);
   border-bottom: 2px solid var(--isaiah-card-border);
-  color: var(--isaiah-text);
+  color: var(--isaiah-text-primary);
   font-weight: 600;
   padding: 1rem;
 }
@@ -365,11 +422,11 @@ h3 {
 .table tbody td {
   padding: 1rem;
   border-bottom: 1px solid var(--isaiah-card-border);
-  color: var(--isaiah-text);
+  color: var(--isaiah-text-primary);
 }
 
 .table tbody tr:hover {
-  background: var(--isaiah-light);
+  background: var(--isaiah-bg-tertiary);
 }
 
 /* Isaiah 58:10 Inspired Forms */
@@ -379,12 +436,12 @@ h3 {
 
 .form-label {
   font-weight: 600;
-  color: var(--isaiah-text);
+  color: var(--isaiah-text-primary);
   margin-bottom: 0.5rem;
 }
 
 .form-text {
-  color: var(--isaiah-text-light);
+  color: var(--isaiah-text-muted);
   font-size: 0.875rem;
 }
 
@@ -397,6 +454,7 @@ h3 {
 .page-link {
   color: var(--isaiah-accent);
   border: 1px solid var(--isaiah-card-border);
+  background: var(--isaiah-card-bg);
   padding: 0.75rem 1rem;
   margin: 0 0.25rem;
   border-radius: var(--isaiah-border-radius-sm);
@@ -475,4 +533,71 @@ h3 {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Additional Text Visibility Fixes */
+p, span, div {
+  color: var(--isaiah-text-primary);
+}
+
+.text-muted {
+  color: var(--isaiah-text-muted) !important;
+}
+
+.text-secondary {
+  color: var(--isaiah-text-secondary) !important;
+}
+
+/* Ensure all form elements are visible */
+select, option {
+  background: var(--isaiah-form-bg);
+  color: var(--isaiah-form-text);
+  border: 1px solid var(--isaiah-form-border);
+}
+
+/* Ensure buttons are properly styled */
+.btn-outline-primary {
+  color: var(--isaiah-accent);
+  border-color: var(--isaiah-accent);
+  background: transparent;
+}
+
+.btn-outline-primary:hover {
+  background: var(--isaiah-accent);
+  color: var(--isaiah-white);
+  border-color: var(--isaiah-accent);
+}
+
+.btn-outline-secondary {
+  color: var(--isaiah-text-secondary);
+  border-color: var(--isaiah-border-color);
+  background: transparent;
+}
+
+.btn-outline-secondary:hover {
+  background: var(--isaiah-text-secondary);
+  color: var(--isaiah-bg-primary);
+  border-color: var(--isaiah-text-secondary);
+}
+
+/* Ensure badges are visible */
+.badge {
+  color: var(--isaiah-white);
+}
+
+.badge.bg-light {
+  background: var(--isaiah-bg-secondary) !important;
+  color: var(--isaiah-text-primary) !important;
+  border: 1px solid var(--isaiah-border-color);
+}
+
+/* Ensure small text is visible */
+small, .small {
+  color: var(--isaiah-text-secondary);
+}
+
+/* Ensure strong/bold text is visible */
+strong, b {
+  color: var(--isaiah-text-primary);
+  font-weight: 600;
 }
