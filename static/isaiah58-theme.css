@@ -1,0 +1,478 @@
+/* Isaiah 58:10 Ministries Inspired Theme */
+/* Based on https://is5810.com/main/ design and values */
+
+:root {
+  /* Isaiah 58:10 Color Palette */
+  --isaiah-primary: #192a3d;      /* Deep navy blue from their site */
+  --isaiah-secondary: #202124;    /* Dark gray from their site */
+  --isaiah-accent: #e67e22;       /* Warm orange for compassion */
+  --isaiah-warm: #f39c12;         /* Golden warmth */
+  --isaiah-light: #ecf0f1;        /* Light gray background */
+  --isaiah-white: #ffffff;        /* Pure white */
+  --isaiah-text: #2c3e50;         /* Dark blue-gray text */
+  --isaiah-text-light: #7f8c8d;   /* Light text for secondary info */
+  
+  /* Compassionate Gradients */
+  --isaiah-gradient-primary: linear-gradient(135deg, var(--isaiah-primary) 0%, var(--isaiah-secondary) 100%);
+  --isaiah-gradient-warm: linear-gradient(135deg, var(--isaiah-accent) 0%, var(--isaiah-warm) 100%);
+  --isaiah-gradient-light: linear-gradient(135deg, var(--isaiah-light) 0%, var(--isaiah-white) 100%);
+  
+  /* Typography - Isaiah 58:10 Font Stack */
+  --isaiah-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --isaiah-font-size-base: 16px;
+  --isaiah-font-size-lg: 18px;
+  --isaiah-font-size-xl: 24px;
+  --isaiah-font-size-xxl: 32px;
+  
+  /* Spacing & Layout */
+  --isaiah-border-radius: 12px;
+  --isaiah-border-radius-sm: 8px;
+  --isaiah-shadow: 0 4px 12px rgba(25, 42, 61, 0.1);
+  --isaiah-shadow-hover: 0 8px 24px rgba(25, 42, 61, 0.15);
+  --isaiah-transition: all 0.3s ease;
+  
+  /* Component Colors */
+  --isaiah-navbar-bg: var(--isaiah-gradient-primary);
+  --isaiah-navbar-text: var(--isaiah-white);
+  --isaiah-card-bg: var(--isaiah-white);
+  --isaiah-card-border: #e9ecef;
+  --isaiah-button-primary: var(--isaiah-gradient-warm);
+  --isaiah-button-secondary: var(--isaiah-light);
+  --isaiah-link-color: var(--isaiah-accent);
+  --isaiah-link-hover: var(--isaiah-warm);
+}
+
+/* Base Typography */
+body {
+  font-family: var(--isaiah-font-family);
+  font-size: var(--isaiah-font-size-base);
+  line-height: 1.6;
+  color: var(--isaiah-text);
+  background-color: var(--isaiah-light);
+}
+
+/* Isaiah 58:10 Inspired Navigation */
+.navbar {
+  background: var(--isaiah-navbar-bg) !important;
+  box-shadow: var(--isaiah-shadow);
+  border: none;
+  padding: 1rem 0;
+}
+
+.navbar-brand {
+  color: var(--isaiah-navbar-text) !important;
+  font-weight: 700;
+  font-size: var(--isaiah-font-size-xl);
+  text-decoration: none;
+}
+
+.navbar-brand:hover {
+  color: var(--isaiah-navbar-text) !important;
+  opacity: 0.9;
+}
+
+.navbar-nav .nav-link {
+  color: var(--isaiah-navbar-text) !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: var(--isaiah-border-radius-sm);
+  transition: var(--isaiah-transition);
+}
+
+.navbar-nav .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--isaiah-navbar-text) !important;
+}
+
+/* Isaiah 58:10 Inspired Cards */
+.card {
+  background: var(--isaiah-card-bg);
+  border: 1px solid var(--isaiah-card-border);
+  border-radius: var(--isaiah-border-radius);
+  box-shadow: var(--isaiah-shadow);
+  transition: var(--isaiah-transition);
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: var(--isaiah-shadow-hover);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  background: var(--isaiah-gradient-light);
+  border-bottom: 1px solid var(--isaiah-card-border);
+  padding: 1.25rem;
+  font-weight: 600;
+  color: var(--isaiah-text);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Isaiah 58:10 Inspired Buttons */
+.btn-primary {
+  background: var(--isaiah-button-primary);
+  border: none;
+  border-radius: var(--isaiah-border-radius-sm);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  color: var(--isaiah-white);
+  transition: var(--isaiah-transition);
+  box-shadow: var(--isaiah-shadow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--isaiah-shadow-hover);
+  color: var(--isaiah-white);
+}
+
+.btn-secondary {
+  background: var(--isaiah-button-secondary);
+  border: 1px solid var(--isaiah-card-border);
+  border-radius: var(--isaiah-border-radius-sm);
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  color: var(--isaiah-text);
+  transition: var(--isaiah-transition);
+}
+
+.btn-secondary:hover {
+  background: var(--isaiah-white);
+  border-color: var(--isaiah-accent);
+  color: var(--isaiah-accent);
+}
+
+/* Isaiah 58:10 Inspired Search & Filters */
+.search-container {
+  background: var(--isaiah-gradient-light);
+  border-radius: var(--isaiah-border-radius);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--isaiah-shadow);
+}
+
+.search-container h3 {
+  color: var(--isaiah-text);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.form-control {
+  border: 1px solid var(--isaiah-card-border);
+  border-radius: var(--isaiah-border-radius-sm);
+  padding: 0.75rem 1rem;
+  font-family: var(--isaiah-font-family);
+  transition: var(--isaiah-transition);
+}
+
+.form-control:focus {
+  border-color: var(--isaiah-accent);
+  box-shadow: 0 0 0 0.2rem rgba(230, 126, 34, 0.25);
+}
+
+/* Isaiah 58:10 Inspired Resource Cards */
+.resource-card {
+  background: var(--isaiah-card-bg);
+  border: 1px solid var(--isaiah-card-border);
+  border-radius: var(--isaiah-border-radius);
+  box-shadow: var(--isaiah-shadow);
+  transition: var(--isaiah-transition);
+  overflow: hidden;
+  position: relative;
+}
+
+.resource-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--isaiah-gradient-warm);
+}
+
+.resource-card:hover {
+  box-shadow: var(--isaiah-shadow-hover);
+  transform: translateY(-3px);
+}
+
+.resource-card .card-header {
+  background: var(--isaiah-gradient-light);
+  border-bottom: 1px solid var(--isaiah-card-border);
+  padding: 1.25rem;
+}
+
+.resource-card .card-title {
+  color: var(--isaiah-text);
+  font-weight: 600;
+  font-size: var(--isaiah-font-size-lg);
+  margin: 0;
+}
+
+.resource-card .card-body {
+  padding: 1.5rem;
+}
+
+/* Isaiah 58:10 Inspired Badges */
+.badge-primary {
+  background: var(--isaiah-gradient-warm);
+  color: var(--isaiah-white);
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--isaiah-border-radius-sm);
+}
+
+.badge-secondary {
+  background: var(--isaiah-light);
+  color: var(--isaiah-text);
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--isaiah-border-radius-sm);
+  border: 1px solid var(--isaiah-card-border);
+}
+
+/* Isaiah 58:10 Inspired Links */
+a {
+  color: var(--isaiah-link-color);
+  text-decoration: none;
+  transition: var(--isaiah-transition);
+}
+
+a:hover {
+  color: var(--isaiah-link-hover);
+  text-decoration: underline;
+}
+
+/* Isaiah 58:10 Inspired Headers */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--isaiah-font-family);
+  font-weight: 600;
+  color: var(--isaiah-text);
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: var(--isaiah-font-size-xxl);
+  font-weight: 700;
+}
+
+h2 {
+  font-size: var(--isaiah-font-size-xl);
+}
+
+h3 {
+  font-size: var(--isaiah-font-size-lg);
+}
+
+/* Isaiah 58:10 Inspired Mission Statement */
+.mission-statement {
+  background: var(--isaiah-gradient-light);
+  border-radius: var(--isaiah-border-radius);
+  padding: 2rem;
+  margin: 2rem 0;
+  text-align: center;
+  box-shadow: var(--isaiah-shadow);
+}
+
+.mission-statement h2 {
+  color: var(--isaiah-primary);
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.mission-statement p {
+  color: var(--isaiah-text-light);
+  font-size: var(--isaiah-font-size-lg);
+  font-style: italic;
+  margin: 0;
+}
+
+/* Isaiah 58:10 Inspired Footer */
+.footer {
+  background: var(--isaiah-gradient-primary);
+  color: var(--isaiah-white);
+  padding: 3rem 0 1rem;
+  margin-top: 4rem;
+}
+
+.footer h5 {
+  color: var(--isaiah-white);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.footer a {
+  color: var(--isaiah-light);
+  text-decoration: none;
+}
+
+.footer a:hover {
+  color: var(--isaiah-white);
+  text-decoration: underline;
+}
+
+/* Isaiah 58:10 Inspired Alerts */
+.alert {
+  border-radius: var(--isaiah-border-radius-sm);
+  border: none;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.alert-primary {
+  background: var(--isaiah-gradient-light);
+  color: var(--isaiah-text);
+  border-left: 4px solid var(--isaiah-accent);
+}
+
+.alert-success {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  color: #155724;
+  border-left: 4px solid #28a745;
+}
+
+.alert-warning {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  color: #856404;
+  border-left: 4px solid #ffc107;
+}
+
+.alert-danger {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  color: #721c24;
+  border-left: 4px solid #dc3545;
+}
+
+/* Isaiah 58:10 Inspired Tables */
+.table {
+  background: var(--isaiah-card-bg);
+  border-radius: var(--isaiah-border-radius);
+  overflow: hidden;
+  box-shadow: var(--isaiah-shadow);
+}
+
+.table thead th {
+  background: var(--isaiah-gradient-light);
+  border-bottom: 2px solid var(--isaiah-card-border);
+  color: var(--isaiah-text);
+  font-weight: 600;
+  padding: 1rem;
+}
+
+.table tbody td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--isaiah-card-border);
+  color: var(--isaiah-text);
+}
+
+.table tbody tr:hover {
+  background: var(--isaiah-light);
+}
+
+/* Isaiah 58:10 Inspired Forms */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  font-weight: 600;
+  color: var(--isaiah-text);
+  margin-bottom: 0.5rem;
+}
+
+.form-text {
+  color: var(--isaiah-text-light);
+  font-size: 0.875rem;
+}
+
+/* Isaiah 58:10 Inspired Pagination */
+.pagination {
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.page-link {
+  color: var(--isaiah-accent);
+  border: 1px solid var(--isaiah-card-border);
+  padding: 0.75rem 1rem;
+  margin: 0 0.25rem;
+  border-radius: var(--isaiah-border-radius-sm);
+  transition: var(--isaiah-transition);
+}
+
+.page-link:hover {
+  background: var(--isaiah-accent);
+  color: var(--isaiah-white);
+  border-color: var(--isaiah-accent);
+}
+
+.page-item.active .page-link {
+  background: var(--isaiah-gradient-warm);
+  border-color: var(--isaiah-accent);
+  color: var(--isaiah-white);
+}
+
+/* Isaiah 58:10 Inspired Responsive Design */
+@media (max-width: 768px) {
+  .navbar-brand {
+    font-size: var(--isaiah-font-size-lg);
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .search-container {
+    padding: 1.5rem;
+  }
+  
+  .mission-statement {
+    padding: 1.5rem;
+  }
+}
+
+/* Isaiah 58:10 Compassionate Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Isaiah 58:10 Loading States */
+.loading {
+  background: var(--isaiah-gradient-light);
+  border-radius: var(--isaiah-border-radius);
+  padding: 2rem;
+  text-align: center;
+  color: var(--isaiah-text-light);
+}
+
+.loading::after {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--isaiah-card-border);
+  border-radius: 50%;
+  border-top-color: var(--isaiah-accent);
+  animation: spin 1s ease-in-out infinite;
+  margin-left: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
