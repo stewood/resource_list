@@ -19,6 +19,20 @@
                 </div>
                 <div class="card-body" id="filterContent">
                     
+                    <!-- Search Bar (Moved to top) -->
+                    <div class="mb-3">
+                        <label for="search" class="form-label fw-bold">
+                            <i class="fas fa-search me-1"></i>Search Resources
+                        </label>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-lg" id="search" name="q" 
+                                   value="{{ search_query }}" placeholder="Search resources...">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
                     <!-- State/County Selection (Outside Form) -->
                     <div class="card mb-3">
                         <div class="card-header">
@@ -58,19 +72,6 @@
                         
                         <!-- Primary Actions (Always Visible) -->
                         <div class="primary-actions">
-                            <!-- Search Bar -->
-                            <div class="mb-3">
-                                <label for="search" class="form-label fw-bold">
-                                    <i class="fas fa-search me-1"></i>Search Resources
-                                </label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control form-control-lg" id="search" name="q" 
-                                           value="{{ search_query }}" placeholder="Search resources...">
-                                    <button type="submit" class="btn btn-primary btn-lg">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                            </div>
                             
                             <!-- Most Common Quick Filters -->
                             <div class="mb-3">
