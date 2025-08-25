@@ -188,3 +188,4 @@ media/
 local_settings.py
 .env.local
 .env.development
+cloud/exports/*.json
