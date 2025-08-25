@@ -15,7 +15,7 @@ DATABASES = {
         "USER": "postgres",
         "PASSWORD": "postgres",
         "HOST": "localhost",
-        "PORT": "5433",
+        "PORT": "5432",
         "TEST": {
             "NAME": "test_resource_directory_test",
         },
