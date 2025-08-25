@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: resource_directory_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=resource_directory.production_settings
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/resource_directory_test
+      - SECRET_KEY=test-secret-key-for-local-testing-only
+      - DEBUG=True
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+      - GIS_ENABLED=False
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    command: >
+      sh -c "
+        echo 'Waiting for database...' &&
+        python manage.py wait_for_db &&
+        echo 'Running migrations...' &&
+        python manage.py migrate &&
+        echo 'Collecting static files...' &&
+        python manage.py collectstatic --noinput &&
+        echo 'Starting server...' &&
+        gunicorn resource_directory.wsgi:application --bind 0.0.0.0:8000
+      "
+
+volumes:
+  postgres_data:
