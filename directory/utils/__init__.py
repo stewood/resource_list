@@ -12,13 +12,34 @@ Modules:
     - duplicate_utils: Duplicate detection and resolution utilities
 """
 
-from .geometry import (
-    GeometryProcessor,
-    simplify_geometry,
-    normalize_multipolygon,
-    validate_coverage_geometry,
-    optimize_for_display,
-)
+from django.conf import settings
+
+# Only import geometry functions if GIS is enabled
+if getattr(settings, 'GIS_ENABLED', False):
+    from .geometry import (
+        GeometryProcessor,
+        simplify_geometry,
+        normalize_multipolygon,
+        validate_coverage_geometry,
+        optimize_for_display,
+    )
+else:
+    # Create dummy functions for when GIS is disabled
+    class GeometryProcessor:
+        pass
+    
+    def simplify_geometry(*args, **kwargs):
+        return None
+    
+    def normalize_multipolygon(*args, **kwargs):
+        return None
+    
+    def validate_coverage_geometry(*args, **kwargs):
+        return True
+    
+    def optimize_for_display(*args, **kwargs):
+        return None
+
 from .export_utils import export_resources_to_csv
 from .version_utils import compare_versions, generate_diff_html
 from .formatting_utils import escape_html, format_field_name, get_field_display_value

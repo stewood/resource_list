@@ -26,14 +26,37 @@ from typing import List, Optional, Tuple, Union
 from decimal import Decimal
 import math
 
-from django.contrib.gis.geos import (
-    GEOSGeometry, 
-    Point, 
-    Polygon, 
-    MultiPolygon,
-    LinearRing
-)
-from django.contrib.gis.geos.error import GEOSException
+from django.conf import settings
+
+# Only import GIS modules if GIS is enabled
+if getattr(settings, 'GIS_ENABLED', False):
+    from django.contrib.gis.geos import (
+        GEOSGeometry, 
+        Point, 
+        Polygon, 
+        MultiPolygon,
+        LinearRing
+    )
+    from django.contrib.gis.geos.error import GEOSException
+else:
+    # Create dummy classes for when GIS is disabled
+    class GEOSGeometry:
+        pass
+    
+    class Point:
+        pass
+    
+    class Polygon:
+        pass
+    
+    class MultiPolygon:
+        pass
+    
+    class LinearRing:
+        pass
+    
+    class GEOSException(Exception):
+        pass
 
 logger = logging.getLogger(__name__)
 

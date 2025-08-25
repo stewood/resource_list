@@ -39,9 +39,17 @@ from typing import Dict, List, Tuple, Any, Optional
 from collections import defaultdict
 import re
 
-from django.contrib.gis.geos import GEOSGeometry
+from django.conf import settings
 from django.db import transaction
 from django.db.models import Q
+
+# Only import GIS modules if GIS is enabled
+if getattr(settings, 'GIS_ENABLED', False):
+    from django.contrib.gis.geos import GEOSGeometry
+else:
+    # Create dummy class for when GIS is disabled
+    class GEOSGeometry:
+        pass
 
 from directory.models import CoverageArea
 
