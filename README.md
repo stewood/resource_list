@@ -57,10 +57,17 @@ This project uses a **local development → staging deployment** workflow:
 
 ### **Workflow Steps**
 1. **Develop locally** using `./scripts/development/start_dev.sh`
-2. **Test changes** in your local environment
-3. **Deploy to staging** using `./scripts/deployment/deploy_to_staging.sh`
-4. **Verify staging** at https://isaiah58-resource-directory.onrender.com
-5. **Deploy to production** (when ready)
+2. **Test changes thoroughly** in your local environment
+3. **Get user approval** before any staging deployment
+4. **Deploy to staging** using `./scripts/deployment/deploy_to_staging.sh` (with permission)
+5. **Verify staging** at https://isaiah58-resource-directory.onrender.com
+6. **Deploy to production** (when ready, with permission)
+
+### **Important Workflow Rules**
+- **Always test in development first** - Never deploy to staging without local testing
+- **Get explicit permission** - Ask for approval before staging deployments
+- **Verify functionality** - Test all features, light/dark modes, and responsive design
+- **Document changes** - Update documentation as needed
 
 ## ✨ Key Features
 
