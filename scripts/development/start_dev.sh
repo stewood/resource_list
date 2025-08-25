@@ -28,8 +28,8 @@ trap cleanup SIGINT SIGTERM
 echo "🚀 Starting Development Environment..."
 echo "======================================"
 
-# Change to project directory
-cd "$(dirname "$0")/.."
+# Change to project directory (scripts/development/.. = project root)
+cd "$(dirname "$0")/../.."
 
 # Check if Docker is running
 if ! docker info > /dev/null 2>&1; then
