@@ -14,16 +14,53 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-# Initialize database
-python manage.py migrate
-python manage.py setup_wal
-python manage.py createsuperuser
+# Start development environment (PostgreSQL + Django)
+./scripts/development/start_dev.sh
 
-# Run server
-python manage.py runserver
+# Create superuser (optional)
+python manage.py createsuperuser
 ```
 
-**Docker**: `docker-compose up --build`
+**Alternative Docker**: `docker-compose up --build`
+
+## 🔄 Development Workflow
+
+This project uses a **local development → staging deployment** workflow:
+
+### **Local Development Environment**
+```bash
+# Start the development environment
+./scripts/development/start_dev.sh
+
+# This will:
+# - Start PostgreSQL database in Docker
+# - Run Django migrations
+# - Start the development server at http://localhost:8000
+```
+
+### **Staging Deployment**
+```bash
+# Deploy changes to staging (Render)
+./scripts/deployment/deploy_to_staging.sh
+
+# This will:
+# - Run all tests
+# - Validate configuration
+# - Collect static files
+# - Push to git and trigger Render deployment
+```
+
+### **Environment Structure**
+- **Local**: Development environment with PostgreSQL (Docker)
+- **Staging**: Render-hosted environment for testing
+- **Production**: Future deployment target
+
+### **Workflow Steps**
+1. **Develop locally** using `./scripts/development/start_dev.sh`
+2. **Test changes** in your local environment
+3. **Deploy to staging** using `./scripts/deployment/deploy_to_staging.sh`
+4. **Verify staging** at https://isaiah58-resource-directory.onrender.com
+5. **Deploy to production** (when ready)
 
 ## ✨ Key Features
 
@@ -37,10 +74,11 @@ python manage.py runserver
 ## 🏗️ Tech Stack
 
 - **Backend**: Django 5.0.2 + Python 3.x
-- **Database**: SQLite with WAL mode
+- **Database**: PostgreSQL (local Docker, staging Render)
 - **Frontend**: HTMX + Bootstrap
-- **Search**: SQLite FTS5
-- **Deployment**: Docker support
+- **Search**: PostgreSQL full-text search
+- **Deployment**: Docker (local) + Render (staging)
+- **Version Control**: Git with automated deployment
 
 ## 📊 Quality Metrics
 
