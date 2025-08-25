@@ -73,6 +73,7 @@ class FormTestCase(TestCase):
             "name": "Test Resource",
             "phone": "555-123-4567",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         
         form = ResourceForm(data=form_data)
@@ -83,6 +84,7 @@ class FormTestCase(TestCase):
         form_data = {
             "name": "Test Resource",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         
         form = ResourceForm(data=form_data)
@@ -99,6 +101,7 @@ class FormTestCase(TestCase):
             "source": "Test Source",
             "phone": "555-123-4567",
             "status": "needs_review",
+            "verification_frequency_days": 180,
         }
         
         form = ResourceForm(data=form_data)
@@ -114,6 +117,7 @@ class FormTestCase(TestCase):
             "source": "Test Source",
             "phone": "555-123-4567",
             "status": "needs_review",
+            "verification_frequency_days": 180,
         }
         
         form = ResourceForm(data=form_data)
@@ -132,6 +136,7 @@ class FormTestCase(TestCase):
             "status": "published",
             "last_verified_at": timezone.now().strftime("%Y-%m-%dT%H:%M"),
             "last_verified_by": self.reviewer.pk,
+            "verification_frequency_days": 180,
         }
         
         form = ResourceForm(data=form_data)
@@ -147,6 +152,7 @@ class FormTestCase(TestCase):
             "source": "Test Source",
             "phone": "555-123-4567",
             "status": "published",
+            "verification_frequency_days": 180,
         }
         
         form = ResourceForm(data=form_data)
@@ -160,6 +166,7 @@ class FormTestCase(TestCase):
             "phone": "555-123-4567",
             "status": "draft",
             "category": self.category.pk,
+            "verification_frequency_days": 180,
         }
         
         form = ResourceForm(data=form_data)
@@ -172,6 +179,7 @@ class FormTestCase(TestCase):
             "phone": "555-123-4567",
             "status": "draft",
             "service_types": [self.service_type.pk],
+            "verification_frequency_days": 180,
         }
         
         form = ResourceForm(data=form_data)
@@ -184,6 +192,7 @@ class FormTestCase(TestCase):
             "name": "Test Resource",
             "phone": "555-123-4567",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -193,6 +202,7 @@ class FormTestCase(TestCase):
             "name": "Test Resource",
             "email": "test@example.com",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -202,6 +212,7 @@ class FormTestCase(TestCase):
             "name": "Test Resource",
             "website": "https://example.com",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -213,6 +224,7 @@ class FormTestCase(TestCase):
             "email": "test@example.com",
             "website": "https://example.com",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -228,6 +240,7 @@ class FormTestCase(TestCase):
                 "state": "CA",
                 "postal_code": code,
                 "status": "draft",
+                "verification_frequency_days": 180,
             }
             form = ResourceForm(data=form_data)
             self.assertTrue(form.is_valid(), f"Postal code {code} should be valid")
@@ -241,6 +254,7 @@ class FormTestCase(TestCase):
                 "state": "CA",
                 "postal_code": code,
                 "status": "draft",
+                "verification_frequency_days": 180,
             }
             form = ResourceForm(data=form_data)
             self.assertFalse(form.is_valid(), f"Postal code {code} should be invalid")
@@ -257,6 +271,7 @@ class FormTestCase(TestCase):
         form_data = {
             "phone": "555-123-4567",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertFalse(form.is_valid())
@@ -269,6 +284,7 @@ class FormTestCase(TestCase):
             "name": "Test Resource",
             "email": "test@example.com",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -278,6 +294,7 @@ class FormTestCase(TestCase):
             "name": "Test Resource",
             "email": "invalid-email",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertFalse(form.is_valid())
@@ -290,6 +307,7 @@ class FormTestCase(TestCase):
             "name": "Test Resource",
             "website": "https://example.com",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -299,6 +317,7 @@ class FormTestCase(TestCase):
             "name": "Test Resource",
             "website": "not-a-url",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertFalse(form.is_valid())
@@ -312,6 +331,7 @@ class FormTestCase(TestCase):
             "phone": "555-123-4567",
             "state": "CA",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -322,6 +342,7 @@ class FormTestCase(TestCase):
             "phone": "555-123-4567",
             "state": "CALIFORNIA",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertFalse(form.is_valid())
@@ -334,6 +355,7 @@ class FormTestCase(TestCase):
             "name": "Test Resource",
             "phone": "555-123-4567",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -343,6 +365,7 @@ class FormTestCase(TestCase):
             "name": "Test Resource",
             "phone": "(555) 123-4567",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -358,6 +381,7 @@ class FormTestCase(TestCase):
             "source": "Test Source",
             "phone": "555-123-4567",
             "status": "needs_review",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertFalse(form.is_valid())
@@ -372,6 +396,7 @@ class FormTestCase(TestCase):
             "source": "Test Source",
             "phone": "555-123-4567",
             "status": "needs_review",
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -383,6 +408,7 @@ class FormTestCase(TestCase):
             "name": "Test Resource",
             "phone": "555-123-4567",
             "status": "needs_review",  # Missing description, source
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertFalse(form.is_valid())
@@ -398,6 +424,7 @@ class FormTestCase(TestCase):
             "source": "Test Source",
             "phone": "555-123-4567",
             "status": "published",  # Missing verification
+            "verification_frequency_days": 180,
         }
         form = ResourceForm(data=form_data)
         self.assertFalse(form.is_valid())

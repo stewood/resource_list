@@ -41,6 +41,7 @@ class WorkflowTestCase(BaseTestCase):
             "name": "Integration Test Resource",
             "phone": "555-123-4567",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         
         response = self.client.post(create_url, create_data)
@@ -60,6 +61,7 @@ class WorkflowTestCase(BaseTestCase):
             "source": "Test Source",
             "phone": "555-123-4567",
             "status": "draft",
+            "verification_frequency_days": 180,
         }
         
         response = self.client.post(update_url, update_data)

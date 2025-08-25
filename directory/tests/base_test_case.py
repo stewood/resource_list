@@ -120,4 +120,14 @@ class BaseTestCase(TestCase):
             defaults.setdefault("city", "Test City")
             defaults.setdefault("state", "CA")
         
+        # Handle archive requirements
+        if defaults.get("is_archived"):
+            defaults.setdefault("archived_at", timezone.now())
+            defaults.setdefault("archived_by", self.user)
+            defaults.setdefault("archive_reason", "Test archive")
+        
+        # Handle verification frequency requirement
+        if "verification_frequency_days" not in defaults:
+            defaults["verification_frequency_days"] = 365
+        
         return Resource.objects.create(**defaults)
