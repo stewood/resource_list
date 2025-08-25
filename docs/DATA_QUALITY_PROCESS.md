@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the systematic process for identifying and fixing data quality issues in the Homeless Resource Directory database. The process uses Django shell commands to browse, analyze, and manipulate data directly.
+This document outlines the systematic process for identifying and fixing data quality issues in the Community Resource Directory database. The process uses Django shell commands to browse, analyze, and manipulate data directly.
 
 **⚠️ IMPORTANT: This process involves direct database manipulation. Always obtain explicit user permission before making any changes to the database.**
 

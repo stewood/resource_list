@@ -1,5 +1,5 @@
 """
-Importer app for the Homeless Resource Directory.
+Importer app for the Community Resource Directory.
 
 This app provides CSV import and export functionality for bulk resource management:
 

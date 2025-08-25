@@ -1,5 +1,5 @@
 """
-Audit app for the Homeless Resource Directory.
+Audit app for the Community Resource Directory.
 
 This app provides comprehensive audit logging and version control functionality:
 

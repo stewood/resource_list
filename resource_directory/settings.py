@@ -1,7 +1,7 @@
 """
 Django settings for resource_directory project.
 
-This module contains all Django settings for the Homeless Resource Directory application.
+This module contains all Django settings for the Community Resource Directory application.
 The application provides a comprehensive system for managing and tracking resources
 for people experiencing homelessness, including shelters, food banks, medical services,
 and other support organizations.

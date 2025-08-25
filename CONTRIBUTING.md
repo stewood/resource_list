@@ -1,6 +1,6 @@
-# Contributing to Homeless Resource Directory
+# Contributing to Community Resource Directory
 
-Thank you for your interest in contributing to the Homeless Resource Directory project! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to the Community Resource Directory project! This document provides guidelines for contributing to the project.
 
 ## 🚀 Quick Start
 

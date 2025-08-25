@@ -1,7 +1,7 @@
 # London KY Homeless Resources Import Summary
 
 ## Overview
-Successfully imported verified resources from the "London KY Homeless Resources Update" report into the Homeless Resource Directory database.
+Successfully imported verified resources from the "London KY Homeless Resources Update" report into the Community Resource Directory database.
 
 ## Import Results
 

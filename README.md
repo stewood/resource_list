@@ -1,8 +1,8 @@
-# Homeless Resource Directory
+# Community Resource Directory
 
 [![Test Coverage](https://img.shields.io/badge/test%20coverage-53%25-brightgreen)](https://github.com/stewood/resource_list)
 
-A Django-based web application for managing and curating resources for people experiencing homelessness. Built for case managers, outreach workers, and community partners to connect individuals with appropriate services.
+A Django-based web application for managing and curating resources for people in need. Built for case managers, outreach workers, and community partners to connect individuals with appropriate services.
 
 ## 🚀 Quick Start
 

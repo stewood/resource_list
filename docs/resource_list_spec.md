@@ -1,4 +1,4 @@
-# Homeless Resource Directory — MVP Spec
+# Community Resource Directory — MVP Spec
 
 **Stack**: Django 5 + HTMX + Tailwind (optional) + DRF (optional) • SQLite (WAL) • Docker (volume-mounted DB)
 

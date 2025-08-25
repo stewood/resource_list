@@ -1,5 +1,5 @@
 """
-Directory app for the Homeless Resource Directory.
+Directory app for the Community Resource Directory.
 
 This app provides the core functionality for managing resources for people
 experiencing homelessness, including:

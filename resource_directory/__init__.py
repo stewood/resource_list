@@ -1,5 +1,5 @@
 """
-Homeless Resource Directory - Django Project.
+Community Resource Directory - Django Project.
 
 A comprehensive web application for managing and tracking resources
 for people experiencing homelessness. The system provides tools for

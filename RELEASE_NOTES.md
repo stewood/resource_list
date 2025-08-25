@@ -6,7 +6,7 @@
 
 ### 🎉 What's New
 
-This is the initial release of the Homeless Resource Directory, a comprehensive Django-based web application for managing and curating resources for people experiencing homelessness.
+This is the initial release of the Community Resource Directory, a comprehensive Django-based web application for managing and curating resources for people in need.
 
 ### ✨ Key Features
 

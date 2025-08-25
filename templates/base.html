@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Homeless Resource Directory{% endblock %}</title>
+    <title>{% block title %}Community Resource Directory{% endblock %}</title>
     
     <!-- Prevent flash of light theme -->
     <script>
@@ -24,10 +24,10 @@
           crossorigin=""/>
     <!-- Leaflet.draw CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
-    <!-- Theme CSS -->
-    <link href="{% static 'theme.css' %}" rel="stylesheet">
-    <!-- Isaiah 58:10 Theme CSS -->
+    <!-- Isaiah 58:10 Theme CSS (Primary) -->
     <link href="{% static 'isaiah58-theme.css' %}" rel="stylesheet">
+    <!-- Theme CSS (Fallback) -->
+    <link href="{% static 'theme.css' %}" rel="stylesheet">
     <!-- CKEditor CSS -->
     {{ form.media.css }}
     <!-- HTMX -->
@@ -92,8 +92,13 @@
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{% url 'directory:public_home' %}">
-                <i class="fas fa-hands-helping me-2"></i>
-                Resource Directory
+                <div class="d-flex flex-column">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-hands-helping me-2"></i>
+                        <span>Isaiah 58:10</span>
+                    </div>
+                    <div class="small">Community Resource Directory</div>
+                </div>
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -167,10 +172,10 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-light mt-5 py-3">
+    <footer class="mt-5 py-3">
         <div class="container text-center">
-            <small class="text-muted">
-                Homeless Resource Directory &copy; {% now "Y" %}
+            <small>
+                Isaiah 58:10 Community Resource Directory &copy; {% now "Y" %}
             </small>
         </div>
     </footer>

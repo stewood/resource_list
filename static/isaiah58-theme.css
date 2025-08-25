@@ -30,6 +30,7 @@
   --isaiah-gradient-primary: linear-gradient(135deg, var(--isaiah-primary) 0%, var(--isaiah-secondary) 100%);
   --isaiah-gradient-warm: linear-gradient(135deg, var(--isaiah-accent) 0%, var(--isaiah-warm) 100%);
   --isaiah-gradient-light: linear-gradient(135deg, var(--isaiah-light) 0%, var(--isaiah-white) 100%);
+  --isaiah-gradient-hero: linear-gradient(135deg, rgba(25, 42, 61, 0.9) 0%, rgba(32, 33, 36, 0.9) 100%);
   
   /* Typography - Isaiah 58:10 Font Stack */
   --isaiah-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -98,40 +99,120 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Isaiah 58:10 Inspired Navigation */
+/* Enhanced Navigation */
 .navbar {
   background: var(--isaiah-navbar-bg) !important;
   box-shadow: var(--isaiah-shadow);
-  border: none;
+  border-bottom: none;
   padding: 1rem 0;
 }
 
 .navbar-brand {
-  color: var(--isaiah-navbar-text) !important;
   font-weight: 700;
-  font-size: var(--isaiah-font-size-xl);
-  text-decoration: none;
+  color: var(--isaiah-white) !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  line-height: 1.2;
 }
 
-.navbar-brand:hover {
-  color: var(--isaiah-navbar-text) !important;
+.navbar-brand .d-flex.flex-column {
+  line-height: 1.2;
+}
+
+.navbar-brand .small {
+  font-size: 0.8rem;
+  font-weight: 500;
   opacity: 0.9;
 }
 
 .navbar-nav .nav-link {
-  color: var(--isaiah-navbar-text) !important;
+  color: var(--isaiah-white) !important;
   font-weight: 500;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1rem !important;
   border-radius: var(--isaiah-border-radius-sm);
   transition: var(--isaiah-transition);
+  margin: 0 0.25rem;
 }
 
 .navbar-nav .nav-link:hover {
   background-color: rgba(255, 255, 255, 0.1);
-  color: var(--isaiah-navbar-text) !important;
+  color: var(--isaiah-white) !important;
+  transform: translateY(-1px);
 }
 
-/* Isaiah 58:10 Inspired Cards */
+/* Hero Section Styling */
+.hero-section {
+  background: linear-gradient(rgba(25, 42, 61, 0.7), rgba(25, 42, 61, 0.7)), 
+              url('/static/images/hero/hero-background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  color: var(--isaiah-white);
+  padding: 4rem 0;
+  margin-bottom: 3rem;
+  border-radius: var(--isaiah-border-radius);
+  position: relative;
+  overflow: hidden;
+  min-height: 400px;
+  width: 100%;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(230, 126, 34, 0.1) 0%, rgba(243, 156, 18, 0.1) 100%);
+  pointer-events: none;
+}
+
+.hero-section .container {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-section h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-section .lead {
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+}
+
+/* Mission Statement Styling */
+.mission-statement {
+  background: var(--isaiah-gradient-light);
+  padding: 3rem 2rem;
+  border-radius: var(--isaiah-border-radius);
+  text-align: center;
+  margin: 3rem 0;
+  box-shadow: var(--isaiah-shadow);
+  border-left: 5px solid var(--isaiah-accent);
+}
+
+.mission-statement h2 {
+  color: var(--isaiah-primary);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.mission-statement p {
+  color: var(--isaiah-text-secondary);
+  font-style: italic;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Enhanced Card Styling */
 .card {
   background: var(--isaiah-card-bg);
   border: 1px solid var(--isaiah-card-border);
@@ -142,361 +223,289 @@ body {
 }
 
 .card:hover {
+  transform: translateY(-4px);
   box-shadow: var(--isaiah-shadow-hover);
-  transform: translateY(-2px);
-}
-
-.card-header {
-  background: var(--isaiah-bg-secondary);
-  border-bottom: 1px solid var(--isaiah-card-border);
-  padding: 1.25rem;
-  font-weight: 600;
-  color: var(--isaiah-text-primary);
 }
 
 .card-body {
   padding: 1.5rem;
-  color: var(--isaiah-text-primary);
 }
 
-/* Isaiah 58:10 Inspired Buttons */
+.card-title {
+  color: var(--isaiah-text-primary);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.card-text {
+  color: var(--isaiah-text-secondary);
+  line-height: 1.6;
+}
+
+/* Stats Cards */
+.stats-card {
+  background: var(--isaiah-gradient-light);
+  border: none;
+  text-align: center;
+  padding: 2rem 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--isaiah-gradient-warm);
+}
+
+.stats-card i {
+  font-size: 2.5rem;
+  color: var(--isaiah-accent);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.stats-card h5 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--isaiah-primary);
+  margin-bottom: 0.5rem;
+}
+
+.stats-card p {
+  color: var(--isaiah-text-secondary);
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Category Cards */
+.category-card {
+  background: var(--isaiah-card-bg);
+  border: 1px solid var(--isaiah-card-border);
+  border-radius: var(--isaiah-border-radius);
+  padding: 1.5rem;
+  transition: var(--isaiah-transition);
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--isaiah-gradient-warm);
+  transform: scaleX(0);
+  transition: var(--isaiah-transition);
+}
+
+.category-card:hover::before {
+  transform: scaleX(1);
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--isaiah-shadow-hover);
+}
+
+.category-card h5 {
+  color: var(--isaiah-primary);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.category-card p {
+  color: var(--isaiah-text-secondary);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.category-badge {
+  background: var(--isaiah-gradient-warm);
+  color: var(--isaiah-white);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+/* Enhanced Button Styling */
 .btn-primary {
-  background: var(--isaiah-button-primary);
+  background: var(--isaiah-gradient-warm);
   border: none;
   border-radius: var(--isaiah-border-radius-sm);
   padding: 0.75rem 1.5rem;
   font-weight: 600;
-  color: var(--isaiah-white);
   transition: var(--isaiah-transition);
   box-shadow: var(--isaiah-shadow);
 }
 
 .btn-primary:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: var(--isaiah-shadow-hover);
-  color: var(--isaiah-white);
+  background: var(--isaiah-gradient-warm);
 }
 
-.btn-secondary {
-  background: var(--isaiah-button-secondary);
-  border: 1px solid var(--isaiah-card-border);
+.btn-outline-primary {
+  border: 2px solid var(--isaiah-accent);
+  color: var(--isaiah-accent);
+  background: transparent;
   border-radius: var(--isaiah-border-radius-sm);
   padding: 0.75rem 1.5rem;
-  font-weight: 500;
-  color: var(--isaiah-text);
-  transition: var(--isaiah-transition);
-}
-
-.btn-secondary:hover {
-  background: var(--isaiah-white);
-  border-color: var(--isaiah-accent);
-  color: var(--isaiah-accent);
-}
-
-/* Isaiah 58:10 Inspired Search & Filters */
-.search-container {
-  background: var(--isaiah-bg-secondary);
-  border-radius: var(--isaiah-border-radius);
-  padding: 2rem;
-  margin-bottom: 2rem;
-  box-shadow: var(--isaiah-shadow);
-}
-
-.search-container h3 {
-  color: var(--isaiah-text-primary);
   font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.form-control {
-  background: var(--isaiah-form-bg);
-  border: 1px solid var(--isaiah-form-border);
-  border-radius: var(--isaiah-border-radius-sm);
-  padding: 0.75rem 1rem;
-  font-family: var(--isaiah-font-family);
-  color: var(--isaiah-form-text);
   transition: var(--isaiah-transition);
 }
 
-.form-control:focus {
+.btn-outline-primary:hover {
+  background: var(--isaiah-accent);
   border-color: var(--isaiah-accent);
-  box-shadow: 0 0 0 0.2rem rgba(230, 126, 34, 0.25);
-  background: var(--isaiah-form-bg);
-  color: var(--isaiah-form-text);
+  color: var(--isaiah-white);
+  transform: translateY(-2px);
 }
 
-.form-control::placeholder {
-  color: var(--isaiah-text-muted);
-}
-
-/* Isaiah 58:10 Inspired Resource Cards */
-.resource-card {
-  background: var(--isaiah-card-bg);
-  border: 1px solid var(--isaiah-card-border);
+/* Quick Access Buttons */
+.quick-access-btn {
+  background: var(--isaiah-gradient-primary);
+  border: none;
   border-radius: var(--isaiah-border-radius);
-  box-shadow: var(--isaiah-shadow);
+  padding: 1.5rem;
+  font-weight: 600;
+  font-size: 1.1rem;
   transition: var(--isaiah-transition);
-  overflow: hidden;
+  box-shadow: var(--isaiah-shadow);
+  text-decoration: none;
+  color: var(--isaiah-white);
+  display: block;
+  text-align: center;
   position: relative;
+  overflow: hidden;
 }
 
-.resource-card::before {
+.quick-access-btn::before {
   content: '';
   position: absolute;
   top: 0;
-  left: 0;
-  width: 4px;
+  left: -100%;
+  width: 100%;
   height: 100%;
-  background: var(--isaiah-gradient-warm);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
 }
 
-.resource-card:hover {
+.quick-access-btn:hover::before {
+  left: 100%;
+}
+
+.quick-access-btn:hover {
+  transform: translateY(-4px);
   box-shadow: var(--isaiah-shadow-hover);
-  transform: translateY(-3px);
-}
-
-.resource-card .card-header {
-  background: var(--isaiah-bg-secondary);
-  border-bottom: 1px solid var(--isaiah-card-border);
-  padding: 1.25rem;
-}
-
-.resource-card .card-title {
-  color: var(--isaiah-text-primary);
-  font-weight: 600;
-  font-size: var(--isaiah-font-size-lg);
-  margin: 0;
-}
-
-.resource-card .card-body {
-  padding: 1.5rem;
-  color: var(--isaiah-text-primary);
-}
-
-/* Isaiah 58:10 Inspired Badges */
-.badge-primary {
-  background: var(--isaiah-gradient-warm);
   color: var(--isaiah-white);
-  font-weight: 500;
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--isaiah-border-radius-sm);
-}
-
-.badge-secondary {
-  background: var(--isaiah-light);
-  color: var(--isaiah-text);
-  font-weight: 500;
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--isaiah-border-radius-sm);
-  border: 1px solid var(--isaiah-card-border);
-}
-
-/* Isaiah 58:10 Inspired Links */
-a {
-  color: var(--isaiah-link-color);
   text-decoration: none;
+}
+
+.quick-access-btn.emergency {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.quick-access-btn.success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.quick-access-btn.info {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+}
+
+/* Search Section */
+.search-section {
+  background: var(--isaiah-gradient-light);
+  border-radius: var(--isaiah-border-radius);
+  padding: 2rem;
+  box-shadow: var(--isaiah-shadow);
+  margin: 2rem 0;
+}
+
+.search-section h5 {
+  color: var(--isaiah-primary);
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.search-section .form-control {
+  border: 2px solid var(--isaiah-border-color);
+  border-radius: var(--isaiah-border-radius-sm);
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
   transition: var(--isaiah-transition);
 }
 
-a:hover {
-  color: var(--isaiah-link-hover);
-  text-decoration: underline;
+.search-section .form-control:focus {
+  border-color: var(--isaiah-accent);
+  box-shadow: 0 0 0 0.2rem rgba(230, 126, 34, 0.25);
 }
 
-/* Isaiah 58:10 Inspired Headers */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--isaiah-font-family);
-  font-weight: 600;
-  color: var(--isaiah-text-primary);
-  margin-bottom: 1rem;
-}
-
-h1 {
-  font-size: var(--isaiah-font-size-xxl);
-  font-weight: 700;
-}
-
-h2 {
-  font-size: var(--isaiah-font-size-xl);
-}
-
-h3 {
-  font-size: var(--isaiah-font-size-lg);
-}
-
-/* Isaiah 58:10 Inspired Mission Statement */
-.mission-statement {
-  background: var(--isaiah-bg-secondary);
+/* Help Info Card */
+.help-info-card {
+  background: linear-gradient(135deg, var(--isaiah-light) 0%, var(--isaiah-white) 100%);
+  border: none;
   border-radius: var(--isaiah-border-radius);
-  padding: 2rem;
-  margin: 2rem 0;
-  text-align: center;
   box-shadow: var(--isaiah-shadow);
+  border-left: 5px solid var(--isaiah-accent);
 }
 
-.mission-statement h2 {
+.help-info-card .card-title {
   color: var(--isaiah-primary);
   font-weight: 700;
   margin-bottom: 1rem;
 }
 
-.mission-statement p {
+.help-info-card .card-text {
   color: var(--isaiah-text-secondary);
-  font-size: var(--isaiah-font-size-lg);
-  font-style: italic;
-  margin: 0;
+  line-height: 1.6;
 }
 
-/* Isaiah 58:10 Inspired Footer */
-.footer {
-  background: var(--isaiah-gradient-primary);
-  color: var(--isaiah-white);
-  padding: 3rem 0 1rem;
-  margin-top: 4rem;
-}
-
-.footer h5 {
-  color: var(--isaiah-white);
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.footer a {
-  color: var(--isaiah-light);
-  text-decoration: none;
-}
-
-.footer a:hover {
-  color: var(--isaiah-white);
-  text-decoration: underline;
-}
-
-/* Isaiah 58:10 Inspired Alerts */
-.alert {
-  border-radius: var(--isaiah-border-radius-sm);
-  border: none;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.alert-primary {
-  background: var(--isaiah-gradient-light);
-  color: var(--isaiah-text);
-  border-left: 4px solid var(--isaiah-accent);
-}
-
-.alert-success {
-  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-  color: #155724;
-  border-left: 4px solid #28a745;
-}
-
-.alert-warning {
-  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-  color: #856404;
-  border-left: 4px solid #ffc107;
-}
-
-.alert-danger {
-  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-  color: #721c24;
-  border-left: 4px solid #dc3545;
-}
-
-/* Isaiah 58:10 Inspired Tables */
-.table {
-  background: var(--isaiah-card-bg);
-  border-radius: var(--isaiah-border-radius);
-  overflow: hidden;
-  box-shadow: var(--isaiah-shadow);
-}
-
-.table thead th {
-  background: var(--isaiah-bg-secondary);
-  border-bottom: 2px solid var(--isaiah-card-border);
-  color: var(--isaiah-text-primary);
-  font-weight: 600;
-  padding: 1rem;
-}
-
-.table tbody td {
-  padding: 1rem;
-  border-bottom: 1px solid var(--isaiah-card-border);
-  color: var(--isaiah-text-primary);
-}
-
-.table tbody tr:hover {
-  background: var(--isaiah-bg-tertiary);
-}
-
-/* Isaiah 58:10 Inspired Forms */
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-label {
-  font-weight: 600;
-  color: var(--isaiah-text-primary);
-  margin-bottom: 0.5rem;
-}
-
-.form-text {
-  color: var(--isaiah-text-muted);
-  font-size: 0.875rem;
-}
-
-/* Isaiah 58:10 Inspired Pagination */
-.pagination {
-  justify-content: center;
-  margin: 2rem 0;
-}
-
-.page-link {
+.help-info-card strong {
   color: var(--isaiah-accent);
-  border: 1px solid var(--isaiah-card-border);
-  background: var(--isaiah-card-bg);
-  padding: 0.75rem 1rem;
-  margin: 0 0.25rem;
-  border-radius: var(--isaiah-border-radius-sm);
-  transition: var(--isaiah-transition);
+  font-weight: 700;
 }
 
-.page-link:hover {
-  background: var(--isaiah-accent);
-  color: var(--isaiah-white);
-  border-color: var(--isaiah-accent);
+/* Section Headers */
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
 }
 
-.page-item.active .page-link {
+.section-header h2 {
+  color: var(--isaiah-primary);
+  font-weight: 700;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.section-header::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
   background: var(--isaiah-gradient-warm);
-  border-color: var(--isaiah-accent);
-  color: var(--isaiah-white);
+  border-radius: 2px;
 }
 
-/* Isaiah 58:10 Inspired Responsive Design */
-@media (max-width: 768px) {
-  .navbar-brand {
-    font-size: var(--isaiah-font-size-lg);
-  }
-  
-  .card-body {
-    padding: 1rem;
-  }
-  
-  .search-container {
-    padding: 1.5rem;
-  }
-  
-  .mission-statement {
-    padding: 1.5rem;
-  }
-}
-
-/* Isaiah 58:10 Compassionate Animations */
+/* Animations */
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -508,96 +517,80 @@ h3 {
   animation: fadeInUp 0.6s ease-out;
 }
 
-/* Isaiah 58:10 Loading States */
-.loading {
-  background: var(--isaiah-gradient-light);
-  border-radius: var(--isaiah-border-radius);
-  padding: 2rem;
-  text-align: center;
-  color: var(--isaiah-text-light);
-}
-
-.loading::after {
-  content: '';
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--isaiah-card-border);
-  border-radius: 50%;
-  border-top-color: var(--isaiah-accent);
-  animation: spin 1s ease-in-out infinite;
-  margin-left: 0.5rem;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 
-/* Additional Text Visibility Fixes */
-p, span, div {
-  color: var(--isaiah-text-primary);
+.pulse {
+  animation: pulse 2s infinite;
 }
 
-.text-muted {
-  color: var(--isaiah-text-muted) !important;
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 2rem;
+  }
+  
+  .hero-section .lead {
+    font-size: 1.1rem;
+  }
+  
+  .section-header h2 {
+    font-size: 2rem;
+  }
+  
+  .stats-card {
+    margin-bottom: 1rem;
+  }
+  
+  .quick-access-btn {
+    margin-bottom: 1rem;
+  }
 }
 
-.text-secondary {
-  color: var(--isaiah-text-secondary) !important;
+/* Dark Mode Enhancements */
+[data-theme="dark"] .hero-section {
+  background: linear-gradient(rgba(26, 26, 26, 0.8), rgba(45, 45, 45, 0.8)), 
+              url('/static/images/hero/hero-background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
-/* Ensure all form elements are visible */
-select, option {
-  background: var(--isaiah-form-bg);
-  color: var(--isaiah-form-text);
-  border: 1px solid var(--isaiah-form-border);
+[data-theme="dark"] .mission-statement {
+  background: linear-gradient(135deg, var(--isaiah-bg-secondary) 0%, var(--isaiah-bg-tertiary) 100%);
 }
 
-/* Ensure buttons are properly styled */
-.btn-outline-primary {
-  color: var(--isaiah-accent);
-  border-color: var(--isaiah-accent);
-  background: transparent;
+[data-theme="dark"] .stats-card {
+  background: linear-gradient(135deg, var(--isaiah-bg-secondary) 0%, var(--isaiah-bg-tertiary) 100%);
 }
 
-.btn-outline-primary:hover {
-  background: var(--isaiah-accent);
+[data-theme="dark"] .search-section {
+  background: linear-gradient(135deg, var(--isaiah-bg-secondary) 0%, var(--isaiah-bg-tertiary) 100%);
+}
+
+[data-theme="dark"] .help-info-card {
+  background: linear-gradient(135deg, var(--isaiah-bg-secondary) 0%, var(--isaiah-bg-tertiary) 100%);
+}
+
+/* Footer Enhancement */
+footer {
+  background: var(--isaiah-gradient-primary) !important;
   color: var(--isaiah-white);
-  border-color: var(--isaiah-accent);
+  padding: 2rem 0;
+  margin-top: 4rem;
 }
 
-.btn-outline-secondary {
-  color: var(--isaiah-text-secondary);
-  border-color: var(--isaiah-border-color);
-  background: transparent;
-}
-
-.btn-outline-secondary:hover {
-  background: var(--isaiah-text-secondary);
-  color: var(--isaiah-bg-primary);
-  border-color: var(--isaiah-text-secondary);
-}
-
-/* Ensure badges are visible */
-.badge {
-  color: var(--isaiah-white);
-}
-
-.badge.bg-light {
-  background: var(--isaiah-bg-secondary) !important;
-  color: var(--isaiah-text-primary) !important;
-  border: 1px solid var(--isaiah-border-color);
-}
-
-/* Ensure small text is visible */
-small, .small {
-  color: var(--isaiah-text-secondary);
-}
-
-/* Ensure strong/bold text is visible */
-strong, b {
-  color: var(--isaiah-text-primary);
-  font-weight: 600;
+footer small {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
 }

@@ -45,13 +45,9 @@ fi
 
 # Check if we have uncommitted changes
 if [ -n "$(git status --porcelain)" ]; then
-    print_warning "You have uncommitted changes. Consider committing them before deployment."
-    read -p "Continue anyway? (y/N): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        print_status "Deployment cancelled"
-        exit 1
-    fi
+    print_error "You have uncommitted changes. Please commit all changes before deployment."
+    print_status "Use 'git add .' and 'git commit -m \"your message\"' to commit changes"
+    exit 1
 fi
 
 # Get current branch
