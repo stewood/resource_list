@@ -15,6 +15,7 @@ RUN apt-get update \
         sqlite3 \
         python3-dev \
         build-essential \
+        libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
