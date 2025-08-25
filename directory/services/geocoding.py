@@ -27,8 +27,22 @@ from functools import wraps
 
 import requests
 from django.conf import settings
-from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
-from geopy.geocoders import Nominatim
+
+# Only import geopy modules if GIS is enabled
+if getattr(settings, 'GIS_ENABLED', False):
+    from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
+    from geopy.geocoders import Nominatim
+else:
+    # Create dummy classes for when GIS is disabled
+    class GeocoderTimedOut(Exception):
+        pass
+    
+    class GeocoderUnavailable(Exception):
+        pass
+    
+    class Nominatim:
+        def __init__(self, *args, **kwargs):
+            pass
 
 logger = logging.getLogger(__name__)
 
