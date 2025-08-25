@@ -27,6 +27,9 @@ COPY . .
 # Create data directory for SQLite
 RUN mkdir -p /data
 
+# Collect static files
+RUN python manage.py collectstatic --noinput --settings=resource_directory.staging_settings
+
 # Expose port
 EXPOSE 8000
 
