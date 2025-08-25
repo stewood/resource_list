@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load directory_extras %}
 
 {% block title %}Preview Import - Import Resources{% endblock %}
 
@@ -69,7 +70,7 @@
                                                 {{ row.data.category|default:"—" }}
                                             </td>
                                             <td>
-                                                {{ row.data.phone|default:"—" }}
+                                                {{ row.data.phone|format_phone|default:"—" }}
                                             </td>
                                             <td>
                                                 {{ row.data.email|default:"—" }}

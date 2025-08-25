@@ -994,6 +994,11 @@ class LocationSearchView(View):
                     'total_pages': paginator.num_pages
                 }
             }
+
+            # Add suggestions if requested
+            if request.GET.get('suggestions') == 'true' and address:
+                suggestions = self.get_address_suggestions(address)
+                response_data['suggestions'] = suggestions
             
             return JsonResponse(response_data)
             
@@ -1007,6 +1012,67 @@ class LocationSearchView(View):
                 {'error': f'Internal server error: {str(e)}'}, 
                 status=500
             )
+
+    def get_address_suggestions(self, query: str) -> List[Dict[str, str]]:
+        """Get address suggestions for autocomplete.
+        
+        Args:
+            query: The address query string
+            
+        Returns:
+            List of suggestion dictionaries with address and type
+        """
+        suggestions = []
+        
+        try:
+            # Get popular cities from the database
+            from ..models import Resource
+            cities = Resource.objects.filter(
+                city__icontains=query
+            ).values_list('city', 'state').distinct()[:5]
+            
+            for city, state in cities:
+                if city and state:
+                    suggestions.append({
+                        'address': f"{city}, {state}",
+                        'type': 'City'
+                    })
+            
+            # Add common Kentucky cities if query matches
+            kentucky_cities = [
+                'London', 'Lexington', 'Louisville', 'Bowling Green', 
+                'Owensboro', 'Covington', 'Richmond', 'Georgetown'
+            ]
+            
+            for city in kentucky_cities:
+                if query.lower() in city.lower():
+                    suggestions.append({
+                        'address': f"{city}, KY",
+                        'type': 'City'
+                    })
+            
+            # Add state suggestions
+            states = ['Kentucky', 'Tennessee', 'Ohio', 'Indiana', 'West Virginia', 'Virginia']
+            for state in states:
+                if query.lower() in state.lower():
+                    suggestions.append({
+                        'address': state,
+                        'type': 'State'
+                    })
+            
+            # Remove duplicates while preserving order
+            seen = set()
+            unique_suggestions = []
+            for suggestion in suggestions:
+                if suggestion['address'] not in seen:
+                    seen.add(suggestion['address'])
+                    unique_suggestions.append(suggestion)
+            
+            return unique_suggestions[:8]  # Limit to 8 suggestions
+            
+        except Exception as e:
+            logger.error(f"Error getting address suggestions: {e}")
+            return []
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -1375,3 +1441,173 @@ class ResourceEligibilityView(View):
                 {'error': f'Internal server error: {str(e)}'}, 
                 status=500
             )
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ReverseGeocodingView(View):
+    """API view for reverse geocoding coordinates to address.
+    
+    This view provides a RESTful endpoint for converting coordinates
+    to human-readable addresses using the geocoding service.
+    
+    Endpoint: GET /api/geocode/reverse/
+    
+    Query Parameters:
+        - lat: Latitude coordinate (required)
+        - lon: Longitude coordinate (required)
+        
+    Response Format:
+        {
+            "success": true,
+            "result": {
+                "address": "London, Laurel County, Kentucky, United States",
+                "latitude": 37.1283343,
+                "longitude": -84.0835576,
+                "confidence": 0.8,
+                "provider": "nominatim"
+            }
+        }
+    """
+    
+    def get(self, request: HttpRequest) -> JsonResponse:
+        """Handle GET requests for reverse geocoding.
+        
+        Args:
+            request: HTTP request object
+            
+        Returns:
+            JsonResponse: JSON response with geocoding result
+        """
+        try:
+            # Get query parameters
+            lat = request.GET.get('lat')
+            lon = request.GET.get('lon')
+            
+            # Validate required parameters
+            if not lat or not lon:
+                return JsonResponse(
+                    {'error': 'Both lat and lon parameters are required'}, 
+                    status=400
+                )
+            
+            try:
+                lat = float(lat)
+                lon = float(lon)
+            except ValueError:
+                return JsonResponse(
+                    {'error': 'lat and lon must be valid numbers'}, 
+                    status=400
+                )
+            
+            # Validate coordinates
+            if not (-90 <= lat <= 90) or not (-180 <= lon <= 180):
+                return JsonResponse(
+                    {'error': 'Invalid coordinates provided'}, 
+                    status=400
+                )
+            
+            # Use geocoding service for reverse geocoding
+            from ..services.geocoding import get_geocoding_service
+            
+            service = get_geocoding_service()
+            result = service.reverse_geocode(lat, lon)
+            
+            if result:
+                return JsonResponse({
+                    'success': True,
+                    'result': {
+                        'address': result.address,
+                        'latitude': result.latitude,
+                        'longitude': result.longitude,
+                        'confidence': result.confidence,
+                        'provider': result.provider
+                    }
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Could not reverse geocode the provided coordinates'
+                }, status=404)
+                
+        except ValueError as e:
+            return JsonResponse(
+                {'error': f'Invalid parameter value: {str(e)}'}, 
+                status=400
+            )
+        except Exception as e:
+            return JsonResponse(
+                {'error': f'Internal server error: {str(e)}'}, 
+                status=500
+            )
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class StateCountyView(View):
+    """API view for getting states and counties for dropdowns.
+    
+    This view provides a RESTful endpoint for retrieving states and counties
+    for use in location selection dropdowns.
+    
+    Endpoint: GET /api/location/states-counties/
+    
+    Query Parameters:
+        - state_fips: State FIPS code (optional, for getting counties)
+        
+    Response Format:
+        {
+            "success": true,
+            "states": [
+                {
+                    "id": 123,
+                    "name": "Kentucky",
+                    "ext_ids": {"state_fips": "21"}
+                }
+            ],
+            "counties": [
+                {
+                    "id": 456,
+                    "name": "Laurel County",
+                    "ext_ids": {"state_fips": "21", "county_fips": "125"}
+                }
+            ]
+        }
+    """
+    
+    def get(self, request: HttpRequest) -> JsonResponse:
+        """Handle GET requests for states and counties.
+        
+        Args:
+            request: HTTP request object
+            
+        Returns:
+            JsonResponse: JSON response with states and counties data
+        """
+        try:
+            from ..models import CoverageArea
+            
+            # Get all states
+            states = CoverageArea.objects.filter(kind='STATE').order_by('name').values(
+                'id', 'name', 'ext_ids'
+            )
+            
+            # Get counties for a specific state if state_fips provided
+            state_fips = request.GET.get('state_fips')
+            counties = []
+            
+            if state_fips:
+                counties = CoverageArea.objects.filter(
+                    kind='COUNTY',
+                    ext_ids__state_fips=state_fips
+                ).order_by('name').values('id', 'name', 'ext_ids')
+            
+            return JsonResponse({
+                'success': True,
+                'states': list(states),
+                'counties': list(counties)
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': f'Internal server error: {str(e)}'
+            }, status=500)

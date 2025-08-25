@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load directory_extras %}
 
 {% block title %}{{ resource.name }} - Homeless Resource Directory{% endblock %}
 
@@ -78,7 +79,7 @@
                         <div class="col-md-6 mb-3">
                             <h6><i class="fas fa-phone text-primary"></i> Phone</h6>
                             <p class="mb-0">
-                                <a href="tel:{{ resource.phone }}" class="text-decoration-none">{{ resource.phone }}</a>
+                                <a href="tel:{{ resource.phone }}" class="text-decoration-none">{{ resource.phone|format_phone }}</a>
                             </p>
                         </div>
                         {% endif %}

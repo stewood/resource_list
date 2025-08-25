@@ -18,86 +18,137 @@
                     </button>
                 </div>
                 <div class="card-body" id="filterContent">
+                    
+                    <!-- State/County Selection (Outside Form) -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-map-marker-alt me-2"></i>Select Your Location
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="stateSelect" class="form-label">State</label>
+                                    <select class="form-select" id="stateSelect">
+                                        <option value="">Select a state...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="countySelect" class="form-label">County</label>
+                                    <select class="form-select" id="countySelect" disabled>
+                                        <option value="">Select a county...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button type="button" class="btn btn-primary" id="applyLocationFilter">
+                                    <i class="fas fa-filter me-2"></i>Apply Location Filter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <form method="get" id="filter-form">
-                        <!-- Active Filters Display -->
-                        <div class="active-filters mb-3" id="activeFiltersContainer" style="display: none;">
-                            <label class="form-label fw-bold mb-2">
-                                <i class="fas fa-tags me-1"></i>Active Filters
-                            </label>
-                            <div id="activeFilters" class="d-flex flex-wrap gap-1">
-                                <!-- Active filters will be populated here -->
+                        
+                        <!-- Hidden fields for state/county selection -->
+                        <input type="hidden" id="selected_state_fips" name="state_fips" value="">
+                        <input type="hidden" id="selected_county_id" name="county_id" value="">
+                        <input type="hidden" id="include_national" name="include_national" value="1">
+                        
+                        <!-- Primary Actions (Always Visible) -->
+                        <div class="primary-actions">
+                            <!-- Search Bar -->
+                            <div class="mb-3">
+                                <label for="search" class="form-label fw-bold">
+                                    <i class="fas fa-search me-1"></i>Search Resources
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control form-control-lg" id="search" name="q" 
+                                           value="{{ search_query }}" placeholder="Search resources...">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Most Common Quick Filters -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-bolt me-1"></i>Quick Filters
+                                </label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-outline-danger quick-filter-btn" data-filter="category" data-value="hotlines">
+                                        <i class="fas fa-phone-alt me-1"></i>Hotlines
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary quick-filter-btn" data-filter="category" data-value="housing">
+                                        <i class="fas fa-house-user me-1"></i>Housing
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success quick-filter-btn" data-filter="category" data-value="medical">
+                                        <i class="fas fa-stethoscope me-1"></i>Medical
+                                    </button>
+                                    <button type="button" class="btn btn-outline-warning quick-filter-btn" data-filter="category" data-value="food_assistance">
+                                        <i class="fas fa-hamburger me-1"></i>Food
+                                    </button>
+                                    <button type="button" class="btn btn-outline-info quick-filter-btn" data-filter="emergency" data-value="true">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>Emergency
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary quick-filter-btn" data-filter="24hour" data-value="true">
+                                        <i class="fas fa-clock me-1"></i>24-Hour
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- National Resources Checkbox -->
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="include_national_checkbox" checked>
+                                    <label class="form-check-label" for="include_national_checkbox">
+                                        <i class="fas fa-globe me-1"></i>Include national resources
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    National resources provide services across multiple states or the entire country.
+                                </small>
+                            </div>
+                            
+                            <!-- More Filters Button -->
+                            <div class="d-grid">
+                                <button type="button" class="btn btn-outline-primary" id="toggleAdvancedFilters">
+                                    <i class="fas fa-sliders-h me-1"></i>More Filters
+                                    <span class="filter-count-badge" id="filterCount">0</span>
+                                </button>
                             </div>
                         </div>
 
-                        <!-- Search -->
-                        <div class="search-container mb-3">
-                            <label for="search" class="form-label fw-bold">
-                                <i class="fas fa-search me-1"></i>Search
-                            </label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="search" name="q" 
-                                       value="{{ search_query }}" placeholder="Search resources...">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Quick Filters -->
-                        <div class="quick-filters mb-3">
-                            <label class="form-label fw-bold mb-2">
-                                <i class="fas fa-bolt me-1"></i>Quick Links
-                            </label>
-                            <div class="d-flex flex-column gap-2">
-                                <button type="button" class="btn btn-outline-danger quick-filter-btn" data-filter="category" data-value="hotlines">
-                                    <i class="fas fa-phone-alt me-1"></i>Hotlines & Crisis
-                                </button>
-                                <button type="button" class="btn btn-outline-primary quick-filter-btn" data-filter="category" data-value="housing">
-                                    <i class="fas fa-house-user me-1"></i>Housing & Shelter
-                                </button>
-                                <button type="button" class="btn btn-outline-success quick-filter-btn" data-filter="category" data-value="medical">
-                                    <i class="fas fa-stethoscope me-1"></i>Medical & Health
-                                </button>
-                                <button type="button" class="btn btn-outline-info quick-filter-btn" data-filter="category" data-value="mental_health">
-                                    <i class="fas fa-head-side-virus me-1"></i>Mental Health
-                                </button>
-                                <button type="button" class="btn btn-outline-warning quick-filter-btn" data-filter="category" data-value="food_assistance">
-                                    <i class="fas fa-hamburger me-1"></i>Food Assistance
-                                </button>
-                                <button type="button" class="btn btn-outline-danger quick-filter-btn" data-filter="category" data-value="emergency_services">
-                                    <i class="fas fa-shield-alt me-1"></i>Emergency Services
-                                </button>
-                                <button type="button" class="btn btn-outline-info quick-filter-btn" data-filter="category" data-value="legal">
-                                    <i class="fas fa-balance-scale me-1"></i>Legal Services
-                                </button>
-                                <button type="button" class="btn btn-outline-secondary quick-filter-btn" data-filter="category" data-value="transportation">
-                                    <i class="fas fa-bus me-1"></i>Transportation
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Category Filter -->
-                        <div class="filter-group mb-3">
-                            <label for="category" class="form-label fw-bold">
-                                <i class="fas fa-tag me-1"></i>Category
-                            </label>
-                            <select class="form-select" id="category" name="category">
-                                <option value="">All Categories</option>
-                                {% for category in categories %}
-                                <option value="{{ category.id }}" {% if category_filter == category.id|stringformat:"s" %}selected{% endif %}>
-                                    {{ category.name }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <!-- Service Type Filter -->
-                        <div class="filter-group mb-3">
-                            <label for="service_type" class="form-label fw-bold">
-                                <i class="fas fa-cogs me-1"></i>Service Type
-                            </label>
-                            <select class="form-select" id="service_type" name="service_type">
-                                <option value="">All Service Types</option>
+                        <!-- Advanced Filters (Expandable Accordion) -->
+                        <div class="advanced-filters" id="advancedFilters" style="display: none; max-height: 0;">
+                            
+                            <!-- Service Classification Accordion -->
+                            <div class="accordion" id="filterAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#serviceCollapse">
+                                            <i class="fas fa-tag me-2"></i>Service Classification
+                                        </button>
+                                    </h2>
+                                    <div id="serviceCollapse" class="accordion-collapse collapse" data-bs-parent="#filterAccordion">
+                                        <div class="accordion-body">
+                                            <div class="mb-3">
+                                                <label for="category" class="form-label">Category</label>
+                                                <select class="form-select" id="category" name="category">
+                                                    <option value="">All Categories</option>
+                                                    {% for category in categories %}
+                                                    <option value="{{ category.id }}" {% if category_filter == category.id|stringformat:"s" %}selected{% endif %}>
+                                                        {{ category.name }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="service_type" class="form-label">Service Type</label>
+                                                <select class="form-select" id="service_type" name="service_type">
+                                                    <option value="">All Service Types</option>
                                 {% for service_type in service_types %}
                                 <option value="{{ service_type.id }}" {% if service_type_filter == service_type.id|stringformat:"s" %}selected{% endif %}>
                                     {{ service_type.name }}
@@ -105,75 +156,211 @@
                                 {% endfor %}
                             </select>
                         </div>
-
-                        <!-- Location Filters -->
-                        <div class="filter-section mb-3">
-                            <h6 class="filter-section-title">
-                                <i class="fas fa-map-marker-alt me-1"></i>Location
-                            </h6>
-                            <div class="filter-group mb-2">
-                                <label for="city" class="form-label">City</label>
-                                <select class="form-select" id="city" name="city">
-                                    <option value="">All Cities</option>
-                                    {% for city in cities %}
-                                    <option value="{{ city }}" {% if city_filter == city %}selected{% endif %}>
-                                        {{ city }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="filter-group mb-2">
-                                <label for="state" class="form-label">State</label>
-                                <select class="form-select" id="state" name="state">
-                                    <option value="">All States</option>
-                                    {% for state in states %}
-                                    <option value="{{ state }}" {% if state_filter == state %}selected{% endif %}>
-                                        {{ state }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
 
-                        <!-- Service Availability -->
-                        <div class="filter-section mb-3">
-                            <h6 class="filter-section-title">
-                                <i class="fas fa-clock me-1"></i>Service Availability
-                            </h6>
-                            <div class="filter-group">
-                                <label for="24hour" class="form-label">24-Hour Services</label>
-                                <select class="form-select" id="24hour" name="24hour">
-                                    <option value="">All Services</option>
-                                    <option value="true" {% if '24hour' in request.GET and request.GET.24hour == 'true' %}selected{% endif %}>24-Hour Only</option>
-                                    <option value="false" {% if '24hour' in request.GET and request.GET.24hour == 'false' %}selected{% endif %}>Non-24-Hour Only</option>
-                                </select>
+                            <!-- Location & Coverage Accordion -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#locationCollapse">
+                                        <i class="fas fa-map-marker-alt me-2"></i>Location & Coverage
+                                    </button>
+                                </h2>
+                                <div id="locationCollapse" class="accordion-collapse collapse" data-bs-parent="#filterAccordion">
+                                    <div class="accordion-body">
+                                        <!-- Basic Location -->
+                                        <div class="mb-3">
+                                            <label for="city" class="form-label">City</label>
+                                            <select class="form-select" id="city" name="city">
+                                                <option value="">All Cities</option>
+                                                {% for city in cities %}
+                                                <option value="{{ city }}" {% if city_filter == city %}selected{% endif %}>
+                                                    {{ city }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="state" class="form-label">State</label>
+                                            <select class="form-select" id="state" name="state">
+                                                <option value="">All States</option>
+                                                {% for state in states %}
+                                                <option value="{{ state }}" {% if state_filter == state %}selected{% endif %}>
+                                                    {{ state }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        
+                                        <!-- Location Search -->
+                                        <div class="mb-3">
+                                            <label for="address" class="form-label">Address Search</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="address" name="address" 
+                                                       value="{{ address_filter }}" placeholder="Enter your address or city">
+                                                <button type="button" class="btn btn-outline-primary" id="geocodeBtn" title="Geocode Address">
+                                                    <i class="fas fa-map-marker-alt"></i>
+                                                </button>
+                                            </div>
+                                            <div class="form-text small">Enter an address to find resources serving that location</div>
+                                        </div>
+                                        
+                                        <!-- Radius Selection (when coordinates present) -->
+                                        {% if lat_filter and lon_filter %}
+                                        <div class="mb-3">
+                                            <label for="radius_miles" class="form-label">Search Radius</label>
+                                            <select class="form-select" id="radius_miles" name="radius_miles">
+                                                <option value="5" {% if radius_miles == '5' %}selected{% endif %}>5 miles</option>
+                                                <option value="10" {% if radius_miles == '10' or not radius_miles %}selected{% endif %}>10 miles</option>
+                                                <option value="25" {% if radius_miles == '25' %}selected{% endif %}>25 miles</option>
+                                                <option value="50" {% if radius_miles == '50' %}selected{% endif %}>50 miles</option>
+                                                <option value="100" {% if radius_miles == '100' %}selected{% endif %}>100 miles</option>
+                                            </select>
+                                        </div>
+                                        {% else %}
+                                        <div class="form-text small text-muted">
+                                            <i class="fas fa-info-circle"></i> Enter an address above to set search radius
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <!-- Hidden fields for coordinates -->
+                                        <input type="hidden" id="lat" name="lat" value="{{ lat_filter }}">
+                                        <input type="hidden" id="lon" name="lon" value="{{ lon_filter }}">
+                                        
+                                        <!-- Location feedback -->
+                                        <div id="locationFeedback" class="mt-2" style="display: none;">
+                                            <div class="alert alert-info alert-sm">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                <span id="locationMessage"></span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Location confirmation display -->
+                                        {% if lat_filter and lon_filter and address_filter %}
+                                        <div class="location-confirmation mt-2">
+                                            <div class="alert alert-success alert-sm">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                                        <strong>Searching near:</strong> {{ address_filter }}
+                                                    </div>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="changeLocationBtn" title="Change Location">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="mt-1 small text-muted">
+                                                    <i class="fas fa-crosshairs me-1"></i>
+                                                    Coordinates: {{ lat_filter }}, {{ lon_filter }}
+                                                </div>
+                                                <div class="mt-1 small text-muted">
+                                        <i class="fas fa-circle me-1"></i>
+                                        Radius: {{ radius_miles }} miles
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                            {% endif %}
+                                            
+                                            <!-- Advanced Location Filters (when coordinates present) -->
+                                            {% if lat_filter and lon_filter %}
+                                            <div class="mb-3">
+                                                <label for="coverage_area_type" class="form-label">Coverage Area Type</label>
+                                                <select class="form-select" id="coverage_area_type" name="coverage_area_type">
+                                                    <option value="" {% if not coverage_area_type_filter %}selected{% endif %}>Any coverage type</option>
+                                                    <option value="STATE" {% if coverage_area_type_filter == 'STATE' %}selected{% endif %}>State-level coverage only</option>
+                                                    <option value="COUNTY" {% if coverage_area_type_filter == 'COUNTY' %}selected{% endif %}>County-level coverage only</option>
+                                                    <option value="CITY" {% if coverage_area_type_filter == 'CITY' %}selected{% endif %}>City-level coverage only</option>
+                                                    <option value="RADIUS" {% if coverage_area_type_filter == 'RADIUS' %}selected{% endif %}>Radius-based coverage only</option>
+                                                    <option value="POLYGON" {% if coverage_area_type_filter == 'POLYGON' %}selected{% endif %}>Custom polygon coverage only</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <!-- Distance Range Filter -->
+                                            <div class="mb-3">
+                                                <label class="form-label">Distance Range (miles)</label>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <input type="number" class="form-control" id="min_distance" name="min_distance" 
+                                                               value="{{ min_distance_filter }}" placeholder="Min" step="0.1" min="0" max="99.9">
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <input type="number" class="form-control" id="max_distance" name="max_distance" 
+                                                               value="{{ max_distance_filter }}" placeholder="Max" step="0.1" min="0.1" max="100">
+                                                    </div>
+                                                </div>
+                                                <small class="form-text text-muted">Leave empty to include all distances</small>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
 
-                        <!-- Sort Options -->
-                        <div class="filter-section mb-3">
-                            <h6 class="filter-section-title">
-                                <i class="fas fa-sort me-1"></i>Sort Options
-                            </h6>
-                            <div class="filter-group">
-                                <label for="sort" class="form-label">Sort By</label>
-                                <select class="form-select" id="sort" name="sort">
-                                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name A-Z</option>
-                                    <option value="city" {% if sort_by == 'city' %}selected{% endif %}>City A-Z</option>
-                                    <option value="category" {% if sort_by == 'category' %}selected{% endif %}>Category</option>
-                                    <option value="emergency" {% if sort_by == 'emergency' %}selected{% endif %}>Emergency First</option>
-                                </select>
+
+
+                                <!-- Service Availability Accordion -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#availabilityCollapse">
+                                            <i class="fas fa-clock me-2"></i>Service Availability
+                                        </button>
+                                    </h2>
+                                    <div id="availabilityCollapse" class="accordion-collapse collapse" data-bs-parent="#filterAccordion">
+                                        <div class="accordion-body">
+                                            <div class="mb-3">
+                                                <label for="24hour" class="form-label">24-Hour Services</label>
+                                                <select class="form-select" id="24hour" name="24hour">
+                                                    <option value="">All Services</option>
+                                                    <option value="true" {% if '24hour' in request.GET and request.GET.24hour == 'true' %}selected{% endif %}>24-Hour Only</option>
+                                                    <option value="false" {% if '24hour' in request.GET and request.GET.24hour == 'false' %}selected{% endif %}>Non-24-Hour Only</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="emergency" class="form-label">Emergency Services</label>
+                                                <select class="form-select" id="emergency" name="emergency">
+                                                    <option value="">All Services</option>
+                                                    <option value="true" {% if 'emergency' in request.GET and request.GET.emergency == 'true' %}selected{% endif %}>Emergency Only</option>
+                                                    <option value="false" {% if 'emergency' in request.GET and request.GET.emergency == 'false' %}selected{% endif %}>Non-Emergency Only</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sort & Results Accordion -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sortCollapse">
+                                            <i class="fas fa-sort me-2"></i>Sort & Results
+                                        </button>
+                                    </h2>
+                                    <div id="sortCollapse" class="accordion-collapse collapse" data-bs-parent="#filterAccordion">
+                                        <div class="accordion-body">
+                                            <div class="mb-3">
+                                                <label for="sort" class="form-label">Sort By</label>
+                                                <select class="form-select" id="sort" name="sort">
+                                                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name A-Z</option>
+                                                    <option value="city" {% if sort_by == 'city' %}selected{% endif %}>City A-Z</option>
+                                                    <option value="category" {% if sort_by == 'category' %}selected{% endif %}>Category</option>
+                                                    <option value="emergency" {% if sort_by == 'emergency' %}selected{% endif %}>Emergency First</option>
+                                                    <option value="distance" {% if sort_by == 'distance' %}selected{% endif %}>Distance (when location set)</option>
+                                                    <option value="proximity" {% if sort_by == 'proximity' %}selected{% endif %}>Proximity (Distance + Coverage)</option>
+                                                    <option value="coverage_specificity" {% if sort_by == 'coverage_specificity' %}selected{% endif %}>Coverage Specificity</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <!-- Apply/Clear Buttons -->
+                                            <div class="d-grid gap-2">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-search"></i> Apply Filters
+                                                </button>
+                                                <a href="{% url 'directory:public_resource_list' %}" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-times"></i> Clear All
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-
-                        <!-- Apply/Clear Buttons -->
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-search"></i> Apply Filters
-                            </button>
-                            <a href="{% url 'directory:public_resource_list' %}" class="btn btn-outline-secondary">
-                                <i class="fas fa-times"></i> Clear All
-                            </a>
                         </div>
                     </form>
                 </div>
@@ -241,12 +428,45 @@
                             {% if resource.city and resource.state %}
                             <p class="text-muted small mb-2">
                                 <i class="fas fa-map-marker-alt"></i> {{ resource.city }}, {{ resource.state }}
+                                {% if lat_filter and lon_filter and resource.distance_miles %}
+                                <span class="text-primary ms-2">
+                                    <i class="fas fa-ruler"></i> {{ resource.distance_miles|floatformat:1 }} miles away
+                                </span>
+                                {% endif %}
                             </p>
+                            {% endif %}
+                            
+                            <!-- Location-based indicators -->
+                            {% if lat_filter and lon_filter %}
+                            <div class="location-indicators mb-2">
+                                {% if resource.coverage_areas.exists %}
+                                <span class="badge bg-success me-1" title="Serves your area">
+                                    <i class="fas fa-check-circle me-1"></i>Serves your area
+                                </span>
+                                {% else %}
+                                <span class="badge bg-warning me-1" title="May not serve your area">
+                                    <i class="fas fa-question-circle me-1"></i>Check coverage
+                                </span>
+                                {% endif %}
+                                
+                                {% if resource.coverage_areas.exists %}
+                                <div class="small text-muted mt-1">
+                                    <i class="fas fa-map-marked-alt me-1"></i>
+                                    Coverage: 
+                                    {% for area in resource.coverage_areas.all|slice:":3" %}
+                                        <span class="badge bg-light text-dark me-1">{{ area.name }}</span>
+                                    {% endfor %}
+                                    {% if resource.coverage_areas.count > 3 %}
+                                        <span class="badge bg-light text-dark">+{{ resource.coverage_areas.count|add:"-3" }} more</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
                             {% endif %}
                             
                             {% if resource.phone %}
                             <p class="text-muted small mb-3">
-                                <i class="fas fa-phone"></i> {{ resource.phone }}
+                                <i class="fas fa-phone"></i> {{ resource.phone|format_phone }}
                             </p>
                             {% endif %}
                             
@@ -323,60 +543,59 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const filterForm = document.getElementById('filter-form');
+        
+        // Reset filters button
         const resetBtn = document.getElementById('resetFilters');
-        const activeFiltersContainer = document.getElementById('activeFiltersContainer');
-        const activeFilters = document.getElementById('activeFilters');
-        
-        // Reset filters
-        resetBtn.addEventListener('click', function() {
-            const inputs = filterForm.querySelectorAll('input, select');
-            inputs.forEach(input => {
-                if (input.type === 'text') {
-                    input.value = '';
-                } else if (input.tagName === 'SELECT') {
-                    input.selectedIndex = 0;
-                }
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                // Clear all form inputs
+                const inputs = filterForm.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    if (input.type === 'text' || input.type === 'hidden') {
+                        input.value = '';
+                    } else if (input.type === 'select-one') {
+                        input.selectedIndex = 0;
+                    }
+                });
+                
+                // Reset quick filter button states
+                document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+                    btn.classList.remove('btn-primary', 'btn-danger', 'btn-success', 'btn-warning', 'btn-info', 'btn-secondary');
+                    btn.classList.add('btn-outline-' + getColorClass(btn));
+                });
+                
+                filterForm.submit();
             });
-            
-            activeFilters.innerHTML = '';
-            activeFiltersContainer.style.display = 'none';
-            
-            document.querySelectorAll('.quick-filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            filterForm.submit();
-        });
+        }
         
-        // Quick filter buttons
+        // Quick filter buttons - perform immediate search
         document.querySelectorAll('.quick-filter-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const filterName = this.dataset.filter;
                 const filterValue = this.dataset.value;
                 
-                this.classList.toggle('active');
+                // Toggle active state
+                const colorClass = getColorClass(this);
+                this.classList.toggle('btn-outline-' + colorClass);
+                this.classList.toggle('btn-' + colorClass);
                 
+                // Update form fields
                 const formField = document.getElementById(filterName);
                 if (formField) {
-                    if (this.classList.contains('active')) {
-                        // For categories, we need to find the matching category ID
+                    if (this.classList.contains('btn-' + colorClass)) {
+                        // For category filters, we need to find the category ID
                         if (filterName === 'category') {
+                            const searchValue = filterValue.toLowerCase();
                             const categorySelect = document.getElementById('category');
-                            const categoryOptions = categorySelect.options;
-                            let foundCategoryId = null;
+                            let foundCategoryId = '';
                             
-                            // Look for a category that matches our value
-                            for (let i = 0; i < categoryOptions.length; i++) {
-                                const option = categoryOptions[i];
+                            for (let i = 0; i < categorySelect.options.length; i++) {
+                                const option = categorySelect.options[i];
                                 const optionText = option.text.toLowerCase();
-                                const searchValue = filterValue.toLowerCase();
                                 
-                                if (optionText.includes(searchValue) || 
-                                    searchValue.includes(optionText) ||
-                                    optionText.includes('hotline') && searchValue.includes('hotline') ||
+                                if (optionText.includes('hotlines') && searchValue.includes('hotlines') ||
                                     optionText.includes('housing') && searchValue.includes('housing') ||
                                     optionText.includes('medical') && searchValue.includes('medical') ||
-                                    optionText.includes('mental') && searchValue.includes('mental') ||
                                     optionText.includes('food') && searchValue.includes('food') ||
                                     optionText.includes('emergency') && searchValue.includes('emergency') ||
                                     optionText.includes('legal') && searchValue.includes('legal') ||
@@ -397,158 +616,301 @@
                     }
                 }
                 
-                updateActiveFilters();
+                // Preserve current location state before submitting
+                const stateFipsField = document.getElementById('selected_state_fips');
+                const countyIdField = document.getElementById('selected_county_id');
+                const includeNationalHidden = document.getElementById('include_national');
+                const includeNationalCheckbox = document.getElementById('include_national_checkbox');
+                
+                // Get current URL parameters to preserve location state
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentStateFips = urlParams.get('state_fips');
+                const currentCountyId = urlParams.get('county_id');
+                const currentIncludeNational = urlParams.get('include_national');
+                
+                // Set hidden fields to preserve location state
+                if (stateFipsField && currentStateFips) {
+                    stateFipsField.value = currentStateFips;
+                }
+                if (countyIdField && currentCountyId) {
+                    countyIdField.value = currentCountyId;
+                }
+                if (includeNationalHidden && currentIncludeNational !== null) {
+                    includeNationalHidden.value = currentIncludeNational;
+                } else if (includeNationalHidden && includeNationalCheckbox) {
+                    includeNationalHidden.value = includeNationalCheckbox.checked ? '1' : '0';
+                }
+                
+                // Submit form immediately for quick search
                 filterForm.submit();
             });
         });
         
-        // Auto-submit on filter changes
-        let submitTimeout;
-        const filterInputs = document.querySelectorAll('#category, #service_type, #sort');
-        const hour24Input = document.getElementById('24hour');
-        
-        // Add event listeners to all filter inputs
-        filterInputs.forEach(input => {
-            input.addEventListener('change', function() {
-                clearTimeout(submitTimeout);
-                submitTimeout = setTimeout(() => {
-                    updateActiveFilters();
-                    filterForm.submit();
-                }, 300);
-            });
-        });
-        
-        // Add event listener to 24hour input separately (since it has a number in the ID)
-        if (hour24Input) {
-            hour24Input.addEventListener('change', function() {
-                clearTimeout(submitTimeout);
-                submitTimeout = setTimeout(() => {
-                    updateActiveFilters();
-                    filterForm.submit();
-                }, 300);
-            });
-        }
-        
-        // Update active filters display
-        function updateActiveFilters() {
-            activeFilters.innerHTML = '';
-            let hasActiveFilters = false;
-            
-            const formData = new FormData(filterForm);
-            for (let [key, value] of formData.entries()) {
-                if (value && key !== 'q' && key !== 'page') {
-                    hasActiveFilters = true;
-                    const filterTag = createFilterTag(key, value);
-                    activeFilters.appendChild(filterTag);
-                }
-            }
-            
-            activeFiltersContainer.style.display = hasActiveFilters ? 'block' : 'none';
-        }
-        
-        // Create filter tag element
-        function createFilterTag(filterName, filterValue) {
-            const tag = document.createElement('span');
-            tag.className = 'active-filter-tag';
-            
-            const displayName = getFilterDisplayName(filterName, filterValue);
-            
-            tag.innerHTML = `
-                <span>${displayName}</span>
-                <button type="button" class="remove-filter" data-filter="${filterName}" data-value="${filterValue}">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            
-            tag.querySelector('.remove-filter').addEventListener('click', function() {
-                const filterField = document.getElementById(filterName);
-                if (filterField) {
-                    filterField.value = '';
-                }
-                
-                const quickBtn = document.querySelector(`[data-filter="${filterName}"][data-value="${filterValue}"]`);
-                if (quickBtn) {
-                    quickBtn.classList.remove('active');
-                }
-                
-                updateActiveFilters();
-                filterForm.submit();
-            });
-            
-            return tag;
-        }
-        
-        // Get display name for filter
-        function getFilterDisplayName(filterName, filterValue) {
-            const filterLabels = {
-                'category': 'Category',
-                'service_type': 'Service Type',
-                'emergency': 'Emergency Services',
-                '24hour': '24/7 Services',
-                'city': 'City',
-                'state': 'State',
-                'sort': 'Sort'
-            };
-            
-            const valueLabels = {
-                'true': 'Yes',
-                'false': 'No',
-                'name': 'Name A-Z',
-                'city': 'City A-Z',
-                'category': 'Category',
-                'emergency': 'Emergency First'
-            };
-            
-            const label = filterLabels[filterName] || filterName;
-            let value = valueLabels[filterValue] || filterValue;
-            
-            // For categories, try to get the actual category name
-            if (filterName === 'category' && filterValue) {
-                const categorySelect = document.getElementById('category');
-                if (categorySelect) {
-                    const categoryOptions = categorySelect.options;
-                    for (let i = 0; i < categoryOptions.length; i++) {
-                        const option = categoryOptions[i];
-                        if (option.value === filterValue) {
-                            value = option.text;
-                            break;
+                                                // Auto-submit on filter changes (only for visible fields)
+                    let submitTimeout;
+                    
+                    // Only add event listeners to fields that exist and are visible
+                    const addFilterListener = (selector) => {
+                        const element = document.querySelector(selector);
+                        if (element) {
+                            element.addEventListener('change', function() {
+                                clearTimeout(submitTimeout);
+                                submitTimeout = setTimeout(() => {
+                                    filterForm.submit();
+                                }, 300);
+                            });
                         }
-                    }
-                }
-            }
-            
-            // For service types, try to get the actual service type name
-            if (filterName === 'service_type' && filterValue) {
-                const serviceTypeSelect = document.getElementById('service_type');
-                if (serviceTypeSelect) {
-                    const serviceTypeOptions = serviceTypeSelect.options;
-                    for (let i = 0; i < serviceTypeOptions.length; i++) {
-                        const option = serviceTypeOptions[i];
-                        if (option.value === filterValue) {
-                            value = option.text;
-                            break;
-                        }
-                    }
-                }
-            }
-            
-            return `${label}: ${value}`;
-        }
-        
-        // Initialize active filters
-        updateActiveFilters();
+                    };
+                    
+                    // Add listeners to basic fields that are always present
+                    addFilterListener('#search');
+                    addFilterListener('#city');
+                    addFilterListener('#state');
         
         // Search with debounce
         const searchInput = document.getElementById('search');
-        let searchTimeout;
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                if (this.value.length >= 3 || this.value.length === 0) {
-                    filterForm.submit();
+        if (searchInput) {
+            let searchTimeout;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    if (this.value.length >= 3 || this.value.length === 0) {
+                        filterForm.submit();
+                    }
+                }, 500);
+            });
+        }
+        
+        // Helper function to get color class
+        function getColorClass(button) {
+            const classes = button.className.split(' ');
+            for (const cls of classes) {
+                if (cls.startsWith('btn-outline-')) {
+                    return cls.replace('btn-outline-', '');
                 }
-            }, 500);
+            }
+            return 'primary';
+        }
+        
+        // Initialize quick filter button states based on current form values
+        document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+            const filterName = btn.dataset.filter;
+            const filterValue = btn.dataset.value;
+            const formField = document.getElementById(filterName);
+            
+            if (formField && formField.value === filterValue) {
+                const colorClass = getColorClass(btn);
+                btn.classList.remove('btn-outline-' + colorClass);
+                btn.classList.add('btn-' + colorClass);
+            }
         });
+        
+
+        
+        // State/County Selection functionality
+        const stateSelect = document.getElementById('stateSelect');
+        const countySelect = document.getElementById('countySelect');
+        const applyLocationFilter = document.getElementById('applyLocationFilter');
+        
+                    // Load states on page load
+            if (stateSelect) {
+                fetch('/api/location/states-counties/')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.states) {
+                            data.states.forEach(state => {
+                                const option = document.createElement('option');
+                                option.value = state.ext_ids.state_fips;
+                                option.textContent = state.name;
+                                stateSelect.appendChild(option);
+                            });
+                            
+                            // Restore selected state from URL parameters
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const selectedStateFips = urlParams.get('state_fips');
+                            if (selectedStateFips) {
+                                stateSelect.value = selectedStateFips;
+                                // Trigger change event to load counties
+                                stateSelect.dispatchEvent(new Event('change'));
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading states:', error);
+                    });
+            }
+        
+                    // Load counties when state is selected
+            if (stateSelect && countySelect) {
+                stateSelect.addEventListener('change', function() {
+                    const stateFips = this.value;
+                    countySelect.innerHTML = '<option value="">Select a county...</option>';
+                    countySelect.disabled = !stateFips;
+                    
+                    if (stateFips) {
+                        fetch(`/api/location/states-counties/?state_fips=${stateFips}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success && data.counties && data.counties.length > 0) {
+                                    // State has counties - populate the dropdown and wait for user selection
+                                    data.counties.forEach(county => {
+                                        const option = document.createElement('option');
+                                        option.value = county.id;
+                                        option.textContent = county.name;
+                                        countySelect.appendChild(option);
+                                    });
+                                    
+                                    // Restore selected county from URL parameters
+                                    const urlParams = new URLSearchParams(window.location.search);
+                                    const selectedCountyId = urlParams.get('county_id');
+                                    if (selectedCountyId) {
+                                        countySelect.value = selectedCountyId;
+                                    }
+                                } else {
+                                    // State has no counties - auto-submit with just the state
+                                    const urlParams = new URLSearchParams(window.location.search);
+                                    const selectedStateFips = urlParams.get('state_fips');
+                                    
+                                    // Only auto-submit if this is a new selection (not restoring from URL)
+                                    if (!selectedStateFips || selectedStateFips !== stateFips) {
+                                        // Set the hidden form fields
+                                        const stateFipsField = document.getElementById('selected_state_fips');
+                                        const countyIdField = document.getElementById('selected_county_id');
+                                        
+                                        if (stateFipsField) stateFipsField.value = stateFips;
+                                        if (countyIdField) countyIdField.value = '';  // Clear county
+                                        
+                                        // Submit the form with cleaned parameters
+                                        const formData = new FormData(filterForm);
+                                        const cleanedData = new URLSearchParams();
+                                        
+                                        for (const [key, value] of formData.entries()) {
+                                            // Only include non-empty values, but allow '0' as a valid value
+                                            if (value !== null && value !== undefined && value !== '' && value !== 'Select a state...' && value !== 'Select a county...') {
+                                                cleanedData.append(key, value);
+                                            }
+                                        }
+                                        
+                                        // Navigate to cleaned URL
+                                        const newUrl = window.location.pathname + '?' + cleanedData.toString();
+                                        window.location.href = newUrl;
+                                    }
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error loading counties:', error);
+                            });
+                    } else {
+                        // No state selected - clear county dropdown
+                        countySelect.innerHTML = '<option value="">Select a county...</option>';
+                        countySelect.disabled = true;
+                    }
+                });
+            }
+        
+        // Auto-submit when county is selected
+        if (countySelect) {
+            countySelect.addEventListener('change', function() {
+                const selectedCounty = this.value;
+                const selectedState = stateSelect.value;
+                
+                if (selectedCounty && selectedState) {
+                    // Set the hidden form fields
+                    const stateFipsField = document.getElementById('selected_state_fips');
+                    const countyIdField = document.getElementById('selected_county_id');
+                    
+                    if (stateFipsField) stateFipsField.value = selectedState;
+                    if (countyIdField) countyIdField.value = selectedCounty;
+                    
+                    // Submit the form with cleaned parameters
+                    const formData = new FormData(filterForm);
+                    const cleanedData = new URLSearchParams();
+                    
+                    for (const [key, value] of formData.entries()) {
+                        // Only include non-empty values, but allow '0' as a valid value
+                        if (value !== null && value !== undefined && value !== '' && value !== 'Select a state...' && value !== 'Select a county...') {
+                            cleanedData.append(key, value);
+                        }
+                    }
+                    
+                    // Navigate to cleaned URL
+                    const newUrl = window.location.pathname + '?' + cleanedData.toString();
+                    window.location.href = newUrl;
+                }
+            });
+        }
+        
+        // Apply location filter
+        if (applyLocationFilter) {
+            applyLocationFilter.addEventListener('click', function() {
+                const selectedState = stateSelect.value;
+                const selectedCounty = countySelect.value;
+                
+                if (!selectedState) {
+                    alert('Please select a state first.');
+                    return;
+                }
+                
+                if (!selectedCounty) {
+                    alert('Please select a county.');
+                    return;
+                }
+                
+                // Get the selected values
+                const selectedStateFips = stateSelect.value;
+                const selectedCountyId = countySelect.value;
+                
+                // Set the hidden form fields
+                const stateFipsField = document.getElementById('selected_state_fips');
+                const countyIdField = document.getElementById('selected_county_id');
+                
+                if (stateFipsField) stateFipsField.value = selectedStateFips;
+                if (countyIdField) countyIdField.value = selectedCountyId;
+                
+                // Submit the form to filter results
+                filterForm.submit();
+            });
+        }
+        
+        // Form submission handler to clean up empty parameters
+        if (filterForm) {
+            filterForm.addEventListener('submit', function(e) {
+                // Remove empty form fields before submission
+                const formData = new FormData(this);
+                const cleanedData = new URLSearchParams();
+                
+                for (const [key, value] of formData.entries()) {
+                    // Only include non-empty values, but allow '0' as a valid value
+                    if (value !== null && value !== undefined && value !== '' && value !== 'Select a state...' && value !== 'Select a county...') {
+                        cleanedData.append(key, value);
+                    }
+                }
+                
+                // Update the form action to include cleaned parameters
+                const newUrl = window.location.pathname + '?' + cleanedData.toString();
+                window.location.href = newUrl;
+                e.preventDefault();
+            });
+        }
+        
+        // National resources checkbox functionality
+        const includeNationalCheckbox = document.getElementById('include_national_checkbox');
+        const includeNationalHidden = document.getElementById('include_national');
+        
+        if (includeNationalCheckbox && includeNationalHidden) {
+            // Restore checkbox state from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const includeNationalParam = urlParams.get('include_national');
+            if (includeNationalParam !== null) {
+                includeNationalCheckbox.checked = includeNationalParam === '1';
+                includeNationalHidden.value = includeNationalCheckbox.checked ? '1' : '0';
+            }
+            
+            // Update hidden field when checkbox changes
+            includeNationalCheckbox.addEventListener('change', function() {
+                includeNationalHidden.value = this.checked ? '1' : '0';
+            });
+        }
     });
 </script>
 {% endblock %}

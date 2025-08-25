@@ -1,0 +1,240 @@
+
+=== VERIFICATION UPDATE 2025-08-21 21:21:25 ===
+Resource ID: 6
+Resource Name: Kentucky Adult Protective Services Hotline
+Changes Made: 15 fields updated
+Fields Updated: phone, email, website, address1, address2, city, state, county, postal_code, hours_of_operation, eligibility_requirements, populations_served, cost_information, languages_available, description
+Verification Notes: 1053 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 21:21:45 ===
+Resource ID: 6
+Resource Name: Kentucky Adult Protective Services Hotline
+Changes Made: 0 fields updated
+Fields Updated: None
+Verification Notes: 35 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 21:24:05 ===
+Resource ID: 6
+Resource Name: Kentucky Adult Protective Services Hotline
+Changes Made: 0 fields updated
+Fields Updated: None
+Verification Notes: 68 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 21:24:15 ===
+Resource ID: 6
+Resource Name: Kentucky Adult Protective Services Hotline
+Changes Made: 1 fields updated
+Fields Updated: description
+Verification Notes: 0 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 21:24:56 ===
+Resource ID: 125
+Resource Name: Oxford House
+Changes Made: 0 fields updated
+Fields Updated: None
+Verification Notes: 111 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 21:25:01 ===
+Resource ID: 125
+Resource Name: Oxford House
+Changes Made: 1 fields updated
+Fields Updated: description
+Verification Notes: 0 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 21:30:48 ===
+Resource ID: 6
+Resource Name: Kentucky Adult Protective Services Hotline
+Changes Made: 0 fields updated
+Fields Updated: None
+Verification Notes: 3643 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 21:32:07 ===
+Resource ID: 6
+Resource Name: Kentucky Adult Protective Services Hotline
+Changes Made: 0 fields updated
+Fields Updated: None
+Verification Notes: 3643 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 21:33:32 ===
+Resource ID: 6
+Resource Name: Kentucky Adult Protective Services Hotline
+Changes Made: 0 fields updated
+Fields Updated: None
+Verification Notes: 3643 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 21:35:02 ===
+Resource ID: 6
+Resource Name: Kentucky Adult Protective Services Hotline
+Changes Made: 0 fields updated
+Fields Updated: None
+Verification Notes: 5443 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 21:35:19 ===
+Resource ID: 6
+Resource Name: Kentucky Adult Protective Services Hotline
+Changes Made: 0 fields updated
+Fields Updated: None
+Verification Notes: 5443 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 21:41:35 ===
+Resource ID: 12
+Resource Name: Battered Women's Justice Project (BWJP)
+Changes Made: 14 fields updated
+Fields Updated: phone, email, website, address1, city, state, county, postal_code, hours_of_operation, eligibility_requirements, populations_served, cost_information, languages_available, description
+Verification Notes: 6212 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 21:53:33 ===
+Resource ID: 13
+Resource Name: Bluegrass First Steps
+Changes Made: 15 fields updated
+Fields Updated: phone, email, website, address1, address2, city, state, county, postal_code, hours_of_operation, eligibility_requirements, populations_served, cost_information, languages_available, description
+Verification Notes: 6411 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 21:59:45 ===
+Resource ID: 14
+Resource Name: Kentucky Cabinet for Health and Family Services
+Changes Made: 14 fields updated
+Fields Updated: phone, email, website, address1, city, state, county, postal_code, hours_of_operation, eligibility_requirements, populations_served, cost_information, languages_available, description
+Verification Notes: 6407 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 22:06:14 ===
+Resource ID: 16
+Resource Name: Cabinet for Health and Family Services Secretary's Office
+Changes Made: 14 fields updated
+Fields Updated: phone, email, website, address1, city, state, county, postal_code, hours_of_operation, eligibility_requirements, populations_served, cost_information, languages_available, description
+Verification Notes: 6170 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 22:27:42 ===
+Resource ID: 17
+Resource Name: NCI's Cancer Information Service
+Changes Made: 14 fields updated
+Fields Updated: phone, email, website, address1, city, state, county, postal_code, hours_of_operation, eligibility_requirements, populations_served, cost_information, languages_available, description
+Verification Notes: 6440 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 22:32:16 ===
+Resource ID: 18
+Resource Name: Kentucky Child Care Assistance Program (CCAP)
+Changes Made: 15 fields updated
+Fields Updated: phone, email, website, address1, address2, city, state, county, postal_code, hours_of_operation, eligibility_requirements, populations_served, cost_information, languages_available, description
+Verification Notes: 6716 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-21 22:32:27 ===
+Resource ID: 18
+Resource Name: Kentucky Child Care Assistance Program (CCAP)
+Changes Made: 1 fields updated
+Fields Updated: phone
+Verification Notes: 0 characters
+Next Verification: 2026-02-17
+
+=== VERIFICATION UPDATE 2025-08-22 00:07:37 ===
+Resource ID: 19
+Resource Name: Child Protection Hotline
+Changes Made: 15 fields updated
+Fields Updated: phone, email, website, address1, address2, city, state, county, postal_code, hours_of_operation, eligibility_requirements, populations_served, cost_information, languages_available, description
+Verification Notes: 6511 characters
+Next Verification: 2026-02-18
+
+=== VERIFICATION UPDATE 2025-08-22 00:07:47 ===
+Resource ID: 19
+Resource Name: Child Protection Hotline
+Changes Made: 1 fields updated
+Fields Updated: phone
+Verification Notes: 0 characters
+Next Verification: 2026-02-18
+
+=== VERIFICATION UPDATE 2025-08-22 00:13:24 ===
+Resource ID: 24
+Resource Name: Consumer Product Safety Commission (CPSC)
+Changes Made: 14 fields updated
+Fields Updated: phone, email, website, address1, city, state, county, postal_code, hours_of_operation, eligibility_requirements, populations_served, cost_information, languages_available, description
+Verification Notes: 5253 characters
+Next Verification: 2026-02-18
+
+=== VERIFICATION UPDATE 2025-08-22 00:13:35 ===
+Resource ID: 24
+Resource Name: Consumer Product Safety Commission (CPSC)
+Changes Made: 1 fields updated
+Fields Updated: phone
+Verification Notes: 0 characters
+Next Verification: 2026-02-18
+
+=== VERIFICATION UPDATE 2025-08-22 00:17:49 ===
+Resource ID: 25
+Resource Name: Combat Veterans Motorcycle Association (CVMA)
+Changes Made: 14 fields updated
+Fields Updated: phone, email, website, address1, city, state, county, postal_code, hours_of_operation, eligibility_requirements, populations_served, cost_information, languages_available, description
+Verification Notes: 5935 characters
+Next Verification: 2026-02-18
+
+=== VERIFICATION UPDATE 2025-08-22 00:26:06 ===
+Resource ID: 25
+Resource Name: Combat Veterans Motorcycle Association (CVMA)
+Changes Made: 15 fields updated
+Fields Updated: phone, email, website, address1, address2, city, state, county, postal_code, hours_of_operation, eligibility_requirements, populations_served, cost_information, languages_available, description
+Verification Notes: 5094 characters
+Next Verification: 2026-02-18
+
+=== VERIFICATION UPDATE 2025-08-22 00:29:35 ===
+Resource ID: 26
+Resource Name: Four Rivers Behavioral Health Crisis Line
+Changes Made: 14 fields updated
+Fields Updated: phone, email, website, address1, city, state, county, postal_code, hours_of_operation, eligibility_requirements, populations_served, cost_information, languages_available, description
+Verification Notes: 6485 characters
+Next Verification: 2026-02-18
+
+=== VERIFICATION UPDATE 2025-08-22 00:36:51 ===
+Resource ID: 28
+Resource Name: Crisis Text Line
+Changes Made: 4 fields updated
+Fields Updated: populations_served, cost_information, languages_available, description
+Verification Notes: 1053 characters
+Next Verification: 2025-02-17
+
+=== VERIFICATION UPDATE 2025-08-22 00:39:37 ===
+Resource ID: 29
+Resource Name: Cumberland Valley Aging & Disability Resource Center
+Changes Made: 5 fields updated
+Fields Updated: phone, email, website, postal_code, description
+Verification Notes: 1227 characters
+Next Verification: 2026-02-18
+
+=== VERIFICATION UPDATE 2025-08-22 00:44:22 ===
+Resource ID: 29
+Resource Name: Cumberland Valley Aging & Disability Resource Center
+Changes Made: 1 fields updated
+Fields Updated: phone
+Verification Notes: 1672 characters
+Next Verification: 2026-02-18
+
+=== VERIFICATION UPDATE 2025-08-22 00:50:33 ===
+Resource ID: 30
+Resource Name: Department of Health and Human Services - Administration for Children & Families
+Changes Made: 14 fields updated
+Fields Updated: phone, email, website, address1, city, state, county, postal_code, hours_of_operation, eligibility_requirements, populations_served, cost_information, languages_available, description
+Verification Notes: 5418 characters
+Next Verification: 2026-02-18
+
+=== VERIFICATION UPDATE 2025-08-22 01:05:20 ===
+Resource ID: 31
+Resource Name: U.S. Department of Housing and Urban Development (HUD) Office of Fair Housing and Equal Opportunity (FHEO)
+Changes Made: 6 fields updated
+Fields Updated: email, hours_of_operation, eligibility_requirements, populations_served, cost_information, languages_available
+Verification Notes: 6837 characters
+Next Verification: 2026-02-18

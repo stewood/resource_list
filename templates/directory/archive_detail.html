@@ -113,7 +113,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         {% if resource.phone %}
-                            <p><strong>Phone:</strong> <a href="tel:{{ resource.phone }}">{{ resource.phone }}</a></p>
+                            <p><strong>Phone:</strong> <a href="tel:{{ resource.phone }}">{{ resource.phone|format_phone }}</a></p>
                         {% endif %}
                         {% if resource.email %}
                             <p><strong>Email:</strong> <a href="mailto:{{ resource.email }}">{{ resource.email }}</a></p>

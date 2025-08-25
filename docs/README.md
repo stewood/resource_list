@@ -8,6 +8,12 @@ This directory contains project documentation and specifications.
 - **london_ky_import_summary.md** - Summary of the London KY resource import process
 - **resource_list_spec.md** - Technical specifications for the resource directory system
 
+## Process Documentation
+
+- **[verification/](./verification/)** - Resource verification process and quality assurance documentation
+  - **VERIFICATION.md** - Complete step-by-step verification workflow
+  - **README.md** - Overview and usage guide for verification process
+
 ## Import Data
 
 The `data/` directory contains CSV files used for importing resources:

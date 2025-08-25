@@ -158,6 +158,10 @@ class Resource(models.Model):
         blank=True,
         related_name="verified_resources",
     )
+    verification_frequency_days = models.IntegerField(
+        default=180,
+        help_text="Number of days between verifications (default: 180 days = 6 months)"
+    )
 
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
@@ -419,7 +423,7 @@ class Resource(models.Model):
         """Check if the resource needs verification.
         
         A resource needs verification if it has never been verified or if
-        the verification has expired based on the configured expiry period.
+        the verification has expired based on the configured verification frequency.
         
         Returns:
             bool: True if verification is needed, False otherwise
@@ -428,9 +432,21 @@ class Resource(models.Model):
             return True
 
         expiry_date = self.last_verified_at + timedelta(
-            days=settings.VERIFICATION_EXPIRY_DAYS
+            days=self.verification_frequency_days
         )
         return timezone.now() > expiry_date
+
+    @property
+    def next_verification_date(self):
+        """Calculate when the next verification is due.
+        
+        Returns:
+            datetime: Date when next verification is due, or None if never verified
+        """
+        if not self.last_verified_at:
+            return None
+        
+        return self.last_verified_at + timedelta(days=self.verification_frequency_days)
 
     @property
     def has_contact_info(self) -> bool:

@@ -167,6 +167,42 @@ class ResourceFilterForm(forms.Form):
         help_text="Search radius in miles (0.5-100 miles)"
     )
 
+    # Advanced location filtering
+    coverage_area_type = forms.ChoiceField(
+        choices=[
+            ("", "Any coverage type"),
+            ("STATE", "State-level coverage only"),
+            ("COUNTY", "County-level coverage only"),
+            ("CITY", "City-level coverage only"),
+            ("RADIUS", "Radius-based coverage only"),
+            ("POLYGON", "Custom polygon coverage only"),
+        ],
+        required=False,
+        initial="",
+        widget=forms.Select(attrs={"class": "form-control"}),
+        help_text="Filter by specific coverage area types"
+    )
+
+    max_distance = forms.FloatField(
+        required=False,
+        min_value=0.1,
+        max_value=100.0,
+        widget=forms.NumberInput(
+            attrs={"class": "form-control", "step": "0.1", "min": "0.1", "max": "100", "placeholder": "Max distance (miles)"}
+        ),
+        help_text="Maximum distance from search location"
+    )
+
+    min_distance = forms.FloatField(
+        required=False,
+        min_value=0.0,
+        max_value=99.9,
+        widget=forms.NumberInput(
+            attrs={"class": "form-control", "step": "0.1", "min": "0.0", "max": "99.9", "placeholder": "Min distance (miles)"}
+        ),
+        help_text="Minimum distance from search location"
+    )
+
     sort = forms.ChoiceField(
         choices=[
             ("-updated_at", "Recently Updated"),
@@ -280,6 +316,25 @@ class ResourceFilterForm(forms.Form):
                 Q(state__icontains=address) |
                 Q(county__icontains=address)
             )
+
+        # Advanced location filtering
+        coverage_area_type = self.cleaned_data.get("coverage_area_type")
+        if coverage_area_type:
+            queryset = queryset.filter(coverage_areas__kind=coverage_area_type)
+
+        # Distance-based filtering
+        max_distance = self.cleaned_data.get("max_distance")
+        min_distance = self.cleaned_data.get("min_distance")
+        
+        if (lat and lon) and (max_distance or min_distance):
+            try:
+                # Apply distance filtering
+                if max_distance:
+                    queryset = queryset.filter(distance_miles__lte=float(max_distance))
+                if min_distance:
+                    queryset = queryset.filter(distance_miles__gte=float(min_distance))
+            except (ValueError, TypeError) as e:
+                logger.warning(f"Distance filtering failed: {e}")
 
         # Enhanced Location-Based Result Ranking
         sort = self.cleaned_data.get("sort")

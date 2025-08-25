@@ -156,6 +156,7 @@ class ResourceAdmin(admin.ModelAdmin):
         "archived_by",
         "needs_verification",
         "has_contact_info",
+        "next_verification_date",
     ]
     fieldsets = (
         (
@@ -197,7 +198,7 @@ class ResourceAdmin(admin.ModelAdmin):
                 )
             },
         ),
-        ("Verification", {"fields": ("last_verified_at", "last_verified_by")}),
+        ("Verification", {"fields": ("last_verified_at", "last_verified_by", "verification_frequency_days", "next_verification_date")}),
         (
             "Archive Information",
             {

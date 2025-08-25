@@ -229,11 +229,58 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
     if state_filter:
         queryset = queryset.filter(state__icontains=state_filter)
     
+    # Filter by state FIPS code and county ID (from our new dropdowns)
+    state_fips_filter = request.GET.get("state_fips", "")
+    county_id_filter = request.GET.get("county_id", "")
+    include_national = request.GET.get("include_national", "1") == "1"  # Default to True
+    
+    if state_fips_filter or county_id_filter:
+        # Filter by coverage areas matching the selected state/county
+        coverage_filters = Q()
+        
+        if state_fips_filter:
+            coverage_filters |= Q(coverage_areas__ext_ids__state_fips=state_fips_filter)
+        
+        if county_id_filter:
+            coverage_filters |= Q(coverage_areas__id=county_id_filter)
+        
+        # Include/exclude truly national resources (those with United States coverage area ID: 7855)
+        if include_national:
+            # When including national, add resources with national coverage to the filtered results
+            national_coverage_filter = Q(coverage_areas__id=7855)  # United States coverage area
+            queryset = queryset.filter(coverage_filters | national_coverage_filter).distinct()
+        else:
+            # When excluding national, filter only by local coverage and exclude national resources
+            queryset = queryset.filter(coverage_filters).exclude(coverage_areas__id=7855).distinct()
+    
     # Location-based filtering
     address_filter = request.GET.get("address", "").strip()
     lat_filter = request.GET.get("lat", "")
     lon_filter = request.GET.get("lon", "")
     radius_miles = request.GET.get("radius_miles", "10.0")
+    
+    # Distance-based filtering (will be applied after spatial filtering)
+    max_distance_filter = request.GET.get("max_distance", "")
+    min_distance_filter = request.GET.get("min_distance", "")
+    
+    # Store distance filters for later use
+    distance_filters = {
+        'max_distance': max_distance_filter,
+        'min_distance': min_distance_filter
+    }
+    
+    # Log search for analytics (if address is provided)
+    if address_filter:
+        import time
+        start_time = time.time()
+        
+        # Get user info for analytics
+        user = request.user if request.user.is_authenticated else None
+        ip_address = request.META.get('REMOTE_ADDR')
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
+        
+        # We'll log the search after we get the results
+        search_start_time = start_time
 
     if address_filter and lat_filter and lon_filter:
             # Use spatial filtering when coordinates are available
@@ -249,6 +296,33 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
                 spatial_ids = list(spatial_queryset.values_list('pk', flat=True))
                 if spatial_ids:
                     queryset = queryset.filter(pk__in=spatial_ids)
+                    
+                    # Apply distance filtering after spatial filtering
+                    if distance_filters['max_distance'] or distance_filters['min_distance']:
+                        try:
+                            # Re-apply spatial filtering with distance constraints
+                            spatial_queryset = Resource.objects.filter_by_location_with_proximity(
+                                lat=float(lat_filter),
+                                lon=float(lon_filter),
+                                radius_miles=float(radius_miles) if radius_miles else None,
+                                sort_by_proximity=True
+                            )
+                            
+                            # Apply distance filters
+                            if distance_filters['max_distance']:
+                                spatial_queryset = spatial_queryset.filter(distance_miles__lte=float(distance_filters['max_distance']))
+                            if distance_filters['min_distance']:
+                                spatial_queryset = spatial_queryset.filter(distance_miles__gte=float(distance_filters['min_distance']))
+                            
+                            # Update queryset with distance-filtered results
+                            distance_filtered_ids = list(spatial_queryset.values_list('pk', flat=True))
+                            if distance_filtered_ids:
+                                queryset = queryset.filter(pk__in=distance_filtered_ids)
+                            else:
+                                queryset = Resource.objects.none()
+                        except (ValueError, TypeError) as e:
+                            logger.warning(f"Distance filtering failed: {e}")
+                    
                     # Preserve spatial ordering when proximity-based sorting is requested
                     if request.GET.get("sort") in ["distance", "proximity"]:
                         from django.db.models import Case, When
@@ -288,6 +362,11 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
         queryset = queryset.filter(is_24_hour_service=True)
     elif twenty_four_hour_filter == "false":
         queryset = queryset.filter(is_24_hour_service=False)
+    
+    # Advanced location filtering
+    coverage_area_type_filter = request.GET.get("coverage_area_type", "")
+    if coverage_area_type_filter:
+        queryset = queryset.filter(coverage_areas__kind=coverage_area_type_filter)
     
     # Enhanced Location-Based Result Ranking
     sort_by = request.GET.get("sort", "name")
@@ -349,6 +428,30 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     
+    # Log search for analytics (if address was provided)
+    if address_filter and 'search_start_time' in locals():
+        import time
+        search_duration_ms = int((time.time() - search_start_time) * 1000)
+        results_count = paginator.count
+        
+        # Determine geocoding success
+        geocoding_success = bool(lat_filter and lon_filter)
+        
+        # Log the search
+        from ..models import LocationSearchLog
+        LocationSearchLog.log_search(
+            address=address_filter,
+            lat=float(lat_filter) if lat_filter else None,
+            lon=float(lon_filter) if lon_filter else None,
+            radius_miles=float(radius_miles) if radius_miles else 10.0,
+            results_count=results_count,
+            search_duration_ms=search_duration_ms,
+            geocoding_success=geocoding_success,
+            user=user,
+            ip_address=ip_address,
+            user_agent=user_agent
+        )
+    
     # Get filter options for the sidebar
     categories = TaxonomyCategory.objects.filter(
         resources__status="published",
@@ -392,6 +495,12 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
         'radius_miles': radius_miles,
         'emergency_filter': emergency_filter,
         'twenty_four_hour_filter': twenty_four_hour_filter,
+        'coverage_area_type_filter': coverage_area_type_filter,
+        'max_distance_filter': max_distance_filter,
+        'min_distance_filter': min_distance_filter,
+        'state_fips_filter': state_fips_filter,
+        'county_id_filter': county_id_filter,
+        'include_national': include_national,
         'sort_by': sort_by,
         'categories': categories,
         'service_types': service_types,

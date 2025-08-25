@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("directory", "0003_fix_fts5_search"),
+        ("directory", "0001_initial"),
     ]
 
     operations = [

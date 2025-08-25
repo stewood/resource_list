@@ -166,6 +166,77 @@
                             </div>
                         </div>
 
+                        <!-- Location Search -->
+                        <div class="col-lg-4 mb-3">
+                            <div class="filter-section">
+                                <h6 class="filter-section-title">
+                                    <i class="fas fa-search-location me-2"></i>Location Search
+                                </h6>
+                                <div class="filter-group">
+                                    <label for="address" class="form-label">Address or City</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="address" name="address" 
+                                               value="{{ current_filters.address }}" placeholder="Enter your address or city">
+                                        <button type="button" class="btn btn-outline-primary" id="geocodeBtn" title="Geocode Address">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text">Enter an address to find resources serving that location</div>
+                                </div>
+                                {% if current_filters.lat and current_filters.lon %}
+                                <div class="filter-group">
+                                    <label for="radius_miles" class="form-label">Search Radius</label>
+                                    <select class="form-select" id="radius_miles" name="radius_miles">
+                                        <option value="5" {% if current_filters.radius_miles == '5' %}selected{% endif %}>5 miles</option>
+                                        <option value="10" {% if current_filters.radius_miles == '10' or not current_filters.radius_miles %}selected{% endif %}>10 miles</option>
+                                        <option value="25" {% if current_filters.radius_miles == '25' %}selected{% endif %}>25 miles</option>
+                                        <option value="50" {% if current_filters.radius_miles == '50' %}selected{% endif %}>50 miles</option>
+                                        <option value="100" {% if current_filters.radius_miles == '100' %}selected{% endif %}>100 miles</option>
+                                    </select>
+                                </div>
+                                {% else %}
+                                <div class="form-text small text-muted">
+                                    <i class="fas fa-info-circle"></i> Enter an address above to set search radius
+                                </div>
+                                {% endif %}
+                                <!-- Hidden fields for coordinates -->
+                                <input type="hidden" id="lat" name="lat" value="{{ current_filters.lat }}">
+                                <input type="hidden" id="lon" name="lon" value="{{ current_filters.lon }}">
+                                <!-- Location feedback -->
+                                <div id="locationFeedback" class="mt-2" style="display: none;">
+                                    <div class="alert alert-info alert-sm">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        <span id="locationMessage"></span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Location confirmation display -->
+                                {% if current_filters.lat and current_filters.lon and current_filters.address %}
+                                <div class="location-confirmation mt-2">
+                                    <div class="alert alert-success alert-sm">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <i class="fas fa-map-marker-alt me-1"></i>
+                                                <strong>Searching near:</strong> {{ current_filters.address }}
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" id="changeLocationBtn" title="Change Location">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                        <div class="mt-1 small text-muted">
+                                            <i class="fas fa-crosshairs me-1"></i>
+                                            Coordinates: {{ current_filters.lat }}, {{ current_filters.lon }}
+                                        </div>
+                                        <div class="mt-1 small text-muted">
+                                            <i class="fas fa-circle me-1"></i>
+                                            Radius: {{ current_filters.radius_miles }} miles
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
                         <!-- Service Availability -->
                         <div class="col-lg-4 mb-3">
                             <div class="filter-section">
@@ -216,6 +287,11 @@
                                             <option value="city" {% if current_filters.sort == 'city' %}selected{% endif %}>City A-Z</option>
                                             <option value="-city" {% if current_filters.sort == '-city' %}selected{% endif %}>City Z-A</option>
                                             <option value="emergency_first" {% if current_filters.sort == 'emergency_first' %}selected{% endif %}>Emergency First</option>
+                                            <optgroup label="Location-based (when address provided)">
+                                                <option value="distance" {% if current_filters.sort == 'distance' %}selected{% endif %}>Distance</option>
+                                                <option value="proximity" {% if current_filters.sort == 'proximity' %}selected{% endif %}>Proximity (Distance + Coverage)</option>
+                                                <option value="coverage_specificity" {% if current_filters.sort == 'coverage_specificity' %}selected{% endif %}>Coverage Specificity</option>
+                                            </optgroup>
                                         </select>
                                     </div>
                                     <div class="d-flex gap-2">
@@ -311,7 +387,40 @@
                                             <p class="text-muted small mb-2">
                                                 <i class="fas fa-map-marker-alt"></i> {{ resource.city }}, {{ resource.state }}
                                                 {% if resource.county %} ({{ resource.county }} County){% endif %}
+                                                {% if current_filters.lat and current_filters.lon and resource.distance_miles %}
+                                                <span class="text-primary ms-2">
+                                                    <i class="fas fa-ruler"></i> {{ resource.distance_miles|floatformat:1 }} miles away
+                                                </span>
+                                                {% endif %}
                                             </p>
+                                        {% endif %}
+                                        
+                                        <!-- Location-based indicators -->
+                                        {% if current_filters.lat and current_filters.lon %}
+                                        <div class="location-indicators mb-2">
+                                            {% if resource.coverage_areas.exists %}
+                                            <span class="badge bg-success me-1" title="Serves your area">
+                                                <i class="fas fa-check-circle me-1"></i>Serves your area
+                                            </span>
+                                            {% else %}
+                                            <span class="badge bg-warning me-1" title="May not serve your area">
+                                                <i class="fas fa-question-circle me-1"></i>Check coverage
+                                            </span>
+                                            {% endif %}
+                                            
+                                            {% if resource.coverage_areas.exists %}
+                                            <div class="small text-muted mt-1">
+                                                <i class="fas fa-map-marked-alt me-1"></i>
+                                                Coverage: 
+                                                {% for area in resource.coverage_areas.all|slice:":3" %}
+                                                    <span class="badge bg-light text-dark me-1">{{ area.name }}</span>
+                                                {% endfor %}
+                                                {% if resource.coverage_areas.count > 3 %}
+                                                    <span class="badge bg-light text-dark">+{{ resource.coverage_areas.count|add:"-3" }} more</span>
+                                                {% endif %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
                                         {% endif %}
                                         
                                         {% if resource.is_emergency_service or resource.is_24_hour_service %}

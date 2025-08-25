@@ -1,0 +1,5 @@
+# PostgreSQL adapter for Django
+psycopg2-binary==2.9.7
+
+# Additional dependencies for cloud deployment
+dj-database-url==2.1.0

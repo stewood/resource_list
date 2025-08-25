@@ -1,21 +1,28 @@
+# Core Django dependencies
 Django==5.0.2
 djangorestframework==3.16.1
 django-htmx==1.23.2
 gunicorn==21.2.0
 whitenoise==6.7.0
 python-dotenv==1.1.1
-tblib==3.1.0
-coverage==7.4.3
+dj-database-url==2.1.0
 
-# GIS dependencies for spatial service areas
-numpy<2
-shapely==2.0.2
-geopy==2.4.1
-fiona==1.9.5
-pyproj==3.6.1
+# Database
+psycopg2-binary==2.9.7
+
+# HTTP requests
 requests==2.31.0
 
-# Development tools
+# Development tools (optional for production)
+tblib==3.1.0
+coverage==7.4.3
 flake8==7.3.0
 black==25.1.0
 isort==6.0.1
+
+# GIS dependencies (optional - only needed if GIS_ENABLED=True)
+# numpy<2
+# shapely==2.0.2
+# geopy==2.4.1
+# fiona==1.9.5
+# pyproj==3.6.1

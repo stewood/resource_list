@@ -235,6 +235,10 @@ RESOURCE_STATUS_CHOICES = [
 MIN_DESCRIPTION_LENGTH = 20
 VERIFICATION_EXPIRY_DAYS = 180
 
+# Markdown Configuration
+# The verification notes field now uses Markdown formatting
+# Users can write in Markdown and see a live preview of the formatted content
+
 # GIS-specific settings
 if GIS_ENABLED:
     # Coordinate system for spatial data (WGS84)

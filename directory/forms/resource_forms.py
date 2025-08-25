@@ -118,6 +118,7 @@ class ResourceForm(forms.ModelForm):
             "notes",
             "last_verified_at",
             "last_verified_by",
+            "verification_frequency_days",
         ]
         widgets = {
             "name": forms.TextInput(
@@ -228,14 +229,23 @@ class ResourceForm(forms.ModelForm):
             "notes": forms.Textarea(
                 attrs={
                     "class": "form-control",
-                    "rows": 4,
-                    "placeholder": "INTERNAL USE ONLY - Verification details: Include contact person, phone numbers, websites, dates contacted, and verification methods. Example: 'Contacted Jane Smith (502-555-1234) on 8/15/2024. Hours confirmed via website: www.example.org/hours. Eligibility requirements verified by phone call.'",
+                    "rows": 10,
+                    "placeholder": "Enter verification notes in Markdown format...",
                 }
             ),
             "last_verified_at": forms.DateTimeInput(
                 attrs={"class": "form-control", "type": "datetime-local"}
             ),
             "last_verified_by": forms.Select(attrs={"class": "form-control"}),
+            "verification_frequency_days": forms.NumberInput(
+                attrs={
+                    "class": "form-control",
+                    "min": 30,
+                    "max": 1095,
+                    "placeholder": "180",
+                    "title": "Number of days between verifications (30-1095 days)"
+                }
+            ),
         }
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -274,6 +284,7 @@ class ResourceForm(forms.ModelForm):
         # Set initial values
         if not self.instance.pk:  # New resource
             self.fields["status"].initial = "draft"
+            self.fields["verification_frequency_days"].initial = 180
             if self.user:
                 self.fields["last_verified_by"].initial = self.user
 
@@ -377,14 +388,11 @@ class ResourceForm(forms.ModelForm):
 
             # Check if verification is within expiry period
             if last_verified_at:
-                from django.conf import settings
-
-                expiry_date = last_verified_at + timedelta(
-                    days=settings.VERIFICATION_EXPIRY_DAYS
-                )
+                verification_frequency = cleaned_data.get('verification_frequency_days', 180)
+                expiry_date = last_verified_at + timedelta(days=verification_frequency)
                 if timezone.now() > expiry_date:
                     raise ValidationError(
-                        f"Verification must be within {settings.VERIFICATION_EXPIRY_DAYS} days."
+                        f"Verification must be within {verification_frequency} days."
                     )
 
         return cleaned_data

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load directory_extras %}
 
 {% block title %}{{ resource.name }} - Resource Directory{% endblock %}
 
@@ -187,7 +188,7 @@
                     {% if resource.phone %}
                     <div class="col-md-4 mb-3">
                         <strong>Phone:</strong><br>
-                        <a href="tel:{{ resource.phone }}">{{ resource.phone }}</a>
+                        <a href="tel:{{ resource.phone }}">{{ resource.phone|format_phone }}</a>
                     </div>
                     {% endif %}
                     
@@ -344,35 +345,72 @@
         </div>
         
         <!-- Verification Information -->
-        {% if resource.last_verified_at or resource.last_verified_by %}
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">
                     <i class="fas fa-check-circle"></i> Verification Information
+                    {% if resource.needs_verification %}
+                        <span class="badge bg-danger ms-2">Needs Verification</span>
+                    {% else %}
+                        <span class="badge bg-success ms-2">Verified</span>
+                    {% endif %}
                 </h5>
             </div>
             <div class="card-body">
                 <div class="row">
-                    {% if resource.last_verified_at %}
                     <div class="col-md-6 mb-3">
                         <strong>Last Verified:</strong><br>
-                        {{ resource.last_verified_at|date:"F j, Y" }}
-                        {% if resource.needs_verification %}
-                            <span class="badge bg-danger ms-2">Needs Verification</span>
+                        {% if resource.last_verified_at %}
+                            {{ resource.last_verified_at|date:"F j, Y" }}
+                        {% else %}
+                            <span class="text-muted">Never verified</span>
                         {% endif %}
                     </div>
-                    {% endif %}
                     
-                    {% if resource.last_verified_by %}
                     <div class="col-md-6 mb-3">
                         <strong>Verified By:</strong><br>
-                        {{ resource.last_verified_by.get_full_name|default:resource.last_verified_by.username }}
+                        {% if resource.last_verified_by %}
+                            {{ resource.last_verified_by.get_full_name|default:resource.last_verified_by.username }}
+                        {% else %}
+                            <span class="text-muted">No verifier assigned</span>
+                        {% endif %}
                     </div>
-                    {% endif %}
+                    
+                    <div class="col-md-6 mb-3">
+                        <strong>Verification Frequency:</strong><br>
+                        {% if resource.verification_frequency_days %}
+                            {{ resource.verification_frequency_days }} days
+                            <small class="text-muted">({{ resource.verification_frequency_days|days_to_months }} months)</small>
+                        {% else %}
+                            <span class="text-muted">180 days (default)</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <strong>Next Verification Due:</strong><br>
+                        {% if resource.next_verification_date %}
+                            {{ resource.next_verification_date|date:"F j, Y" }}
+                            {% if resource.needs_verification %}
+                                <span class="badge bg-warning ms-2">Overdue</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">Not scheduled</span>
+                        {% endif %}
+                    </div>
                 </div>
+                
+                {% if resource.notes %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <strong>Verification Notes:</strong>
+                        <div class="verification-notes-display border rounded p-3 bg-light mt-2">
+                            {{ resource.notes|markdown }}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
-        {% endif %}
     </div>
     
     <!-- Sidebar -->

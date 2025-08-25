@@ -26,6 +26,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
     <!-- Theme CSS -->
     <link href="{% static 'theme.css' %}" rel="stylesheet">
+    <!-- CKEditor CSS -->
+    {{ form.media.css }}
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.6"></script>
     
@@ -48,6 +50,36 @@
         }
         .btn-action {
             margin-right: 0.25rem;
+        }
+        
+        /* CKEditor Full Width Styling */
+        .cke {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        
+        .cke_inner {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        
+        .cke_contents {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        
+        .cke_top, .cke_bottom {
+            width: 100% !important;
+        }
+        
+        /* Force the editor iframe to be full width */
+        .cke iframe {
+            width: 100% !important;
+        }
+        
+        /* Override any CKEditor width settings */
+        .django-ckeditor-widget {
+            width: 100% !important;
         }
     </style>
     
@@ -152,6 +184,8 @@
     <script src="https://unpkg.com/leaflet-geometryutil@0.10.0/src/leaflet.geometryutil.js"></script>
     <!-- Theme JS -->
     <script src="{% static 'theme.js' %}"></script>
+    <!-- CKEditor JS -->
+    {{ form.media.js }}
     
     <!-- Global HTMX Configuration -->
     <script>

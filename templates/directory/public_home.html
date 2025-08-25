@@ -12,31 +12,37 @@
             <p class="lead mb-4">Find help and resources for people experiencing homelessness in London, Kentucky and surrounding areas.</p>
             <div class="row g-3 justify-content-center">
                 <div class="col-md-3">
-                    <div class="card text-center h-100">
-                        <div class="card-body">
-                            <i class="fas fa-users fa-2x text-primary mb-2"></i>
-                            <h5 class="card-title">{{ total_resources }}</h5>
-                            <p class="card-text small">Total Resources</p>
+                    <a href="{% url 'directory:public_resource_list' %}" class="text-decoration-none">
+                        <div class="card text-center h-100 clickable-card">
+                            <div class="card-body">
+                                <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                                <h5 class="card-title">{{ total_resources }}</h5>
+                                <p class="card-text small">Total Resources</p>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-md-3">
-                    <div class="card text-center h-100">
-                        <div class="card-body">
-                            <i class="fas fa-exclamation-triangle fa-2x text-danger mb-2"></i>
-                            <h5 class="card-title">{{ emergency_count }}</h5>
-                            <p class="card-text small">Emergency Services</p>
+                    <a href="{% url 'directory:public_resource_list' %}?emergency=true" class="text-decoration-none">
+                        <div class="card text-center h-100 clickable-card">
+                            <div class="card-body">
+                                <i class="fas fa-exclamation-triangle fa-2x text-danger mb-2"></i>
+                                <h5 class="card-title">{{ emergency_count }}</h5>
+                                <p class="card-text small">Emergency Services</p>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-md-3">
-                    <div class="card text-center h-100">
-                        <div class="card-body">
-                            <i class="fas fa-clock fa-2x text-success mb-2"></i>
-                            <h5 class="card-title">{{ twenty_four_hour_count }}</h5>
-                            <p class="card-text small">24-Hour Services</p>
+                    <a href="{% url 'directory:public_resource_list' %}?24hour=true" class="text-decoration-none">
+                        <div class="card text-center h-100 clickable-card">
+                            <div class="card-body">
+                                <i class="fas fa-clock fa-2x text-success mb-2"></i>
+                                <h5 class="card-title">{{ twenty_four_hour_count }}</h5>
+                                <p class="card-text small">24-Hour Services</p>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -92,36 +98,6 @@
         </div>
     </div>
 
-    <!-- Service Types Section -->
-    <div class="row mb-5">
-        <div class="col-12">
-            <h2 class="mb-4">Browse by Service Type</h2>
-            <div class="row g-4">
-                {% for service_type in service_types %}
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 resource-card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ service_type.name }}</h5>
-                            <p class="card-text text-muted">{{ service_type.description|truncatewords:15 }}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge bg-success">{{ service_type_counts|get_item:service_type.id }} resources</span>
-                                <a href="{% url 'directory:public_resource_list' %}?service_type={{ service_type.id }}" class="btn btn-outline-success btn-sm">
-                                    View Resources <i class="fas fa-arrow-right ms-1"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="col-12">
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> No service types available at this time.
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
 
     <!-- Quick Links Section -->
     <div class="row mb-5">
@@ -197,6 +173,67 @@
         
         [data-theme="dark"] .help-info-card strong {
             color: #ffffff !important;
+        }
+        
+        /* Clickable card styles */
+        .clickable-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .clickable-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .clickable-card:active {
+            transform: translateY(-2px);
+        }
+        
+        /* Dark mode support for clickable cards */
+        [data-theme="dark"] .clickable-card {
+            background-color: var(--bs-dark) !important;
+            border-color: var(--bs-border-color) !important;
+        }
+        
+        [data-theme="dark"] .clickable-card:hover {
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Ensure proper text colors for dark mode clickable cards */
+        [data-theme="dark"] .clickable-card .card-body {
+            color: #ffffff !important;
+        }
+        
+        [data-theme="dark"] .clickable-card .card-title {
+            color: #ffffff !important;
+        }
+        
+        [data-theme="dark"] .clickable-card .card-text {
+            color: #e0e0e0 !important;
+        }
+        
+        /* Ensure link text is visible in dark mode */
+        [data-theme="dark"] a .clickable-card .card-body,
+        [data-theme="dark"] a .clickable-card .card-title,
+        [data-theme="dark"] a .clickable-card .card-text {
+            color: inherit !important;
+        }
+        
+        /* Override Bootstrap link colors for these specific cards */
+        [data-theme="dark"] a:link .clickable-card,
+        [data-theme="dark"] a:visited .clickable-card {
+            text-decoration: none;
+        }
+        
+        [data-theme="dark"] a:link .clickable-card .card-title,
+        [data-theme="dark"] a:visited .clickable-card .card-title {
+            color: #ffffff !important;
+        }
+        
+        [data-theme="dark"] a:link .clickable-card .card-text,
+        [data-theme="dark"] a:visited .clickable-card .card-text {
+            color: #e0e0e0 !important;
         }
     </style>
 </div>
