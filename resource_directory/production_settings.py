@@ -34,8 +34,8 @@ if not SECRET_KEY:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "0") == "1"
 
-# GIS Configuration - Disabled for cloud deployment
-GIS_ENABLED = False
+# GIS Configuration - Enabled for PostGIS functionality
+GIS_ENABLED = True
 
 # Host configuration
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
@@ -92,14 +92,24 @@ WSGI_APPLICATION = "resource_directory.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# Use PostgreSQL in production
-DATABASES = {
-    "default": dj_database_url.parse(
-        os.environ.get("DATABASE_URL"),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
+# Use PostgreSQL with PostGIS in production when GIS is enabled
+if GIS_ENABLED:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            os.environ.get("DATABASE_URL"),
+            conn_max_age=600,
+            conn_health_checks=True,
+            engine="django.contrib.gis.db.backends.postgis",
+        )
+    }
+else:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            os.environ.get("DATABASE_URL"),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -221,3 +231,18 @@ LOGGING = {
         },
     },
 }
+
+# GIS-specific settings (when GIS is enabled)
+if GIS_ENABLED:
+    # Coordinate system for spatial data (WGS84)
+    SPATIAL_REFERENCE_SYSTEM = 4326
+    
+    # Geometry simplification tolerance for display (in degrees)
+    GEOMETRY_SIMPLIFICATION_TOLERANCE = 0.001
+    
+    # Maximum vertices for uploaded polygons
+    MAX_POLYGON_VERTICES = 10000
+    
+    # Geocoding settings
+    GEOCODING_CACHE_EXPIRY_DAYS = 30
+    GEOCODING_RATE_LIMIT_PER_MINUTE = 60
