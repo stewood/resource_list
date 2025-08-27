@@ -1,6 +1,6 @@
 """
-Django settings for PostgreSQL database on Render.
-This file contains the database configuration for the cloud deployment.
+Django settings for PostgreSQL database on Render with PostGIS support.
+This file contains the database configuration for the cloud deployment with GIS functionality.
 """
 
 import os
@@ -18,13 +18,16 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']  # Configure appropriately for production
 
+# GIS Configuration - Enable PostGIS functionality
+GIS_ENABLED = True
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# PostgreSQL database configuration for Render
+# PostgreSQL database configuration for Render with PostGIS
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'isaiah58_resources',
         'USER': 'isaiah58_user',
         'PASSWORD': 'CMXAq8v3zpy6Vwm1CIV26EKHagUDt0Nr',
@@ -35,6 +38,10 @@ DATABASES = {
         },
     }
 }
+
+# Add GIS apps when GIS is enabled
+if GIS_ENABLED and "django.contrib.gis" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("django.contrib.gis")
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -71,3 +78,10 @@ MIGRATION_EXCLUDE = [
     ('directory', '0002_add_fts5_search'),
     ('audit', '0002_add_immutability_triggers'),
 ]
+
+# GIS-specific settings
+SPATIAL_REFERENCE_SYSTEM = 4326
+GEOMETRY_SIMPLIFICATION_TOLERANCE = 0.001
+MAX_POLYGON_VERTICES = 10000
+GEOCODING_CACHE_EXPIRY_DAYS = 30
+GEOCODING_RATE_LIMIT_PER_MINUTE = 60
