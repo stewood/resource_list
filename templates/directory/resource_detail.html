@@ -616,19 +616,51 @@
     document.addEventListener('DOMContentLoaded', function() {
         const mapContainer = document.getElementById('coverage-map');
         if (mapContainer) {
-            // Initialize map with Leaflet
-            const map = L.map('coverage-map').setView([37.7749, -122.4194], 10);
-            
-            // Add OpenStreetMap tiles
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-            
-            // Load coverage areas from API
+            // Get coverage areas data to determine initial map center
             fetch('{% url "directory:api_resource_areas" resource.pk %}')
                 .then(response => response.json())
                 .then(data => {
                     if (data.coverage_areas && data.coverage_areas.length > 0) {
+                        // Calculate initial center from coverage areas
+                        let totalLat = 0;
+                        let totalLon = 0;
+                        let validCenters = 0;
+                        
+                        // First pass: collect center points
+                        data.coverage_areas.forEach(area => {
+                            if (area.center && area.center.lat && area.center.lon) {
+                                totalLat += area.center.lat;
+                                totalLon += area.center.lon;
+                                validCenters++;
+                            }
+                        });
+                        
+                        // Determine initial map center
+                        let initialCenter = [37.7749, -122.4194]; // Default to San Francisco
+                        let initialZoom = 10;
+                        
+                        if (validCenters > 0) {
+                            // Use average of coverage area centers
+                            initialCenter = [totalLat / validCenters, totalLon / validCenters];
+                            initialZoom = 8; // Zoom out a bit for multiple areas
+                        } else if (data.coverage_areas.length === 1 && data.coverage_areas[0].bounds) {
+                            // Use bounds center if no center points available
+                            const bounds = data.coverage_areas[0].bounds;
+                            initialCenter = [
+                                (bounds.south + bounds.north) / 2,
+                                (bounds.west + bounds.east) / 2
+                            ];
+                            initialZoom = 8;
+                        }
+                        
+                        // Initialize map with calculated center
+                        const map = L.map('coverage-map').setView(initialCenter, initialZoom);
+                        
+                        // Add OpenStreetMap tiles
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '© OpenStreetMap contributors'
+                        }).addTo(map);
+                        
                         let bounds = [];
                         let loadedAreas = 0;
                         
@@ -712,23 +744,24 @@
                                     
                                     loadedAreas++;
                                     
-                                    // Fit map when all areas are loaded
+                                    // Fit map to bounds when all areas are loaded
                                     if (loadedAreas === data.coverage_areas.length && bounds.length > 0) {
-                                        map.fitBounds(bounds);
+                                        const mapBounds = L.latLngBounds(bounds);
+                                        map.fitBounds(mapBounds, { padding: [20, 20] });
                                     }
                                 })
                                 .catch(error => {
-                                    console.error(`Error loading geometry for area ${area.id}:`, error);
+                                    console.error('Error loading area geometry:', error);
                                     loadedAreas++;
                                     
                                     // Try to fit map even if some areas failed
                                     if (loadedAreas === data.coverage_areas.length && bounds.length > 0) {
-                                        map.fitBounds(bounds);
+                                        const mapBounds = L.latLngBounds(bounds);
+                                        map.fitBounds(mapBounds, { padding: [20, 20] });
                                     }
                                 });
                         });
                     } else {
-                        // Show message if no coverage areas
                         mapContainer.innerHTML = '<div class="text-center text-muted p-4">No coverage area data available for map display</div>';
                     }
                 })
