@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED=1
 # Set work directory
 WORKDIR /app
 
-# Install system dependencies (without GIS libraries for production)
+# Install system dependencies (including GIS libraries for PostGIS support)
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         gcc \
@@ -15,6 +15,12 @@ RUN apt-get update \
         python3-dev \
         build-essential \
         libpq-dev \
+        # PostGIS/GIS dependencies
+        libgdal-dev \
+        libgeos-dev \
+        libproj-dev \
+        gdal-bin \
+        proj-bin \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies

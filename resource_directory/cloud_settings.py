@@ -18,16 +18,16 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']  # Configure appropriately for production
 
-# GIS Configuration - Temporarily disable PostGIS functionality
-GIS_ENABLED = False
+# GIS Configuration - Test PostGIS availability
+GIS_ENABLED = True
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# PostgreSQL database configuration for Render (temporarily without PostGIS)
+# PostgreSQL database configuration for Render with PostGIS
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'isaiah58_resources',
         'USER': 'isaiah58_user',
         'PASSWORD': 'CMXAq8v3zpy6Vwm1CIV26EKHagUDt0Nr',
