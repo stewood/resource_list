@@ -1306,7 +1306,7 @@ class ResourceAreaManagementView(View):
                         'notes': association.notes or ''
                     }
                     
-                    # Add bounds if available
+                    # Add bounds and center if available
                     if coverage_area.geom and hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
                         try:
                             bounds = coverage_area.geom.extent
@@ -1316,8 +1316,21 @@ class ResourceAreaManagementView(View):
                                 'east': bounds[2],
                                 'north': bounds[3]
                             }
+                            
+                            # Add center coordinates for map positioning
+                            center = coverage_area.geom.centroid
+                            area_data['center'] = {
+                                'lat': center.y,
+                                'lon': center.x
+                            }
                         except Exception:
                             pass
+                    elif coverage_area.center:
+                        # Use stored center point if available
+                        area_data['center'] = {
+                            'lat': coverage_area.center.y,
+                            'lon': coverage_area.center.x
+                        }
                     
                     coverage_areas.append(area_data)
                 except ResourceCoverage.DoesNotExist:
