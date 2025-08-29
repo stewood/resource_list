@@ -21,21 +21,21 @@ class VersionTestCase(TestCase):
             first_name="Test",
             last_name="User",
         )
-        
+
         self.editor = User.objects.create_user(
             username="editor",
             password="testpass123",
             first_name="Test",
             last_name="Editor",
         )
-        
+
         self.reviewer = User.objects.create_user(
             username="reviewer",
             password="testpass123",
             first_name="Test",
             last_name="Reviewer",
         )
-        
+
         self.admin = User.objects.create_user(
             username="admin",
             password="testpass123",
@@ -57,7 +57,7 @@ class VersionTestCase(TestCase):
         self.category = TaxonomyCategory.objects.create(
             name="Test Category", slug="test-category"
         )
-        
+
         self.service_type = ServiceType.objects.create(
             name="Test Service", slug="test-service"
         )
@@ -71,7 +71,7 @@ class VersionTestCase(TestCase):
             created_by=self.user,
             updated_by=self.user,
         )
-        
+
         # Should have one version created
         versions = ResourceVersion.objects.filter(resource=resource)
         self.assertEqual(versions.count(), 1)
@@ -86,11 +86,11 @@ class VersionTestCase(TestCase):
             created_by=self.user,
             updated_by=self.user,
         )
-        
+
         # Update the resource
         resource.name = "Updated Test Resource"
         resource.save()
-        
+
         # Should have two versions
         versions = ResourceVersion.objects.filter(resource=resource)
         self.assertEqual(versions.count(), 2)
@@ -110,10 +110,10 @@ class VersionTestCase(TestCase):
             created_by=self.user,
             updated_by=self.user,
         )
-        
+
         # Get the version
         version = ResourceVersion.objects.get(resource=resource, version_number=1)
-        
+
         # Check that snapshot contains the correct data
         snapshot = version.snapshot
         self.assertEqual(snapshot["name"], "Test Resource")
@@ -130,27 +130,27 @@ class VersionTestCase(TestCase):
             "description": "Old description",
             "city": "Old City",
         }
-        
+
         snapshot2 = {
             "name": "New Name",
             "description": "New description",
             "state": "CA",
         }
-        
+
         differences = compare_versions(snapshot1, snapshot2)
-        
+
         # Should have 4 differences: name, description, city (removed), state (added)
         self.assertEqual(len(differences), 4)
-        
+
         # Check specific differences
         self.assertIn("name", differences)
         self.assertEqual(differences["name"]["old_value"], "Old Name")
         self.assertEqual(differences["name"]["new_value"], "New Name")
         self.assertEqual(differences["name"]["diff_type"], "changed")
-        
+
         self.assertIn("city", differences)
         self.assertEqual(differences["city"]["diff_type"], "removed")
-        
+
         self.assertIn("state", differences)
         self.assertEqual(differences["state"]["diff_type"], "added")
 
@@ -160,12 +160,12 @@ class VersionTestCase(TestCase):
             "name": "Test Resource",
             "description": "Test description",
         }
-        
+
         snapshot2 = {
             "name": "Test Resource",
             "description": "Test description",
         }
-        
+
         differences = compare_versions(snapshot1, snapshot2)
         self.assertEqual(len(differences), 0)
 
@@ -173,11 +173,11 @@ class VersionTestCase(TestCase):
         """Test version comparison with empty snapshots."""
         differences = compare_versions({}, {})
         self.assertEqual(len(differences), 0)
-        
+
         differences = compare_versions({"name": "Test"}, {})
         self.assertEqual(len(differences), 1)
         self.assertEqual(differences["name"]["diff_type"], "removed")
-        
+
         differences = compare_versions({}, {"name": "Test"})
         self.assertEqual(len(differences), 1)
         self.assertEqual(differences["name"]["diff_type"], "added")
@@ -192,7 +192,7 @@ class VersionTestCase(TestCase):
             "phone": "555-1234",
             "email": "old@example.com",
         }
-        
+
         snapshot2 = {
             "name": "New Name",
             "description": "New description",
@@ -201,22 +201,22 @@ class VersionTestCase(TestCase):
             "phone": "555-5678",
             "website": "https://new.example.com",
         }
-        
+
         differences = compare_versions(snapshot1, snapshot2)
-        
+
         # Should have 7 differences
         self.assertEqual(len(differences), 7)
-        
+
         # Check changed fields
         self.assertEqual(differences["name"]["diff_type"], "changed")
         self.assertEqual(differences["description"]["diff_type"], "changed")
         self.assertEqual(differences["city"]["diff_type"], "changed")
         self.assertEqual(differences["state"]["diff_type"], "changed")
         self.assertEqual(differences["phone"]["diff_type"], "changed")
-        
+
         # Check removed field
         self.assertEqual(differences["email"]["diff_type"], "removed")
-        
+
         # Check added field
         self.assertEqual(differences["website"]["diff_type"], "added")
 
@@ -229,21 +229,23 @@ class VersionTestCase(TestCase):
             created_by=self.user,
             updated_by=self.user,
         )
-        
+
         # Make several updates
         resource.name = "Updated 1"
         resource.save()
-        
+
         resource.name = "Updated 2"
         resource.save()
-        
+
         resource.name = "Updated 3"
         resource.save()
-        
+
         # Check version ordering
-        versions = ResourceVersion.objects.filter(resource=resource).order_by('version_number')
+        versions = ResourceVersion.objects.filter(resource=resource).order_by(
+            "version_number"
+        )
         self.assertEqual(versions.count(), 4)
-        
+
         # Check version numbers
         for i, version in enumerate(versions, 1):
             self.assertEqual(version.version_number, i)
@@ -261,10 +263,10 @@ class VersionTestCase(TestCase):
             created_by=self.user,
             updated_by=self.user,
         )
-        
+
         # Get the version
         version = ResourceVersion.objects.get(resource=resource, version_number=1)
-        
+
         # Check metadata fields
         self.assertEqual(version.resource, resource)
         self.assertEqual(version.version_number, 1)
@@ -287,10 +289,10 @@ class VersionTestCase(TestCase):
             created_by=self.user,
             updated_by=self.user,
         )
-        
+
         # Get the version
         version = ResourceVersion.objects.get(resource=resource, version_number=1)
-        
+
         # Check string representation
         expected_str = "Test Resource v1"
         self.assertEqual(str(version), expected_str)
@@ -309,13 +311,13 @@ class VersionTestCase(TestCase):
             created_by=self.user,
             updated_by=self.user,
         )
-        
+
         # Add service types
         resource.service_types.add(self.service_type)
-        
+
         # Get the version
         version = ResourceVersion.objects.get(resource=resource, version_number=1)
-        
+
         # Check that snapshot contains related object data
         snapshot = version.snapshot
         self.assertEqual(snapshot["name"], "Test Resource")
@@ -332,10 +334,10 @@ class VersionTestCase(TestCase):
             created_by=self.user,
             updated_by=self.user,
         )
-        
+
         # Get the version
         version = ResourceVersion.objects.get(resource=resource, version_number=1)
-        
+
         # Check that snapshot handles null fields correctly
         snapshot = version.snapshot
         self.assertEqual(snapshot["name"], "Test Resource")
@@ -349,15 +351,15 @@ class VersionTestCase(TestCase):
             "description": None,
             "city": "",
         }
-        
+
         snapshot2 = {
             "name": "Test Resource",
             "description": "New description",
             "city": "New City",
         }
-        
+
         differences = compare_versions(snapshot1, snapshot2)
-        
+
         # Should have 2 differences
         self.assertEqual(len(differences), 2)
         self.assertEqual(differences["description"]["diff_type"], "changed")
@@ -370,15 +372,15 @@ class VersionTestCase(TestCase):
             "is_emergency_service": False,
             "is_24_hour_service": True,
         }
-        
+
         snapshot2 = {
             "name": "Test Resource",
             "is_emergency_service": True,
             "is_24_hour_service": False,
         }
-        
+
         differences = compare_versions(snapshot1, snapshot2)
-        
+
         # Should have 2 differences
         self.assertEqual(len(differences), 2)
         self.assertEqual(differences["is_emergency_service"]["diff_type"], "changed")

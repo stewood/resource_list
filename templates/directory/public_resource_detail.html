@@ -158,72 +158,12 @@
                         <div id="coverage-map" style="height: 300px; width: 100%; border: 1px solid #ddd; border-radius: 4px;"></div>
                     </div>
                     
-                    <!-- Coverage Area Details -->
-                    <div>
-                        <h6>Coverage Details:</h6>
-                        <div class="table-responsive">
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Area Name</th>
-                                        <th>Type</th>
-                                        <th>Details</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for area in resource.coverage_areas.all %}
-                                    <tr>
-                                        <td>{{ area.name }}</td>
-                                        <td>
-                                            <span class="badge bg-secondary">{{ area.kind }}</span>
-                                        </td>
-                                        <td>
-                                            {% if area.ext_ids %}
-                                                <small class="text-muted">
-                                                    {% for key, value in area.ext_ids.items %}
-                                                        {{ key }}: {{ value }}{% if not forloop.last %}, {% endif %}
-                                                    {% endfor %}
-                                                </small>
-                                            {% else %}
-                                                <span class="text-muted">No additional details</span>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+
                 </div>
             </div>
             {% endif %}
 
-            <!-- Location-Based Eligibility -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-location-arrow"></i> Location Eligibility
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6>Check if this resource serves your area:</h6>
-                            <div class="input-group mb-3">
-                                <input type="text" id="eligibility-address" class="form-control" placeholder="Enter your address">
-                                <button class="btn btn-outline-primary" type="button" onclick="checkEligibility()">
-                                    <i class="fas fa-search"></i> Check
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div id="eligibility-result" class="mt-3">
-                                <p class="text-muted">Enter an address to check if this resource serves your area.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- Operational Details -->
             <div class="card mb-4">
@@ -548,114 +488,6 @@
     });
     {% endif %}
 
-                    // Enhanced Location Eligibility Check
-                function checkEligibility() {
-                    const address = document.getElementById('eligibility-address').value.trim();
-                    const resultDiv = document.getElementById('eligibility-result');
-                    
-                    if (!address) {
-                        resultDiv.innerHTML = '<div class="alert alert-warning">Please enter an address to check eligibility.</div>';
-                        return;
-                    }
-                    
-                    resultDiv.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Checking eligibility...</div>';
-                    
-                    // First, geocode the address to get coordinates
-                    fetch(`{% url "directory:api_location_search" %}?address=${encodeURIComponent(address)}&radius_miles=1`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.location && data.location.coordinates) {
-                                const [lat, lon] = data.location.coordinates;
-                                
-                                // Now check specific resource eligibility with coordinates
-                                return fetch(`{% url "directory:api_resource_eligibility" resource.pk %}?lat=${lat}&lon=${lon}&address=${encodeURIComponent(address)}`);
-                            } else {
-                                throw new Error('Could not geocode address');
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(eligibilityData => {
-                            if (eligibilityData.error) {
-                                resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${eligibilityData.error}</div>`;
-                                return;
-                            }
-                            
-                            const { serves_location, distance_miles, eligibility_reason, coverage_areas, query_address } = eligibilityData;
-                            
-                            let resultHtml = '';
-                            
-                            if (serves_location) {
-                                resultHtml = `
-                                    <div class="alert alert-success">
-                                        <div class="d-flex align-items-start">
-                                            <i class="fas fa-check-circle fa-2x me-3 text-success"></i>
-                                            <div>
-                                                <h6 class="alert-heading">✅ Serves Your Area!</h6>
-                                                <p class="mb-2">${eligibility_reason}</p>
-                                                ${distance_miles ? `<p class="mb-1"><strong>Distance:</strong> ${distance_miles} miles</p>` : ''}
-                                                <small class="text-muted">Address: ${query_address || address}</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `;
-                            } else {
-                                resultHtml = `
-                                    <div class="alert alert-warning">
-                                        <div class="d-flex align-items-start">
-                                            <i class="fas fa-exclamation-triangle fa-2x me-3 text-warning"></i>
-                                            <div>
-                                                <h6 class="alert-heading">⚠️ May Not Serve Your Area</h6>
-                                                <p class="mb-2">${eligibility_reason}</p>
-                                                ${distance_miles ? `<p class="mb-1"><strong>Distance:</strong> ${distance_miles} miles</p>` : ''}
-                                                <small class="text-muted">Address: ${query_address || address}</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `;
-                            }
-                            
-                            // Add coverage area details if available
-                            if (coverage_areas && coverage_areas.length > 0) {
-                                resultHtml += `
-                                    <div class="mt-3">
-                                        <h6>Coverage Area Details:</h6>
-                                        <div class="table-responsive">
-                                            <table class="table table-sm">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Area Name</th>
-                                                        <th>Type</th>
-                                                        <th>Distance</th>
-                                                        <th>Status</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    ${coverage_areas.map(area => `
-                                                        <tr>
-                                                            <td>${area.name}</td>
-                                                            <td><span class="badge bg-secondary">${area.kind}</span></td>
-                                                            <td>${area.distance_miles} miles</td>
-                                                            <td>
-                                                                ${area.contains_location ? 
-                                                                    '<span class="badge bg-success">Serves</span>' : 
-                                                                    '<span class="badge bg-light text-dark">Nearby</span>'
-                                                                }
-                                                            </td>
-                                                        </tr>
-                                                    `).join('')}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                `;
-                            }
-                            
-                            resultDiv.innerHTML = resultHtml;
-                        })
-                        .catch(error => {
-                            console.error('Error checking eligibility:', error);
-                            resultDiv.innerHTML = '<div class="alert alert-danger">Error checking eligibility. Please try again.</div>';
-                        });
-                }
+
 </script>
 {% endblock %}

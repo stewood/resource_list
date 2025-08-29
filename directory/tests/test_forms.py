@@ -22,21 +22,21 @@ class FormTestCase(TestCase):
             first_name="Test",
             last_name="User",
         )
-        
+
         self.editor = User.objects.create_user(
             username="editor",
             password="testpass123",
             first_name="Test",
             last_name="Editor",
         )
-        
+
         self.reviewer = User.objects.create_user(
             username="reviewer",
             password="testpass123",
             first_name="Test",
             last_name="Reviewer",
         )
-        
+
         self.admin = User.objects.create_user(
             username="admin",
             password="testpass123",
@@ -53,7 +53,7 @@ class FormTestCase(TestCase):
         self.editor.groups.add(self.editor_group)
         self.reviewer.groups.add(self.reviewer_group)
         self.admin.groups.add(self.admin_group)
-        
+
         # Make reviewer a staff user so it can be selected as verifier
         self.reviewer.is_staff = True
         self.reviewer.save()
@@ -62,7 +62,7 @@ class FormTestCase(TestCase):
         self.category = TaxonomyCategory.objects.create(
             name="Test Category", slug="test-category"
         )
-        
+
         self.service_type = ServiceType.objects.create(
             name="Test Service", slug="test-service"
         )
@@ -75,7 +75,7 @@ class FormTestCase(TestCase):
             "status": "draft",
             "verification_frequency_days": 180,
         }
-        
+
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
 
@@ -86,7 +86,7 @@ class FormTestCase(TestCase):
             "status": "draft",
             "verification_frequency_days": 180,
         }
-        
+
         form = ResourceForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn("phone", form.errors)
@@ -103,7 +103,7 @@ class FormTestCase(TestCase):
             "status": "needs_review",
             "verification_frequency_days": 180,
         }
-        
+
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
 
@@ -119,7 +119,7 @@ class FormTestCase(TestCase):
             "status": "needs_review",
             "verification_frequency_days": 180,
         }
-        
+
         form = ResourceForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn("description", form.errors)
@@ -138,7 +138,7 @@ class FormTestCase(TestCase):
             "last_verified_by": self.reviewer.pk,
             "verification_frequency_days": 180,
         }
-        
+
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
 
@@ -154,7 +154,7 @@ class FormTestCase(TestCase):
             "status": "published",
             "verification_frequency_days": 180,
         }
-        
+
         form = ResourceForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn("last_verified_at", form.errors)
@@ -168,7 +168,7 @@ class FormTestCase(TestCase):
             "category": self.category.pk,
             "verification_frequency_days": 180,
         }
-        
+
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
 
@@ -181,7 +181,7 @@ class FormTestCase(TestCase):
             "service_types": [self.service_type.pk],
             "verification_frequency_days": 180,
         }
-        
+
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
 
@@ -196,7 +196,7 @@ class FormTestCase(TestCase):
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
-        
+
         # Test with email
         form_data = {
             "name": "Test Resource",
@@ -206,7 +206,7 @@ class FormTestCase(TestCase):
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
-        
+
         # Test with website
         form_data = {
             "name": "Test Resource",
@@ -216,7 +216,7 @@ class FormTestCase(TestCase):
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
-        
+
         # Test with multiple contact methods
         form_data = {
             "name": "Test Resource",
@@ -244,7 +244,7 @@ class FormTestCase(TestCase):
             }
             form = ResourceForm(data=form_data)
             self.assertTrue(form.is_valid(), f"Postal code {code} should be valid")
-        
+
         # Invalid postal codes
         invalid_codes = ["1234", "123456", "12345-123", "12345-12345"]
         for code in invalid_codes:
@@ -288,7 +288,7 @@ class FormTestCase(TestCase):
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
-        
+
         # Invalid email
         form_data = {
             "name": "Test Resource",
@@ -311,7 +311,7 @@ class FormTestCase(TestCase):
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
-        
+
         # Invalid website
         form_data = {
             "name": "Test Resource",
@@ -335,7 +335,7 @@ class FormTestCase(TestCase):
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
-        
+
         # Invalid state (too long)
         form_data = {
             "name": "Test Resource",
@@ -359,7 +359,7 @@ class FormTestCase(TestCase):
         }
         form = ResourceForm(data=form_data)
         self.assertTrue(form.is_valid())
-        
+
         # Phone with non-digits (should be normalized)
         form_data = {
             "name": "Test Resource",
@@ -386,7 +386,7 @@ class FormTestCase(TestCase):
         form = ResourceForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn("description", form.errors)
-        
+
         # Long enough description for needs_review
         form_data = {
             "name": "Test Resource",
@@ -414,7 +414,7 @@ class FormTestCase(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("description", form.errors)
         self.assertIn("source", form.errors)
-        
+
         # Needs review to published without verification
         form_data = {
             "name": "Test Resource",

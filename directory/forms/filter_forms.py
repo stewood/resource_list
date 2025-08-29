@@ -41,7 +41,7 @@ Version: 1.0.0
 
 Usage:
     from directory.forms.filter_forms import ResourceFilterForm
-    
+
     # Create a filter form
     filter_form = ResourceFilterForm(request.GET)
     if filter_form.is_valid():
@@ -62,12 +62,12 @@ logger = logging.getLogger(__name__)
 
 class ResourceFilterForm(forms.Form):
     """Form for filtering and searching resources with comprehensive filter options.
-    
+
     This form provides a complete interface for filtering and searching resources
     with multiple filter criteria including search terms, status, category,
     location, and sorting options. It supports both basic text search and
     structured filtering for efficient resource discovery.
-    
+
     Features:
         - Full-text search capability with placeholder text
         - Status filtering (draft, needs_review, published)
@@ -76,7 +76,7 @@ class ResourceFilterForm(forms.Form):
         - Multiple sorting options with user-friendly labels
         - Bootstrap-compatible form styling
         - All fields optional for flexible filtering
-        
+
     Filter Options:
         - q: Text search across resource fields
         - status: Filter by resource status
@@ -84,7 +84,7 @@ class ResourceFilterForm(forms.Form):
         - city: Filter by city name
         - state: Filter by state code
         - sort: Sort order for results
-        
+
     Sort Options:
         - Recently Updated (default): -updated_at
         - Name A-Z: name
@@ -93,7 +93,7 @@ class ResourceFilterForm(forms.Form):
         - City Z-A: -city
         - Status: status
         - Status (Reverse): -status
-        
+
     Example:
         >>> filter_form = ResourceFilterForm(request.GET)
         >>> if filter_form.is_valid():
@@ -141,19 +141,19 @@ class ResourceFilterForm(forms.Form):
         widget=forms.TextInput(
             attrs={"class": "form-control", "placeholder": "Enter address or location"}
         ),
-        help_text="Enter an address to find resources serving that location"
+        help_text="Enter an address to find resources serving that location",
     )
 
     lat = forms.FloatField(
         required=False,
         widget=forms.HiddenInput(),
-        help_text="Latitude coordinate (auto-filled when address is geocoded)"
+        help_text="Latitude coordinate (auto-filled when address is geocoded)",
     )
 
     lon = forms.FloatField(
         required=False,
         widget=forms.HiddenInput(),
-        help_text="Longitude coordinate (auto-filled when address is geocoded)"
+        help_text="Longitude coordinate (auto-filled when address is geocoded)",
     )
 
     radius_miles = forms.FloatField(
@@ -164,7 +164,7 @@ class ResourceFilterForm(forms.Form):
         widget=forms.NumberInput(
             attrs={"class": "form-control", "step": "0.5", "min": "0.5", "max": "100"}
         ),
-        help_text="Search radius in miles (0.5-100 miles)"
+        help_text="Search radius in miles (0.5-100 miles)",
     )
 
     # Advanced location filtering
@@ -180,7 +180,7 @@ class ResourceFilterForm(forms.Form):
         required=False,
         initial="",
         widget=forms.Select(attrs={"class": "form-control"}),
-        help_text="Filter by specific coverage area types"
+        help_text="Filter by specific coverage area types",
     )
 
     max_distance = forms.FloatField(
@@ -188,9 +188,15 @@ class ResourceFilterForm(forms.Form):
         min_value=0.1,
         max_value=100.0,
         widget=forms.NumberInput(
-            attrs={"class": "form-control", "step": "0.1", "min": "0.1", "max": "100", "placeholder": "Max distance (miles)"}
+            attrs={
+                "class": "form-control",
+                "step": "0.1",
+                "min": "0.1",
+                "max": "100",
+                "placeholder": "Max distance (miles)",
+            }
         ),
-        help_text="Maximum distance from search location"
+        help_text="Maximum distance from search location",
     )
 
     min_distance = forms.FloatField(
@@ -198,9 +204,15 @@ class ResourceFilterForm(forms.Form):
         min_value=0.0,
         max_value=99.9,
         widget=forms.NumberInput(
-            attrs={"class": "form-control", "step": "0.1", "min": "0.0", "max": "99.9", "placeholder": "Min distance (miles)"}
+            attrs={
+                "class": "form-control",
+                "step": "0.1",
+                "min": "0.0",
+                "max": "99.9",
+                "placeholder": "Min distance (miles)",
+            }
         ),
-        help_text="Minimum distance from search location"
+        help_text="Minimum distance from search location",
     )
 
     sort = forms.ChoiceField(
@@ -223,18 +235,18 @@ class ResourceFilterForm(forms.Form):
 
     def get_filtered_queryset(self) -> Any:
         """Get a filtered queryset based on form data.
-        
+
         This method applies all the filter criteria from the form to create
         a filtered queryset of resources. It handles text search, status
         filtering, category filtering, location filtering, and sorting.
-        
+
         The method uses the Resource model's custom manager methods for
         advanced search capabilities and combines multiple filter criteria
         to provide comprehensive filtering.
-        
+
         Returns:
             QuerySet: Filtered and sorted resource queryset
-            
+
         Note:
             This method assumes the form has been validated. If the form
             is not valid, it returns an empty queryset. The method uses
@@ -285,17 +297,21 @@ class ResourceFilterForm(forms.Form):
                     lat=float(lat),
                     lon=float(lon),
                     radius_miles=float(radius_miles) if radius_miles else None,
-                    sort_by_proximity=True
+                    sort_by_proximity=True,
                 )
                 # Combine with existing filters
-                spatial_ids = list(spatial_queryset.values_list('pk', flat=True))
+                spatial_ids = list(spatial_queryset.values_list("pk", flat=True))
                 if spatial_ids:
                     queryset = queryset.filter(pk__in=spatial_ids)
                     # Preserve spatial ordering when proximity-based sorting is requested
                     if self.cleaned_data.get("sort") in ["distance", "proximity"]:
                         from django.db.models import Case, When
+
                         preserved = Case(
-                            *[When(pk=pk, then=pos) for pos, pk in enumerate(spatial_ids)]
+                            *[
+                                When(pk=pk, then=pos)
+                                for pos, pk in enumerate(spatial_ids)
+                            ]
                         )
                         queryset = queryset.order_by(preserved)
                 else:
@@ -305,16 +321,16 @@ class ResourceFilterForm(forms.Form):
                 # Fallback to text-based search if spatial filtering fails
                 logger.warning(f"Spatial filtering failed for {address}: {e}")
                 queryset = queryset.filter(
-                    Q(city__icontains=address) | 
-                    Q(state__icontains=address) |
-                    Q(county__icontains=address)
+                    Q(city__icontains=address)
+                    | Q(state__icontains=address)
+                    | Q(county__icontains=address)
                 )
         elif address:
             # Text-based location search when no coordinates
             queryset = queryset.filter(
-                Q(city__icontains=address) | 
-                Q(state__icontains=address) |
-                Q(county__icontains=address)
+                Q(city__icontains=address)
+                | Q(state__icontains=address)
+                | Q(county__icontains=address)
             )
 
         # Advanced location filtering
@@ -325,7 +341,7 @@ class ResourceFilterForm(forms.Form):
         # Distance-based filtering
         max_distance = self.cleaned_data.get("max_distance")
         min_distance = self.cleaned_data.get("min_distance")
-        
+
         if (lat and lon) and (max_distance or min_distance):
             try:
                 # Apply distance filtering
@@ -338,7 +354,7 @@ class ResourceFilterForm(forms.Form):
 
         # Enhanced Location-Based Result Ranking
         sort = self.cleaned_data.get("sort")
-        
+
         # Handle location-based sorting when coordinates are available
         if (lat and lon) and sort in ["distance", "proximity", "coverage_specificity"]:
             try:
@@ -346,55 +362,69 @@ class ResourceFilterForm(forms.Form):
                 queryset = Resource.objects.annotate_proximity_ranking(
                     queryset, float(lat), float(lon)
                 )
-                
+
                 if sort == "proximity":
                     # Sort by proximity score (combines distance and coverage specificity)
-                    queryset = queryset.order_by('-proximity_score', '-specificity_score', 'distance_miles', 'name')
+                    queryset = queryset.order_by(
+                        "-proximity_score",
+                        "-specificity_score",
+                        "distance_miles",
+                        "name",
+                    )
                 elif sort == "distance":
                     # Sort by distance only
-                    queryset = queryset.order_by('distance_miles', '-specificity_score', 'name')
+                    queryset = queryset.order_by(
+                        "distance_miles", "-specificity_score", "name"
+                    )
                 elif sort == "coverage_specificity":
                     # Sort by coverage specificity first, then by proximity
-                    queryset = queryset.order_by('-specificity_score', '-proximity_score', 'distance_miles', 'name')
-                
+                    queryset = queryset.order_by(
+                        "-specificity_score",
+                        "-proximity_score",
+                        "distance_miles",
+                        "name",
+                    )
+
             except Exception as e:
                 logger.warning(f"Proximity ranking failed: {e}")
                 # Fallback to basic coverage specificity sorting
                 queryset = queryset.annotate(
-                    coverage_count=models.Count('coverage_areas')
-                ).order_by('-coverage_count', 'name')
-        
+                    coverage_count=models.Count("coverage_areas")
+                ).order_by("-coverage_count", "name")
+
         # Handle non-location-based sorting or when coordinates are not available
         elif sort:
             if sort == "coverage_specificity":
                 # Sort by coverage area count (more specific = higher priority)
                 queryset = queryset.annotate(
-                    coverage_count=models.Count('coverage_areas')
-                ).order_by('-coverage_count', 'name')
+                    coverage_count=models.Count("coverage_areas")
+                ).order_by("-coverage_count", "name")
             elif sort in ["distance", "proximity"]:
                 # Fallback to default sorting if proximity requested but no coordinates
-                logger.info("Location-based sorting requested but no coordinates available, using default sorting")
+                logger.info(
+                    "Location-based sorting requested but no coordinates available, using default sorting"
+                )
                 queryset = queryset.order_by("-updated_at")
             else:
                 queryset = queryset.order_by(sort)
         else:
             # Default sorting - prioritize resources with coverage areas
             queryset = queryset.annotate(
-                coverage_count=models.Count('coverage_areas')
-            ).order_by('-coverage_count', '-updated_at')
+                coverage_count=models.Count("coverage_areas")
+            ).order_by("-coverage_count", "-updated_at")
 
         return queryset
 
     def get_search_summary(self) -> str:
         """Get a human-readable summary of the current filters.
-        
+
         This method creates a summary string describing the current
         filter criteria applied to the search. It's useful for
         displaying to users what filters are currently active.
-        
+
         Returns:
             str: Human-readable summary of active filters
-            
+
         Example:
             >>> form = ResourceFilterForm({'q': 'mental health', 'city': 'London'})
             >>> form.get_search_summary()
@@ -424,7 +454,7 @@ class ResourceFilterForm(forms.Form):
         state = self.cleaned_data.get("state")
         address = self.cleaned_data.get("address")
         radius_miles = self.cleaned_data.get("radius_miles")
-        
+
         if city:
             location_parts.append(city)
         if state:
@@ -433,7 +463,7 @@ class ResourceFilterForm(forms.Form):
             location_parts.append(f"near '{address}'")
             if radius_miles:
                 location_parts.append(f"within {radius_miles} miles")
-            
+
         if location_parts:
             filters.append(f"location: {', '.join(location_parts)}")
 

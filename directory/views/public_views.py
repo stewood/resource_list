@@ -31,7 +31,7 @@ Dependencies:
 
 Usage:
     from directory.views.public_views import public_home, public_resource_list
-    
+
     # URL patterns typically map to these views
     # / -> public_home
     # /resources/ -> public_resource_list
@@ -56,19 +56,19 @@ logger = logging.getLogger(__name__)
 
 def public_home(request: HttpRequest) -> HttpResponse:
     """Public home page showing resources organized by category and service type.
-    
+
     This view provides a public-facing overview of available resources, organized
     by category and service type with comprehensive statistics. It serves as the
     main landing page for non-authenticated users, showcasing the breadth of
     available services.
-    
+
     Features:
         - Public access without authentication
         - Resource organization by category and service type
         - Comprehensive statistics and counts
         - Emergency and 24-hour service highlighting
         - Optimized database queries with select_related and prefetch_related
-        
+
     Template Context:
         - categories: All categories with published resources
         - service_types: All service types with published resources
@@ -77,70 +77,80 @@ def public_home(request: HttpRequest) -> HttpResponse:
         - emergency_count: Number of emergency services
         - twenty_four_hour_count: Number of 24-hour services
         - total_resources: Total number of published resources
-        
+
     Returns:
         HttpResponse: Rendered public home template with resource overview
-        
+
     Example:
         GET / -> Display public home page with resource statistics
     """
     # Get all published, non-archived resources
-    resources = Resource.objects.filter(
-        status="published", 
-        is_deleted=False, 
-        is_archived=False
-    ).select_related('category').prefetch_related('service_types')
-    
+    resources = (
+        Resource.objects.filter(status="published", is_deleted=False, is_archived=False)
+        .select_related("category")
+        .prefetch_related("service_types")
+    )
+
     # Get all categories with published resources
-    categories = TaxonomyCategory.objects.filter(
-        resources__status="published",
-        resources__is_deleted=False,
-        resources__is_archived=False
-    ).distinct().order_by('name')
-    
+    categories = (
+        TaxonomyCategory.objects.filter(
+            resources__status="published",
+            resources__is_deleted=False,
+            resources__is_archived=False,
+        )
+        .distinct()
+        .order_by("name")
+    )
+
     # Get all service types with published resources
-    service_types = ServiceType.objects.filter(
-        resources__status="published",
-        resources__is_deleted=False,
-        resources__is_archived=False
-    ).distinct().order_by('name')
-    
+    service_types = (
+        ServiceType.objects.filter(
+            resources__status="published",
+            resources__is_deleted=False,
+            resources__is_archived=False,
+        )
+        .distinct()
+        .order_by("name")
+    )
+
     # Count resources by category
     category_counts = {}
     for category in categories:
         category_counts[category.id] = resources.filter(category=category).count()
-    
+
     # Count resources by service type
     service_type_counts = {}
     for service_type in service_types:
-        service_type_counts[service_type.id] = resources.filter(service_types=service_type).count()
-    
+        service_type_counts[service_type.id] = resources.filter(
+            service_types=service_type
+        ).count()
+
     # Get emergency services count
     emergency_count = resources.filter(is_emergency_service=True).count()
-    
+
     # Get 24-hour services count
     twenty_four_hour_count = resources.filter(is_24_hour_service=True).count()
-    
+
     context = {
-        'categories': categories,
-        'service_types': service_types,
-        'category_counts': category_counts,
-        'service_type_counts': service_type_counts,
-        'emergency_count': emergency_count,
-        'twenty_four_hour_count': twenty_four_hour_count,
-        'total_resources': resources.count(),
+        "categories": categories,
+        "service_types": service_types,
+        "category_counts": category_counts,
+        "service_type_counts": service_type_counts,
+        "emergency_count": emergency_count,
+        "twenty_four_hour_count": twenty_four_hour_count,
+        "total_resources": resources.count(),
     }
-    
-    return render(request, 'directory/public_home.html', context)
+
+    return render(request, "directory/public_home.html", context)
 
 
 def public_resource_list(request: HttpRequest) -> HttpResponse:
     """Public resource list view with comprehensive filtering and search capabilities.
-    
+
     This view provides a public-facing list of published resources with advanced
     search, filtering, and sorting capabilities. It allows non-authenticated users
     to discover and browse available services based on various criteria.
-    
+
     Features:
         - Public access without authentication
         - Full-text search using SQLite FTS5 with fallback
@@ -149,7 +159,7 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
         - Pagination for large result sets
         - Optimized database queries
         - Comprehensive filter options in sidebar
-        
+
     URL Parameters:
         - q: Search query string
         - category: Filter by taxonomy category ID
@@ -160,7 +170,7 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
         - 24hour: Filter by 24-hour service status (true/false)
         - sort: Sort order (name, city, category, emergency)
         - page: Page number for pagination
-        
+
     Template Context:
         - page_obj: Paginated queryset of filtered resources
         - search_query: Current search query
@@ -177,30 +187,32 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
         - service_types_dict: Dictionary mapping service type IDs to names
         - cities: List of unique cities with published resources
         - states: List of unique states with published resources
-        
+
     Returns:
         HttpResponse: Rendered public resource list template with filtered data
-        
+
     Example:
         GET /resources/public/?q=mental+health&category=1&sort=name&page=2
     """
     # Start with published, non-archived resources
-    queryset = Resource.objects.filter(
-        status="published", 
-        is_deleted=False, 
-        is_archived=False
-    ).select_related('category').prefetch_related('service_types', 'coverage_areas')
-    
+    queryset = (
+        Resource.objects.filter(status="published", is_deleted=False, is_archived=False)
+        .select_related("category")
+        .prefetch_related("service_types", "coverage_areas")
+    )
+
     # Search functionality
     search_query = request.GET.get("q", "").strip()
     if search_query:
         search_results = Resource.objects.search_combined(search_query)
         if search_results.exists():
-            queryset = search_results.filter(
-                status="published", 
-                is_deleted=False, 
-                is_archived=False
-            ).select_related('category').prefetch_related('service_types', 'coverage_areas')
+            queryset = (
+                search_results.filter(
+                    status="published", is_deleted=False, is_archived=False
+                )
+                .select_related("category")
+                .prefetch_related("service_types", "coverage_areas")
+            )
         else:
             queryset = queryset.filter(
                 Q(name__icontains=search_query)
@@ -208,194 +220,230 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
                 | Q(city__icontains=search_query)
                 | Q(state__icontains=search_query)
             )
-    
+
     # Filter by category
     category_filter = request.GET.get("category", "")
     if category_filter:
         queryset = queryset.filter(category_id=category_filter)
-    
+
     # Filter by service type
     service_type_filter = request.GET.get("service_type", "")
     if service_type_filter:
         queryset = queryset.filter(service_types__id=service_type_filter)
-    
+
     # Filter by city
     city_filter = request.GET.get("city", "")
     if city_filter:
         queryset = queryset.filter(city__icontains=city_filter)
-    
+
     # Filter by state
     state_filter = request.GET.get("state", "")
     if state_filter:
         queryset = queryset.filter(state__icontains=state_filter)
-    
+
     # Filter by state FIPS code and county ID (from our new dropdowns)
     state_fips_filter = request.GET.get("state_fips", "")
     county_id_filter = request.GET.get("county_id", "")
-    include_national = request.GET.get("include_national", "1") == "1"  # Default to True
-    
+    include_national = (
+        request.GET.get("include_national", "1") == "1"
+    )  # Default to True
+
     if state_fips_filter or county_id_filter:
         # Filter by coverage areas matching the selected state/county
         coverage_filters = Q()
-        
+
         if state_fips_filter:
             coverage_filters |= Q(coverage_areas__ext_ids__state_fips=state_fips_filter)
-        
+
         if county_id_filter:
             coverage_filters |= Q(coverage_areas__id=county_id_filter)
-        
+
         # Include/exclude truly national resources (those with United States coverage area ID: 7855)
         if include_national:
             # When including national, add resources with national coverage to the filtered results
-            national_coverage_filter = Q(coverage_areas__id=7855)  # United States coverage area
-            queryset = queryset.filter(coverage_filters | national_coverage_filter).distinct()
+            national_coverage_filter = Q(
+                coverage_areas__id=7855
+            )  # United States coverage area
+            queryset = queryset.filter(
+                coverage_filters | national_coverage_filter
+            ).distinct()
         else:
             # When excluding national, filter only by local coverage and exclude national resources
-            queryset = queryset.filter(coverage_filters).exclude(coverage_areas__id=7855).distinct()
-    
+            queryset = (
+                queryset.filter(coverage_filters)
+                .exclude(coverage_areas__id=7855)
+                .distinct()
+            )
+
     # Location-based filtering
     address_filter = request.GET.get("address", "").strip()
     lat_filter = request.GET.get("lat", "")
     lon_filter = request.GET.get("lon", "")
     radius_miles = request.GET.get("radius_miles", "10.0")
-    
+
     # Distance-based filtering (will be applied after spatial filtering)
     max_distance_filter = request.GET.get("max_distance", "")
     min_distance_filter = request.GET.get("min_distance", "")
-    
+
     # Store distance filters for later use
     distance_filters = {
-        'max_distance': max_distance_filter,
-        'min_distance': min_distance_filter
+        "max_distance": max_distance_filter,
+        "min_distance": min_distance_filter,
     }
-    
+
     # Log search for analytics (if address is provided)
     if address_filter:
         import time
+
         start_time = time.time()
-        
+
         # Get user info for analytics
         user = request.user if request.user.is_authenticated else None
-        ip_address = request.META.get('REMOTE_ADDR')
-        user_agent = request.META.get('HTTP_USER_AGENT', '')
-        
+        ip_address = request.META.get("REMOTE_ADDR")
+        user_agent = request.META.get("HTTP_USER_AGENT", "")
+
         # We'll log the search after we get the results
         search_start_time = start_time
 
     if address_filter and lat_filter and lon_filter:
-            # Use spatial filtering when coordinates are available
-            try:
-                # Use proximity-based filtering for better ranking
-                spatial_queryset = Resource.objects.filter_by_location_with_proximity(
-                    lat=float(lat_filter),
-                    lon=float(lon_filter),
-                    radius_miles=float(radius_miles) if radius_miles else None,
-                    sort_by_proximity=True
-                )
-                # Combine with existing filters
-                spatial_ids = list(spatial_queryset.values_list('pk', flat=True))
-                if spatial_ids:
-                    queryset = queryset.filter(pk__in=spatial_ids)
-                    
-                    # Apply distance filtering after spatial filtering
-                    if distance_filters['max_distance'] or distance_filters['min_distance']:
-                        try:
-                            # Re-apply spatial filtering with distance constraints
-                            spatial_queryset = Resource.objects.filter_by_location_with_proximity(
+        # Use spatial filtering when coordinates are available
+        try:
+            # Use proximity-based filtering for better ranking
+            spatial_queryset = Resource.objects.filter_by_location_with_proximity(
+                lat=float(lat_filter),
+                lon=float(lon_filter),
+                radius_miles=float(radius_miles) if radius_miles else None,
+                sort_by_proximity=True,
+            )
+            # Combine with existing filters
+            spatial_ids = list(spatial_queryset.values_list("pk", flat=True))
+            if spatial_ids:
+                queryset = queryset.filter(pk__in=spatial_ids)
+
+                # Apply distance filtering after spatial filtering
+                if distance_filters["max_distance"] or distance_filters["min_distance"]:
+                    try:
+                        # Re-apply spatial filtering with distance constraints
+                        spatial_queryset = (
+                            Resource.objects.filter_by_location_with_proximity(
                                 lat=float(lat_filter),
                                 lon=float(lon_filter),
-                                radius_miles=float(radius_miles) if radius_miles else None,
-                                sort_by_proximity=True
+                                radius_miles=(
+                                    float(radius_miles) if radius_miles else None
+                                ),
+                                sort_by_proximity=True,
                             )
-                            
-                            # Apply distance filters
-                            if distance_filters['max_distance']:
-                                spatial_queryset = spatial_queryset.filter(distance_miles__lte=float(distance_filters['max_distance']))
-                            if distance_filters['min_distance']:
-                                spatial_queryset = spatial_queryset.filter(distance_miles__gte=float(distance_filters['min_distance']))
-                            
-                            # Update queryset with distance-filtered results
-                            distance_filtered_ids = list(spatial_queryset.values_list('pk', flat=True))
-                            if distance_filtered_ids:
-                                queryset = queryset.filter(pk__in=distance_filtered_ids)
-                            else:
-                                queryset = Resource.objects.none()
-                        except (ValueError, TypeError) as e:
-                            logger.warning(f"Distance filtering failed: {e}")
-                    
-                    # Preserve spatial ordering when proximity-based sorting is requested
-                    if request.GET.get("sort") in ["distance", "proximity"]:
-                        from django.db.models import Case, When
-                        preserved = Case(
-                            *[When(pk=pk, then=pos) for pos, pk in enumerate(spatial_ids)]
                         )
-                        queryset = queryset.order_by(preserved)
-                else:
-                    # No spatial results, return empty queryset
-                    queryset = Resource.objects.none()
-            except (ValueError, TypeError) as e:
-                # Fallback to text-based search if spatial filtering fails
-                logger.warning(f"Spatial filtering failed for {address_filter}: {e}")
-                queryset = queryset.filter(
-                    Q(city__icontains=address_filter) | 
-                    Q(state__icontains=address_filter) |
-                    Q(county__icontains=address_filter)
-                )
-    elif address_filter:
-            # Text-based location search when no coordinates
+
+                        # Apply distance filters
+                        if distance_filters["max_distance"]:
+                            spatial_queryset = spatial_queryset.filter(
+                                distance_miles__lte=float(
+                                    distance_filters["max_distance"]
+                                )
+                            )
+                        if distance_filters["min_distance"]:
+                            spatial_queryset = spatial_queryset.filter(
+                                distance_miles__gte=float(
+                                    distance_filters["min_distance"]
+                                )
+                            )
+
+                        # Update queryset with distance-filtered results
+                        distance_filtered_ids = list(
+                            spatial_queryset.values_list("pk", flat=True)
+                        )
+                        if distance_filtered_ids:
+                            queryset = queryset.filter(pk__in=distance_filtered_ids)
+                        else:
+                            queryset = Resource.objects.none()
+                    except (ValueError, TypeError) as e:
+                        logger.warning(f"Distance filtering failed: {e}")
+
+                # Preserve spatial ordering when proximity-based sorting is requested
+                if request.GET.get("sort") in ["distance", "proximity"]:
+                    from django.db.models import Case, When
+
+                    preserved = Case(
+                        *[When(pk=pk, then=pos) for pos, pk in enumerate(spatial_ids)]
+                    )
+                    queryset = queryset.order_by(preserved)
+            else:
+                # No spatial results, return empty queryset
+                queryset = Resource.objects.none()
+        except (ValueError, TypeError) as e:
+            # Fallback to text-based search if spatial filtering fails
+            logger.warning(f"Spatial filtering failed for {address_filter}: {e}")
             queryset = queryset.filter(
-                Q(city__icontains=address_filter) | 
-                Q(state__icontains=address_filter) |
-                Q(county__icontains=address_filter)
+                Q(city__icontains=address_filter)
+                | Q(state__icontains=address_filter)
+                | Q(county__icontains=address_filter)
             )
-    
+    elif address_filter:
+        # Text-based location search when no coordinates
+        queryset = queryset.filter(
+            Q(city__icontains=address_filter)
+            | Q(state__icontains=address_filter)
+            | Q(county__icontains=address_filter)
+        )
+
     # Filter by emergency services
     emergency_filter = request.GET.get("emergency", "")
     if emergency_filter == "true":
         queryset = queryset.filter(is_emergency_service=True)
     elif emergency_filter == "false":
         queryset = queryset.filter(is_emergency_service=False)
-    
+
     # Filter by 24-hour services
     twenty_four_hour_filter = request.GET.get("24hour", "")
     if twenty_four_hour_filter == "true":
         queryset = queryset.filter(is_24_hour_service=True)
     elif twenty_four_hour_filter == "false":
         queryset = queryset.filter(is_24_hour_service=False)
-    
+
     # Advanced location filtering
     coverage_area_type_filter = request.GET.get("coverage_area_type", "")
     if coverage_area_type_filter:
         queryset = queryset.filter(coverage_areas__kind=coverage_area_type_filter)
-    
+
     # Enhanced Location-Based Result Ranking
     sort_by = request.GET.get("sort", "name")
-    
+
     # Handle location-based sorting when coordinates are available
-    if (lat_filter and lon_filter) and sort_by in ["distance", "proximity", "coverage_specificity"]:
+    if (lat_filter and lon_filter) and sort_by in [
+        "distance",
+        "proximity",
+        "coverage_specificity",
+    ]:
         try:
             # Apply proximity ranking annotations
             queryset = Resource.objects.annotate_proximity_ranking(
                 queryset, float(lat_filter), float(lon_filter)
             )
-            
+
             if sort_by == "proximity":
                 # Sort by proximity score (combines distance and coverage specificity)
-                queryset = queryset.order_by('-proximity_score', '-specificity_score', 'distance_miles', 'name')
+                queryset = queryset.order_by(
+                    "-proximity_score", "-specificity_score", "distance_miles", "name"
+                )
             elif sort_by == "distance":
                 # Sort by distance only
-                queryset = queryset.order_by('distance_miles', '-specificity_score', 'name')
+                queryset = queryset.order_by(
+                    "distance_miles", "-specificity_score", "name"
+                )
             elif sort_by == "coverage_specificity":
                 # Sort by coverage specificity first, then by proximity
-                queryset = queryset.order_by('-specificity_score', '-proximity_score', 'distance_miles', 'name')
-            
+                queryset = queryset.order_by(
+                    "-specificity_score", "-proximity_score", "distance_miles", "name"
+                )
+
         except Exception as e:
             logger.warning(f"Proximity ranking failed: {e}")
             # Fallback to basic coverage specificity sorting
             queryset = queryset.annotate(
-                coverage_count=models.Count('coverage_areas')
-            ).order_by('-coverage_count', 'name')
-    
+                coverage_count=models.Count("coverage_areas")
+            ).order_by("-coverage_count", "name")
+
     # Handle non-location-based sorting or when coordinates are not available
     elif sort_by:
         if sort_by == "name":
@@ -409,36 +457,40 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
         elif sort_by == "coverage_specificity":
             # Sort by coverage area count (more specific = higher priority)
             queryset = queryset.annotate(
-                coverage_count=models.Count('coverage_areas')
-            ).order_by('-coverage_count', 'name')
+                coverage_count=models.Count("coverage_areas")
+            ).order_by("-coverage_count", "name")
         elif sort_by in ["distance", "proximity"]:
             # Fallback to default sorting if location-based sorting requested but no coordinates
-            logger.info("Location-based sorting requested but no coordinates available, using default sorting")
+            logger.info(
+                "Location-based sorting requested but no coordinates available, using default sorting"
+            )
             queryset = queryset.order_by("name")
         else:
             queryset = queryset.order_by(sort_by)
     else:
         # Default sorting - prioritize resources with coverage areas
         queryset = queryset.annotate(
-            coverage_count=models.Count('coverage_areas')
-        ).order_by('-coverage_count', 'name')
-    
+            coverage_count=models.Count("coverage_areas")
+        ).order_by("-coverage_count", "name")
+
     # Pagination
     paginator = Paginator(queryset, 20)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    
+
     # Log search for analytics (if address was provided)
-    if address_filter and 'search_start_time' in locals():
+    if address_filter and "search_start_time" in locals():
         import time
+
         search_duration_ms = int((time.time() - search_start_time) * 1000)
         results_count = paginator.count
-        
+
         # Determine geocoding success
         geocoding_success = bool(lat_filter and lon_filter)
-        
+
         # Log the search
         from ..models import LocationSearchLog
+
         LocationSearchLog.log_search(
             address=address_filter,
             lat=float(lat_filter) if lat_filter else None,
@@ -449,78 +501,90 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
             geocoding_success=geocoding_success,
             user=user,
             ip_address=ip_address,
-            user_agent=user_agent
+            user_agent=user_agent,
         )
-    
+
     # Get filter options for the sidebar
-    categories = TaxonomyCategory.objects.filter(
-        resources__status="published",
-        resources__is_deleted=False,
-        resources__is_archived=False
-    ).distinct().order_by('name')
-    
-    service_types = ServiceType.objects.filter(
-        resources__status="published",
-        resources__is_deleted=False,
-        resources__is_archived=False
-    ).distinct().order_by('name')
-    
+    categories = (
+        TaxonomyCategory.objects.filter(
+            resources__status="published",
+            resources__is_deleted=False,
+            resources__is_archived=False,
+        )
+        .distinct()
+        .order_by("name")
+    )
+
+    service_types = (
+        ServiceType.objects.filter(
+            resources__status="published",
+            resources__is_deleted=False,
+            resources__is_archived=False,
+        )
+        .distinct()
+        .order_by("name")
+    )
+
     # Create dictionaries for template filter usage
     categories_dict = {str(cat.id): cat.name for cat in categories}
     service_types_dict = {str(st.id): st.name for st in service_types}
-    
+
     # Get unique cities and states for filters
-    cities = Resource.objects.filter(
-        status="published", 
-        is_deleted=False, 
-        is_archived=False
-    ).exclude(city="").values_list('city', flat=True).distinct().order_by('city')
-    
-    states = Resource.objects.filter(
-        status="published", 
-        is_deleted=False, 
-        is_archived=False
-    ).exclude(state="").values_list('state', flat=True).distinct().order_by('state')
-    
+    cities = (
+        Resource.objects.filter(status="published", is_deleted=False, is_archived=False)
+        .exclude(city="")
+        .values_list("city", flat=True)
+        .distinct()
+        .order_by("city")
+    )
+
+    states = (
+        Resource.objects.filter(status="published", is_deleted=False, is_archived=False)
+        .exclude(state="")
+        .values_list("state", flat=True)
+        .distinct()
+        .order_by("state")
+    )
+
     context = {
-        'page_obj': page_obj,
-        'search_query': search_query,
-        'category_filter': category_filter,
-        'service_type_filter': service_type_filter,
-        'city_filter': city_filter,
-        'state_filter': state_filter,
-        'address_filter': address_filter,
-        'lat_filter': lat_filter,
-        'lon_filter': lon_filter,
-        'radius_miles': radius_miles,
-        'emergency_filter': emergency_filter,
-        'twenty_four_hour_filter': twenty_four_hour_filter,
-        'coverage_area_type_filter': coverage_area_type_filter,
-        'max_distance_filter': max_distance_filter,
-        'min_distance_filter': min_distance_filter,
-        'state_fips_filter': state_fips_filter,
-        'county_id_filter': county_id_filter,
-        'include_national': include_national,
-        'sort_by': sort_by,
-        'categories': categories,
-        'service_types': service_types,
-        'categories_dict': categories_dict,
-        'service_types_dict': service_types_dict,
-        'cities': cities,
-        'states': states,
+        "page_obj": page_obj,
+        "search_query": search_query,
+        "category_filter": category_filter,
+        "service_type_filter": service_type_filter,
+        "city_filter": city_filter,
+        "state_filter": state_filter,
+        "address_filter": address_filter,
+        "lat_filter": lat_filter,
+        "lon_filter": lon_filter,
+        "radius_miles": radius_miles,
+        "emergency_filter": emergency_filter,
+        "twenty_four_hour_filter": twenty_four_hour_filter,
+        "coverage_area_type_filter": coverage_area_type_filter,
+        "max_distance_filter": max_distance_filter,
+        "min_distance_filter": min_distance_filter,
+        "state_fips_filter": state_fips_filter,
+        "county_id_filter": county_id_filter,
+        "include_national": include_national,
+        "sort_by": sort_by,
+        "categories": categories,
+        "service_types": service_types,
+        "categories_dict": categories_dict,
+        "service_types_dict": service_types_dict,
+        "cities": cities,
+        "states": states,
     }
-    
-    return render(request, 'directory/public_resource_list.html', context)
+
+    return render(request, "directory/public_resource_list.html", context)
 
 
 def public_resource_detail(request: HttpRequest, pk: int) -> HttpResponse:
     """Public resource detail view for published resources with related resource suggestions.
-    
+
     This view displays comprehensive information about a published resource for
     non-authenticated users. It includes related resource suggestions based on
     category and service type similarities to help users discover additional
     relevant services.
-    
+
     Features:
         - Public access without authentication
         - Complete resource information display
@@ -528,78 +592,72 @@ def public_resource_detail(request: HttpRequest, pk: int) -> HttpResponse:
         - Category and service type-based recommendations
         - Deduplication of related resources
         - Limited to published, non-archived resources
-        
+
     Args:
         request: The HTTP request object
         pk: Primary key of the published resource to display
-        
+
     Returns:
         HttpResponse: Rendered public resource detail template with resource and related data
-        
+
     Raises:
         404: If the resource is not found, not published, or is archived/deleted
-        
+
     Template Context:
         - resource: The published resource object
         - related_resources: List of related resources (up to 5, deduplicated)
-        
+
     Example:
         GET /resources/public/123/ -> Display published resource 123 with related suggestions
     """
     resource = get_object_or_404(
-        Resource, 
-        pk=pk, 
-        status="published", 
-        is_deleted=False, 
-        is_archived=False
+        Resource, pk=pk, status="published", is_deleted=False, is_archived=False
     )
-    
+
     # Get related resources (same category or service types)
     related_resources = Resource.objects.filter(
-        status="published",
-        is_deleted=False,
-        is_archived=False
+        status="published", is_deleted=False, is_archived=False
     ).exclude(pk=resource.pk)
-    
+
     if resource.category:
         category_related = related_resources.filter(category=resource.category)[:3]
     else:
         category_related = []
-    
+
     if resource.service_types.exists():
         service_related = related_resources.filter(
             service_types__in=resource.service_types.all()
         ).distinct()[:3]
     else:
         service_related = []
-    
+
     # Combine and deduplicate related resources
     related = list(category_related) + list(service_related)
     related = list({r.pk: r for r in related}.values())[:5]
-    
+
     context = {
-        'resource': resource,
-        'related_resources': related,
+        "resource": resource,
+        "related_resources": related,
     }
-    
-    return render(request, 'directory/public_resource_detail.html', context)
+
+    return render(request, "directory/public_resource_detail.html", context)
 
 
 def custom_logout(request: HttpRequest) -> HttpResponse:
     """Custom logout view that redirects to the public home page.
-    
+
     This view handles user logout by clearing the session and redirecting
     to the public home page instead of the default Django logout behavior.
     It provides a seamless transition from authenticated to public access.
-    
+
     Args:
         request: The HTTP request object
-        
+
     Returns:
         HttpResponse: Redirect response to the public home page
-        
+
     Example:
         GET /logout/ -> Log out user and redirect to public home page
     """
     logout(request)
-    return redirect('directory:public_home')
+    return redirect("directory:public_home")

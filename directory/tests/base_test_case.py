@@ -17,7 +17,7 @@ Version: 1.0.0
 
 Usage:
     from directory.tests.base_test_case import BaseTestCase
-    
+
     class MyTestCase(BaseTestCase):
         def test_something(self):
             resource = self.create_test_resource(name="Test")
@@ -45,21 +45,21 @@ class BaseTestCase(TestCase):
             first_name="Test",
             last_name="User",
         )
-        
+
         cls.editor = User.objects.create_user(
             username="editor",
             password="testpass123",
             first_name="Test",
             last_name="Editor",
         )
-        
+
         cls.reviewer = User.objects.create_user(
             username="reviewer",
             password="testpass123",
             first_name="Test",
             last_name="Reviewer",
         )
-        
+
         cls.admin = User.objects.create_user(
             username="admin",
             password="testpass123",
@@ -81,7 +81,7 @@ class BaseTestCase(TestCase):
         cls.category = TaxonomyCategory.objects.create(
             name="Test Category", slug="test-category"
         )
-        
+
         cls.service_type = ServiceType.objects.create(
             name="Test Service", slug="test-service"
         )
@@ -103,31 +103,33 @@ class BaseTestCase(TestCase):
             "created_by": self.user,
             "updated_by": self.user,
         }
-        
+
         # Update with provided kwargs
         defaults.update(kwargs)
-        
+
         # Handle published status requirements
         if defaults.get("status") == "published":
             defaults.setdefault("last_verified_at", timezone.now() - timedelta(days=30))
             defaults.setdefault("last_verified_by", self.reviewer)
             defaults.setdefault("source", "Test Source")
-        
+
         # Handle needs_review status requirements
         elif defaults.get("status") == "needs_review":
             defaults.setdefault("source", "Test Source")
-            defaults.setdefault("description", "This is a detailed description with enough characters")
+            defaults.setdefault(
+                "description", "This is a detailed description with enough characters"
+            )
             defaults.setdefault("city", "Test City")
             defaults.setdefault("state", "CA")
-        
+
         # Handle archive requirements
         if defaults.get("is_archived"):
             defaults.setdefault("archived_at", timezone.now())
             defaults.setdefault("archived_by", self.user)
             defaults.setdefault("archive_reason", "Test archive")
-        
+
         # Handle verification frequency requirement
         if "verification_frequency_days" not in defaults:
             defaults["verification_frequency_days"] = 365
-        
+
         return Resource.objects.create(**defaults)

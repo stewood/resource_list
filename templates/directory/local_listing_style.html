@@ -1,0 +1,599 @@
+{% extends "base.html" %}
+{% load directory_extras %}
+
+{% block title %}LocalListing Style - Community Resource Directory{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section-local">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 mb-4">
+                    Find Help for Housing, Food, and Support Services
+                </h1>
+                <p class="lead mb-5">Connecting people experiencing homelessness with essential resources and compassionate care. We have {{ total_resources }} verified resources available. Need help now? We're here 24/7.</p>
+                <div class="hero-buttons">
+                    <a href="{% url 'directory:public_resource_list' %}" class="btn btn-primary btn-lg">Explore Resources</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Category Grid -->
+<div class="category-grid-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4 col-lg-2">
+                <a href="{% url 'directory:public_resource_list' %}?emergency=true" class="category-card">
+                    <div class="category-image-placeholder">
+                        <i class="fas fa-home fa-3x"></i>
+                    </div>
+                    <h3>Emergency Shelter</h3>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <a href="{% url 'directory:public_resource_list' %}?category=6" class="category-card">
+                    <div class="category-image-placeholder">
+                        <i class="fas fa-utensils fa-3x"></i>
+                    </div>
+                    <h3>Food & Meals</h3>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <a href="{% url 'directory:public_resource_list' %}?category=9" class="category-card">
+                    <div class="category-image-placeholder">
+                        <i class="fas fa-stethoscope fa-3x"></i>
+                    </div>
+                    <h3>Medical Care</h3>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <a href="{% url 'directory:public_resource_list' %}?category=8" class="category-card">
+                    <div class="category-image-placeholder">
+                        <i class="fas fa-brain fa-3x"></i>
+                    </div>
+                    <h3>Mental Health</h3>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <a href="{% url 'directory:public_resource_list' %}?category=11" class="category-card">
+                    <div class="category-image-placeholder">
+                        <i class="fas fa-briefcase fa-3x"></i>
+                    </div>
+                    <h3>Job Training</h3>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-2">
+                <a href="{% url 'directory:public_resource_list' %}?category=12" class="category-card">
+                    <div class="category-image-placeholder">
+                        <i class="fas fa-car fa-3x"></i>
+                    </div>
+                    <h3>Transportation</h3>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Service Categories Section -->
+<div class="browse-all-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Browse by Service Category</h2>
+        <p class="text-center mb-5">Find the specific type of help you need by browsing our service categories</p>
+        <div class="row g-3">
+            {% for category in categories %}
+            <div class="col-md-4 col-lg-3">
+                <div class="resource-card compact-card">
+                    <div class="resource-image-placeholder compact">
+                        {% if category.name == 'Shelter' or category.name == 'Housing' %}
+                            <i class="fas fa-home fa-2x"></i>
+                        {% elif category.name == 'Food' or category.name == 'Food Assistance' %}
+                            <i class="fas fa-utensils fa-2x"></i>
+                        {% elif category.name == 'Medical' or category.name == 'Healthcare' %}
+                            <i class="fas fa-stethoscope fa-2x"></i>
+                        {% elif category.name == 'Mental Health' %}
+                            <i class="fas fa-brain fa-2x"></i>
+                        {% elif category.name == 'Transportation' %}
+                            <i class="fas fa-bus fa-2x"></i>
+                        {% elif category.name == 'Legal' %}
+                            <i class="fas fa-gavel fa-2x"></i>
+                        {% elif category.name == 'Hotlines' %}
+                            <i class="fas fa-phone fa-2x"></i>
+                        {% elif category.name == 'Emergency Services' %}
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        {% elif category.name == 'Education' %}
+                            <i class="fas fa-graduation-cap fa-2x"></i>
+                        {% elif category.name == 'Veterans' %}
+                            <i class="fas fa-medal fa-2x"></i>
+                        {% elif category.name == 'Child Care' %}
+                            <i class="fas fa-baby fa-2x"></i>
+                        {% elif category.name == 'Utilities' %}
+                            <i class="fas fa-bolt fa-2x"></i>
+                        {% elif category.name == 'Churches' %}
+                            <i class="fas fa-church fa-2x"></i>
+                        {% elif category.name == 'Community & Social Services' %}
+                            <i class="fas fa-hands-helping fa-2x"></i>
+                        {% elif category.name == 'Government & Administrative Services' %}
+                            <i class="fas fa-landmark fa-2x"></i>
+                        {% elif category.name == 'Animal Care' %}
+                            <i class="fas fa-paw fa-2x"></i>
+                        {% else %}
+                            <i class="fas fa-map-marker-alt fa-2x"></i>
+                        {% endif %}
+                    </div>
+                    <div class="resource-badge compact">{{ category.name }}</div>
+                    <div class="resource-content compact">
+                        <h3>{{ category.name }}</h3>
+                        <div class="resource-meta compact">
+                            <div class="location">
+                                <i class="fas fa-info-circle"></i>
+                                {{ category.resource_count }} resources
+                            </div>
+                        </div>
+                        <a href="{% url 'directory:public_resource_list' %}?category={{ category.id }}" class="btn btn-primary btn-sm">Browse</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-muted">No categories available at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Featured Resource Section -->
+<div class="popular-resources-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Featured Resource</h2>
+                    <a href="{% url 'directory:public_resource_list' %}" class="btn btn-outline-primary">Browse all resources</a>
+                </div>
+                {% if featured_resource %}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="resource-card featured-resource">
+                            <div class="resource-image-placeholder">
+                                {% if featured_resource.category.name == 'Shelter' or featured_resource.category.name == 'Housing' %}
+                                    <i class="fas fa-home fa-3x"></i>
+                                {% elif featured_resource.category.name == 'Food' or featured_resource.category.name == 'Food Assistance' %}
+                                    <i class="fas fa-utensils fa-3x"></i>
+                                {% elif featured_resource.category.name == 'Medical' or featured_resource.category.name == 'Healthcare' %}
+                                    <i class="fas fa-stethoscope fa-3x"></i>
+                                {% elif featured_resource.category.name == 'Mental Health' %}
+                                    <i class="fas fa-brain fa-3x"></i>
+                                {% elif featured_resource.category.name == 'Transportation' %}
+                                    <i class="fas fa-bus fa-3x"></i>
+                                {% elif featured_resource.category.name == 'Legal' %}
+                                    <i class="fas fa-gavel fa-3x"></i>
+                                {% elif featured_resource.category.name == 'Hotlines' %}
+                                    <i class="fas fa-phone fa-3x"></i>
+                                {% elif featured_resource.category.name == 'Emergency Services' %}
+                                    <i class="fas fa-exclamation-triangle fa-3x"></i>
+                                {% else %}
+                                    <i class="fas fa-map-marker-alt fa-3x"></i>
+                                {% endif %}
+                            </div>
+                            <div class="resource-badge">
+                                {% if featured_resource.is_emergency_service or featured_resource.is_24_hour_service %}
+                                    <span class="badge bg-danger">Emergency Service</span>
+                                {% endif %}
+                                {{ featured_resource.category.name }}
+                            </div>
+                            <div class="resource-content">
+                                <h3>{{ featured_resource.name }}</h3>
+                                <p>{{ featured_resource.description|truncatewords:30 }}</p>
+                                <div class="resource-meta">
+                                    <div class="location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ featured_resource.city }}, {{ featured_resource.state }}
+                                    </div>
+                                    {% if featured_resource.hours_of_operation %}
+                                    <div class="hours">
+                                        <i class="fas fa-clock"></i>
+                                        {{ featured_resource.hours_of_operation|truncatechars:40 }}
+                                    </div>
+                                    {% elif featured_resource.is_24_hour_service %}
+                                    <div class="hours">
+                                        <i class="fas fa-clock"></i>
+                                        24/7 Available
+                                    </div>
+                                    {% endif %}
+                                    {% if featured_resource.phone %}
+                                    <div class="phone">
+                                        <i class="fas fa-phone"></i>
+                                        {{ featured_resource.phone }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="featured-actions">
+                                    <a href="{% url 'directory:public_resource_detail' featured_resource.pk %}" class="btn btn-primary">View Details</a>
+                                    {% if featured_resource.phone %}
+                                    <a href="tel:{{ featured_resource.phone }}" class="btn btn-success">Call Now</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="row">
+                    <div class="col-12">
+                        <p class="text-muted">No featured resource available at the moment.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Testimonials Section -->
+<div class="testimonials-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <h2>What our community says</h2>
+                <p class="lead">Hear from people who have found help through our resource directory.</p>
+            </div>
+            <div class="col-lg-6">
+                <div class="testimonial-card active">
+                    <div class="testimonial-content">
+                        <div class="testimonial-image-placeholder">
+                            <i class="fas fa-user fa-2x"></i>
+                        </div>
+                        <blockquote>
+                            "I was homeless and found emergency shelter through this directory. The Laurel County Homeless Coalition helped me get back on my feet and find permanent housing."
+                        </blockquote>
+                        <div class="testimonial-author">
+                            <strong>Michael Rodriguez</strong>
+                            <span>London, KY</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Blog/News Section -->
+<div class="blog-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Community News & Updates</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-image-placeholder">
+                        <i class="fas fa-newspaper fa-2x"></i>
+                    </div>
+                    <div class="blog-content">
+                        <div class="blog-meta">
+                            <span class="blog-category">Emergency</span>
+                            <span class="blog-date">Jan 15, 2025</span>
+                        </div>
+                        <h3>New Emergency Shelter Opening</h3>
+                        <p>We're excited to announce the opening of a new emergency shelter serving the London community...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-image-placeholder">
+                        <i class="fas fa-newspaper fa-2x"></i>
+                    </div>
+                    <div class="blog-content">
+                        <div class="blog-meta">
+                            <span class="blog-category">Weather</span>
+                            <span class="blog-date">Jan 10, 2025</span>
+                        </div>
+                        <h3>Winter Weather Shelter Information</h3>
+                        <p>Important information about emergency shelter availability during winter weather conditions...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="blog-card">
+                    <div class="blog-image-placeholder">
+                        <i class="fas fa-newspaper fa-2x"></i>
+                    </div>
+                    <div class="blog-content">
+                        <div class="blog-meta">
+                            <span class="blog-category">Health</span>
+                            <span class="blog-date">Jan 5, 2025</span>
+                        </div>
+                        <h3>Free Medical Clinic Schedule</h3>
+                        <p>Updated schedule for free medical services available to people experiencing homelessness...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="#" class="btn btn-outline-primary">Browse all articles</a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* LocalListing Style Customizations */
+.hero-section-local {
+    background: linear-gradient(135deg, var(--isaiah-primary) 0%, var(--isaiah-accent) 100%);
+    color: white;
+    padding: 6rem 0;
+    text-align: center;
+}
+
+.hero-section-local h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.hero-section-local .lead {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.hero-buttons .btn {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+}
+
+/* Category Grid */
+.category-grid-section {
+    padding: 4rem 0;
+    background: #f8f9fa;
+}
+
+.category-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    text-align: center;
+    padding: 2rem 1rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    text-decoration: none;
+    color: inherit;
+}
+
+.category-image-placeholder {
+    width: 80px;
+    height: 80px;
+    background: var(--isaiah-gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: white;
+}
+
+.category-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Resource Cards */
+.resource-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+}
+
+.resource-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.resource-image-placeholder {
+    height: 200px;
+    background: var(--isaiah-gradient-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--isaiah-primary);
+    position: relative;
+}
+
+.resource-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: var(--isaiah-accent);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.resource-content {
+    padding: 1.5rem;
+}
+
+.resource-content h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.resource-meta {
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.resource-meta > div {
+    margin-bottom: 0.5rem;
+}
+
+.resource-meta i {
+    margin-right: 0.5rem;
+    color: var(--isaiah-accent);
+}
+
+
+
+/* Newsletter Section */
+.newsletter-section {
+    padding: 4rem 0;
+    background: var(--isaiah-gradient-primary);
+    color: white;
+}
+
+.newsletter-form .input-group {
+    max-width: 400px;
+}
+
+.newsletter-image-placeholder {
+    height: 300px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Browse All Section */
+.browse-all-section {
+    padding: 4rem 0;
+    background: #f8f9fa;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+    padding: 4rem 0;
+    background: white;
+}
+
+.testimonial-card {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 12px;
+    border-left: 4px solid var(--isaiah-accent);
+}
+
+.testimonial-image-placeholder {
+    width: 60px;
+    height: 60px;
+    background: var(--isaiah-gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.testimonial-author {
+    margin-top: 1rem;
+}
+
+.testimonial-author strong {
+    display: block;
+    color: var(--isaiah-primary);
+}
+
+.testimonial-author span {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Blog Section */
+.blog-section {
+    padding: 4rem 0;
+    background: white;
+}
+
+.blog-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    height: 100%;
+}
+
+.blog-card:hover {
+    transform: translateY(-5px);
+}
+
+.blog-image-placeholder {
+    height: 200px;
+    background: var(--isaiah-gradient-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--isaiah-primary);
+}
+
+.blog-content {
+    padding: 1.5rem;
+}
+
+.blog-meta {
+    margin-bottom: 1rem;
+}
+
+.blog-category {
+    background: var(--isaiah-accent);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-right: 1rem;
+}
+
+.blog-date {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.blog-content h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section-local h1 {
+        font-size: 2.5rem;
+    }
+    
+    .category-card {
+        margin-bottom: 1rem;
+    }
+    
+    .why-visit-images {
+        height: 300px;
+        margin-top: 2rem;
+    }
+    
+    .image-placeholder-large,
+    .image-placeholder-small {
+        position: relative;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %}

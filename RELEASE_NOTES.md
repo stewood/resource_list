@@ -50,9 +50,9 @@ This is the initial release of the Community Resource Directory, a comprehensive
 
 #### Tech Stack
 - **Backend**: Django 5.0.2 with Python 3.x
-- **Database**: SQLite with WAL mode for performance
+- **Database**: PostgreSQL with PostGIS for spatial functionality
 - **Frontend**: HTMX + Bootstrap for responsive design
-- **Search**: SQLite FTS5 for full-text search
+- **Search**: PostgreSQL full-text search with spatial capabilities
 - **Deployment**: Docker support included
 
 #### Project Structure
@@ -217,11 +217,15 @@ docker-compose up --build
 - `DJANGO_SECRET_KEY`: Secret key for Django (required in production)
 - `DEBUG`: Enable debug mode (defaults to False)
 - `ALLOWED_HOSTS`: Comma-separated list of allowed hosts
-- `DATABASE_PATH`: Path to SQLite database file
+- `POSTGRES_DB`: PostgreSQL database name
+- `POSTGRES_USER`: PostgreSQL username
+- `POSTGRES_PASSWORD`: PostgreSQL password
+- `POSTGRES_HOST`: PostgreSQL host
+- `POSTGRES_PORT`: PostgreSQL port
 
 #### Database Setup
 
-The application uses SQLite with WAL mode for optimal performance. The database is automatically configured during setup.
+The application uses PostgreSQL with PostGIS for optimal performance and spatial functionality. The database is automatically configured during setup.
 
 ### 📚 Documentation
 

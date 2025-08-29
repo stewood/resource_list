@@ -10,10 +10,17 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from .models import AuditLog, Resource, ResourceVersion, ServiceType, TaxonomyCategory
-from .permissions import (user_can_hard_delete, user_can_manage_taxonomies,
-                          user_can_manage_users, user_can_publish,
-                          user_can_submit_for_review, user_can_verify,
-                          user_is_admin, user_is_editor, user_is_reviewer)
+from .permissions import (
+    user_can_hard_delete,
+    user_can_manage_taxonomies,
+    user_can_manage_users,
+    user_can_publish,
+    user_can_submit_for_review,
+    user_can_verify,
+    user_is_admin,
+    user_is_editor,
+    user_is_reviewer,
+)
 from .utils import export_resources_to_csv
 
 
@@ -180,7 +187,16 @@ class ResourceAdmin(admin.ModelAdmin):
         ("Contact Information", {"fields": ("phone", "email", "website")}),
         (
             "Location",
-            {"fields": ("address1", "address2", "city", "state", "county", "postal_code")},
+            {
+                "fields": (
+                    "address1",
+                    "address2",
+                    "city",
+                    "state",
+                    "county",
+                    "postal_code",
+                )
+            },
         ),
         (
             "Service Details",
@@ -198,11 +214,26 @@ class ResourceAdmin(admin.ModelAdmin):
                 )
             },
         ),
-        ("Verification", {"fields": ("last_verified_at", "last_verified_by", "verification_frequency_days", "next_verification_date")}),
+        (
+            "Verification",
+            {
+                "fields": (
+                    "last_verified_at",
+                    "last_verified_by",
+                    "verification_frequency_days",
+                    "next_verification_date",
+                )
+            },
+        ),
         (
             "Archive Information",
             {
-                "fields": ("is_archived", "archived_at", "archived_by", "archive_reason"),
+                "fields": (
+                    "is_archived",
+                    "archived_at",
+                    "archived_by",
+                    "archive_reason",
+                ),
                 "classes": ("collapse",),
             },
         ),
@@ -223,7 +254,14 @@ class ResourceAdmin(admin.ModelAdmin):
         ),
     )
     inlines = [ResourceVersionInline]
-    actions = ["submit_for_review", "publish_resource", "unpublish_resource", "archive_resources", "unarchive_resources", "export_to_csv"]
+    actions = [
+        "submit_for_review",
+        "publish_resource",
+        "unpublish_resource",
+        "archive_resources",
+        "unarchive_resources",
+        "export_to_csv",
+    ]
 
     def needs_verification_display(self, obj):
         """Display verification status with color coding."""
@@ -305,14 +343,14 @@ class ResourceAdmin(admin.ModelAdmin):
 
         # Filter out already archived resources
         to_archive = queryset.filter(is_archived=False)
-        
+
         if not to_archive.exists():
             self.message_user(request, "No resources to archive.")
             return
 
         # For bulk archive, we'll set a generic reason
         from django.utils import timezone
-        
+
         updated = to_archive.update(
             is_archived=True,
             archived_at=timezone.now(),
@@ -330,7 +368,7 @@ class ResourceAdmin(admin.ModelAdmin):
 
         # Filter to only archived resources
         to_unarchive = queryset.filter(is_archived=True)
-        
+
         if not to_unarchive.exists():
             self.message_user(request, "No archived resources to unarchive.")
             return

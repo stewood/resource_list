@@ -5,18 +5,23 @@ This module provides test-specific settings that enable GIS support
 to handle spatial field migrations during testing.
 """
 
+import os
 from .settings import *
 
 # Enable GIS for tests to handle spatial field migrations
 GIS_ENABLED = True
 
-# Use in-memory database for faster tests
+# Use PostgreSQL for tests (same as development)
 DATABASES = {
     "default": {
-        "ENGINE": "django.contrib.gis.db.backends.spatialite",
-        "NAME": ":memory:",
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": os.environ.get("POSTGRES_DB", "resource_directory_test"),
+        "USER": os.environ.get("POSTGRES_USER", "postgres"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "postgres"),
+        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
+        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
         "OPTIONS": {
-            "timeout": 20,
+            "connect_timeout": 10,
         },
     }
 }

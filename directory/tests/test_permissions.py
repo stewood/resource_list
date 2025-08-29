@@ -28,21 +28,21 @@ class PermissionTestCase(TestCase):
             first_name="Test",
             last_name="User",
         )
-        
+
         self.editor = User.objects.create_user(
             username="editor",
             password="testpass123",
             first_name="Test",
             last_name="Editor",
         )
-        
+
         self.reviewer = User.objects.create_user(
             username="reviewer",
             password="testpass123",
             first_name="Test",
             last_name="Reviewer",
         )
-        
+
         self.admin = User.objects.create_user(
             username="admin",
             password="testpass123",
@@ -65,7 +65,7 @@ class PermissionTestCase(TestCase):
         self.assertTrue(user_is_editor(self.editor))
         self.assertTrue(user_is_reviewer(self.reviewer))
         self.assertTrue(user_is_admin(self.admin))
-        
+
         self.assertFalse(user_is_editor(self.user))
         self.assertFalse(user_is_reviewer(self.user))
         self.assertFalse(user_is_admin(self.user))
@@ -96,10 +96,10 @@ class PermissionTestCase(TestCase):
         editor_perms = get_role_permissions("Editor")
         self.assertIn("Can add resource", editor_perms)
         self.assertIn("Can change resource", editor_perms)
-        
+
         reviewer_perms = get_role_permissions("Reviewer")
         self.assertIn("Can add taxonomy category", reviewer_perms)
-        
+
         admin_perms = get_role_permissions("Admin")
         self.assertIn("Can delete resource", admin_perms)
         self.assertIn("Can manage user", admin_perms)
@@ -108,11 +108,9 @@ class PermissionTestCase(TestCase):
         """Test superuser permissions."""
         # Create superuser
         superuser = User.objects.create_superuser(
-            username="superuser",
-            email="super@example.com",
-            password="testpass123"
+            username="superuser", email="super@example.com", password="testpass123"
         )
-        
+
         # Superuser should have all permissions
         self.assertTrue(user_is_editor(superuser))
         self.assertTrue(user_is_reviewer(superuser))
@@ -124,9 +122,9 @@ class PermissionTestCase(TestCase):
     def test_anonymous_user_permissions(self):
         """Test anonymous user permissions."""
         from django.contrib.auth.models import AnonymousUser
-        
+
         anonymous = AnonymousUser()
-        
+
         # Anonymous users should have no permissions
         self.assertFalse(user_is_editor(anonymous))
         self.assertFalse(user_is_reviewer(anonymous))
@@ -140,11 +138,11 @@ class PermissionTestCase(TestCase):
         # Add user to multiple groups
         self.user.groups.add(self.editor_group)
         self.user.groups.add(self.reviewer_group)
-        
+
         # Should have editor permissions (first group)
         self.assertTrue(user_is_editor(self.user))
         self.assertTrue(user_can_submit_for_review(self.user))
-        
+
         # Should not have reviewer permissions (role precedence)
         self.assertFalse(user_is_reviewer(self.user))
         self.assertFalse(user_can_publish(self.user))
@@ -154,9 +152,9 @@ class PermissionTestCase(TestCase):
         # User with all roles should be identified as Admin
         self.admin.groups.add(self.editor_group)
         self.admin.groups.add(self.reviewer_group)
-        
+
         self.assertEqual(get_user_role(self.admin), "Admin")
-        
+
         # User with Reviewer and Editor roles should be identified as Reviewer
         self.reviewer.groups.add(self.editor_group)
         self.assertEqual(get_user_role(self.reviewer), "Reviewer")
@@ -182,12 +180,12 @@ class PermissionTestCase(TestCase):
         self.assertTrue(user_is_editor(self.editor))
         self.assertTrue(user_can_submit_for_review(self.editor))
         self.assertFalse(user_can_publish(self.editor))
-        
+
         # Reviewer permissions
         self.assertTrue(user_is_reviewer(self.reviewer))
         self.assertTrue(user_can_submit_for_review(self.reviewer))
         self.assertTrue(user_can_publish(self.reviewer))
-        
+
         # Admin permissions
         self.assertTrue(user_is_admin(self.admin))
         self.assertTrue(user_can_submit_for_review(self.admin))
@@ -197,16 +195,13 @@ class PermissionTestCase(TestCase):
         """Test group creation and user assignment."""
         # Create new group
         new_group = Group.objects.create(name="NewGroup")
-        
+
         # Create new user
-        new_user = User.objects.create_user(
-            username="newuser",
-            password="testpass123"
-        )
-        
+        new_user = User.objects.create_user(username="newuser", password="testpass123")
+
         # Assign user to group
         new_user.groups.add(new_group)
-        
+
         # User should not have special permissions (group not recognized)
         self.assertFalse(user_is_editor(new_user))
         self.assertFalse(user_is_reviewer(new_user))

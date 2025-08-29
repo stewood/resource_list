@@ -2,6 +2,111 @@
 
 This directory contains utility scripts for managing the resource directory system.
 
+## Geographic Data Management
+
+The `geo_manager.py` script provides a beautiful, user-friendly CLI for managing geographic data with rich progress bars and status updates.
+
+### Usage
+
+```bash
+# Navigate to the project root
+cd /home/stewood/rl
+
+# Activate the virtual environment
+source venv/bin/activate
+
+# Check current geographic data status
+python scripts/geo_manager.py status
+
+# Import Kentucky region (all states + KY + bordering states counties/cities)
+python scripts/geo_manager.py kentucky-region --clear-existing
+
+# Populate data for specific states
+python scripts/geo_manager.py populate --states KY,IN,OH
+
+# Populate data for all states
+python scripts/geo_manager.py populate --states all
+
+# Clear all geographic data
+python scripts/geo_manager.py clear
+
+# Update existing data for specific states
+python scripts/geo_manager.py update --states KY --year 2023
+
+# Show help
+python scripts/geo_manager.py help
+```
+
+### Available Commands
+
+#### Status
+```bash
+python scripts/geo_manager.py status
+```
+Shows current geographic data status with counts of states, counties, and cities.
+
+#### Kentucky Region Import
+```bash
+python scripts/geo_manager.py kentucky-region [--clear-existing]
+```
+Imports all states plus counties and cities for Kentucky and its bordering states:
+- Kentucky (KY)
+- Indiana (IN)
+- Illinois (IL)
+- Missouri (MO)
+- Tennessee (TN)
+- Virginia (VA)
+- West Virginia (WV)
+- Ohio (OH)
+
+This is the recommended command for a complete regional dataset.
+
+#### Populate Data
+```bash
+python scripts/geo_manager.py populate --states STATE1,STATE2 [--clear-existing]
+```
+Populates geographic data for specific states.
+
+**Examples:**
+```bash
+python scripts/geo_manager.py populate --states KY,IN,OH
+python scripts/geo_manager.py populate --states all
+```
+
+#### Clear Data
+```bash
+python scripts/geo_manager.py clear
+```
+Clears all geographic data from the database.
+
+#### Update Data
+```bash
+python scripts/geo_manager.py update --states STATE1,STATE2 [--year YEAR]
+```
+Updates existing geographic data for specific states.
+
+**Examples:**
+```bash
+python scripts/geo_manager.py update --states KY --year 2023
+```
+
+### Features
+
+- **Beautiful UI**: Rich progress bars and colored output
+- **Real-time Progress**: Shows actual progress with ETA for downloads and imports
+- **Optimized Downloads**: Downloads files only once when possible
+- **Error Handling**: Clear error messages and graceful failure handling
+- **Non-interactive**: Runs without requiring user confirmation
+- **Comprehensive**: Handles states, counties, and cities in one tool
+
+### State Abbreviations
+
+The tool accepts both state abbreviations and FIPS codes:
+- `KY` or `21` for Kentucky
+- `IN` or `18` for Indiana
+- `OH` or `39` for Ohio
+- etc.
+
 ## Service Area Management Script
 
 The `manage_service_areas.py` script provides a command-line interface for managing service areas for resources.
@@ -124,58 +229,3 @@ The system supports these types of service areas:
 - All changes are logged with the user who made them and timestamps
 - The script includes error handling and validation
 - Make sure to run from the scripts directory with the virtual environment activated
-
-## Geographic Data Update Script
-
-The `update_geographic_data.py` script manages TIGER/Line data imports and now includes automatic maintenance of national coverage areas.
-
-### Usage
-
-```bash
-# Navigate to the project root
-cd /home/stewood/rl
-
-# Activate the virtual environment
-source venv/bin/activate
-
-# Check current data status (includes national coverage areas)
-python scripts/update_geographic_data.py --status-only
-
-# Update existing data (maintains national coverage areas)
-python scripts/update_geographic_data.py --update-existing
-
-# Import all states (creates and maintains national coverage areas)
-python scripts/update_geographic_data.py --all-states
-
-# Clear and reimport all data
-python scripts/update_geographic_data.py --all-states --clear-existing
-```
-
-### National Coverage Area Integration
-
-The geographic data update script now automatically:
-
-1. **Maintains National Coverage Areas**: After importing state data, it updates the metadata for national coverage areas
-2. **Tracks Updates**: Records when national coverage areas were last updated
-3. **Validates Coverage**: Ensures national coverage areas exist and are properly configured
-4. **Reports Status**: Shows national coverage area status in data status reports
-
-### National Coverage Areas Maintained
-
-- **National (Lower 48 States)** - ID: 7854
-- **United States (All States and Territories)** - ID: 7855
-
-These areas are automatically updated with metadata including:
-- `last_updated`: Timestamp of last maintenance
-- `available_states`: Count of available states in database
-- `update_source`: Source of the update (geographic_data_update)
-
-### Integration with TIGER/Line Updates
-
-When you run geographic data updates, the system will:
-1. Import/update individual state, county, and city boundaries
-2. Automatically maintain national coverage area metadata
-3. Report the status of all coverage areas including national ones
-4. Warn if national coverage areas are missing
-
-This ensures that your national coverage areas stay synchronized with your underlying geographic data.

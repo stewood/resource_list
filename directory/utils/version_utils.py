@@ -30,10 +30,10 @@ Version: 1.0.0
 
 Usage:
     from directory.utils.version_utils import compare_versions, generate_diff_html
-    
+
     # Compare versions
     differences = compare_versions(snapshot1, snapshot2)
-    
+
     # Generate HTML diff
     diff_html = generate_diff_html("old text", "new text")
 """
@@ -48,24 +48,24 @@ def compare_versions(
     snapshot1: Dict[str, Any], snapshot2: Dict[str, Any]
 ) -> Dict[str, Dict[str, Any]]:
     """Compare two resource snapshots and return detailed differences.
-    
+
     This function performs a comprehensive comparison between two resource
     snapshots, identifying added, removed, and changed fields. It preserves
     original data types while providing both raw values and HTML-formatted
     diffs for display purposes.
-    
+
     Features:
         - Complete field-by-field comparison
         - Diff type classification (added, removed, changed)
         - Preservation of original data types
         - HTML diff generation for display
         - Handling of missing fields in either snapshot
-        
+
     Diff Types:
         - "added": Field exists in snapshot2 but not in snapshot1
         - "removed": Field exists in snapshot1 but not in snapshot2
         - "changed": Field exists in both but with different values
-        
+
     Return Structure:
         {
             "field_name": {
@@ -75,26 +75,26 @@ def compare_versions(
                 "diff_html": HTML-formatted diff string
             }
         }
-        
+
     Args:
         snapshot1: Dictionary containing the first version's field values
         snapshot2: Dictionary containing the second version's field values
-        
+
     Returns:
         Dict[str, Dict[str, Any]]: Dictionary mapping field names to their differences,
                                   including old/new values, diff type, and HTML diff
-                                  
+
     Example:
         >>> snapshot1 = {"name": "Old Name", "status": "draft"}
         >>> snapshot2 = {"name": "New Name", "status": "published", "city": "London"}
         >>> differences = compare_versions(snapshot1, snapshot2)
         >>> # Returns:
         >>> # {
-        >>> #     "name": {"old_value": "Old Name", "new_value": "New Name", 
+        >>> #     "name": {"old_value": "Old Name", "new_value": "New Name",
         >>> #              "diff_type": "changed", "diff_html": "..."},
-        >>> #     "status": {"old_value": "draft", "new_value": "published", 
+        >>> #     "status": {"old_value": "draft", "new_value": "published",
         >>> #                "diff_type": "changed", "diff_html": "..."},
-        >>> #     "city": {"old_value": None, "new_value": "London", 
+        >>> #     "city": {"old_value": None, "new_value": "London",
         >>> #             "diff_type": "added", "diff_html": "..."}
         >>> # }
     """
@@ -131,11 +131,11 @@ def compare_versions(
 
 def generate_diff_html(old_text: str, new_text: str) -> str:
     """Generate HTML diff between two text strings with syntax highlighting.
-    
+
     This function creates an HTML-formatted diff between two text strings using
     Python's difflib module. It provides visual highlighting for additions,
     deletions, and context lines, making it easy to see changes between versions.
-    
+
     Features:
         - Unified diff format with line-by-line comparison
         - HTML highlighting for additions (green) and deletions (red)
@@ -143,21 +143,21 @@ def generate_diff_html(old_text: str, new_text: str) -> str:
         - Safe HTML escaping to prevent XSS
         - Fallback for identical text
         - Bootstrap-compatible CSS classes
-        
+
     CSS Classes Used:
         - diff-header: For diff metadata lines (@@ lines)
         - diff-added: For added lines (green highlighting)
         - diff-removed: For removed lines (red highlighting)
         - diff-context: For unchanged context lines
         - text-muted: For identical text or no diff available
-        
+
     Args:
         old_text: Original text string to compare
         new_text: New text string to compare against
-        
+
     Returns:
         str: HTML string with diff highlighting and proper escaping
-        
+
     Example:
         >>> old_text = "Hello\nWorld"
         >>> new_text = "Hello\nBeautiful\nWorld"

@@ -22,7 +22,7 @@ Version: 1.0.0
 Usage:
     # Backward compatible imports (recommended for existing code)
     from directory.models import Resource, TaxonomyCategory, ServiceType
-    
+
     # Direct module imports (for new code)
     from directory.models.resource import Resource
     from directory.models.taxonomy import TaxonomyCategory, ServiceType
@@ -45,7 +45,7 @@ from .managers import ResourceManager
 # Define __all__ for explicit exports
 __all__ = [
     "Resource",
-    "TaxonomyCategory", 
+    "TaxonomyCategory",
     "ServiceType",
     "ResourceVersion",
     "AuditLog",

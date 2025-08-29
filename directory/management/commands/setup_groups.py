@@ -122,7 +122,7 @@ class Command(BaseCommand):
             group: Django Group instance to assign permissions to
             permission_names: List of permission codenames to assign
             resource_ct: ContentType for Resource model
-            category_ct: ContentType for TaxonomyCategory model  
+            category_ct: ContentType for TaxonomyCategory model
             user_ct: ContentType for User model
         """
         for perm_name in permission_names:

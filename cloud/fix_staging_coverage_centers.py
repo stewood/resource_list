@@ -122,3 +122,4 @@ if __name__ == "__main__":
     else:
         success = fix_staging_coverage_area_centers()
         sys.exit(0 if success else 1)
+

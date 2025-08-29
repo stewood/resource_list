@@ -39,26 +39,26 @@ SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY", "django-insecure-dev-key-change-in-production"
 )
 
+# Enable GIS features in development
+GIS_ENABLED = True
+
 # Allow all hosts in development
 ALLOWED_HOSTS = ["*"]
 
-# Database configuration for PostgreSQL in Docker
+# Database configuration for PostgreSQL with PostGIS in Docker
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
         "NAME": os.environ.get("POSTGRES_DB", "resource_directory_dev"),
         "USER": os.environ.get("POSTGRES_USER", "postgres"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "postgres"),
         "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
-        "PORT": os.environ.get("POSTGRES_PORT", "5433"),
+        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
         "OPTIONS": {
             "connect_timeout": 10,
         },
     }
 }
-
-# Disable GIS features in development (match production)
-GIS_ENABLED = False
 
 # Development-specific middleware
 # Enable debug toolbar for development

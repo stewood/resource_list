@@ -9,19 +9,17 @@ services:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-dev-secret-key-change-in-production}
       - DEBUG=${DEBUG:-0}
       - ALLOWED_HOSTS=*
-      - DATABASE_PATH=/data/db.sqlite3
+      # PostgreSQL Configuration
+      - POSTGRES_DB=${POSTGRES_DB:-resource_directory_dev}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_HOST=${POSTGRES_HOST:-localhost}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
       # GIS Configuration
       - GIS_ENABLED=${GIS_ENABLED:-1}
-      - SPATIALITE_LIBRARY_PATH=${SPATIALITE_LIBRARY_PATH:-/usr/lib/x86_64-linux-gnu/mod_spatialite.so}
-      - GDAL_LIBRARY_PATH=${GDAL_LIBRARY_PATH:-/usr/lib/x86_64-linux-gnu/libgdal.so}
     volumes:
-      - resources_data:/data  # db.sqlite3 lives here
       # Optional: Mount external data directory for TIGER/Line files
       - ${TIGER_DATA_DIR:-./tiger_data}:/app/tiger_data:ro
     command: >
       sh -c "python manage.py migrate &&
-             python manage.py setup_wal &&
              gunicorn --bind 0.0.0.0:8000 resource_directory.wsgi:application"
-
-volumes:
-  resources_data:

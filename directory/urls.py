@@ -44,7 +44,6 @@ urlpatterns = [
     path("", public_home, name="public_home"),
     path("resources/", public_resource_list, name="public_resource_list"),
     path("resources/<int:pk>/", public_resource_detail, name="public_resource_detail"),
-    
     # Admin views (authentication required)
     path("manage/dashboard/", dashboard, name="dashboard"),
     path("manage/resources/", ResourceListView.as_view(), name="resource_list"),
@@ -109,16 +108,38 @@ urlpatterns = [
         unarchive_resource,
         name="unarchive_resource",
     ),
-    
     # Authentication
     path("logout/", custom_logout, name="logout"),
-    
     # API endpoints
     path("api/areas/search/", AreaSearchView.as_view(), name="api_area_search"),
-    path("api/areas/<int:area_id>/preview/", AreaSearchView.as_view(), name="api_area_preview"),
-    path("api/search/by-location/", LocationSearchView.as_view(), name="api_location_search"),
-    path("api/geocode/reverse/", ReverseGeocodingView.as_view(), name="api_reverse_geocode"),
-    path("api/location/states-counties/", StateCountyView.as_view(), name="api_states_counties"),
-    path("api/resources/<int:resource_id>/areas/", ResourceAreaManagementView.as_view(), name="api_resource_areas"),
-    path("api/resources/<int:resource_id>/eligibility/", ResourceEligibilityView.as_view(), name="api_resource_eligibility"),
+    path(
+        "api/areas/<int:area_id>/preview/",
+        AreaSearchView.as_view(),
+        name="api_area_preview",
+    ),
+    path(
+        "api/search/by-location/",
+        LocationSearchView.as_view(),
+        name="api_location_search",
+    ),
+    path(
+        "api/geocode/reverse/",
+        ReverseGeocodingView.as_view(),
+        name="api_reverse_geocode",
+    ),
+    path(
+        "api/location/states-counties/",
+        StateCountyView.as_view(),
+        name="api_states_counties",
+    ),
+    path(
+        "api/resources/<int:resource_id>/areas/",
+        ResourceAreaManagementView.as_view(),
+        name="api_resource_areas",
+    ),
+    path(
+        "api/resources/<int:resource_id>/eligibility/",
+        ResourceEligibilityView.as_view(),
+        name="api_resource_eligibility",
+    ),
 ]

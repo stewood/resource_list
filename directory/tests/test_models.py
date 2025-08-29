@@ -26,8 +26,12 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 from directory.models import (
-    Resource, TaxonomyCategory, ServiceType, CoverageArea,
-    ResourceCoverage, GeocodingCache
+    Resource,
+    TaxonomyCategory,
+    ServiceType,
+    CoverageArea,
+    ResourceCoverage,
+    GeocodingCache,
 )
 from .base_test_case import BaseTestCase
 
@@ -44,7 +48,7 @@ class ResourceModelTestCase(BaseTestCase):
             state="CA",
             phone="5551234567",
         )
-        
+
         self.assertEqual(resource.name, "Test Resource")
         self.assertEqual(resource.city, "Test City")
         self.assertEqual(resource.state, "CA")
@@ -70,14 +74,14 @@ class ResourceModelTestCase(BaseTestCase):
         # Create draft resource
         resource = self.create_test_resource(status="draft")
         self.assertEqual(resource.status, "draft")
-        
+
         # Test published status requirements
         resource.status = "published"
         resource.last_verified_at = timezone.now() - timedelta(days=30)
         resource.last_verified_by = self.reviewer
         resource.source = "Test Source"
         resource.save()
-        
+
         self.assertEqual(resource.status, "published")
 
     def test_resource_relationships(self):
@@ -87,7 +91,7 @@ class ResourceModelTestCase(BaseTestCase):
         resource.category = self.category
         resource.service_types.add(self.service_type)
         resource.save()
-        
+
         self.assertEqual(resource.category, self.category)
         self.assertIn(self.service_type, resource.service_types.all())
 
@@ -101,7 +105,7 @@ class ResourceModelTestCase(BaseTestCase):
             created_by=self.user,
             updated_by=self.user,
         )
-        
+
         # Create resource and add coverage area
         resource = self.create_test_resource()
         ResourceCoverage.objects.create(
@@ -109,7 +113,7 @@ class ResourceModelTestCase(BaseTestCase):
             coverage_area=coverage_area,
             created_by=self.user,
         )
-        
+
         self.assertIn(coverage_area, resource.coverage_areas.all())
         self.assertIn(resource, coverage_area.resources.all())
 
@@ -124,7 +128,7 @@ class ServiceTypeModelTestCase(BaseTestCase):
             description="A test service type",
             slug="test-service-type",
         )
-        
+
         self.assertEqual(service_type.name, "Test Service Type")
         self.assertEqual(service_type.slug, "test-service-type")
         self.assertIsNotNone(service_type.created_at)
@@ -157,9 +161,9 @@ class ResourceManagerTestCase(BaseTestCase):
             last_verified_by=self.reviewer,
             source="Test Source",
         )
-        
+
         draft_resource = self.create_test_resource(status="draft")
-        
+
         # Test filtering by status (since there's no published manager)
         published_resources = Resource.objects.filter(status="published")
         self.assertIn(published_resource, published_resources)
@@ -170,12 +174,12 @@ class ResourceManagerTestCase(BaseTestCase):
         # Create active and archived resources
         active_resource = self.create_test_resource(is_archived=False)
         archived_resource = self.create_test_resource(is_archived=True)
-        
+
         # Test default manager (should exclude archived)
         active_resources = Resource.objects.all()
         self.assertIn(active_resource, active_resources)
         self.assertNotIn(archived_resource, active_resources)
-        
+
         # Test archived manager
         archived_resources = Resource.objects.archived()
         self.assertNotIn(active_resource, archived_resources)
@@ -187,7 +191,7 @@ class ResourceManagerTestCase(BaseTestCase):
         resource1 = self.create_test_resource(name="Food Bank")
         resource2 = self.create_test_resource(name="Shelter")
         resource3 = self.create_test_resource(name="Medical Clinic")
-        
+
         # Test search by name
         food_results = Resource.objects.filter(name__icontains="Food")
         self.assertIn(resource1, food_results)
@@ -205,7 +209,7 @@ class TaxonomyCategoryModelTestCase(BaseTestCase):
             description="A test category",
             slug="test-category-creation",
         )
-        
+
         self.assertEqual(category.name, "Test Category Creation")
         self.assertEqual(category.slug, "test-category-creation")
         self.assertIsNotNone(category.created_at)
@@ -232,11 +236,11 @@ class TaxonomyCategoryModelTestCase(BaseTestCase):
             name="Test Category Rel",
             slug="test-category-rel",
         )
-        
+
         resource = self.create_test_resource()
         resource.category = category
         resource.save()
-        
+
         self.assertEqual(resource.category, category)
         self.assertIn(resource, category.resources.all())
 
@@ -247,11 +251,12 @@ class CoverageAreaModelTestCase(BaseTestCase):
     def setUp(self):
         """Set up test-specific data for CoverageArea tests."""
         super().setUp()
-        
+
         # Import CoverageArea here to avoid circular imports
         from directory.models import CoverageArea
+
         self.CoverageArea = CoverageArea
-        
+
         # Create test coverage areas with different types
         self.state_area = self.CoverageArea.objects.create(
             name="Kentucky",
@@ -260,7 +265,7 @@ class CoverageAreaModelTestCase(BaseTestCase):
             created_by=self.user,
             updated_by=self.user,
         )
-        
+
         self.county_area = self.CoverageArea.objects.create(
             name="Laurel County",
             kind="COUNTY",
@@ -268,7 +273,7 @@ class CoverageAreaModelTestCase(BaseTestCase):
             created_by=self.user,
             updated_by=self.user,
         )
-        
+
         self.city_area = self.CoverageArea.objects.create(
             name="London",
             kind="CITY",
@@ -286,7 +291,7 @@ class CoverageAreaModelTestCase(BaseTestCase):
             created_by=self.user,
             updated_by=self.user,
         )
-        
+
         self.assertEqual(area.name, "Test County")
         self.assertEqual(area.kind, "COUNTY")
         self.assertEqual(area.ext_ids, {"state_fips": "21", "county_fips": "123"})
@@ -308,7 +313,7 @@ class CoverageAreaModelTestCase(BaseTestCase):
             ("CITY", {"state_fips": "21"}),
             ("POLYGON", {}),
         ]
-        
+
         for kind, ext_ids in test_cases:
             area = self.CoverageArea.objects.create(
                 name=f"Test {kind}",
@@ -339,7 +344,7 @@ class CoverageAreaModelTestCase(BaseTestCase):
             coverage_area=self.county_area,
             created_by=self.user,
         )
-        
+
         self.assertIn(self.state_area, resource.coverage_areas.all())
         self.assertIn(self.county_area, resource.coverage_areas.all())
         self.assertIn(resource, self.state_area.resources.all())
@@ -359,13 +364,13 @@ class ResourceCoverageModelTestCase(BaseTestCase):
             created_by=self.user,
             updated_by=self.user,
         )
-        
+
         resource_coverage = ResourceCoverage.objects.create(
             resource=resource,
             coverage_area=coverage_area,
             created_by=self.user,
         )
-        
+
         self.assertEqual(resource_coverage.resource, resource)
         self.assertEqual(resource_coverage.coverage_area, coverage_area)
         self.assertIsNotNone(resource_coverage.created_at)
@@ -380,13 +385,13 @@ class ResourceCoverageModelTestCase(BaseTestCase):
             created_by=self.user,
             updated_by=self.user,
         )
-        
+
         resource_coverage = ResourceCoverage.objects.create(
             resource=resource,
             coverage_area=coverage_area,
             created_by=self.user,
         )
-        
+
         expected_str = f"{resource.name} → {coverage_area.name}"
         self.assertEqual(str(resource_coverage), expected_str)
 
@@ -405,7 +410,7 @@ class GeocodingCacheModelTestCase(BaseTestCase):
             confidence=0.8,
             expires_at=timezone.now() + timedelta(days=30),
         )
-        
+
         self.assertEqual(cache_entry.query, "London, KY")
         self.assertEqual(cache_entry.latitude, 37.1283)
         self.assertEqual(cache_entry.longitude, -84.0836)
@@ -424,7 +429,7 @@ class GeocodingCacheModelTestCase(BaseTestCase):
             confidence=0.8,
             expires_at=timezone.now() + timedelta(days=30),
         )
-        
+
         expected_str = "London, KY -> London, Kentucky (0.8)"
         # The actual string representation is different than expected
         actual_str = str(cache_entry)

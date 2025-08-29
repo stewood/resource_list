@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Community Resource Directory{% endblock %}</title>
     
-    <!-- Prevent flash of light theme -->
+    <!-- Prevent flash of dark theme -->
     <script>
         (function() {
-            var theme = localStorage.getItem('theme') || 'light';
+            var theme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', theme);
         })();
     </script>
@@ -129,8 +129,8 @@
                 <ul class="navbar-nav">
                     <!-- Theme Toggle Button -->
                     <li class="nav-item">
-                        <button id="theme-toggle" class="theme-toggle" title="Switch to dark mode">
-                            <i class="fas fa-moon"></i>
+                        <button id="theme-toggle" class="theme-toggle" title="Switch to light mode">
+                            <i class="fas fa-sun"></i>
                         </button>
                     </li>
                     

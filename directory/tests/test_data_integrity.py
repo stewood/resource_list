@@ -54,21 +54,24 @@ class DataIntegrityTestCase(BaseTestCase):
             languages_available="English, Spanish",
             capacity="50 people per day",
         )
-        
+
         # Verify data integrity
         self.assertEqual(resource.name, "Complete Test Resource")
         self.assertEqual(resource.phone, "5551234567")  # Normalized phone number
         self.assertEqual(resource.website, "https://example.com")  # Normalized URL
         self.assertEqual(resource.state, "CA")  # Normalized state
-        
+
         # Add service type
         resource.service_types.add(self.service_type)
-        
+
         # Test that all data is preserved
         resource.refresh_from_db()
-        
+
         self.assertEqual(resource.name, "Complete Test Resource")
-        self.assertEqual(resource.description, "A comprehensive test resource with detailed information")
+        self.assertEqual(
+            resource.description,
+            "A comprehensive test resource with detailed information",
+        )
         self.assertEqual(resource.city, "Test City")
         self.assertEqual(resource.state, "CA")
         self.assertEqual(resource.county, "Test County")
@@ -90,7 +93,7 @@ class DataIntegrityTestCase(BaseTestCase):
         self.assertEqual(resource.capacity, "50 people per day")
         self.assertEqual(resource.created_by, self.user)
         self.assertEqual(resource.updated_by, self.user)
-        
+
         # Test related objects
         self.assertIn(self.service_type, resource.service_types.all())
         self.assertEqual(resource.category, self.category)

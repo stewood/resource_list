@@ -19,7 +19,7 @@ Version: 1.0.0
 
 Usage:
     from directory.views import ResourceListView, ResourceDetailView
-    
+
     # All views are available through the package namespace
     # URL patterns can import directly from this package
 """
@@ -66,32 +66,27 @@ from .api_views import (
 __all__ = [
     # Resource views
     "ResourceListView",
-    "ResourceDetailView", 
+    "ResourceDetailView",
     "ResourceCreateView",
     "ResourceUpdateView",
-    
     # Workflow views
     "submit_for_review",
     "publish_resource",
     "unpublish_resource",
     "archive_resource",
     "unarchive_resource",
-    
     # Archive views
     "ArchiveListView",
     "ArchiveDetailView",
-    
     # Dashboard views
     "dashboard",
     "version_comparison",
     "version_history",
-    
     # Public views
     "public_home",
     "public_resource_list",
     "public_resource_detail",
     "custom_logout",
-    
     # API views
     "AreaSearchView",
     "LocationSearchView",

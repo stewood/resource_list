@@ -124,21 +124,23 @@ WSGI_APPLICATION = "resource_directory.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 # Database configuration
-if GIS_ENABLED:
-    # Use SpatiaLite when GIS is enabled
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.contrib.gis.db.backends.spatialite",
-            "NAME": os.environ.get("DATABASE_PATH", BASE_DIR / "data" / "db.sqlite3"),
-            "OPTIONS": {
-                "timeout": 20,
-            },
-        }
+# Default to PostgreSQL with PostGIS for development and production
+DATABASES = {
+    "default": {
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": os.environ.get("POSTGRES_DB", "resource_directory_dev"),
+        "USER": os.environ.get("POSTGRES_USER", "postgres"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "postgres"),
+        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
+        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        "OPTIONS": {
+            "connect_timeout": 10,
+        },
     }
-    
-    # Note: SpatiaLite library path is auto-detected by Django GIS
-else:
-    # Use regular SQLite when GIS is disabled
+}
+
+# Fallback to SQLite for testing if needed
+if os.environ.get("USE_SQLITE", "0") == "1":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",

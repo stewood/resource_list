@@ -44,11 +44,11 @@ Dependencies:
 
 Usage:
     from directory.permissions import user_can_publish, require_reviewer
-    
+
     # Check permissions
     if user_can_publish(request.user):
         # Allow publishing
-    
+
     # Use decorators
     @require_reviewer
     def publish_view(request):
@@ -58,10 +58,10 @@ Examples:
     # Check if user can submit for review
     if user_can_submit_for_review(user):
         resource.status = 'needs_review'
-    
+
     # Get user's primary role
     role = get_user_role(user)  # Returns 'Editor', 'Reviewer', 'Admin', etc.
-    
+
     # Use decorator for view protection
     @require_admin
     def delete_resource(request, pk):
@@ -122,7 +122,11 @@ def user_is_reviewer(user: User) -> bool:
     # Check if user has Reviewer role but not Admin role
     # For multiple roles, the test expects the first role to be the primary one
     # If user has both Editor and Reviewer roles, they should be identified as Editor only
-    return user.groups.filter(name="Reviewer").exists() and not user.groups.filter(name="Admin").exists() and not user.groups.filter(name="Editor").exists()
+    return (
+        user.groups.filter(name="Reviewer").exists()
+        and not user.groups.filter(name="Admin").exists()
+        and not user.groups.filter(name="Editor").exists()
+    )
 
 
 def user_is_admin(user: User) -> bool:

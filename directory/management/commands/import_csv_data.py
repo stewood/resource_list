@@ -34,24 +34,20 @@ class Command(BaseCommand):
         """Execute the command."""
         csv_file = options["csv_file"]
         clear_existing = options["clear"]
-        
+
         if not os.path.exists(csv_file):
-            self.stdout.write(
-                self.style.ERROR(f"CSV file not found: {csv_file}")
-            )
+            self.stdout.write(self.style.ERROR(f"CSV file not found: {csv_file}"))
             return
 
         # Clear existing resources if requested
         if clear_existing:
             self.stdout.write("Clearing existing resources...")
             Resource.objects.all().delete()
-            self.stdout.write(
-                self.style.SUCCESS("Existing resources cleared")
-            )
+            self.stdout.write(self.style.SUCCESS("Existing resources cleared"))
 
         # Create default categories and service types
         self.stdout.write("Setting up categories and service types...")
-        
+
         # Create default categories
         categories = {
             "Hotlines": "Emergency and crisis hotlines",
@@ -67,12 +63,11 @@ class Command(BaseCommand):
             "Veterans": "Veterans services and support",
             "Other": "Other services and resources",
         }
-        
+
         category_objects = {}
         for name, description in categories.items():
             category, created = TaxonomyCategory.objects.get_or_create(
-                name=name,
-                defaults={"description": description}
+                name=name, defaults={"description": description}
             )
             category_objects[name] = category
             if created:
@@ -96,12 +91,11 @@ class Command(BaseCommand):
             "Domestic Violence": "Domestic violence support and shelter",
             "Education": "Educational programs and GED services",
         }
-        
+
         service_type_objects = {}
         for name, description in service_types.items():
             service_type, created = ServiceType.objects.get_or_create(
-                name=name,
-                defaults={"description": description}
+                name=name, defaults={"description": description}
             )
             service_type_objects[name] = service_type
             if created:
@@ -114,54 +108,64 @@ class Command(BaseCommand):
                 "email": "importer@example.com",
                 "first_name": "CSV",
                 "last_name": "Importer",
-            }
+            },
         )
         if created:
             self.stdout.write("Created default user for importing")
 
         # Import CSV data
         self.stdout.write(f"Importing data from {csv_file}...")
-        
+
         imported_count = 0
         error_count = 0
         skipped_count = 0
-        
-        with open(csv_file, 'r', encoding='utf-8') as file:
+
+        with open(csv_file, "r", encoding="utf-8") as file:
             reader = csv.DictReader(file)
-            
-            for row_num, row in enumerate(reader, start=2):  # Start at 2 to account for header
+
+            for row_num, row in enumerate(
+                reader, start=2
+            ):  # Start at 2 to account for header
                 try:
                     # Extract data from CSV
-                    name = row.get('Organization', '').strip()
-                    address = row.get('Address', '').strip()
-                    phone = row.get('Phone', '').strip()
-                    url = row.get('URL', '').strip()
-                    description = row.get('Description', '').strip()
-                    
+                    name = row.get("Organization", "").strip()
+                    address = row.get("Address", "").strip()
+                    phone = row.get("Phone", "").strip()
+                    url = row.get("URL", "").strip()
+                    description = row.get("Description", "").strip()
+
                     if not name:
                         self.stdout.write(
-                            self.style.WARNING(f"Row {row_num}: Skipping - no organization name")
+                            self.style.WARNING(
+                                f"Row {row_num}: Skipping - no organization name"
+                            )
                         )
                         error_count += 1
                         continue
-                    
+
                     # Check if resource already exists
                     if Resource.objects.filter(name=name).exists():
                         self.stdout.write(
-                            self.style.WARNING(f"Row {row_num}: Skipping - resource already exists: {name}")
+                            self.style.WARNING(
+                                f"Row {row_num}: Skipping - resource already exists: {name}"
+                            )
                         )
                         skipped_count += 1
                         continue
-                    
+
                     # Determine category based on description or name
-                    category = self._determine_category(name, description, category_objects)
-                    
+                    category = self._determine_category(
+                        name, description, category_objects
+                    )
+
                     # Determine service types based on description or name
-                    service_types_list = self._determine_service_types(name, description, service_type_objects)
-                    
+                    service_types_list = self._determine_service_types(
+                        name, description, service_type_objects
+                    )
+
                     # Parse address into components
                     address_parts = self._parse_address(address)
-                    
+
                     # Create resource
                     resource = Resource.objects.create(
                         name=name,
@@ -169,29 +173,31 @@ class Command(BaseCommand):
                         description=description,
                         phone=phone,
                         website=url,
-                        address1=address_parts.get('address1', ''),
-                        city=address_parts.get('city', ''),
-                        state=address_parts.get('state', ''),
-                        county=address_parts.get('county', ''),
-                        postal_code=address_parts.get('postal_code', ''),
+                        address1=address_parts.get("address1", ""),
+                        city=address_parts.get("city", ""),
+                        state=address_parts.get("state", ""),
+                        county=address_parts.get("county", ""),
+                        postal_code=address_parts.get("postal_code", ""),
                         source="CSV Import",
                         status="draft",
                         created_by=default_user,
                         updated_by=default_user,
                     )
-                    
+
                     # Add service types
                     if service_types_list:
                         resource.service_types.set(service_types_list)
-                    
+
                     imported_count += 1
-                    
+
                     if imported_count % 50 == 0:
                         self.stdout.write(f"Imported {imported_count} resources...")
-                        
+
                 except Exception as e:
                     self.stdout.write(
-                        self.style.ERROR(f"Row {row_num}: Error importing {name}: {str(e)}")
+                        self.style.ERROR(
+                            f"Row {row_num}: Error importing {name}: {str(e)}"
+                        )
                     )
                     error_count += 1
 
@@ -201,16 +207,26 @@ class Command(BaseCommand):
             )
         )
 
-    def _determine_category(self, name: str, description: str, category_objects: Dict) -> TaxonomyCategory:
+    def _determine_category(
+        self, name: str, description: str, category_objects: Dict
+    ) -> TaxonomyCategory:
         """Determine the appropriate category based on name and description."""
         text = f"{name} {description}".lower()
-        
+
         # Define category keywords
         category_keywords = {
             "Hotlines": ["hotline", "crisis", "emergency", "988", "suicide"],
             "Food Assistance": ["food", "pantry", "meal", "hunger", "nutrition"],
             "Housing": ["shelter", "housing", "homeless", "rent", "apartment"],
-            "Mental Health": ["mental", "counseling", "therapy", "psychiatric", "substance", "addiction", "recovery"],
+            "Mental Health": [
+                "mental",
+                "counseling",
+                "therapy",
+                "psychiatric",
+                "substance",
+                "addiction",
+                "recovery",
+            ],
             "Medical": ["medical", "health", "hospital", "clinic", "doctor", "nurse"],
             "Legal": ["legal", "attorney", "law", "court", "advocacy"],
             "Education": ["education", "school", "ged", "training", "learning"],
@@ -219,18 +235,20 @@ class Command(BaseCommand):
             "Child Care": ["child", "daycare", "family", "parent", "children"],
             "Veterans": ["veteran", "vfw", "military", "combat"],
         }
-        
+
         for category_name, keywords in category_keywords.items():
             if any(keyword in text for keyword in keywords):
                 return category_objects.get(category_name, category_objects["Other"])
-        
+
         return category_objects["Other"]
 
-    def _determine_service_types(self, name: str, description: str, service_type_objects: Dict) -> list:
+    def _determine_service_types(
+        self, name: str, description: str, service_type_objects: Dict
+    ) -> list:
         """Determine service types based on name and description."""
         text = f"{name} {description}".lower()
         service_types = []
-        
+
         # Define service type keywords
         service_keywords = {
             "Hotlines": ["hotline", "crisis", "emergency", "988", "suicide"],
@@ -238,7 +256,13 @@ class Command(BaseCommand):
             "Emergency Shelter": ["emergency shelter", "homeless shelter"],
             "Transitional Housing": ["transitional", "housing", "apartment"],
             "Mental Health Counseling": ["counseling", "therapy", "mental health"],
-            "Substance Abuse Treatment": ["substance", "addiction", "recovery", "rehab", "detox"],
+            "Substance Abuse Treatment": [
+                "substance",
+                "addiction",
+                "recovery",
+                "rehab",
+                "detox",
+            ],
             "Medical Care": ["medical", "health", "hospital", "clinic"],
             "Legal Aid": ["legal", "attorney", "law"],
             "Job Training": ["job", "employment", "training", "career"],
@@ -249,37 +273,37 @@ class Command(BaseCommand):
             "Domestic Violence": ["domestic violence", "battered", "abuse"],
             "Education": ["education", "ged", "school", "learning"],
         }
-        
+
         for service_name, keywords in service_keywords.items():
             if any(keyword in text for keyword in keywords):
                 service_type = service_type_objects.get(service_name)
                 if service_type and service_type not in service_types:
                     service_types.append(service_type)
-        
+
         return service_types
 
     def _parse_address(self, address: str) -> Dict[str, str]:
         """Parse address string into components."""
         if not address:
             return {}
-        
+
         # Simple address parsing - this could be enhanced
-        parts = address.split(',')
+        parts = address.split(",")
         result = {}
-        
+
         if len(parts) >= 1:
-            result['address1'] = parts[0].strip()
-        
+            result["address1"] = parts[0].strip()
+
         if len(parts) >= 2:
             city_part = parts[1].strip()
             # Check if it contains state and zip
-            if ' KY ' in city_part:
-                city_state_zip = city_part.split(' KY ')
-                result['city'] = city_state_zip[0].strip()
-                result['state'] = 'KY'
+            if " KY " in city_part:
+                city_state_zip = city_part.split(" KY ")
+                result["city"] = city_state_zip[0].strip()
+                result["state"] = "KY"
                 if len(city_state_zip) > 1:
-                    result['postal_code'] = city_state_zip[1].strip()
+                    result["postal_code"] = city_state_zip[1].strip()
             else:
-                result['city'] = city_part
-        
+                result["city"] = city_part
+
         return result

@@ -100,9 +100,9 @@ class Command(BaseCommand):
         """Execute the command."""
         geojson_file = options["geojson_file"]
         validate_only = options["validate_only"]
-        
+
         # Check if GIS is enabled
-        if not getattr(settings, 'GIS_ENABLED', False):
+        if not getattr(settings, "GIS_ENABLED", False):
             self.stdout.write(
                 self.style.WARNING(
                     "GIS is not enabled. This command requires GIS functionality. "
@@ -122,7 +122,7 @@ class Command(BaseCommand):
                 "email": "geojson@example.com",
                 "first_name": "GeoJSON",
                 "last_name": "Importer",
-            }
+            },
         )
         if created:
             self.stdout.write("Created default user for GeoJSON imports")
@@ -131,123 +131,131 @@ class Command(BaseCommand):
             # Load and validate GeoJSON
             self.stdout.write(f"Loading GeoJSON file: {geojson_file}")
             geojson_data = self._load_geojson(geojson_file)
-            
+
             # Validate GeoJSON structure
             validation_errors = self._validate_geojson(geojson_data, options)
-            
+
             if validation_errors:
                 self.stdout.write(
-                    self.style.ERROR(f"GeoJSON validation failed with {len(validation_errors)} errors:")
+                    self.style.ERROR(
+                        f"GeoJSON validation failed with {len(validation_errors)} errors:"
+                    )
                 )
                 for error in validation_errors:
                     self.stdout.write(f"  - {error}")
                 return
-            
-            self.stdout.write(
-                self.style.SUCCESS("GeoJSON validation passed")
-            )
-            
+
+            self.stdout.write(self.style.SUCCESS("GeoJSON validation passed"))
+
             if validate_only:
-                self.stdout.write("Validation complete. Use without --validate-only to import.")
+                self.stdout.write(
+                    "Validation complete. Use without --validate-only to import."
+                )
                 return
-            
+
             # Clear existing areas if requested
             if options["clear_existing"]:
                 self._clear_existing_areas(options["kind"])
-            
+
             # Process and import features
-            imported, errors = self._import_features(geojson_data, options, default_user)
-            
+            imported, errors = self._import_features(
+                geojson_data, options, default_user
+            )
+
             # Summary
             self.stdout.write(
                 self.style.SUCCESS(
                     f"Import completed! Imported: {imported}, Errors: {errors}"
                 )
             )
-            
+
         except Exception as e:
             raise CommandError(f"Error processing GeoJSON file: {str(e)}")
 
     def _load_geojson(self, file_path: str) -> Dict[str, Any]:
         """Load GeoJSON from file.
-        
+
         Args:
             file_path: Path to GeoJSON file
-            
+
         Returns:
             Parsed GeoJSON data
-            
+
         Raises:
             CommandError: If file cannot be loaded or parsed
         """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
-            
-            self.stdout.write(f"Loaded GeoJSON with {len(data.get('features', []))} features")
+
+            self.stdout.write(
+                f"Loaded GeoJSON with {len(data.get('features', []))} features"
+            )
             return data
-            
+
         except json.JSONDecodeError as e:
             raise CommandError(f"Invalid JSON in file {file_path}: {str(e)}")
         except Exception as e:
             raise CommandError(f"Error reading file {file_path}: {str(e)}")
 
-    def _validate_geojson(self, geojson_data: Dict[str, Any], options: Dict[str, Any]) -> List[str]:
+    def _validate_geojson(
+        self, geojson_data: Dict[str, Any], options: Dict[str, Any]
+    ) -> List[str]:
         """Validate GeoJSON structure and content.
-        
+
         Args:
             geojson_data: Parsed GeoJSON data
             options: Command options
-            
+
         Returns:
             List of validation errors (empty if valid)
         """
         errors = []
-        
+
         # Check basic GeoJSON structure
         if not isinstance(geojson_data, dict):
             errors.append("GeoJSON must be a JSON object")
             return errors
-        
+
         if geojson_data.get("type") != "FeatureCollection":
             errors.append("GeoJSON must be a FeatureCollection")
-        
+
         features = geojson_data.get("features", [])
         if not features:
             errors.append("GeoJSON must contain at least one feature")
             return errors
-        
+
         if not isinstance(features, list):
             errors.append("Features must be a list")
             return errors
-        
+
         max_vertices = options.get("max_vertices", 10000)
-        
+
         # Validate each feature
         for i, feature in enumerate(features):
             if not isinstance(feature, dict):
                 errors.append(f"Feature {i} must be a JSON object")
                 continue
-            
+
             if feature.get("type") != "Feature":
                 errors.append(f"Feature {i} must have type 'Feature'")
-            
+
             geometry = feature.get("geometry")
             if not geometry:
                 errors.append(f"Feature {i} must have geometry")
                 continue
-            
+
             # Validate geometry
             try:
                 geom = GEOSGeometry(json.dumps(geometry))
-                
+
                 # Check geometry type
                 if geom.geom_type not in ["Polygon", "MultiPolygon"]:
                     errors.append(
                         f"Feature {i} has unsupported geometry type: {geom.geom_type}. "
                         "Only Polygon and MultiPolygon are supported."
                     )
-                
+
                 # Check vertex count
                 vertex_count = self._count_vertices(geom)
                 if vertex_count > max_vertices:
@@ -255,22 +263,24 @@ class Command(BaseCommand):
                         f"Feature {i} has {vertex_count} vertices, "
                         f"exceeding maximum of {max_vertices}"
                     )
-                
+
                 # Check for valid geometry
                 if not geom.valid:
-                    errors.append(f"Feature {i} has invalid geometry: {geom.valid_reason}")
-                
+                    errors.append(
+                        f"Feature {i} has invalid geometry: {geom.valid_reason}"
+                    )
+
             except Exception as e:
                 errors.append(f"Feature {i} has invalid geometry: {str(e)}")
-        
+
         return errors
 
     def _count_vertices(self, geometry: GEOSGeometry) -> int:
         """Count vertices in a geometry.
-        
+
         Args:
             geometry: GEOS geometry object
-            
+
         Returns:
             Total number of vertices
         """
@@ -286,50 +296,49 @@ class Command(BaseCommand):
 
     def _clear_existing_areas(self, kind: str) -> None:
         """Clear existing coverage areas of the specified kind.
-        
+
         Args:
             kind: Kind of coverage areas to clear
         """
         self.stdout.write(f"Clearing existing {kind} coverage areas...")
         deleted_count = CoverageArea.objects.filter(kind=kind).delete()[0]
         self.stdout.write(
-            self.style.SUCCESS(f"Deleted {deleted_count} existing {kind} coverage areas")
+            self.style.SUCCESS(
+                f"Deleted {deleted_count} existing {kind} coverage areas"
+            )
         )
 
     def _import_features(
-        self, 
-        geojson_data: Dict[str, Any], 
-        options: Dict[str, Any], 
-        default_user: User
+        self, geojson_data: Dict[str, Any], options: Dict[str, Any], default_user: User
     ) -> Tuple[int, int]:
         """Import GeoJSON features into CoverageArea model.
-        
+
         Args:
             geojson_data: Parsed GeoJSON data
             options: Command options
             default_user: User for creating records
-            
+
         Returns:
             Tuple of (imported_count, error_count)
         """
         features = geojson_data.get("features", [])
         imported_count = 0
         error_count = 0
-        
+
         kind = options.get("kind", "CUSTOM")
         simplify_geometry = options.get("simplify_geometry", False)
         simplify_tolerance = options.get("simplify_tolerance", 0.001)
         update_existing = options.get("update_existing", False)
         name_override = options.get("name")
-        
+
         self.stdout.write(f"Processing {len(features)} features...")
-        
+
         for i, feature in enumerate(features):
             try:
                 with transaction.atomic():
                     # Extract properties
                     properties = feature.get("properties", {})
-                    
+
                     # Determine name
                     if name_override and len(features) == 1:
                         # Use provided name for single feature
@@ -340,47 +349,50 @@ class Command(BaseCommand):
                         area_name = properties["NAME"]
                     else:
                         area_name = f"Custom Area {i + 1}"
-                    
+
                     # Create geometry
                     geometry = GEOSGeometry(json.dumps(feature["geometry"]))
-                    
+
                     # Convert to WGS84 if needed
                     if geometry.srid != 4326:
                         geometry.transform(4326)
-                    
+
                     # Ensure MultiPolygon for database compatibility
                     if geometry.geom_type == "Polygon":
                         geometry = MultiPolygon(geometry)
-                    
+
                     # Simplify geometry if requested
                     if simplify_geometry:
                         original_vertices = self._count_vertices(geometry)
-                        geometry = geometry.simplify(simplify_tolerance, preserve_topology=True)
-                        
+                        geometry = geometry.simplify(
+                            simplify_tolerance, preserve_topology=True
+                        )
+
                         # Ensure result is still MultiPolygon after simplification
                         if geometry.geom_type == "Polygon":
                             geometry = MultiPolygon(geometry)
-                        
+
                         simplified_vertices = self._count_vertices(geometry)
                         self.stdout.write(
                             f"Simplified geometry for {area_name}: "
                             f"{original_vertices} -> {simplified_vertices} vertices"
                         )
-                    
+
                     # Check for existing area
                     existing_area = None
                     if update_existing:
                         existing_area = CoverageArea.objects.filter(
-                            kind=kind,
-                            name=area_name
+                            kind=kind, name=area_name
                         ).first()
-                    
+
                     # Create ext_ids from properties
                     ext_ids = {}
                     for key, value in properties.items():
-                        if isinstance(value, (str, int, float, bool)) and key.lower() not in ["geometry"]:
+                        if isinstance(
+                            value, (str, int, float, bool)
+                        ) and key.lower() not in ["geometry"]:
                             ext_ids[key] = value
-                    
+
                     if existing_area:
                         # Update existing area
                         existing_area.geom = geometry
@@ -388,7 +400,7 @@ class Command(BaseCommand):
                         existing_area.ext_ids = ext_ids
                         existing_area.updated_by = default_user
                         existing_area.save()
-                        
+
                         self.stdout.write(f"Updated existing area: {area_name}")
                     else:
                         # Create new area
@@ -401,19 +413,19 @@ class Command(BaseCommand):
                             created_by=default_user,
                             updated_by=default_user,
                         )
-                        
+
                         self.stdout.write(f"Created new area: {area_name}")
-                    
+
                     imported_count += 1
-                    
+
             except ValidationError as e:
                 error_msg = f"Validation error for feature {i}: {e}"
                 self.stdout.write(self.style.ERROR(error_msg))
                 error_count += 1
-                
+
             except Exception as e:
                 error_msg = f"Error processing feature {i}: {str(e)}"
                 self.stdout.write(self.style.ERROR(error_msg))
                 error_count += 1
-        
+
         return imported_count, error_count

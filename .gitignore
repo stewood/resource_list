@@ -161,6 +161,7 @@ staticfiles/
 # Backup files
 *.bak
 *.backup
+backups/
 
 # Temporary files
 *.tmp

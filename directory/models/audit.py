@@ -23,10 +23,10 @@ Version: 1.0.0
 
 Usage:
     from directory.models.audit import ResourceVersion, AuditLog
-    
+
     # Get version history for a resource
     versions = ResourceVersion.objects.filter(resource=resource)
-    
+
     # Get audit logs for a specific action
     logs = AuditLog.objects.filter(action='create_resource')
 """
@@ -40,15 +40,15 @@ from django.db import models
 
 class ResourceVersion(models.Model):
     """Immutable snapshots of resource changes.
-    
+
     This model maintains an immutable history of all changes made to resources,
     providing a complete audit trail and version history. Each version contains
     a full snapshot of the resource state at the time of the change, along with
     metadata about what changed and who made the change.
-    
+
     Versions are automatically created whenever a resource is saved, providing
     a complete history that can be used for auditing, rollback, or analysis.
-    
+
     Attributes:
         resource (Resource): The resource this version belongs to
         version_number (int): Sequential version number for this resource
@@ -57,12 +57,12 @@ class ResourceVersion(models.Model):
         change_type (str): Type of change (create, update, status_change)
         changed_by (User): User who made the change
         changed_at (datetime): When the change was made
-        
+
     Change Types:
         - create: Initial resource creation
         - update: Field value changes
         - status_change: Status workflow changes
-        
+
     Example:
         >>> # Get all versions for a resource
         >>> versions = ResourceVersion.objects.filter(resource=resource)
@@ -99,7 +99,7 @@ class ResourceVersion(models.Model):
     @property
     def snapshot(self) -> Dict[str, Any]:
         """Get the snapshot data as a dictionary.
-        
+
         Returns:
             Dict[str, Any]: The complete resource state at version time
         """
@@ -108,7 +108,7 @@ class ResourceVersion(models.Model):
     @property
     def changed_field_list(self) -> List[str]:
         """Get the list of changed fields.
-        
+
         Returns:
             List[str]: List of field names that changed in this version
         """
@@ -117,16 +117,16 @@ class ResourceVersion(models.Model):
 
 class AuditLog(models.Model):
     """Append-only audit log for all system actions.
-    
+
     This model provides a comprehensive audit trail of all actions performed
     in the system, including resource creation, updates, deletions, and
     administrative actions. The log is append-only to ensure data integrity
     and provides detailed context for each action.
-    
+
     Each log entry includes the actor, action type, target information,
     and optional metadata for additional context. This enables complete
     audit trails for compliance and debugging purposes.
-    
+
     Attributes:
         actor (User): User who performed the action
         action (str): Type of action performed (e.g., 'create_resource')
@@ -134,7 +134,7 @@ class AuditLog(models.Model):
         target_id (str): ID of the affected record
         metadata_json (str): Additional context as JSON string
         created_at (datetime): When the action was performed
-        
+
     Example:
         >>> # Get recent audit logs
         >>> logs = AuditLog.objects.filter(actor=user).order_by('-created_at')[:10]
@@ -171,7 +171,7 @@ class AuditLog(models.Model):
     @property
     def metadata(self) -> Dict[str, Any]:
         """Get the metadata as a dictionary.
-        
+
         Returns:
             Dict[str, Any]: The metadata context for this action, or empty dict
         """

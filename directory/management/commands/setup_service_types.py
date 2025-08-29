@@ -85,14 +85,10 @@ class Command(BaseCommand):
             if created:
                 created_count += 1
                 self.stdout.write(
-                    self.style.SUCCESS(
-                        f'Created service type: "{service_type.name}"'
-                    )
+                    self.style.SUCCESS(f'Created service type: "{service_type.name}"')
                 )
             else:
-                self.stdout.write(
-                    f'Service type already exists: "{service_type.name}"'
-                )
+                self.stdout.write(f'Service type already exists: "{service_type.name}"')
 
         self.stdout.write(
             self.style.SUCCESS(

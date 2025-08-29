@@ -12,14 +12,14 @@ Version: 1.0.0
 
 Usage:
     from directory.models.coverage_area import CoverageArea
-    
+
     # Create a county coverage area
     county_area = CoverageArea.objects.create(
         kind="COUNTY",
         name="Laurel County, KY",
         ext_ids={"state_fips": "21", "county_fips": "125"}
     )
-    
+
     # Create a radius-based coverage area
     radius_area = CoverageArea.objects.create(
         kind="RADIUS",
@@ -38,40 +38,32 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 
-# Conditionally import GIS models only when GIS is enabled
-if getattr(settings, 'GIS_ENABLED', False):
-    from django.contrib.gis.db import models as gis_models
-    # Use GIS fields when GIS is enabled
-    GeometryField = gis_models.MultiPolygonField
-    PointField = gis_models.PointField
-else:
-    # Use regular fields when GIS is disabled
-    GeometryField = models.TextField
-    PointField = models.TextField
+# Import GIS models for spatial fields
+from django.contrib.gis.db import models
 
 
 class CoverageArea(models.Model):
     """Model representing a spatial service area for resources.
-    
+
     This model defines geographic areas where resources provide services.
     Coverage areas can be administrative boundaries (counties, cities, states),
     custom polygons, or radius-based areas around a point.
-    
+
     The model supports multiple area types and stores geometry data for
     spatial queries. For radius-based areas, the actual geometry is stored
     as a buffer polygon to enable unified spatial queries.
-    
+
     Attributes:
         KIND_CHOICES: Available coverage area types
         objects: Default model manager
-        
+
     Area Types:
         - CITY: City or municipal boundaries
-        - COUNTY: County or parish boundaries  
+        - COUNTY: County or parish boundaries
         - STATE: State or province boundaries
         - POLYGON: Custom polygon boundaries
         - RADIUS: Radius-based area around a point
-        
+
     Example:
         >>> # Create a county coverage area
         >>> county = CoverageArea.objects.create(
@@ -79,10 +71,10 @@ class CoverageArea(models.Model):
         ...     name="Laurel County, KY",
         ...     ext_ids={"state_fips": "21", "county_fips": "125"}
         ... )
-        
+
         >>> # Create a radius-based area
         >>> radius = CoverageArea.objects.create(
-        ...     kind="RADIUS", 
+        ...     kind="RADIUS",
         ...     name="Downtown Service Area",
         ...     center=Point(-84.0849, 37.1289, srid=4326),
         ...     radius_m=5000
@@ -99,56 +91,46 @@ class CoverageArea(models.Model):
 
     # Basic information
     kind = models.CharField(
-        max_length=20,
-        choices=KIND_CHOICES,
-        help_text="Type of coverage area"
+        max_length=20, choices=KIND_CHOICES, help_text="Type of coverage area"
     )
     name = models.CharField(
-        max_length=200,
-        help_text="Human-readable name for the coverage area"
+        max_length=200, help_text="Human-readable name for the coverage area"
     )
 
-    # Geometry fields (GIS-enabled when available, otherwise text fields)
-    geom = GeometryField(srid=4326, null=True, blank=True) if getattr(settings, 'GIS_ENABLED', False) else models.TextField(null=True, blank=True)
-    center = PointField(srid=4326, null=True, blank=True) if getattr(settings, 'GIS_ENABLED', False) else models.TextField(null=True, blank=True)
-    
+    # Geometry fields (GIS-enabled)
+    geom = models.MultiPolygonField(srid=4326, null=True, blank=True)
+    center = models.PointField(srid=4326, null=True, blank=True)
+
     # Radius information (for radius-based areas)
     radius_m = models.IntegerField(
-        null=True,
-        blank=True,
-        help_text="Radius in meters (for radius-based areas)"
+        null=True, blank=True, help_text="Radius in meters (for radius-based areas)"
     )
 
     # External identifiers (FIPS codes, etc.)
     ext_ids = models.JSONField(
-        default=dict,
-        blank=True,
-        help_text="External identifiers (e.g., FIPS codes)"
+        default=dict, blank=True, help_text="External identifiers (e.g., FIPS codes)"
     )
 
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="created_coverage_areas"
+        User, on_delete=models.CASCADE, related_name="created_coverage_areas"
     )
     updated_by = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="updated_coverage_areas"
+        User, on_delete=models.CASCADE, related_name="updated_coverage_areas"
     )
 
     class Meta:
         """Meta options for CoverageArea model.
-        
+
         Indexes:
             - Spatial index on geom field for efficient spatial queries (auto-created by Django GIS)
             - B-tree index on kind field for filtering by area type
             - B-tree index on name field for name-based lookups
             - Composite index on kind + name for common filtering patterns
         """
+
         ordering = ["name"]
         indexes = [
             models.Index(fields=["kind"], name="coverage_area_kind_idx"),
@@ -164,7 +146,7 @@ class CoverageArea(models.Model):
 
     def clean(self) -> None:
         """Validate the coverage area data.
-        
+
         This method implements comprehensive validation rules for coverage areas:
         - Name is required for all area types
         - Radius-based areas must have radius between 0.5-100 miles
@@ -172,7 +154,7 @@ class CoverageArea(models.Model):
         - Administrative areas should have appropriate FIPS codes
         - Custom areas should have descriptive names
         - Geometry validation (when GIS is enabled)
-        
+
         Raises:
             ValidationError: If validation fails with field-specific errors
         """
@@ -195,23 +177,31 @@ class CoverageArea(models.Model):
                 errors["radius_m"] = "Radius must be at least 0.5 miles (800 meters)."
             elif self.radius_m > 160934:  # 100 miles
                 errors["radius_m"] = "Radius cannot exceed 100 miles (160,934 meters)."
-            
+
             # Radius areas should have descriptive names
             if self.name and len(self.name) < 10:
-                errors["name"] = "Radius areas should have descriptive names (at least 10 characters)."
+                errors["name"] = (
+                    "Radius areas should have descriptive names (at least 10 characters)."
+                )
 
         elif self.kind in ["CITY", "COUNTY", "STATE"]:
             # Administrative areas should have FIPS codes
             if not self.ext_ids:
-                errors["ext_ids"] = f"{self.kind.title()} areas should include FIPS codes."
+                errors["ext_ids"] = (
+                    f"{self.kind.title()} areas should include FIPS codes."
+                )
             else:
                 # Validate FIPS code structure
                 if self.kind == "STATE":
                     if not self.ext_ids.get("state_fips"):
                         errors["ext_ids"] = "State areas must include state_fips code."
                 elif self.kind == "COUNTY":
-                    if not self.ext_ids.get("state_fips") or not self.ext_ids.get("county_fips"):
-                        errors["ext_ids"] = "County areas must include both state_fips and county_fips codes."
+                    if not self.ext_ids.get("state_fips") or not self.ext_ids.get(
+                        "county_fips"
+                    ):
+                        errors["ext_ids"] = (
+                            "County areas must include both state_fips and county_fips codes."
+                        )
                 elif self.kind == "CITY":
                     if not self.ext_ids.get("state_fips"):
                         errors["ext_ids"] = "City areas must include state_fips code."
@@ -219,7 +209,9 @@ class CoverageArea(models.Model):
         elif self.kind == "POLYGON":
             # Custom polygons should have descriptive names
             if self.name and len(self.name) < 10:
-                errors["name"] = "Custom polygons should have descriptive names (at least 10 characters)."
+                errors["name"] = (
+                    "Custom polygons should have descriptive names (at least 10 characters)."
+                )
 
         # External IDs validation
         if self.ext_ids:
@@ -230,16 +222,23 @@ class CoverageArea(models.Model):
                 for key, value in self.ext_ids.items():
                     if key.endswith("_fips") and value:
                         if not isinstance(value, str) or not value.isdigit():
-                            errors["ext_ids"] = f"FIPS code '{key}' must be a string of digits."
+                            errors["ext_ids"] = (
+                                f"FIPS code '{key}' must be a string of digits."
+                            )
                         elif key == "state_fips" and len(value) != 2:
-                            errors["ext_ids"] = "State FIPS code must be exactly 2 digits."
+                            errors["ext_ids"] = (
+                                "State FIPS code must be exactly 2 digits."
+                            )
                         elif key == "county_fips" and len(value) != 3:
-                            errors["ext_ids"] = "County FIPS code must be exactly 3 digits."
+                            errors["ext_ids"] = (
+                                "County FIPS code must be exactly 3 digits."
+                            )
 
         # Geometry validation (when GIS is enabled)
         try:
             from django.contrib.gis.geos import Point, MultiPolygon
-            if getattr(settings, 'GIS_ENABLED', False):
+
+            if getattr(settings, "GIS_ENABLED", False):
                 # Import GIS-specific validation when available
                 self._validate_geometry()
         except ImportError:
@@ -251,7 +250,7 @@ class CoverageArea(models.Model):
 
     def _process_geometry(self) -> None:
         """Process geometry fields when GIS is enabled.
-        
+
         This method handles geometry processing:
         - Create buffer polygon for radius-based areas
         - Ensure proper SRID for all geometries
@@ -260,57 +259,63 @@ class CoverageArea(models.Model):
         try:
             from django.contrib.gis.geos import Point, MultiPolygon
             from django.conf import settings
-            
+
             # Process radius-based areas
-            if self.kind == "RADIUS" and hasattr(self, 'center') and self.center and self.radius_m:
+            if (
+                self.kind == "RADIUS"
+                and hasattr(self, "center")
+                and self.center
+                and self.radius_m
+            ):
                 # Create buffer polygon from center point
                 buffer_geom = self.center.buffer(self.radius_m)
-                
+
                 # Convert to MultiPolygon if needed
-                if hasattr(self, 'geom'):
-                    if buffer_geom.geom_type == 'Polygon':
+                if hasattr(self, "geom"):
+                    if buffer_geom.geom_type == "Polygon":
                         self.geom = MultiPolygon([buffer_geom], srid=4326)
                     else:
                         self.geom = buffer_geom
-                        
+
             # Ensure proper SRID for all geometries
-            if hasattr(self, 'geom') and self.geom and self.geom.srid != 4326:
+            if hasattr(self, "geom") and self.geom and self.geom.srid != 4326:
                 self.geom.transform(4326)
-                
-            if hasattr(self, 'center') and self.center and self.center.srid != 4326:
+
+            if hasattr(self, "center") and self.center and self.center.srid != 4326:
                 self.center.transform(4326)
-                
+
         except ImportError:
             # GIS not available, skip geometry processing
             pass
 
     def save(self, *args: Any, **kwargs: Any) -> None:
         """Save the coverage area with validation and geometry processing.
-        
+
         This method performs validation and geometry processing before saving.
         For radius-based areas, it will create a buffer polygon when GIS is enabled.
-        
+
         Args:
             *args: Standard save arguments
             **kwargs: Standard save keyword arguments
         """
         self.full_clean()
-        
+
         # Process geometry when GIS is enabled
         try:
             from django.conf import settings
-            if getattr(settings, 'GIS_ENABLED', False):
+
+            if getattr(settings, "GIS_ENABLED", False):
                 self._process_geometry()
         except ImportError:
             # GIS not available, skip geometry processing
             pass
-        
+
         super().save(*args, **kwargs)
 
     @property
     def display_name(self) -> str:
         """Return a formatted display name for the coverage area.
-        
+
         Returns:
             str: Formatted display name with type indicator
         """
@@ -320,7 +325,7 @@ class CoverageArea(models.Model):
     @property
     def fips_codes(self) -> Dict[str, str]:
         """Return FIPS codes from external IDs.
-        
+
         Returns:
             Dict[str, str]: Dictionary containing state_fips and county_fips if available
         """
@@ -332,7 +337,7 @@ class CoverageArea(models.Model):
     @property
     def is_administrative(self) -> bool:
         """Check if this is an administrative boundary.
-        
+
         Returns:
             bool: True if this is a city, county, or state boundary
         """
@@ -341,7 +346,7 @@ class CoverageArea(models.Model):
     @property
     def is_custom(self) -> bool:
         """Check if this is a custom area (polygon or radius).
-        
+
         Returns:
             bool: True if this is a custom polygon or radius area
         """
@@ -349,7 +354,7 @@ class CoverageArea(models.Model):
 
     def get_radius_miles(self) -> Optional[float]:
         """Get the radius in miles for radius-based areas.
-        
+
         Returns:
             Optional[float]: Radius in miles, or None if not a radius area
         """
@@ -359,7 +364,7 @@ class CoverageArea(models.Model):
 
     def set_radius_miles(self, miles: float) -> None:
         """Set the radius in miles for radius-based areas.
-        
+
         Args:
             miles: Radius in miles (0.5 to 100)
         """
@@ -368,12 +373,12 @@ class CoverageArea(models.Model):
 
     def get_area_sq_meters(self) -> Optional[float]:
         """Get the area in square meters (when geometry is available).
-        
+
         Returns:
             Optional[float]: Area in square meters, or None if not available
         """
         try:
-            if hasattr(self, 'geom') and self.geom:
+            if hasattr(self, "geom") and self.geom:
                 return self.geom.area
         except (ImportError, AttributeError):
             pass
@@ -381,7 +386,7 @@ class CoverageArea(models.Model):
 
     def get_area_sq_miles(self) -> Optional[float]:
         """Get the area in square miles (when geometry is available).
-        
+
         Returns:
             Optional[float]: Area in square miles, or None if not available
         """
@@ -392,12 +397,12 @@ class CoverageArea(models.Model):
 
     def get_perimeter_meters(self) -> Optional[float]:
         """Get the perimeter in meters (when geometry is available).
-        
+
         Returns:
             Optional[float]: Perimeter in meters, or None if not available
         """
         try:
-            if hasattr(self, 'geom') and self.geom:
+            if hasattr(self, "geom") and self.geom:
                 return self.geom.length
         except (ImportError, AttributeError):
             pass
@@ -405,7 +410,7 @@ class CoverageArea(models.Model):
 
     def get_perimeter_miles(self) -> Optional[float]:
         """Get the perimeter in miles (when geometry is available).
-        
+
         Returns:
             Optional[float]: Perimeter in miles, or None if not available
         """
@@ -416,18 +421,18 @@ class CoverageArea(models.Model):
 
     def get_bounds(self) -> Optional[Dict[str, float]]:
         """Get the bounding box coordinates (when geometry is available).
-        
+
         Returns:
             Optional[Dict[str, float]]: Dictionary with min/max lat/lon, or None if not available
         """
         try:
-            if hasattr(self, 'geom') and self.geom:
+            if hasattr(self, "geom") and self.geom:
                 bounds = self.geom.extent
                 return {
-                    'min_lon': bounds[0],
-                    'min_lat': bounds[1],
-                    'max_lon': bounds[2],
-                    'max_lat': bounds[3],
+                    "min_lon": bounds[0],
+                    "min_lat": bounds[1],
+                    "max_lon": bounds[2],
+                    "max_lat": bounds[3],
                 }
         except (ImportError, AttributeError):
             pass
@@ -435,17 +440,18 @@ class CoverageArea(models.Model):
 
     def contains_point(self, lat: float, lon: float) -> bool:
         """Check if a point is within this coverage area.
-        
+
         Args:
             lat: Latitude of the point
             lon: Longitude of the point
-            
+
         Returns:
             bool: True if the point is within the coverage area
         """
         try:
-            if hasattr(self, 'geom') and self.geom:
+            if hasattr(self, "geom") and self.geom:
                 from django.contrib.gis.geos import Point
+
                 point = Point(lon, lat, srid=4326)
                 return self.geom.contains(point)
         except (ImportError, AttributeError):
@@ -454,21 +460,21 @@ class CoverageArea(models.Model):
 
     def get_center_coordinates(self) -> Optional[Dict[str, float]]:
         """Get the center coordinates of the coverage area.
-        
+
         Returns:
             Optional[Dict[str, float]]: Dictionary with lat/lon, or None if not available
         """
         try:
-            if hasattr(self, 'center') and self.center:
+            if hasattr(self, "center") and self.center:
                 return {
-                    'lat': self.center.y,
-                    'lon': self.center.x,
+                    "lat": self.center.y,
+                    "lon": self.center.x,
                 }
-            elif hasattr(self, 'geom') and self.geom:
+            elif hasattr(self, "geom") and self.geom:
                 centroid = self.geom.centroid
                 return {
-                    'lat': centroid.y,
-                    'lon': centroid.x,
+                    "lat": centroid.y,
+                    "lon": centroid.x,
                 }
         except (ImportError, AttributeError):
             pass
@@ -476,55 +482,61 @@ class CoverageArea(models.Model):
 
     def _validate_geometry(self) -> None:
         """Validate geometry fields when GIS is enabled.
-        
+
         This method performs geometry-specific validation:
         - Check that geometry has correct SRID (4326)
         - Validate polygon geometry for custom areas
         - Check for self-intersecting polygons
         - Validate vertex count limits
-        
+
         Raises:
             ValidationError: If geometry validation fails
         """
         try:
             from django.contrib.gis.geos import GEOSGeometry
             from django.conf import settings
-            
+
             errors = {}
-            
+
             # Check if geometry fields exist (they will be added in GIS migration)
-            if hasattr(self, 'geom') and self.geom:
+            if hasattr(self, "geom") and self.geom:
                 # Validate SRID
                 if self.geom.srid != 4326:
                     errors["geom"] = "Geometry must use SRID 4326 (WGS84)."
-                
+
                 # Validate polygon geometry
                 if self.kind == "POLYGON":
                     # Check for self-intersecting polygons
                     if not self.geom.valid:
-                        errors["geom"] = "Polygon geometry is not valid (may be self-intersecting)."
-                    
+                        errors["geom"] = (
+                            "Polygon geometry is not valid (may be self-intersecting)."
+                        )
+
                     # Check vertex count
                     vertex_count = len(self.geom.coords[0]) if self.geom.coords else 0
-                    max_vertices = getattr(settings, 'MAX_POLYGON_VERTICES', 10000)
+                    max_vertices = getattr(settings, "MAX_POLYGON_VERTICES", 10000)
                     if vertex_count > max_vertices:
-                        errors["geom"] = f"Polygon has too many vertices ({vertex_count}). Maximum allowed: {max_vertices}."
-                
+                        errors["geom"] = (
+                            f"Polygon has too many vertices ({vertex_count}). Maximum allowed: {max_vertices}."
+                        )
+
                 # Validate radius geometry
                 elif self.kind == "RADIUS":
                     if not self.geom.valid:
                         errors["geom"] = "Radius geometry is not valid."
-            
+
             # Validate center point for radius areas
-            if hasattr(self, 'center') and self.kind == "RADIUS":
+            if hasattr(self, "center") and self.kind == "RADIUS":
                 if not self.center:
-                    errors["center"] = "Center point is required for radius-based areas."
+                    errors["center"] = (
+                        "Center point is required for radius-based areas."
+                    )
                 elif self.center.srid != 4326:
                     errors["center"] = "Center point must use SRID 4326 (WGS84)."
-            
+
             if errors:
                 raise ValidationError(errors)
-                
+
         except ImportError:
             # GIS not available, skip geometry validation
             pass

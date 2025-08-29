@@ -20,7 +20,7 @@ Version: 1.0.0
 Usage:
     # Backward compatible imports (recommended for existing code)
     from directory.forms import ResourceForm, ResourceFilterForm
-    
+
     # Direct module imports (for new code)
     from directory.forms.resource_forms import ResourceForm
     from directory.forms.filter_forms import ResourceFilterForm

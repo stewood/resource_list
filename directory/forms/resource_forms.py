@@ -32,7 +32,7 @@ Version: 1.0.0
 
 Usage:
     from directory.forms.resource_forms import ResourceForm
-    
+
     # Create a new resource form
     form = ResourceForm(data=request.POST, user=request.user)
     if form.is_valid():
@@ -52,12 +52,12 @@ from ..models import Resource
 
 class ResourceForm(forms.ModelForm):
     """Form for creating and editing resources with comprehensive validation and role-based permissions.
-    
+
     This form provides a complete interface for resource creation and editing with
     advanced validation rules based on resource status, role-based field visibility,
     and automatic user assignment. It implements the workflow validation requirements
     for draft, needs_review, and published statuses.
-    
+
     Features:
         - Complete resource field coverage with Bootstrap styling
         - Role-based field visibility (notes field for Editor+ roles only)
@@ -66,20 +66,20 @@ class ResourceForm(forms.ModelForm):
         - Verification tracking for published resources
         - Custom field widgets with helpful placeholders
         - Staff-only verifier selection
-        
+
     Validation Rules:
         - Draft: Name required, at least one contact method (phone/email/website)
         - Needs Review: City/state required, description 20+ chars, source required
         - Published: Verification date/verifier required, expiry period checking
-        
+
     Field Visibility:
         - All users: Basic resource information fields
         - Editor/Reviewer/Admin only: Notes field (internal verification details)
         - Staff only: Verifier selection for published resources
-        
+
     Args:
         user: User object for role-based permissions and automatic assignment
-        
+
     Example:
         >>> form = ResourceForm(data=request.POST, user=request.user)
         >>> if form.is_valid():
@@ -89,6 +89,7 @@ class ResourceForm(forms.ModelForm):
 
     class Meta:
         """Form metadata defining model, fields, and widgets."""
+
         model = Resource
         fields = [
             "name",
@@ -243,25 +244,25 @@ class ResourceForm(forms.ModelForm):
                     "min": 30,
                     "max": 1095,
                     "placeholder": "180",
-                    "title": "Number of days between verifications (30-1095 days)"
+                    "title": "Number of days between verifications (30-1095 days)",
                 }
             ),
         }
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize the form with user context and role-based field configuration.
-        
+
         This method sets up the form with user-specific configurations including
         role-based field visibility, verifier filtering, and initial values.
         It handles the user parameter and configures the form based on user
         permissions and context.
-        
+
         Args:
             *args: Positional arguments passed to the parent form
             **kwargs: Keyword arguments including:
                 - user: User object for role-based permissions (optional)
                 - Other standard form arguments (data, files, instance, etc.)
-                
+
         Note:
             The user parameter is extracted from kwargs and stored as an instance
             attribute for use in validation and save methods. If no user is provided,
@@ -290,46 +291,51 @@ class ResourceForm(forms.ModelForm):
 
     def _user_can_edit_notes(self, user: User) -> bool:
         """Check if user can edit notes field (Editor role or higher).
-        
+
         This method determines whether a user has permission to view and edit
         the notes field, which contains internal verification details and is
         restricted to users with Editor, Reviewer, or Admin roles.
-        
+
         Args:
             user: User object to check permissions for
-            
+
         Returns:
             bool: True if user has Editor, Reviewer, or Admin role, False otherwise
-            
+
         Note:
             This is a private method used internally by the form to control
             field visibility. The notes field contains sensitive internal
             information and should only be accessible to authorized users.
         """
         from ..permissions import user_has_role
-        return user_has_role(user, "Editor") or user_has_role(user, "Reviewer") or user_has_role(user, "Admin")
+
+        return (
+            user_has_role(user, "Editor")
+            or user_has_role(user, "Reviewer")
+            or user_has_role(user, "Admin")
+        )
 
     def clean(self) -> Dict[str, Any]:
         """Custom validation for the form with status-based validation rules.
-        
+
         This method implements comprehensive validation rules based on the resource
         status being set. It enforces different requirements for draft, needs_review,
         and published statuses, ensuring data quality and workflow compliance.
-        
+
         Validation Rules:
             - Draft: Name required, at least one contact method (phone/email/website)
             - Needs Review: City/state required, description 20+ chars, source required
             - Published: Verification date/verifier required, expiry period checking
-            
+
         Args:
             None (uses cleaned_data from parent clean method)
-            
+
         Returns:
             Dict[str, Any]: Cleaned form data
-            
+
         Raises:
             ValidationError: If validation rules are not met for the target status
-            
+
         Note:
             This method extends the parent clean() method and applies additional
             validation rules based on the status field value. It ensures that
@@ -388,7 +394,9 @@ class ResourceForm(forms.ModelForm):
 
             # Check if verification is within expiry period
             if last_verified_at:
-                verification_frequency = cleaned_data.get('verification_frequency_days', 180)
+                verification_frequency = cleaned_data.get(
+                    "verification_frequency_days", 180
+                )
                 expiry_date = last_verified_at + timedelta(days=verification_frequency)
                 if timezone.now() > expiry_date:
                     raise ValidationError(
@@ -399,18 +407,18 @@ class ResourceForm(forms.ModelForm):
 
     def save(self, commit: bool = True) -> Resource:
         """Save the form with proper user assignment and tracking.
-        
+
         This method saves the resource with automatic user assignment for
         created_by and updated_by fields. It handles both new resource creation
         and existing resource updates with appropriate user tracking.
-        
+
         Args:
             commit: Whether to save the resource to the database immediately
                    (default: True)
-                   
+
         Returns:
             Resource: The saved resource instance
-            
+
         Note:
             If commit=False, the resource is not saved to the database but
             the user assignment is still applied to the instance. The caller
@@ -426,52 +434,62 @@ class ResourceForm(forms.ModelForm):
 
         if commit:
             resource.save()
-            
+
             # Handle service areas if provided
             self._save_service_areas(resource)
-            
+
         return resource
 
     def _save_service_areas(self, resource: Resource) -> None:
         """Save service areas for the resource.
-        
+
         This method handles the association of coverage areas with the resource
         based on the service_areas data provided in the form.
-        
+
         Args:
             resource: The resource instance to associate service areas with
         """
         # Always clear existing associations first
         from ..models import ResourceCoverage
+
         ResourceCoverage.objects.filter(resource=resource).delete()
-        
+
         # Then add new associations if any are provided
-        service_areas_data = self.data.get('service_areas')
+        service_areas_data = self.data.get("service_areas")
         if service_areas_data:
             try:
                 import json
+
                 coverage_area_ids = json.loads(service_areas_data)
-                
+
                 # Add new associations
                 if coverage_area_ids:
                     from ..models import CoverageArea
-                    coverage_areas = CoverageArea.objects.filter(id__in=coverage_area_ids)
-                    
+
+                    coverage_areas = CoverageArea.objects.filter(
+                        id__in=coverage_area_ids
+                    )
+
                     # Create associations through the through model
                     associations = []
                     for coverage_area in coverage_areas:
-                        associations.append(ResourceCoverage(
-                            resource=resource,
-                            coverage_area=coverage_area,
-                            created_by=self.user if self.user else None,
-                            notes='Added via resource form'
-                        ))
-                    
+                        associations.append(
+                            ResourceCoverage(
+                                resource=resource,
+                                coverage_area=coverage_area,
+                                created_by=self.user if self.user else None,
+                                notes="Added via resource form",
+                            )
+                        )
+
                     if associations:
                         ResourceCoverage.objects.bulk_create(associations)
-                    
+
             except (json.JSONDecodeError, ValueError) as e:
                 # Log error but don't fail the form save
                 import logging
+
                 logger = logging.getLogger(__name__)
-                logger.warning(f"Error processing service areas for resource {resource.id}: {e}")
+                logger.warning(
+                    f"Error processing service areas for resource {resource.id}: {e}"
+                )

@@ -32,7 +32,7 @@ Dependencies:
 
 Usage:
     from directory.views.archive_views import ArchiveListView, ArchiveDetailView
-    
+
     # URL patterns typically map to these views
     # /archives/ -> ArchiveListView
     # /archives/<pk>/ -> ArchiveDetailView
@@ -51,26 +51,26 @@ from ..permissions import user_has_role
 
 class ArchiveListView(LoginRequiredMixin, ListView):
     """List view for archived resources with search, filtering, and statistics.
-    
+
     This view provides a comprehensive listing of archived resources with search
     capabilities, filtering options, and archive statistics. It allows users to
     browse and search through resources that have been archived (marked as inactive
     but preserved for historical purposes).
-    
+
     Features:
         - Full-text search using SQLite FTS5 with fallback to basic search
         - Multiple filter options (category, service type, location)
         - Sorting by various fields including archive-specific fields
         - Pagination with configurable page size
         - Archive statistics and category breakdowns
-        
+
     Template Context:
         - resources: Paginated queryset of archived resources
         - categories: All taxonomy categories for filter dropdown
         - service_types: All service types for filter dropdown
         - total_archived: Total count of archived resources
         - archived_by_category: Dictionary of category names and their archived resource counts
-        
+
     URL Parameters:
         - q: Search query string
         - category: Filter by taxonomy category ID
@@ -80,7 +80,7 @@ class ArchiveListView(LoginRequiredMixin, ListView):
         - county: Filter by county name (case-insensitive)
         - sort: Sort order (name, -name, city, -city, archived_at, -archived_at, archived_by, -archived_by)
         - page: Page number for pagination
-        
+
     Example:
         GET /archive/?q=mental+health&category=1&sort=-archived_at&page=2
     """
@@ -92,15 +92,15 @@ class ArchiveListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self) -> models.QuerySet:
         """Get only archived resources with search and filtering.
-        
+
         This method builds a filtered queryset of archived resources based on
         URL parameters. It supports full-text search using SQLite FTS5 with
         fallback to basic field matching, and applies various filters for
         category, service type, and location.
-        
+
         Returns:
             models.QuerySet: Filtered queryset of archived resources matching the criteria
-            
+
         Note:
             This method processes URL parameters in the following order:
             1. Base archived resources queryset
@@ -165,13 +165,13 @@ class ArchiveListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         """Add additional context data for the template.
-        
+
         This method provides additional context data beyond the archived resources
         queryset, including filter options and archive statistics for the template.
-        
+
         Args:
             **kwargs: Additional keyword arguments passed to the parent method
-            
+
         Returns:
             Dict[str, Any]: Context dictionary containing:
                 - resources: Paginated queryset of archived resources
@@ -179,17 +179,17 @@ class ArchiveListView(LoginRequiredMixin, ListView):
                 - service_types: All service types for filter dropdown
                 - total_archived: Total count of archived resources
                 - archived_by_category: Dictionary mapping category names to their archived resource counts
-                
+
         Note:
             The archived_by_category dictionary only includes categories that have
             archived resources (count > 0) to avoid cluttering the interface.
         """
         context = super().get_context_data(**kwargs)
-        
+
         # Get filter options
         context["categories"] = TaxonomyCategory.objects.all().order_by("name")
         context["service_types"] = ServiceType.objects.all().order_by("name")
-        
+
         # Get archive statistics
         context["total_archived"] = Resource.objects.archived().count()
         context["archived_by_category"] = {}
@@ -203,27 +203,27 @@ class ArchiveListView(LoginRequiredMixin, ListView):
 
 class ArchiveDetailView(LoginRequiredMixin, DetailView):
     """Detail view for archived resources with version history and permissions.
-    
+
     This view displays comprehensive information about an archived resource including
     all its fields, complete version history, and permission-based content visibility.
     It provides access to historical data while maintaining appropriate permission
     checks for sensitive fields like notes.
-    
+
     Features:
         - Complete archived resource information display
         - Full version history (up to 10 versions)
         - Permission-based notes field visibility
         - Role-based access control for sensitive data
         - Historical data preservation
-        
+
     Template Context:
         - resource: The archived resource object being displayed
         - versions: Complete version history (up to 10 versions)
         - can_view_notes: Boolean indicating if user can view notes field
-        
+
     URL Parameters:
         - pk: Primary key of the archived resource to display
-        
+
     Example:
         GET /archive/123/ -> Displays archived resource with ID 123
     """
@@ -234,10 +234,10 @@ class ArchiveDetailView(LoginRequiredMixin, DetailView):
 
     def get_queryset(self) -> models.QuerySet:
         """Get only archived resources.
-        
+
         This method ensures that only archived resources are accessible through
         this view, maintaining the separation between active and archived data.
-        
+
         Returns:
             models.QuerySet: Queryset containing only archived resources
         """
@@ -245,30 +245,34 @@ class ArchiveDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         """Add additional context data for the template.
-        
+
         This method provides additional context beyond the archived resource object,
         including version history and permission-based visibility flags.
-        
+
         Args:
             **kwargs: Additional keyword arguments passed to the parent method
-            
+
         Returns:
             Dict[str, Any]: Context dictionary containing:
                 - resource: The archived resource object (from parent)
                 - versions: Complete version history (up to 10 versions)
                 - can_view_notes: Boolean indicating if user can view notes field
-                
+
         Note:
             The can_view_notes flag controls visibility of the notes field
             based on user roles (Editor, Reviewer, or Admin required).
             Version history is limited to 10 versions to prevent performance issues.
         """
         context = super().get_context_data(**kwargs)
-        
+
         # Add permission context for notes field
-        context['can_view_notes'] = user_has_role(self.request.user, "Editor") or user_has_role(self.request.user, "Reviewer") or user_has_role(self.request.user, "Admin")
-        
+        context["can_view_notes"] = (
+            user_has_role(self.request.user, "Editor")
+            or user_has_role(self.request.user, "Reviewer")
+            or user_has_role(self.request.user, "Admin")
+        )
+
         # Get version history
         context["versions"] = self.object.versions.all()[:10]
-        
+
         return context

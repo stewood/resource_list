@@ -31,7 +31,7 @@ Dependencies:
 
 Usage:
     from directory.views.dashboard_views import dashboard, version_comparison
-    
+
     # URL patterns typically map to these views
     # /dashboard/ -> dashboard
     # /resources/<pk>/versions/ -> version_history
@@ -54,19 +54,19 @@ from ..utils import compare_versions
 @login_required
 def dashboard(request: HttpRequest) -> HttpResponse:
     """Dashboard view with comprehensive resource analytics and metrics.
-    
+
     This view provides an overview of the resource directory system with
     key metrics, counts by status, verification tracking, and recent activity.
     It serves as the main administrative dashboard for monitoring system health
     and resource management status.
-    
+
     Features:
         - Resource counts by status (draft, needs_review, published, archived)
         - Verification tracking for published resources
         - Recent activity monitoring
         - System health indicators
         - Administrative overview
-        
+
     Template Context:
         - draft_count: Number of resources in draft status
         - review_count: Number of resources awaiting review
@@ -74,10 +74,10 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         - archived_count: Number of archived resources
         - needs_verification: Number of published resources needing verification
         - recent_resources: List of recently updated resources (last 10)
-        
+
     Returns:
         HttpResponse: Rendered dashboard template with analytics data
-        
+
     Example:
         GET /dashboard/ -> Display system dashboard with metrics
     """
@@ -125,30 +125,30 @@ def version_comparison(
     request: HttpRequest, resource_pk: int, version1_pk: int, version2_pk: int = None
 ) -> HttpResponse:
     """Compare two versions of a resource with detailed difference analysis.
-    
+
     This view provides a side-by-side comparison of two versions of a resource,
     highlighting the differences between them. It can compare any two historical
     versions or compare a historical version with the current state of the resource.
-    
+
     Features:
         - Side-by-side version comparison
         - Detailed difference highlighting
         - Support for comparing historical versions or current state
         - Comprehensive field comparison
         - User-friendly difference presentation
-        
+
     Args:
         request: The HTTP request object
         resource_pk: Primary key of the resource to compare versions for
         version1_pk: Primary key of the first version to compare
         version2_pk: Primary key of the second version to compare (optional, defaults to current)
-        
+
     Returns:
         HttpResponse: Rendered version comparison template with difference data
-        
+
     Raises:
         404: If the resource or version is not found
-        
+
     Template Context:
         - resource: The resource object being compared
         - version1: The first version object
@@ -156,7 +156,7 @@ def version_comparison(
         - differences: Dictionary of field differences between versions
         - version1_snapshot: Complete snapshot data for version 1
         - version2_snapshot: Complete snapshot data for version 2
-        
+
     Example:
         GET /resources/123/versions/1/compare/ -> Compare version 1 with current
         GET /resources/123/versions/1/compare/2/ -> Compare version 1 with version 2
@@ -216,32 +216,32 @@ def version_comparison(
 @login_required
 def version_history(request: HttpRequest, resource_pk: int) -> HttpResponse:
     """Show complete version history for a resource with chronological ordering.
-    
+
     This view displays the complete version history of a resource, showing all
     changes made over time in chronological order. It provides access to the
     full audit trail for transparency and historical tracking.
-    
+
     Features:
         - Complete version history display
         - Chronological ordering (newest first)
         - Access to all historical snapshots
         - Audit trail transparency
         - Historical change tracking
-        
+
     Args:
         request: The HTTP request object
         resource_pk: Primary key of the resource to show version history for
-        
+
     Returns:
         HttpResponse: Rendered version history template with complete version list
-        
+
     Raises:
         404: If the resource is not found
-        
+
     Template Context:
         - resource: The resource object
         - versions: Complete list of all versions ordered by version number (descending)
-        
+
     Example:
         GET /resources/123/versions/ -> Display complete version history for resource 123
     """

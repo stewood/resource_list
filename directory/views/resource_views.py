@@ -25,7 +25,7 @@ Dependencies:
 
 Usage:
     from directory.views.resource_views import ResourceDetailView
-    
+
     # URL patterns typically map to this view
     # /resources/<pk>/ -> ResourceDetailView
 """
@@ -42,27 +42,27 @@ from ..permissions import user_has_role, user_can_publish
 
 class ResourceDetailView(LoginRequiredMixin, DetailView):
     """Detail view for individual resources with version history and permissions.
-    
+
     This view displays comprehensive information about a single resource including
     all its fields, recent version history, and permission-based content visibility.
     It supports viewing both active and archived resources, with appropriate
     permission checks for sensitive fields like notes.
-    
+
     Features:
         - Complete resource information display
         - Recent version history (last 5 versions)
         - Permission-based notes field visibility
         - Support for archived resource viewing
         - Role-based access control for sensitive data
-        
+
     Template Context:
         - resource: The resource object being displayed
         - versions: Recent version history (last 5 versions)
         - can_view_notes: Boolean indicating if user can view notes field
-        
+
     URL Parameters:
         - pk: Primary key of the resource to display
-        
+
     Example:
         GET /resources/123/ -> Displays resource with ID 123
     """
@@ -73,10 +73,10 @@ class ResourceDetailView(LoginRequiredMixin, DetailView):
 
     def get_queryset(self) -> models.QuerySet:
         """Filter out deleted resources but include archived ones.
-        
+
         This method ensures that deleted resources are not accessible while
         allowing archived resources to be viewed for historical purposes.
-        
+
         Returns:
             models.QuerySet: Queryset including active and archived resources,
                             excluding deleted ones
@@ -85,36 +85,40 @@ class ResourceDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         """Add additional context data for the template.
-        
+
         This method provides additional context beyond the resource object,
         including version history and permission-based visibility flags.
-        
+
         Args:
             **kwargs: Additional keyword arguments passed to the parent method
-            
+
         Returns:
             Dict[str, Any]: Context dictionary containing:
                 - resource: The resource object (from parent)
                 - versions: Recent version history (last 5 versions)
                 - can_view_notes: Boolean indicating if user can view notes field
-                
+
         Note:
             The can_view_notes flag controls visibility of the notes field
             based on user roles (Editor, Reviewer, or Admin required).
         """
         context = super().get_context_data(**kwargs)
-        
+
         # Add permission context for notes field
-        context['can_view_notes'] = user_has_role(self.request.user, "Editor") or user_has_role(self.request.user, "Reviewer") or user_has_role(self.request.user, "Admin")
-        
+        context["can_view_notes"] = (
+            user_has_role(self.request.user, "Editor")
+            or user_has_role(self.request.user, "Reviewer")
+            or user_has_role(self.request.user, "Admin")
+        )
+
         # Add permission context for publishing
-        context['user_can_publish'] = user_can_publish(self.request.user)
-        
+        context["user_can_publish"] = user_can_publish(self.request.user)
+
         # Get recent versions
         context["versions"] = ResourceVersion.objects.filter(
             resource=self.object
         ).order_by("-changed_at")[:5]
-        
+
         return context
 
 
@@ -124,7 +128,7 @@ from .resource_crud_views import ResourceCreateView, ResourceUpdateView
 
 __all__ = [
     "ResourceDetailView",
-    "ResourceListView", 
+    "ResourceListView",
     "ResourceCreateView",
     "ResourceUpdateView",
 ]
