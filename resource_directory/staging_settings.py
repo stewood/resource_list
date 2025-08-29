@@ -28,14 +28,14 @@ ALLOWED_HOSTS = [
 if os.environ.get('ALLOWED_HOSTS'):
     ALLOWED_HOSTS.extend(os.environ.get('ALLOWED_HOSTS').split(','))
 
-# Disable GIS features to avoid PostGIS dependency
-GIS_ENABLED = False
+# Enable GIS features for PostGIS support
+GIS_ENABLED = True
 
-# Database - PostgreSQL on Render
+# Database - PostgreSQL with PostGIS on Render
 # Use environment variables for database configuration
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': os.environ.get('DB_NAME', 'isaiah58_resources'),
         'USER': os.environ.get('DB_USER', 'isaiah58_user'),
         'PASSWORD': os.environ.get('DB_PASSWORD', 'CMXAq8v3zpy6Vwm1CIV26EKHagUDt0Nr'),
