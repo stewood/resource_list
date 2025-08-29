@@ -519,34 +519,20 @@
                                     
                                     loadedAreas++;
                                     
-                                    // Only fit bounds if we have multiple areas or if the initial center was San Francisco
+                                    // Always fit bounds when all areas are loaded to show full coverage
                                     if (loadedAreas === data.coverage_areas.length && bounds.length > 0) {
-                                        // Check if initial center was San Francisco (fallback)
-                                        const isSanFrancisco = initialCenter[0] === 37.7749 && initialCenter[1] === -122.4194;
-                                        
-                                        if (data.coverage_areas.length > 1 || isSanFrancisco) {
-                                            // For multiple areas or when we had to use fallback, fit to bounds
-                                            const mapBounds = L.latLngBounds(bounds);
-                                            map.fitBounds(mapBounds, { padding: [20, 20] });
-                                        }
-                                        // For single areas with good initial center, keep the initial center
+                                        const mapBounds = L.latLngBounds(bounds);
+                                        map.fitBounds(mapBounds, { padding: [20, 20] });
                                     }
                                 })
                                 .catch(error => {
                                     console.error('Error loading area geometry:', error);
                                     loadedAreas++;
                                     
-                                    // Only fit bounds if we have multiple areas or if the initial center was San Francisco
+                                    // Always fit bounds when all areas are loaded to show full coverage
                                     if (loadedAreas === data.coverage_areas.length && bounds.length > 0) {
-                                        // Check if initial center was San Francisco (fallback)
-                                        const isSanFrancisco = initialCenter[0] === 37.7749 && initialCenter[1] === -122.4194;
-                                        
-                                        if (data.coverage_areas.length > 1 || isSanFrancisco) {
-                                            // For multiple areas or when we had to use fallback, fit to bounds
-                                            const mapBounds = L.latLngBounds(bounds);
-                                            map.fitBounds(mapBounds, { padding: [20, 20] });
-                                        }
-                                        // For single areas with good initial center, keep the initial center
+                                        const mapBounds = L.latLngBounds(bounds);
+                                        map.fitBounds(mapBounds, { padding: [20, 20] });
                                     }
                                 });
                         });
