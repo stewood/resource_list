@@ -299,7 +299,13 @@ class AreaSearchView(View):
             else:
                 # Fallback to center point if no geometry
                 if area.center:
-                    preview_data['center'] = [area.center.y, area.center.x]  # lat, lng
+                    try:
+                        # Handle case where center might be stored as string
+                        if hasattr(area.center, 'y') and hasattr(area.center, 'x'):
+                            preview_data['center'] = [area.center.y, area.center.x]  # lat, lng
+                    except Exception:
+                        # Skip center if there's any error accessing it
+                        pass
                 
                 # Add bounds if available
                 if area.geom and hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
@@ -405,7 +411,13 @@ class AreaSearchView(View):
             else:
                 # Fallback to center point if no geometry
                 if area.center:
-                    area_data['center'] = [area.center.y, area.center.x]  # lat, lng
+                    try:
+                        # Handle case where center might be stored as string
+                        if hasattr(area.center, 'y') and hasattr(area.center, 'x'):
+                            area_data['center'] = [area.center.y, area.center.x]  # lat, lng
+                    except Exception:
+                        # Skip center if there's any error accessing it
+                        pass
                 
                 # Add bounds if available
                 if area.geom and hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
@@ -1327,10 +1339,19 @@ class ResourceAreaManagementView(View):
                             pass
                     elif coverage_area.center:
                         # Use stored center point if available
-                        area_data['center'] = {
-                            'lat': coverage_area.center.y,
-                            'lon': coverage_area.center.x
-                        }
+                        try:
+                            # Handle case where center might be stored as string
+                            if hasattr(coverage_area.center, 'y') and hasattr(coverage_area.center, 'x'):
+                                area_data['center'] = {
+                                    'lat': coverage_area.center.y,
+                                    'lon': coverage_area.center.x
+                                }
+                            else:
+                                # Skip center if it's not a proper Point object
+                                pass
+                        except Exception:
+                            # Skip center if there's any error accessing it
+                            pass
                     
                     coverage_areas.append(area_data)
                 except ResourceCoverage.DoesNotExist:
