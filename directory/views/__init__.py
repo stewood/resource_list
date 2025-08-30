@@ -31,8 +31,7 @@ from .resource_views import (
     ResourceCreateView,
     ResourceUpdateView,
 )
-from .ai_review_views import (
-    AIReviewView,
+from .ai_dashboard_views import (
     AIDashboardView,
     AIDashboardAPIView,
 )
@@ -51,6 +50,7 @@ from .dashboard_views import (
     dashboard,
     version_comparison,
     version_history,
+    published_comparison,
 )
 from .public_views import (
     public_home,
@@ -69,6 +69,9 @@ from .api_views import (
 from .ai_api_views import (
     AIVerificationView,
 )
+from .ai_auto_verification_views import (
+    AIAutoVerificationView,
+)
 
 # Export all views for easy importing
 __all__ = [
@@ -77,8 +80,7 @@ __all__ = [
     "ResourceDetailView",
     "ResourceCreateView",
     "ResourceUpdateView",
-    # AI Review views
-    "AIReviewView",
+    # AI Dashboard views
     "AIDashboardView",
     "AIDashboardAPIView",
     # Workflow views
@@ -94,6 +96,7 @@ __all__ = [
     "dashboard",
     "version_comparison",
     "version_history",
+    "published_comparison",
     # Public views
     "public_home",
     "public_resource_list",
@@ -108,4 +111,5 @@ __all__ = [
     "StateCountyView",
     # AI API views
     "AIVerificationView",
+    "AIAutoVerificationView",
 ]

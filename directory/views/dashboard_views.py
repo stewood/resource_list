@@ -38,6 +38,7 @@ Usage:
     # /resources/<pk>/versions/<v1>/compare/ -> version_comparison
 """
 
+import logging
 from datetime import timedelta
 from typing import Any, Dict
 
@@ -46,6 +47,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
+
+logger = logging.getLogger(__name__)
 
 from ..models import Resource, ResourceVersion
 from ..utils import compare_versions
@@ -254,3 +257,152 @@ def version_history(request: HttpRequest, resource_pk: int) -> HttpResponse:
     }
 
     return render(request, "directory/version_history.html", context)
+
+
+@login_required
+def published_comparison(request: HttpRequest, resource_pk: int) -> HttpResponse:
+    """Compare current resource state with the last published version.
+
+    This view provides a focused comparison between the current state of a resource
+    and the last version that was published. This is particularly useful for
+    reviewing changes before publishing updates.
+
+    Features:
+        - Comparison with last published version
+        - Focused on changes since last publication
+        - User-friendly difference presentation
+        - Handles cases where resource was never published
+
+    Args:
+        request: The HTTP request object
+        resource_pk: Primary key of the resource to compare
+
+    Returns:
+        HttpResponse: Rendered comparison template with difference data
+
+    Raises:
+        404: If the resource is not found
+
+    Template Context:
+        - resource: The resource object being compared
+        - last_published_version: The last published version (or None)
+        - differences: Dictionary of field differences
+        - current_snapshot: Current resource state
+        - published_snapshot: Last published version state (or None)
+        - was_never_published: Boolean indicating if resource was never published
+
+    Example:
+        GET /resources/123/published-comparison/ -> Compare current with last published
+    """
+    resource = get_object_or_404(Resource, pk=resource_pk, is_deleted=False)
+    
+    # Find the last published version
+    # Look for the last version where the resource status was "published"
+    last_published_version = None
+    for version in ResourceVersion.objects.filter(resource=resource).order_by('-version_number'):
+        try:
+            snapshot_data = version.snapshot
+            if snapshot_data.get('status') == 'published':
+                last_published_version = version
+                break
+        except (KeyError, TypeError):
+            # Skip versions with invalid snapshot data
+            continue
+    
+    # Create current snapshot for comparison (focusing on meaningful data, excluding system metadata)
+    current_snapshot = {
+        # Basic information
+        "name": resource.name,
+        "category": resource.category.name if resource.category else "",
+        "description": resource.description,
+        
+        # Contact information
+        "phone": resource.phone,
+        "email": resource.email,
+        "website": resource.website,
+        
+        # Location information
+        "address1": resource.address1,
+        "address2": resource.address2,
+        "city": resource.city,
+        "state": resource.state,
+        "postal_code": resource.postal_code,
+        "county": resource.county,
+        
+        # Service information
+        "hours_of_operation": resource.hours_of_operation,
+        "eligibility_requirements": resource.eligibility_requirements,
+        "populations_served": resource.populations_served,
+        "cost_information": resource.cost_information,
+        "languages_available": resource.languages_available,
+        "is_emergency_service": resource.is_emergency_service,
+        "is_24_hour_service": resource.is_24_hour_service,
+        
+        # Workflow status
+        "status": resource.status,
+        "last_verified_by": (
+            resource.last_verified_by.get_full_name()
+            if resource.last_verified_by
+            else ""
+        ),
+    }
+    
+    was_never_published = False
+    published_snapshot = None
+    differences = {}
+    
+    if last_published_version:
+        published_snapshot = last_published_version.snapshot
+        
+        # Filter out system/metadata fields to focus on meaningful data
+        system_fields_to_exclude = {
+            'id', 'category_id', 'created_by_id', 'updated_by_id', 'last_verified_by_id',
+            'created_at', 'updated_at', 'is_deleted', 'last_verified_at', 'source', 'notes'
+        }
+        
+        # Create filtered published snapshot with only meaningful fields
+        filtered_published_snapshot = {
+            key: value for key, value in published_snapshot.items()
+            if key not in system_fields_to_exclude
+        }
+        
+        # Get all differences
+        all_differences = compare_versions(filtered_published_snapshot, current_snapshot)
+        
+        # Filter to only show fields that actually changed (not just added empty fields)
+        differences = {}
+        for field, diff in all_differences.items():
+            # Only include if there's a meaningful change
+            if diff['diff_type'] == 'added' and diff['new_value']:
+                # Include added fields that have actual content
+                differences[field] = diff
+            elif diff['diff_type'] == 'modified':
+                # Include modified fields
+                differences[field] = diff
+            elif diff['diff_type'] == 'removed' and diff['old_value']:
+                # Include removed fields that had content
+                differences[field] = diff
+    else:
+        was_never_published = True
+        # For new resources, show current state as "added" fields
+        differences = {
+            field: {
+                "old_value": None,
+                "new_value": value,
+                "diff_type": "added",
+                "diff_html": generate_diff_html("", str(value) if value else "")
+            }
+            for field, value in current_snapshot.items()
+            if value  # Only show non-empty fields
+        }
+
+    context = {
+        "resource": resource,
+        "last_published_version": last_published_version,
+        "differences": differences,
+        "current_snapshot": current_snapshot,
+        "published_snapshot": published_snapshot,
+        "was_never_published": was_never_published,
+    }
+
+    return render(request, "directory/published_comparison.html", context)

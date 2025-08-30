@@ -1,0 +1,374 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load directory_extras %}
+
+{% block title %}Changes Since Published - {{ resource.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'directory:dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'directory:resource_list' %}">Resources</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'directory:resource_detail' resource.pk %}">{{ resource.name }}</a></li>
+                    <li class="breadcrumb-item active">Changes Since Published</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-exchange-alt"></i> Changes Since Published
+                </h1>
+                <div>
+                    <a href="{% url 'directory:resource_detail' resource.pk %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Resource
+                    </a>
+                    <a href="{% url 'directory:version_history' resource.pk %}" class="btn btn-outline-info">
+                        <i class="fas fa-history"></i> Full History
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparison Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="card-title">
+                                <i class="fas fa-globe"></i> Last Published Version
+                            </h5>
+                            {% if last_published_version %}
+                                <p class="text-muted mb-1">
+                                    <strong>Version:</strong> {{ last_published_version.version_number }}
+                                </p>
+                                <p class="text-muted mb-1">
+                                    <strong>Published by:</strong> {{ last_published_version.changed_by.get_full_name|default:last_published_version.changed_by.username }}
+                                </p>
+                                <p class="text-muted mb-0">
+                                    <strong>Date:</strong> {{ last_published_version.changed_at|date:"M j, Y H:i" }}
+                                </p>
+                            {% else %}
+                                <p class="text-muted mb-0">
+                                    <strong>Status:</strong> <span class="badge bg-warning">Never Published</span>
+                                </p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="card-title">
+                                <i class="fas fa-edit"></i> Current State
+                            </h5>
+                            <p class="text-muted mb-1">
+                                <strong>Status:</strong> 
+                                {% if resource.status == 'draft' %}
+                                    <span class="badge bg-secondary">Draft</span>
+                                {% elif resource.status == 'needs_review' %}
+                                    <span class="badge bg-warning">Needs Review</span>
+                                {% elif resource.status == 'published' %}
+                                    <span class="badge bg-success">Published</span>
+                                {% endif %}
+                            </p>
+                            <p class="text-muted mb-1">
+                                <strong>Last Updated:</strong> {{ resource.updated_at|date:"M j, Y H:i" }}
+                            </p>
+                            <p class="text-muted mb-0">
+                                <strong>Updated by:</strong> {{ resource.updated_by.get_full_name|default:resource.updated_by.username }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Changes Summary -->
+    {% if differences %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list"></i> Changes Summary
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% with added_count=0 changed_count=0 removed_count=0 %}
+                            {% for field_name, diff in differences.items %}
+                                {% if diff.diff_type == 'added' %}
+                                    {% with added_count=added_count|add:1 %}{% endwith %}
+                                {% elif diff.diff_type == 'changed' %}
+                                    {% with changed_count=changed_count|add:1 %}{% endwith %}
+                                {% elif diff.diff_type == 'removed' %}
+                                    {% with removed_count=removed_count|add:1 %}{% endwith %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            <div class="row text-center">
+                                {% if added_count > 0 %}
+                                    <div class="col-md-4">
+                                        <div class="text-success">
+                                            <i class="fas fa-plus-circle fa-2x"></i>
+                                            <h4>{{ added_count }}</h4>
+                                            <p>Fields Added</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% if changed_count > 0 %}
+                                    <div class="col-md-4">
+                                        <div class="text-warning">
+                                            <i class="fas fa-edit fa-2x"></i>
+                                            <h4>{{ changed_count }}</h4>
+                                            <p>Fields Modified</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% if removed_count > 0 %}
+                                    <div class="col-md-4">
+                                        <div class="text-danger">
+                                            <i class="fas fa-minus-circle fa-2x"></i>
+                                            <h4>{{ removed_count }}</h4>
+                                            <p>Fields Removed</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Changes -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-code-branch"></i> Detailed Changes ({{ differences|length }} fields)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Field</th>
+                                        <th>Published Version</th>
+                                        <th>Current Version</th>
+                                        <th>Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for field_name, diff in differences.items %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ field_name|title }}</strong>
+                                        </td>
+                                        <td>
+                                            {% if diff.diff_type == 'removed' %}
+                                                <div class="text-danger">
+                                                    <del>{{ diff.old_value|default:"(empty)" }}</del>
+                                                </div>
+                                            {% else %}
+                                                <div class="text-muted">{{ diff.old_value|default:"(empty)" }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if diff.diff_type == 'added' %}
+                                                <div class="text-success">
+                                                    <ins>{{ diff.new_value|default:"(empty)" }}</ins>
+                                                </div>
+                                            {% else %}
+                                                <div class="text-muted">{{ diff.new_value|default:"(empty)" }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if diff.diff_type == 'added' %}
+                                                <span class="badge bg-success">Added</span>
+                                            {% elif diff.diff_type == 'changed' %}
+                                                <span class="badge bg-warning">Modified</span>
+                                            {% elif diff.diff_type == 'removed' %}
+                                                <span class="badge bg-danger">Removed</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- No Changes -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                        <h4>No Changes Detected</h4>
+                        <p class="text-muted">
+                            {% if was_never_published %}
+                                This resource has never been published before.
+                            {% else %}
+                                The current state matches the last published version.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- AI Verification Report -->
+    {% if resource.notes %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-robot"></i> AI Verification Report
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="ai-verification-report">
+                            {{ resource.notes|markdown }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .table td {
+        vertical-align: middle;
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+    }
+    
+    del {
+        text-decoration: line-through;
+        color: #dc3545;
+    }
+    
+    ins {
+        text-decoration: underline;
+        color: #198754;
+    }
+    
+    .ai-verification-report {
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        line-height: 1.3;
+        background-color: #2d3748;
+        border: 1px solid #4a5568;
+        border-radius: 0.375rem;
+        padding: 0.75rem;
+        white-space: pre-wrap;
+        overflow-x: auto;
+        color: #e2e8f0;
+    }
+    
+    .ai-verification-report h1,
+    .ai-verification-report h2,
+    .ai-verification-report h3 {
+        color: #f7fafc;
+        margin-top: 0.75rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .ai-verification-report h1 {
+        font-size: 1.3rem;
+        border-bottom: 2px solid #63b3ed;
+        padding-bottom: 0.25rem;
+        margin-top: 0.5rem;
+    }
+    
+    .ai-verification-report h2 {
+        font-size: 1.1rem;
+        border-bottom: 1px solid #4a5568;
+        padding-bottom: 0.25rem;
+        margin-top: 0.75rem;
+    }
+    
+    .ai-verification-report h3 {
+        font-size: 1rem;
+        color: #a0aec0;
+        margin-top: 0.5rem;
+    }
+    
+    .ai-verification-report strong {
+        color: #f7fafc;
+    }
+    
+    .ai-verification-report ul {
+        margin-left: 1rem;
+        margin-top: 0.25rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .ai-verification-report li {
+        margin-bottom: 0.125rem;
+    }
+    
+    .ai-verification-report table {
+        background-color: #1a202c;
+        border: 1px solid #4a5568;
+        border-radius: 0.375rem;
+        margin: 0.5rem 0;
+        font-size: 0.8rem;
+    }
+    
+    .ai-verification-report th {
+        background-color: #2d3748;
+        color: #f7fafc;
+        padding: 0.5rem;
+        border-bottom: 1px solid #4a5568;
+        font-weight: bold;
+    }
+    
+    .ai-verification-report td {
+        padding: 0.5rem;
+        border-bottom: 1px solid #4a5568;
+        color: #e2e8f0;
+        vertical-align: top;
+    }
+    
+    .ai-verification-report tr:nth-child(even) {
+        background-color: #2d3748;
+    }
+    
+    .ai-verification-report tr:nth-child(odd) {
+        background-color: #1a202c;
+    }
+    
+    .ai-verification-report code {
+        background-color: #1a202c;
+        color: #68d391;
+        padding: 0.125rem 0.25rem;
+        border-radius: 0.25rem;
+        font-family: 'Courier New', monospace;
+    }
+    
+    .ai-verification-report p {
+        color: #e2e8f0;
+        margin-bottom: 0.5rem;
+        margin-top: 0.25rem;
+    }
+</style>
+{% endblock %}

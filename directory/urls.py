@@ -10,8 +10,7 @@ from .views import (
     ResourceDetailView,
     ResourceCreateView,
     ResourceUpdateView,
-    # AI Review views
-    AIReviewView,
+    # AI Dashboard views
     AIDashboardView,
     AIDashboardAPIView,
     # Workflow views
@@ -27,6 +26,7 @@ from .views import (
     dashboard,
     version_comparison,
     version_history,
+    published_comparison,
     # Public views
     public_home,
     public_resource_list,
@@ -41,6 +41,7 @@ from .views import (
     StateCountyView,
     # AI API views
     AIVerificationView,
+    AIAutoVerificationView,
 )
 
 app_name = "directory"
@@ -66,11 +67,7 @@ urlpatterns = [
         ResourceUpdateView.as_view(),
         name="resource_update",
     ),
-    path(
-        "manage/resources/<int:pk>/ai-review/",
-        AIReviewView.as_view(),
-        name="ai_review",
-    ),
+
     path(
         "manage/resources/<int:pk>/ai-dashboard/",
         AIDashboardView.as_view(),
@@ -105,6 +102,12 @@ urlpatterns = [
         "manage/resources/<int:resource_pk>/versions/<int:version1_pk>/compare/<int:version2_pk>/",
         version_comparison,
         name="version_comparison_two",
+    ),
+    # Published comparison
+    path(
+        "manage/resources/<int:resource_pk>/published-comparison/",
+        published_comparison,
+        name="published_comparison",
     ),
     # Archive views
     path("manage/archives/", ArchiveListView.as_view(), name="archive_list"),
@@ -163,6 +166,12 @@ urlpatterns = [
         "api/resources/<int:resource_id>/ai-verify/",
         AIVerificationView.as_view(),
         name="api_ai_verification",
+    ),
+    # AI Auto Verification API
+    path(
+        "api/resources/<int:resource_id>/ai-auto-verify/",
+        AIAutoVerificationView.as_view(),
+        name="api_ai_auto_verification",
     ),
     # AI Dashboard API
     path(

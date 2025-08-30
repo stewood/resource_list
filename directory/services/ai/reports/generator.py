@@ -106,7 +106,17 @@ class ReportGenerator:
             current_display = str(current_value)[:50] + "..." if len(str(current_value)) > 50 else str(current_value)
             verified_display = str(verified_value)[:50] + "..." if len(str(verified_value)) > 50 else str(verified_value)
             
-            status = "✅ Verified" if "verified" in change_note.lower() else "⚠️ Needs Update" if "update" in change_note.lower() else "❌ Failed"
+            # Determine status based on actual changes and confidence
+            # Compare original value (from current_data) with AI-found value (from verified_data)
+            original_value = current_data.get(field, '')
+            values_different = original_value != verified_value
+            
+            if values_different:
+                status = "⚠️ Needs Update"
+            elif confidence in ["High", "Medium"]:
+                status = "✅ Verified"
+            else:
+                status = "❌ Failed"
             
             report.append(f"| {field.title()} | {current_display} | {status} | {confidence} | {change_note[:100]}... |")
         
@@ -126,7 +136,18 @@ class ReportGenerator:
             change_note = change_notes.get(field, "No changes")
             
             current_display = str(current_value)[:50] + "..." if len(str(current_value)) > 50 else str(current_value)
-            status = "✅ Verified" if "verified" in change_note.lower() else "⚠️ Needs Update" if "update" in change_note.lower() else "❌ Failed"
+            
+            # Determine status based on actual changes and confidence
+            # Compare original value (from current_data) with AI-found value (from verified_data)
+            original_value = current_data.get(field, '')
+            values_different = original_value != verified_value
+            
+            if values_different:
+                status = "⚠️ Needs Update"
+            elif confidence in ["High", "Medium"]:
+                status = "✅ Verified"
+            else:
+                status = "❌ Failed"
             
             report.append(f"| {field.title()} | {current_display} | {status} | {confidence} | {change_note[:100]}... |")
         
@@ -146,7 +167,18 @@ class ReportGenerator:
             change_note = change_notes.get(field, "No changes")
             
             current_display = str(current_value)[:50] + "..." if len(str(current_value)) > 50 else str(current_value)
-            status = "✅ Verified" if "verified" in change_note.lower() else "⚠️ Needs Update" if "update" in change_note.lower() else "❌ Failed"
+            
+            # Determine status based on actual changes and confidence
+            # Compare original value (from current_data) with AI-found value (from verified_data)
+            original_value = current_data.get(field, '')
+            values_different = original_value != verified_value
+            
+            if values_different:
+                status = "⚠️ Needs Update"
+            elif confidence in ["High", "Medium"]:
+                status = "✅ Verified"
+            else:
+                status = "❌ Failed"
             
             report.append(f"| {field.replace('_', ' ').title()} | {current_display} | {status} | {confidence} | {change_note[:100]}... |")
         
@@ -160,18 +192,28 @@ class ReportGenerator:
         
         service_fields = ['service_types', 'hours_of_operation', 'eligibility_requirements', 'populations_served', 'cost_information', 'languages_available']
         for field in service_fields:
-            current_value = current_data.get(field, '')
-            verified_value = verified_data.get(field, current_value)
+            original_value = current_data.get(field, '')  # This is the original value before AI changes
+            verified_value = verified_data.get(field, original_value)
             confidence = confidence_levels.get(f"{field}_confidence", "Medium")
             change_note = change_notes.get(field, "No changes")
             
-            # Handle list values
-            if isinstance(current_value, list):
-                current_display = ", ".join(current_value)[:50] + "..." if len(", ".join(current_value)) > 50 else ", ".join(current_value)
+            # Handle list values for display
+            if isinstance(original_value, list):
+                current_display = ", ".join(original_value)[:50] + "..." if len(", ".join(original_value)) > 50 else ", ".join(original_value)
             else:
-                current_display = str(current_value)[:50] + "..." if len(str(current_value)) > 50 else str(current_value)
+                current_display = str(original_value)[:50] + "..." if len(str(original_value)) > 50 else str(original_value)
             
-            status = "✅ Verified" if "verified" in change_note.lower() else "⚠️ Needs Update" if "update" in change_note.lower() else "❌ Failed"
+            # Determine status based on actual changes and confidence
+            # Compare original value (from current_data) with AI-found value (from verified_data)
+            original_value = current_data.get(field, '')
+            values_different = original_value != verified_value
+            
+            if values_different:
+                status = "⚠️ Needs Update"
+            elif confidence in ["High", "Medium"]:
+                status = "✅ Verified"
+            else:
+                status = "❌ Failed"
             
             report.append(f"| {field.replace('_', ' ').title()} | {current_display} | {status} | {confidence} | {change_note[:100]}... |")
         

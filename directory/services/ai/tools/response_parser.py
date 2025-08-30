@@ -355,7 +355,7 @@ class ResponseParser:
         service_info = {}
         
         # Look for the pipe format section first
-        pipe_section_match = re.search(r'### Service Information in Pipe Format(.*?)(?=###|$)', response, re.DOTALL | re.IGNORECASE)
+        pipe_section_match = re.search(r'### (?:Service Information in Pipe Format|MANDATORY OUTPUT FORMAT|Pipe-Separated Service Information)(.*?)(?=###|$)', response, re.DOTALL | re.IGNORECASE)
         if not pipe_section_match:
             return service_info
         

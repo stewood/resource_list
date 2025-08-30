@@ -334,11 +334,11 @@ class AIReviewService:
             Please provide your analysis in a clear, structured format with both basic information and service discovery results.
             """)
             
-            # Create a simple chain without complex agents
-            chain = prompt | self.llm | StrOutputParser()
-            
             # Format current data for the prompt
             formatted_data = self._format_data_for_prompt(current_data)
+            
+            # Create a simple chain without complex agents
+            chain = prompt | self.llm | StrOutputParser()
             
             # Get AI response
             ai_response = chain.invoke({"current_data": formatted_data})

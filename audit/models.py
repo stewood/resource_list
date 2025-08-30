@@ -91,6 +91,13 @@ class AuditManager:
             "status": resource.status,
             "source": resource.source,
             "notes": resource.notes,
+            "hours_of_operation": resource.hours_of_operation,
+            "eligibility_requirements": resource.eligibility_requirements,
+            "populations_served": resource.populations_served,
+            "cost_information": resource.cost_information,
+            "languages_available": resource.languages_available,
+            "is_emergency_service": resource.is_emergency_service,
+            "is_24_hour_service": resource.is_24_hour_service,
             "last_verified_at": (
                 resource.last_verified_at.isoformat()
                 if resource.last_verified_at
@@ -133,7 +140,7 @@ def handle_resource_save(
         )
     else:
         change_type = "update"
-        # For now, we'll track all fields as changed
+        # Track all relevant fields that could be changed
         # In a more sophisticated implementation, you'd compare old vs new values
         changed_fields = [
             "name",
@@ -150,6 +157,13 @@ def handle_resource_save(
             "status",
             "source",
             "notes",
+            "hours_of_operation",
+            "eligibility_requirements",
+            "populations_served",
+            "cost_information",
+            "languages_available",
+            "is_emergency_service",
+            "is_24_hour_service",
             "last_verified_at",
             "last_verified_by",
         ]
