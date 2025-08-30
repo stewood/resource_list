@@ -15,6 +15,7 @@ whitenoise==6.6.0
 gunicorn==21.2.0
 markdown2==2.4.10
 requests==2.32.5
+beautifulsoup4==4.12.2
 
 # GIS dependencies for PostGIS support
 numpy==1.26.4
@@ -24,3 +25,9 @@ pyproj==3.6.1
 
 # UI improvements
 tqdm==4.66.1
+
+# AI/LLM dependencies for LangChain
+langchain==0.3.27
+langchain-openai==0.3.32
+langchain-community==0.3.29
+python-dotenv==1.1.1

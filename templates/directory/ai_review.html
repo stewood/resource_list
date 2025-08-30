@@ -1,0 +1,1123 @@
+{% extends 'base.html' %}
+{% load directory_extras %}
+
+{% csrf_token %}
+
+{% block title %}AI Review - {{ resource.name }} - Resource Directory{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>
+                <i class="fas fa-robot text-primary"></i>
+                AI Review: {{ resource.name }}
+            </h1>
+            <div class="btn-group">
+                <a href="{% url 'directory:resource_detail' resource.pk %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Resource
+                </a>
+                {% if can_apply_changes %}
+                <button type="button" class="btn btn-success" id="apply-changes-btn" disabled>
+                    <i class="fas fa-check"></i> Apply Changes
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Messages -->
+<div id="status-message"></div>
+
+<div class="row">
+    <!-- Current Data Column -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-database"></i> Current Data
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Basic Information -->
+                <div class="mb-4">
+                    <h6 class="text-primary">Basic Information</h6>
+                    <div class="row">
+                        <div class="col-12 mb-3 field-group" data-field="name">
+                            <strong>Name:</strong>
+                            <div class="form-control-plaintext bg-light">
+                                <span class="text-muted">{{ current_data.name|default:"Not specified" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3 field-group" data-field="category">
+                            <strong>Category:</strong>
+                            <div class="form-control-plaintext bg-light">
+                                <span class="text-muted">{{ current_data.category|default:"Not specified" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3 field-group" data-field="service_types">
+                            <strong>Service Types:</strong>
+                            <div class="form-control-plaintext bg-light">
+                                {% if current_data.service_types %}
+                                    {% for service_type in current_data.service_types %}
+                                        <span class="badge bg-secondary me-1">{{ service_type }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-muted">No service types specified</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3 field-group" data-field="description">
+                            <strong>Description:</strong>
+                            <div class="form-control-plaintext bg-light">
+                                <span class="text-muted">{{ current_data.description|default:"No description provided"|linebreaks }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="mb-4">
+                    <h6 class="text-primary">Contact Information</h6>
+                    <div class="row">
+                        <div class="col-12 mb-3 field-group" data-field="phone">
+                            <strong>Phone:</strong>
+                            <div class="form-control-plaintext bg-light">
+                                <span class="text-muted">{{ current_data.phone|default:"Not specified" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3 field-group" data-field="email">
+                            <strong>Email:</strong>
+                            <div class="form-control-plaintext bg-light">
+                                <span class="text-muted">{{ current_data.email|default:"Not specified" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3 field-group" data-field="website">
+                            <strong>Website:</strong>
+                            <div class="form-control-plaintext bg-light">
+                                <span class="text-muted">{{ current_data.website|default:"Not specified" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="mb-4">
+                    <h6 class="text-primary">Location</h6>
+                    <div class="row">
+                        <div class="col-12 mb-3 field-group" data-field="address1">
+                            <strong>Address Line 1:</strong>
+                            <div class="form-control-plaintext bg-light">
+                                <span class="text-muted">{{ current_data.address1|default:"Not specified" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3 field-group" data-field="address2">
+                            <strong>Address Line 2:</strong>
+                            <div class="form-control-plaintext bg-light">
+                                <span class="text-muted">{{ current_data.address2|default:"Not specified" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3 field-group" data-field="city">
+                            <strong>City:</strong>
+                            <div class="form-control-plaintext bg-light">
+                                <span class="text-muted">{{ current_data.city|default:"Not specified" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3 field-group" data-field="state">
+                            <strong>State:</strong>
+                            <div class="form-control-plaintext bg-light">
+                                <span class="text-muted">{{ current_data.state|default:"Not specified" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3 field-group" data-field="postal_code">
+                            <strong>Postal Code:</strong>
+                            <div class="form-control-plaintext bg-light">
+                                <span class="text-muted">{{ current_data.postal_code|default:"Not specified" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3 field-group" data-field="county">
+                            <strong>County:</strong>
+                            <div class="form-control-plaintext bg-light">
+                                <span class="text-muted">{{ current_data.county|default:"Not specified" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                                    <!-- Service Details -->
+                    <div class="mb-4">
+                        <h6 class="text-primary">Service Details</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="hours_of_operation">
+                                <strong>Hours of Operation:</strong>
+                                <div class="form-control-plaintext bg-light">
+                                    <span class="text-muted">{{ current_data.hours_of_operation|default:"Not specified"|linebreaks }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3 field-group" data-field="is_emergency_service">
+                                <strong>Emergency Service:</strong>
+                                <div class="form-control-plaintext bg-light">
+                                    <span class="text-muted">{% if current_data.is_emergency_service %}Yes{% else %}No{% endif %}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3 field-group" data-field="is_24_hour_service">
+                                <strong>24/7 Service:</strong>
+                                <div class="form-control-plaintext bg-light">
+                                    <span class="text-muted">{% if current_data.is_24_hour_service %}Yes{% else %}No{% endif %}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="eligibility_requirements">
+                                <strong>Eligibility Requirements:</strong>
+                                <div class="form-control-plaintext bg-light">
+                                    <span class="text-muted">{{ current_data.eligibility_requirements|default:"Not specified"|linebreaks }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="populations_served">
+                                <strong>Populations Served:</strong>
+                                <div class="form-control-plaintext bg-light">
+                                    <span class="text-muted">{{ current_data.populations_served|default:"Not specified"|linebreaks }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="insurance_accepted">
+                                <strong>Insurance Accepted:</strong>
+                                <div class="form-control-plaintext bg-light">
+                                    <span class="text-muted">{{ current_data.insurance_accepted|default:"Not specified"|linebreaks }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="cost_information">
+                                <strong>Cost Information:</strong>
+                                <div class="form-control-plaintext bg-light">
+                                    <span class="text-muted">{{ current_data.cost_information|default:"Not specified"|linebreaks }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="languages_available">
+                                <strong>Languages Available:</strong>
+                                <div class="form-control-plaintext bg-light">
+                                    <span class="text-muted">{{ current_data.languages_available|default:"Not specified" }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="capacity">
+                                <strong>Capacity:</strong>
+                                <div class="form-control-plaintext bg-light">
+                                    <span class="text-muted">{{ current_data.capacity|default:"Not specified" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                                    <!-- Coverage Areas -->
+                    <div class="mb-4">
+                        <h6 class="text-primary">Coverage Areas</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="coverage_areas">
+                                <strong>Coverage Areas:</strong>
+                                <div class="form-control-plaintext bg-light">
+                                    {% if current_data.coverage_areas %}
+                                        {% for area in current_data.coverage_areas %}
+                                            <span class="badge bg-info me-1">{{ area }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-muted">No coverage areas specified</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Source and Notes -->
+                    <div class="mb-4">
+                        <h6 class="text-primary">Source and Notes</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="source">
+                                <strong>Source:</strong>
+                                <div class="form-control-plaintext bg-light">
+                                    <span class="text-muted">{{ current_data.source|default:"Not specified" }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="notes">
+                                <strong>Notes:</strong>
+                                <div class="form-control-plaintext bg-light">
+                                    <span class="text-muted">{{ current_data.notes|default:"No notes provided"|linebreaks }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Verified Data Column -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-robot"></i> AI Verified Data
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="ai-review-form">
+                    {% csrf_token %}
+                    <!-- Basic Information -->
+                    <div class="mb-4">
+                        <h6 class="text-success">Basic Information</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="name">
+                                <label for="verified_name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="verified_name" name="verified_name" placeholder="AI verified name">
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="category">
+                                <label for="verified_category" class="form-label">Category</label>
+                                <input type="text" class="form-control" id="verified_category" name="verified_category" placeholder="AI verified category">
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="service_types">
+                                <label for="verified_service_types" class="form-label">Service Types</label>
+                                <input type="text" class="form-control" id="verified_service_types" name="verified_service_types" placeholder="AI verified service types (comma separated)">
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="description">
+                                <label for="verified_description" class="form-label">Description</label>
+                                <textarea class="form-control" id="verified_description" name="verified_description" rows="3" placeholder="AI verified description"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="mb-4">
+                        <h6 class="text-success">Contact Information</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="phone">
+                                <label for="verified_phone" class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="verified_phone" name="verified_phone" placeholder="AI verified phone number">
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="email">
+                                <label for="verified_email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="verified_email" name="verified_email" placeholder="AI verified email">
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="website">
+                                <label for="verified_website" class="form-label">Website</label>
+                                <input type="url" class="form-control" id="verified_website" name="verified_website" placeholder="AI verified website URL">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="mb-4">
+                        <h6 class="text-success">Location</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="address1">
+                                <label for="verified_address1" class="form-label">Address Line 1</label>
+                                <input type="text" class="form-control" id="verified_address1" name="verified_address1" placeholder="AI verified address">
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="address2">
+                                <label for="verified_address2" class="form-label">Address Line 2</label>
+                                <input type="text" class="form-control" id="verified_address2" name="verified_address2" placeholder="AI verified address line 2">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3 field-group" data-field="city">
+                                <label for="verified_city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="verified_city" name="verified_city" placeholder="AI verified city">
+                            </div>
+                            
+                            <div class="col-md-3 mb-3 field-group" data-field="state">
+                                <label for="verified_state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="verified_state" name="verified_state" placeholder="AI verified state">
+                            </div>
+                            
+                            <div class="col-md-3 mb-3 field-group" data-field="postal_code">
+                                <label for="verified_postal_code" class="form-label">Postal Code</label>
+                                <input type="text" class="form-control" id="verified_postal_code" name="verified_postal_code" placeholder="AI verified postal code">
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="county">
+                                <label for="verified_county" class="form-label">County</label>
+                                <input type="text" class="form-control" id="verified_county" name="verified_county" placeholder="AI verified county">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Details -->
+                    <div class="mb-4">
+                        <h6 class="text-success">Service Details</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="hours_of_operation">
+                                <label for="verified_hours_of_operation" class="form-label">Hours of Operation</label>
+                                <textarea class="form-control" id="verified_hours_of_operation" name="verified_hours_of_operation" rows="3" placeholder="AI verified hours of operation"></textarea>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3 field-group" data-field="is_emergency_service">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="verified_is_emergency_service" name="verified_is_emergency_service">
+                                    <label class="form-check-label" for="verified_is_emergency_service">
+                                        Emergency Service
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3 field-group" data-field="is_24_hour_service">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="verified_is_24_hour_service" name="verified_is_24_hour_service">
+                                    <label class="form-check-label" for="verified_is_24_hour_service">
+                                        24/7 Service
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="eligibility_requirements">
+                                <label for="verified_eligibility_requirements" class="form-label">Eligibility Requirements</label>
+                                <textarea class="form-control" id="verified_eligibility_requirements" name="verified_eligibility_requirements" rows="3" placeholder="AI verified eligibility requirements"></textarea>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="populations_served">
+                                <label for="verified_populations_served" class="form-label">Populations Served</label>
+                                <textarea class="form-control" id="verified_populations_served" name="verified_populations_served" rows="3" placeholder="AI verified populations served"></textarea>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="insurance_accepted">
+                                <label for="verified_insurance_accepted" class="form-label">Insurance Accepted</label>
+                                <textarea class="form-control" id="verified_insurance_accepted" name="verified_insurance_accepted" rows="3" placeholder="AI verified insurance information"></textarea>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="cost_information">
+                                <label for="verified_cost_information" class="form-label">Cost Information</label>
+                                <textarea class="form-control" id="verified_cost_information" name="verified_cost_information" rows="3" placeholder="AI verified cost information"></textarea>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="languages_available">
+                                <label for="verified_languages_available" class="form-label">Languages Available</label>
+                                <input type="text" class="form-control" id="verified_languages_available" name="verified_languages_available" placeholder="AI verified languages available">
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="capacity">
+                                <label for="verified_capacity" class="form-label">Capacity</label>
+                                <input type="text" class="form-control" id="verified_capacity" name="verified_capacity" placeholder="AI verified capacity information">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coverage Areas -->
+                    <div class="mb-4">
+                        <h6 class="text-success">Coverage Areas</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="coverage_areas">
+                                <label for="verified_coverage_areas" class="form-label">Coverage Areas</label>
+                                <input type="text" class="form-control" id="verified_coverage_areas" name="verified_coverage_areas" placeholder="AI verified coverage areas (comma separated)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Source and Notes -->
+                    <div class="mb-4">
+                        <h6 class="text-success">Source and Notes</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="source">
+                                <label for="verified_source" class="form-label">Source</label>
+                                <input type="text" class="form-control" id="verified_source" name="verified_source" placeholder="AI verified source">
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="notes">
+                                <label for="verified_notes" class="form-label">Notes</label>
+                                <textarea class="form-control" id="verified_notes" name="verified_notes" rows="3" placeholder="AI verification notes"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Notes Column -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-sticky-note"></i> AI Change Notes
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="change-notes-content">
+                
+                <!-- Detailed Verification Notes Section -->
+                <div class="mb-4" id="verification-notes-section" style="display: none;">
+                    <h6 class="text-success">
+                        <i class="fas fa-search"></i> Detailed Verification Notes
+                    </h6>
+                    <div class="alert alert-info">
+                        <small>
+                            <strong>Verification Details:</strong> This section shows how the AI verified each field, 
+                            what web searches would be performed, and which authoritative sources would be checked.
+                        </small>
+                    </div>
+                    
+                    <!-- Verification Notes Content -->
+                    <div id="verification-notes-content">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+                    <!-- Basic Information Notes -->
+                    <div class="mb-4">
+                        <h6 class="text-info">Basic Information</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="name">
+                                <label class="form-label">Name Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_name">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="category">
+                                <label class="form-label">Category Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_category">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="service_types">
+                                <label class="form-label">Service Types Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_service_types">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="description">
+                                <label class="form-label">Description Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_description">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information Notes -->
+                    <div class="mb-4">
+                        <h6 class="text-info">Contact Information</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="phone">
+                                <label class="form-label">Phone Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_phone">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="email">
+                                <label class="form-label">Email Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_email">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="website">
+                                <label class="form-label">Website Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_website">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location Notes -->
+                    <div class="mb-4">
+                        <h6 class="text-info">Location</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="address1">
+                                <label class="form-label">Address Line 1 Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_address1">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="address2">
+                                <label class="form-label">Address Line 2 Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_address2">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3 field-group" data-field="city">
+                                <label class="form-label">City Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_city">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3 mb-3 field-group" data-field="state">
+                                <label class="form-label">State Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_state">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3 mb-3 field-group" data-field="postal_code">
+                                <label class="form-label">Postal Code Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_postal_code">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="county">
+                                <label class="form-label">County Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_county">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Details Notes -->
+                    <div class="mb-4">
+                        <h6 class="text-info">Service Details</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="hours_of_operation">
+                                <label class="form-label">Hours of Operation Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_hours_of_operation">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3 field-group" data-field="is_emergency_service">
+                                <label class="form-label">Emergency Service Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_is_emergency_service">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3 field-group" data-field="is_24_hour_service">
+                                <label class="form-label">24/7 Service Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_is_24_hour_service">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="eligibility_requirements">
+                                <label class="form-label">Eligibility Requirements Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_eligibility_requirements">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="populations_served">
+                                <label class="form-label">Populations Served Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_populations_served">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="insurance_accepted">
+                                <label class="form-label">Insurance Accepted Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_insurance_accepted">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="cost_information">
+                                <label class="form-label">Cost Information Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_cost_information">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="languages_available">
+                                <label class="form-label">Languages Available Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_languages_available">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="capacity">
+                                <label class="form-label">Capacity Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_capacity">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coverage Areas Notes -->
+                    <div class="mb-4">
+                        <h6 class="text-info">Coverage Areas</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="coverage_areas">
+                                <label class="form-label">Coverage Areas Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_coverage_areas">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Source and Notes -->
+                    <div class="mb-4">
+                        <h6 class="text-info">Source and Notes</h6>
+                        <div class="row">
+                            <div class="col-12 mb-3 field-group" data-field="source">
+                                <label class="form-label">Source Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_source">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 mb-3 field-group" data-field="notes">
+                                <label class="form-label">Notes Changes</label>
+                                <div class="form-control-plaintext bg-light" id="notes_notes">
+                                    <em class="text-muted">AI will generate notes here...</em>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Review Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs"></i> AI Review Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-primary w-100 mb-2" id="run-ai-verification">
+                            <i class="fas fa-robot"></i> Run AI Verification
+                        </button>
+                        <small class="text-muted">This will analyze the current data and populate the verified fields with AI-suggested improvements.</small>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-outline-secondary w-100 mb-2" id="clear-verified-data">
+                            <i class="fas fa-eraser"></i> Clear All Data
+                        </button>
+                        <small class="text-muted">Clear all verified data and notes to start fresh.</small>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-outline-info w-100 mb-2" id="clear-notes-only">
+                            <i class="fas fa-sticky-note"></i> Clear Notes Only
+                        </button>
+                        <small class="text-muted">Clear only the change notes while keeping verified data.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Ensure consistent field group heights and alignment */
+    .field-group {
+        position: relative;
+        height: 120px;
+        margin-bottom: 1.5rem !important;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .field-group .form-label,
+    .field-group strong {
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+    
+    .field-group .form-control,
+    .field-group .form-control-plaintext {
+        flex: 1;
+        height: 60px;
+        display: flex;
+        align-items: flex-start;
+        padding: 0.5rem;
+        overflow: hidden;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    /* Ensure text content doesn't overflow */
+    .form-control-plaintext span {
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
+    
+    /* Horizontal lines to connect corresponding fields across columns */
+    .field-group::before {
+        content: '';
+        position: absolute;
+        top: 60px; /* Align with the middle of the field content */
+        left: -20px;
+        right: -20px;
+        height: 1px;
+        background: linear-gradient(to right, transparent, #dee2e6, transparent);
+        z-index: 1;
+    }
+    
+    /* Special positioning for description field lines */
+    .field-group[data-field="description"]::before {
+        top: 60px;
+    }
+    
+    /* Ensure form controls are above the lines */
+    .form-control, .form-control-plaintext {
+        position: relative;
+        z-index: 2;
+        background: white !important;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+    }
+    
+    /* Highlight active field groups */
+    .field-group:hover::before {
+        background: linear-gradient(to right, transparent, #007bff, transparent);
+    }
+    
+    /* Consistent spacing for all columns */
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .mb-4 {
+        margin-bottom: 2rem !important;
+    }
+    
+    /* Ensure text areas have consistent height */
+    textarea.form-control {
+        min-height: 60px;
+        resize: vertical;
+    }
+    
+    /* Special handling for description fields to maintain alignment */
+    .field-group[data-field="description"] {
+        height: auto !important;
+        min-height: 120px;
+    }
+    
+    .field-group[data-field="description"] .form-control,
+    .field-group[data-field="description"] .form-control-plaintext {
+        height: auto !important;
+        min-height: 60px;
+    }
+    
+    /* Make description textarea match the height of the current data description */
+    .field-group[data-field="description"] textarea.form-control {
+        height: auto;
+        min-height: 60px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 991.98px) {
+        .field-group::before {
+            display: none;
+        }
+        .field-group {
+            height: auto;
+            min-height: 100px;
+        }
+        .field-group .form-control,
+        .field-group .form-control-plaintext {
+            height: auto;
+            min-height: 50px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Helper function to get confidence color
+    function getConfidenceColor(confidence) {
+        switch(confidence.toLowerCase()) {
+            case 'high': return 'success';
+            case 'medium': return 'warning';
+            case 'low': return 'danger';
+            default: return 'secondary';
+        }
+    }
+    
+    // Handle form changes to enable/disable apply button
+    document.addEventListener('DOMContentLoaded', function() {
+        const aiForm = document.getElementById('ai-review-form');
+        const notesContent = document.getElementById('change-notes-content');
+        const applyButton = document.getElementById('apply-changes-btn');
+        const clearButton = document.getElementById('clear-verified-data');
+        const clearNotesButton = document.getElementById('clear-notes-only');
+        const runAIButton = document.getElementById('run-ai-verification');
+        
+        // Check if any verified fields have data
+        function checkForVerifiedData() {
+            const aiInputs = aiForm.querySelectorAll('input, textarea');
+            let hasData = false;
+            
+            // Check AI verified data
+            aiInputs.forEach(input => {
+                if (input.type === 'checkbox') {
+                    if (input.checked) hasData = true;
+                } else {
+                    if (input.value.trim() !== '') hasData = true;
+                }
+            });
+            
+            if (applyButton) {
+                applyButton.disabled = !hasData;
+            }
+        }
+        
+        // Listen for form changes
+        aiForm.addEventListener('input', checkForVerifiedData);
+        aiForm.addEventListener('change', checkForVerifiedData);
+        
+        // Clear verified data
+        clearButton.addEventListener('click', function() {
+            if (confirm('Are you sure you want to clear all verified data and notes?')) {
+                const aiInputs = aiForm.querySelectorAll('input, textarea');
+                const notesDivs = notesContent.querySelectorAll('.form-control-plaintext');
+                
+                aiInputs.forEach(input => {
+                    if (input.type === 'checkbox') {
+                        input.checked = false;
+                    } else {
+                        input.value = '';
+                    }
+                });
+                
+                notesDivs.forEach(div => {
+                    div.innerHTML = '<em class="text-muted">AI will generate notes here...</em>';
+                });
+                
+                checkForVerifiedData();
+            }
+        });
+        
+        // Clear notes only
+        clearNotesButton.addEventListener('click', function() {
+            if (confirm('Are you sure you want to clear all change notes?')) {
+                const notesDivs = notesContent.querySelectorAll('.form-control-plaintext');
+                notesDivs.forEach(div => {
+                    div.innerHTML = '<em class="text-muted">AI will generate notes here...</em>';
+                });
+            }
+        });
+        
+        // Run AI verification
+        runAIButton.addEventListener('click', function() {
+            runAIButton.disabled = true;
+            runAIButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Running AI Verification...';
+            
+            // Clear any existing status messages
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.innerHTML = '';
+            
+            // Make API call to AI verification endpoint
+            fetch(`/api/resources/{{ resource.pk }}/ai-verify/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Populate verified data fields
+                    const verifiedData = data.verified_data;
+                    const changeNotes = data.change_notes;
+                    const confidenceLevels = data.confidence_levels || {};
+                    
+                    // Update all verified data fields
+                    Object.keys(verifiedData).forEach(fieldName => {
+                        const fieldId = `verified_${fieldName}`;
+                        const field = document.getElementById(fieldId);
+                        if (field) {
+                            field.value = verifiedData[fieldName] || '';
+                        }
+                    });
+                    
+                    // Update all change notes fields with confidence levels
+                    Object.keys(changeNotes).forEach(fieldName => {
+                        const notesId = `notes_${fieldName}`;
+                        const notesField = document.getElementById(notesId);
+                        if (notesField) {
+                            const note = changeNotes[fieldName] || '<em class="text-muted">AI will generate notes here...</em>';
+                            const confidence = confidenceLevels[`${fieldName}_confidence`] || 'Unknown';
+                            
+                            // Add confidence level to the note
+                            const confidenceBadge = confidence !== 'Unknown' ? 
+                                `<span class="badge bg-${getConfidenceColor(confidence)} ms-2">${confidence} Confidence</span>` : '';
+                            
+                            notesField.innerHTML = `${note} ${confidenceBadge}`;
+                        }
+                    });
+                    
+                    // Handle detailed verification notes
+                    const verificationNotes = data.verification_notes || {};
+                    if (Object.keys(verificationNotes).length > 0) {
+                        const verificationNotesSection = document.getElementById('verification-notes-section');
+                        const verificationNotesContent = document.getElementById('verification-notes-content');
+                        
+                        let verificationNotesHtml = '';
+                        Object.keys(verificationNotes).forEach(fieldName => {
+                            const notes = verificationNotes[fieldName];
+                            if (notes && typeof notes === 'object') {
+                                verificationNotesHtml += `
+                                    <div class="mb-3 p-3 border rounded bg-light">
+                                        <h6 class="text-primary">${fieldName.replace('_', ' ').toUpperCase()}</h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <strong>Verification Method:</strong><br>
+                                                <small class="text-muted">${notes.verification_method || 'Not specified'}</small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <strong>Confidence:</strong><br>
+                                                <span class="badge bg-${getConfidenceColor(confidenceLevels[`${fieldName}_confidence`] || 'Medium')}">
+                                                    ${confidenceLevels[`${fieldName}_confidence`] || 'Medium'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2">
+                                            <strong>Web Searches:</strong><br>
+                                            <small class="text-muted">${notes.web_searches || 'Not specified'}</small>
+                                        </div>
+                                        <div class="mt-2">
+                                            <strong>Authoritative Sources:</strong><br>
+                                            <small class="text-muted">${notes.authoritative_sources || 'Not specified'}</small>
+                                        </div>
+                                        <div class="mt-2">
+                                            <strong>Checks Performed:</strong><br>
+                                            <small class="text-muted">${notes.checks || 'Not specified'}</small>
+                                        </div>
+                                        <div class="mt-2">
+                                            <strong>Improvements:</strong><br>
+                                            <small class="text-success">${notes.improvements || 'None suggested'}</small>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        });
+                        
+                        verificationNotesContent.innerHTML = verificationNotesHtml;
+                        verificationNotesSection.style.display = 'block';
+                    }
+                    
+                    // Show enhanced success message
+                    const fieldsVerified = data.fields_verified || [];
+                    const verificationFocus = data.verification_focus || 'basic_information';
+                    
+                    let successMessage = '<div class="alert alert-success">';
+                    successMessage += '<h6><i class="fas fa-robot"></i> Enhanced AI Verification Completed!</h6>';
+                    successMessage += `<p>Successfully verified ${fieldsVerified.length} basic information fields with authoritative web searches.</p>`;
+                    successMessage += '<small class="text-muted">Focus: Basic contact and address information verification</small>';
+                    successMessage += '</div>';
+                    
+                    statusDiv.innerHTML = successMessage;
+                } else {
+                    // Show enhanced error message
+                    let errorMessage = '<div class="alert alert-danger">';
+                    errorMessage += '<h6><i class="fas fa-exclamation-triangle"></i> AI Verification Failed</h6>';
+                    errorMessage += `<p>${data.error || 'Unknown error'}</p>`;
+                    if (data.details) {
+                        errorMessage += `<small class="text-muted">${data.details}</small>`;
+                    }
+                    errorMessage += '</div>';
+                    
+                    statusDiv.innerHTML = errorMessage;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                statusDiv.innerHTML = '<div class="alert alert-danger">AI verification failed. Please try again.</div>';
+            })
+            .finally(() => {
+                runAIButton.disabled = false;
+                runAIButton.innerHTML = '<i class="fas fa-robot"></i> Run AI Verification';
+                checkForVerifiedData();
+            });
+        });
+        
+        // Apply changes (placeholder for future implementation)
+        if (applyButton) {
+            applyButton.addEventListener('click', function() {
+                if (confirm('Are you sure you want to apply the AI-verified changes to this resource?')) {
+                    // TODO: Implement actual change application
+                    alert('Change application functionality will be implemented in the next phase.');
+                }
+            });
+        }
+        
+        // Add hover effects to highlight corresponding fields
+        document.querySelectorAll('.field-group').forEach(group => {
+            group.addEventListener('mouseenter', function() {
+                const fieldName = this.getAttribute('data-field');
+                document.querySelectorAll(`[data-field="${fieldName}"]`).forEach(el => {
+                    el.style.backgroundColor = '#f8f9fa';
+                });
+            });
+            
+            group.addEventListener('mouseleave', function() {
+                const fieldName = this.getAttribute('data-field');
+                document.querySelectorAll(`[data-field="${fieldName}"]`).forEach(el => {
+                    el.style.backgroundColor = '';
+                });
+            });
+        });
+        
+        // Ensure description fields have consistent heights
+        function adjustDescriptionHeights() {
+            const descriptionGroups = document.querySelectorAll('.field-group[data-field="description"]');
+            let maxHeight = 0;
+            
+            // Find the maximum height
+            descriptionGroups.forEach(group => {
+                const content = group.querySelector('.form-control, .form-control-plaintext');
+                if (content) {
+                    const height = content.scrollHeight;
+                    maxHeight = Math.max(maxHeight, height);
+                }
+            });
+            
+            // Set all description fields to the maximum height
+            descriptionGroups.forEach(group => {
+                const content = group.querySelector('.form-control, .form-control-plaintext');
+                if (content) {
+                    content.style.height = maxHeight + 'px';
+                }
+            });
+        }
+        
+        // Run height adjustment on page load
+        adjustDescriptionHeights();
+        
+        // Also adjust when window resizes
+        window.addEventListener('resize', adjustDescriptionHeights);
+    });
+</script>
+{% endblock %}

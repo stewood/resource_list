@@ -31,6 +31,11 @@ from .resource_views import (
     ResourceCreateView,
     ResourceUpdateView,
 )
+from .ai_review_views import (
+    AIReviewView,
+    AIDashboardView,
+    AIDashboardAPIView,
+)
 from .workflow_views import (
     submit_for_review,
     publish_resource,
@@ -61,6 +66,9 @@ from .api_views import (
     ReverseGeocodingView,
     StateCountyView,
 )
+from .ai_api_views import (
+    AIVerificationView,
+)
 
 # Export all views for easy importing
 __all__ = [
@@ -69,6 +77,10 @@ __all__ = [
     "ResourceDetailView",
     "ResourceCreateView",
     "ResourceUpdateView",
+    # AI Review views
+    "AIReviewView",
+    "AIDashboardView",
+    "AIDashboardAPIView",
     # Workflow views
     "submit_for_review",
     "publish_resource",
@@ -94,4 +106,6 @@ __all__ = [
     "ResourceEligibilityView",
     "ReverseGeocodingView",
     "StateCountyView",
+    # AI API views
+    "AIVerificationView",
 ]

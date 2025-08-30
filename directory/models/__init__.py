@@ -5,10 +5,10 @@ This package contains all the data models for the resource directory application
 organized into logical modules for better maintainability and code organization.
 
 Models are organized as follows:
-    - resource.py: Core Resource model and related functionality
-    - taxonomy.py: TaxonomyCategory and ServiceType models for classification
-    - audit.py: ResourceVersion and AuditLog models for audit trails
-    - managers.py: Custom model managers for advanced querying
+    - core/: Core Resource and Taxonomy models
+    - geographic/: Geographic and coverage area models
+    - analytics/: Search analytics and audit models
+    - managers/: Custom model managers for advanced querying
 
 This __init__.py file maintains backward compatibility by importing all models
 at the package level, so existing code can continue to use:
@@ -24,20 +24,20 @@ Usage:
     from directory.models import Resource, TaxonomyCategory, ServiceType
 
     # Direct module imports (for new code)
-    from directory.models.resource import Resource
-    from directory.models.taxonomy import TaxonomyCategory, ServiceType
-    from directory.models.audit import ResourceVersion, AuditLog
+    from directory.models.core import Resource
+    from directory.models.core import TaxonomyCategory, ServiceType
+    from directory.models.analytics import ResourceVersion, AuditLog
     from directory.models.managers import ResourceManager
 """
 
 # Import all models for backward compatibility
-from .audit import AuditLog, ResourceVersion
-from .resource import Resource
-from .taxonomy import ServiceType, TaxonomyCategory
-from .coverage_area import CoverageArea
-from .resource_coverage import ResourceCoverage
-from .geocoding_cache import GeocodingCache
-from .search_analytics import LocationSearchLog, SearchAnalytics
+from .analytics import AuditLog, ResourceVersion
+from .core import Resource
+from .core import ServiceType, TaxonomyCategory
+from .geographic import CoverageArea
+from .geographic import ResourceCoverage
+from .geographic import GeocodingCache
+from .analytics import LocationSearchLog, SearchAnalytics
 
 # Import managers for direct access
 from .managers import ResourceManager

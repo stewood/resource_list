@@ -68,22 +68,41 @@ docker-compose up --build
 ```
 directory/                    # Main Django application
 ├── models/                   # Data models and database schema
-│   ├── resource.py          # Resource model with all fields
-│   ├── coverage_area.py     # Geographic coverage areas
-│   ├── taxonomy.py          # Categories and service types
-│   └── audit.py             # Audit trail and versioning
+│   ├── core/                # Core models
+│   │   ├── resource.py      # Resource model with all fields
+│   │   └── taxonomy.py      # Categories and service types
+│   ├── geographic/          # Geographic models
+│   │   ├── coverage_area.py # Geographic coverage areas
+│   │   ├── geocoding_cache.py # Cached geocoding results
+│   │   └── resource_coverage.py # Resource-coverage relationships
+│   ├── analytics/           # Analytics and audit models
+│   │   ├── search_analytics.py # Search analytics
+│   │   └── audit.py         # Audit trail and versioning
+│   └── managers/            # Custom model managers
+│       └── resource_managers.py # Advanced search and filtering
 ├── views/                    # Application views and logic
+│   ├── api/                 # API views (modular structure)
+│   │   ├── area_views.py    # Area search views
+│   │   ├── location_views.py # Location search views
+│   │   ├── resource_views.py # Resource management views
+│   │   ├── eligibility_views.py # Eligibility checking views
+│   │   ├── geocoding_views.py # Geocoding views
+│   │   └── state_county_views.py # State/county data views
 │   ├── resource_views.py    # Resource CRUD operations
 │   ├── public_views.py      # Public-facing pages
-│   ├── api_views.py         # REST API endpoints
 │   └── workflow_views.py    # Approval workflow
 ├── forms/                    # Form definitions
 │   ├── resource_forms.py    # Resource creation/editing
 │   └── filter_forms.py      # Search and filtering
+├── services/                 # Business logic services
+│   ├── ai/                  # AI services (modular structure)
+│   │   ├── core/            # Core AI services
+│   │   ├── tools/           # AI tools and utilities
+│   │   ├── reports/         # AI report generation
+│   │   └── utils/           # AI utilities
+│   └── geocoding.py         # Address geocoding service
 ├── admin.py                  # Django admin interface
-├── permissions.py            # Custom permissions
-└── services/                 # Business logic services
-    └── geocoding.py         # Address geocoding service
+└── permissions.py            # Custom permissions
 ```
 
 ### **Configuration & Settings**
@@ -99,15 +118,31 @@ resource_directory/           # Django settings and configuration
 ### **Scripts & Automation**
 ```
 scripts/                     # Development and deployment scripts
-├── development/             # Local development tools
+├── development/             # Development and testing tools
 │   ├── start_dev.sh        # Start development environment
-│   └── run_tests.sh        # Run test suite
+│   ├── run_tests.py        # Run test suite
+│   ├── setup_dev_environment.sh # Set up development environment
+│   ├── reset_dev_environment.sh # Reset development environment
+│   ├── analyze_dependencies.py # Analyze code dependencies
+│   └── cache_manager.py    # Manage application cache
 ├── deployment/              # Deployment automation
 │   ├── deploy_to_staging.sh # Deploy to staging
-│   └── deploy_to_production.sh # Deploy to production
-└── data/                    # Data management scripts
-    ├── create_national_coverage.py # Create coverage areas
-    └── reset_admin_password.py    # Admin utilities
+│   └── setup_gis.sh        # Set up GIS components
+├── data/                    # Data management scripts
+│   ├── manage_service_areas.py # Manage service areas
+│   ├── restore_resource_coverage.py # Restore coverage data
+│   ├── update_existing_resources.py # Update resource data
+│   ├── create_national_coverage.py # Create coverage areas
+│   ├── reset_admin_password.py # Admin utilities
+│   ├── init-db.sql         # Database initialization
+│   ├── migrate_sqlite_to_dev.sh # SQLite migration
+│   └── update_data.sh      # Data update scripts
+├── geo/                     # Geographic data management (refactored)
+│   ├── manager.py          # Main geographic manager CLI
+│   ├── operations/         # Geographic operations
+│   └── utils/              # Geographic utilities
+├── migrations/              # Database migration scripts
+└── backup/                  # Backup and restore scripts
 ```
 
 ### **Documentation**
@@ -184,6 +219,15 @@ static/                      # Static assets
 # - Starts PostgreSQL database in Docker
 # - Runs Django migrations
 # - Starts development server at http://localhost:8000
+
+# Alternative: Set up development environment
+./scripts/development/setup_dev_environment.sh
+
+# Run tests
+python scripts/development/run_tests.py
+
+# Analyze dependencies
+python scripts/development/analyze_dependencies.py
 ```
 
 ### **Testing**
@@ -200,6 +244,9 @@ coverage report
 ```bash
 # Deploy to staging (requires permission)
 ./scripts/deployment/deploy_to_staging.sh
+
+# Set up GIS components for deployment
+./scripts/deployment/setup_gis.sh
 
 # Verify at: https://isaiah58-resource-directory.onrender.com
 ```
@@ -307,18 +354,22 @@ This project is open source. See LICENSE file for details.
 ## 🆘 Need Help?
 
 ### **Quick References**
-- **API Documentation**: See `directory/views/api_views.py`
-- **Data Models**: See `directory/models/`
+- **API Documentation**: See `directory/views/api/` (modular structure)
+- **Data Models**: See `directory/models/` (organized by functionality)
 - **Configuration**: See `resource_directory/settings.py`
 - **Deployment**: See `scripts/deployment/`
+- **Data Management**: See `scripts/data/`
+- **Geographic Data**: See `scripts/geo/`
 - **Troubleshooting**: See `docs/troubleshooting/`
 
 ### **Common Tasks**
 - **Add a new resource**: Use the admin interface or API
 - **Modify search**: See `directory/forms/filter_forms.py`
-- **Update coverage areas**: See `scripts/data/`
+- **Update coverage areas**: See `scripts/data/manage_service_areas.py`
+- **Manage geographic data**: See `scripts/geo/manager.py`
 - **Deploy changes**: See `scripts/deployment/`
-- **Run tests**: See `scripts/development/run_tests.sh`
+- **Run tests**: See `scripts/development/run_tests.py`
+- **Analyze dependencies**: See `scripts/development/analyze_dependencies.py`
 
 ### **Support**
 - **Issues**: Create a GitHub issue
