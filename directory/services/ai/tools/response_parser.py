@@ -83,7 +83,7 @@ class ResponseParser:
                     "authoritative_sources": "IRS.gov, state business registries, official organization websites"
                 }
                 change_notes[field] = "Organization name verified - format analysis completed"
-                confidence_levels[f"{field}_confidence"] = "Medium"
+                confidence_levels[f"{field}_confidence"] = self._calculate_confidence_level(response, field, value)
                 
             elif field == 'phone':
                 if value:
@@ -96,6 +96,7 @@ class ResponseParser:
                         "authoritative_sources": "Official organization website, government contact directories"
                     }
                     change_notes[field] = f"Phone number verified: {value}"
+                    confidence_levels[f"{field}_confidence"] = self._calculate_confidence_level(response, field, value)
                 else:
                     verification_notes[field] = {
                         "verification_method": "No data provided",
@@ -106,6 +107,7 @@ class ResponseParser:
                         "authoritative_sources": "Official organization website, government directories"
                     }
                     change_notes[field] = "No phone number provided - verification needed"
+                    confidence_levels[f"{field}_confidence"] = "Very Low"
                     
             elif field == 'email':
                 if value:
@@ -118,6 +120,7 @@ class ResponseParser:
                         "authoritative_sources": "Official organization website, domain registrar databases"
                     }
                     change_notes[field] = f"Email verified: {value}"
+                    confidence_levels[f"{field}_confidence"] = self._calculate_confidence_level(response, field, value)
                 else:
                     verification_notes[field] = {
                         "verification_method": "No data provided",
@@ -128,6 +131,7 @@ class ResponseParser:
                         "authoritative_sources": "Official organization website, contact directories"
                     }
                     change_notes[field] = "No email provided - verification needed"
+                    confidence_levels[f"{field}_confidence"] = "Very Low"
                     
             elif field == 'website':
                 if value:
@@ -140,6 +144,7 @@ class ResponseParser:
                         "authoritative_sources": "Website accessibility tools, content analysis"
                     }
                     change_notes[field] = f"Website verified: {value}"
+                    confidence_levels[f"{field}_confidence"] = self._calculate_confidence_level(response, field, value)
                 else:
                     verification_notes[field] = {
                         "verification_method": "No data provided",
@@ -150,6 +155,7 @@ class ResponseParser:
                         "authoritative_sources": "Search engines, organization directories"
                     }
                     change_notes[field] = "No website provided - verification needed"
+                    confidence_levels[f"{field}_confidence"] = "Very Low"
             
             else:
                 # For other basic fields
@@ -162,6 +168,7 @@ class ResponseParser:
                     "authoritative_sources": "Government databases, official records"
                 }
                 change_notes[field] = f"Field verified: {value}"
+                confidence_levels[f"{field}_confidence"] = self._calculate_confidence_level(response, field, value)
         
         # Extract service information from AI response
         service_info = self._extract_service_info_from_ai_response(response)
@@ -174,7 +181,7 @@ class ResponseParser:
                 if confidence_key in service_info:
                     confidence_levels[confidence_key] = service_info[confidence_key]
                 else:
-                    confidence_levels[confidence_key] = "Medium"
+                    confidence_levels[confidence_key] = self._calculate_confidence_level(response, field, service_info[field])
                 
                 # Generate change notes for service fields
                 if field == 'description':
@@ -406,68 +413,123 @@ class ResponseParser:
     
     def _clean_extracted_text(self, text: str) -> str:
         """
-        Clean extracted text to remove metadata and reasoning artifacts.
+        Clean and normalize extracted text.
         
         Args:
-            text: Raw text to clean
+            text: Raw extracted text
             
         Returns:
             Cleaned and normalized text
         """
         if not text:
-            return text
+            return ""
         
-        # Remove common metadata patterns
+        # Remove extra whitespace and normalize
+        text = ' '.join(text.split())
         
-        # Remove confidence level patterns
-        text = re.sub(r'\*\*confidence level\*\*:\s*[^.]*\.?', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'confidence level:\s*[^.]*\.?', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'confidence:\s*[^.]*\.?', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'confidence level\*\*:\s*[^.]*\.?', '', text, flags=re.IGNORECASE)
+        # Remove common artifacts
+        text = text.replace('|', '').replace('\\n', ' ').replace('\\t', ' ')
         
-        # Remove field name patterns with asterisks
-        text = re.sub(r'\*\*[^*]+\*\*:\s*', '', text)
-        text = re.sub(r'\*\*[^*]+:\s*', '', text)
+        return text.strip()
+    
+    def _calculate_confidence_level(self, ai_response: str, field_name: str, field_value: str) -> str:
+        """
+        Calculate confidence level based on source hierarchy and verification quality.
         
-        # Remove specific field patterns
-        text = re.sub(r'\*\*Health Services\*\*:\s*', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'\*\*Dental Clinic\*\*:\s*', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'\*\*Eligibility Requirements\*\*:\s*', '', text, flags=re.IGNORECASE)
-        text = re.sub(r'\*\*Languages Available\*\*:\s*', '', text, flags=re.IGNORECASE)
+        This function analyzes the AI response to determine what sources were used
+        and assigns confidence levels based on the source hierarchy:
+        - 95-100%: Official website, government (.gov)
+        - 85-94%: Major nonprofits (.org), educational (.edu)
+        - 70-84%: News articles, business directories
+        - 50-69%: Social media, user-generated content
+        - <50%: Unreliable sources, conflicting information
         
-        # Remove generic field name patterns (only match common field labels)
-        field_labels = ['eligibility requirements', 'populations served', 'cost information', 'languages available', 'hours of operation', 'service types']
-        for label in field_labels:
-            text = re.sub(rf'{label}:\s*', '', text, flags=re.IGNORECASE)
+        Args:
+            ai_response: The full AI response containing tool usage and sources
+            field_name: Name of the field being verified
+            field_value: Value of the field being verified
+            
+        Returns:
+            Confidence level string ("High", "Medium", "Low", "Very Low")
+        """
+        response_lower = ai_response.lower()
         
-        # Remove asterisks and markdown formatting
-        text = re.sub(r'\*\*', '', text)
-        text = re.sub(r'\*', '', text)
+        # Check if web search was used
+        web_search_used = "invoking: `web_search`" in response_lower or "web_search" in response_lower
         
-        # Remove section headers and metadata
-        text = re.sub(r'###.*$', '', text, flags=re.MULTILINE)
-        text = re.sub(r'####.*$', '', text, flags=re.MULTILINE)
-        text = re.sub(r'Service Types:.*$', '', text, flags=re.IGNORECASE | re.MULTILINE)
-        text = re.sub(r'Confidence Levels:.*$', '', text, flags=re.IGNORECASE | re.MULTILINE)
-        text = re.sub(r'Structured Output.*$', '', text, flags=re.IGNORECASE | re.MULTILINE)
-        text = re.sub(r'BASIC CONTACT INFORMATION.*$', '', text, flags=re.IGNORECASE | re.MULTILINE)
-        text = re.sub(r'CURRENT SERVICE INFORMATION.*$', '', text, flags=re.IGNORECASE | re.MULTILINE)
-        text = re.sub(r'CATEGORIZATION AND VERIFICATION.*$', '', text, flags=re.IGNORECASE | re.MULTILINE)
-        text = re.sub(r'VERIFICATION CONFIDENCE LEVELS.*$', '', text, flags=re.IGNORECASE | re.MULTILINE)
+        # Check if webpage tool was used
+        webpage_used = "invoking: `fetch_webpage_tool`" in response_lower or "fetch_webpage_tool" in response_lower
         
-        # Remove numbered lists and metadata
-        text = re.sub(r'\d+\.\s*\*\*[^*]+\*\*:.*$', '', text, flags=re.MULTILINE)
-        text = re.sub(r'\d+\.\s*[A-Z][a-z\s]+:.*$', '', text, flags=re.MULTILINE)
+        # Analyze sources mentioned in the response
+        sources_found = []
         
-        # Remove extra whitespace and clean up
-        text = re.sub(r'\s+', ' ', text)
-        text = text.strip()
+        # Look for government sources
+        gov_sources = re.findall(r'https?://[^\s]+\.gov[^\s]*', response_lower)
+        if gov_sources:
+            sources_found.extend(gov_sources)
         
-        # Remove leading/trailing punctuation
-        text = re.sub(r'^[.,;:\s]+', '', text)
-        text = re.sub(r'[.,;:\s]+$', '', text)
+        # Look for nonprofit sources
+        org_sources = re.findall(r'https?://[^\s]+\.org[^\s]*', response_lower)
+        if org_sources:
+            sources_found.extend(org_sources)
         
-        return text
+        # Look for educational sources
+        edu_sources = re.findall(r'https?://[^\s]+\.edu[^\s]*', response_lower)
+        if edu_sources:
+            sources_found.extend(edu_sources)
+        
+        # Look for news sources
+        news_keywords = ['news', 'article', 'press release', 'announcement']
+        news_indicators = [keyword for keyword in news_keywords if keyword in response_lower]
+        
+        # Look for social media indicators
+        social_keywords = ['facebook', 'twitter', 'instagram', 'linkedin', 'social media']
+        social_indicators = [keyword for keyword in social_keywords if keyword in response_lower]
+        
+        # Determine confidence based on sources and verification method
+        if gov_sources:
+            # Government sources are highest confidence
+            return "High"  # 95-100%
+        elif org_sources or edu_sources:
+            # Nonprofit and educational sources are high confidence
+            return "High"  # 85-94%
+        elif webpage_used and web_search_used:
+            # Both tools used, likely found authoritative information
+            return "High"  # 85-94%
+        elif webpage_used:
+            # Website content extracted, good confidence
+            return "Medium"  # 70-84%
+        elif web_search_used and news_indicators:
+            # Web search found news articles
+            return "Medium"  # 70-84%
+        elif web_search_used:
+            # Web search used but no specific sources identified
+            return "Medium"  # 70-84%
+        elif social_indicators:
+            # Social media sources, lower confidence
+            return "Low"  # 50-69%
+        else:
+            # No external verification, lowest confidence
+            return "Very Low"  # <50%
+    
+    def _calculate_confidence_score(self, confidence_level: str) -> float:
+        """
+        Convert confidence level to numerical score.
+        
+        Args:
+            confidence_level: Confidence level string ("High", "Medium", "Low", "Very Low")
+            
+        Returns:
+            Numerical confidence score (0-100)
+        """
+        confidence_mapping = {
+            "High": 95.0,      # 95-100%: Official website, government (.gov)
+            "Medium": 80.0,    # 70-84%: News articles, business directories
+            "Low": 60.0,       # 50-69%: Social media, user-generated content
+            "Very Low": 30.0   # <50%: Unreliable sources, conflicting information
+        }
+        
+        return confidence_mapping.get(confidence_level, 50.0)
     
     def _extract_quote_for_field(self, response: str, field: str) -> str:
         """

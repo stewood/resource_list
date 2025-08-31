@@ -229,6 +229,30 @@ class AIAutoVerificationView(LoginRequiredMixin, APIView):
                 logger.error(f"Failed to parse snapshot JSON for version {last_published_version.id}")
                 return self._prepare_resource_data(resource)
             
+            # Get current service areas for published data (use current data since published snapshot may not have service areas)
+            from directory.models import ResourceCoverage
+            
+            current_service_areas = []
+            if hasattr(resource, 'coverage_areas'):
+                resource_coverage_associations = ResourceCoverage.objects.filter(
+                    resource=resource
+                ).select_related('coverage_area', 'created_by')
+                
+                current_service_areas = [
+                    {
+                        "area_name": association.coverage_area.name,
+                        "area_type": association.coverage_area.kind,
+                        "validation_status": "VALID",  # Assume existing areas are valid
+                        "confidence_score": 100.0,
+                        "geographic_scope": "in_scope",
+                        "source": "existing_database",
+                        "validation_message": f"Existing service area: {association.coverage_area.name} ({association.coverage_area.kind})",
+                        "attached_at": association.created_at.isoformat() if association.created_at else None,
+                        "attached_by": association.created_by.username if association.created_by else None
+                    }
+                    for association in resource_coverage_associations
+                ]
+            
             return {
                 # Basic information
                 "name": published_snapshot.get('name', ''),
@@ -259,6 +283,9 @@ class AIAutoVerificationView(LoginRequiredMixin, APIView):
                 "source": published_snapshot.get('source', ''),
                 "notes": published_snapshot.get('notes', ''),
                 "service_types": published_snapshot.get('service_types', []),
+                
+                # Service areas information (use current data since published snapshot may not have this)
+                "current_service_areas": current_service_areas,
             }
         else:
             # Fallback to current resource data if no published version exists
@@ -275,6 +302,30 @@ class AIAutoVerificationView(LoginRequiredMixin, APIView):
         Returns:
             Dictionary containing formatted resource data for AI verification
         """
+        # Get current service areas through the ResourceCoverage through model
+        from directory.models import ResourceCoverage
+        
+        current_service_areas = []
+        if hasattr(resource, 'coverage_areas'):
+            resource_coverage_associations = ResourceCoverage.objects.filter(
+                resource=resource
+            ).select_related('coverage_area', 'created_by')
+            
+            current_service_areas = [
+                {
+                    "area_name": association.coverage_area.name,
+                    "area_type": association.coverage_area.kind,
+                    "validation_status": "VALID",  # Assume existing areas are valid
+                    "confidence_score": 100.0,
+                    "geographic_scope": "in_scope",
+                    "source": "existing_database",
+                    "validation_message": f"Existing service area: {association.coverage_area.name} ({association.coverage_area.kind})",
+                    "attached_at": association.created_at.isoformat() if association.created_at else None,
+                    "attached_by": association.created_by.username if association.created_by else None
+                }
+                for association in resource_coverage_associations
+            ]
+        
         return {
             # Basic information
             "name": resource.name,
@@ -305,6 +356,9 @@ class AIAutoVerificationView(LoginRequiredMixin, APIView):
             "source": resource.source,
             "notes": resource.notes,
             "service_types": [st.name for st in resource.service_types.all()] if resource.service_types.exists() else [],
+            
+            # Service areas information
+            "current_service_areas": current_service_areas,
         }
     
     def _apply_ai_changes(self, resource: Resource, verified_data: Dict[str, Any], user: Any) -> int:
@@ -391,6 +445,20 @@ class AIAutoVerificationView(LoginRequiredMixin, APIView):
                 logger.error(f"Failed to apply service types changes: {str(e)}")
                 # Continue with other changes even if service types fail
         
+        # Handle service areas (many-to-many field through ResourceCoverage)
+        if 'service_areas' in verified_data and verified_data['service_areas']:
+            try:
+                service_area_changes = self._update_resource_service_areas(
+                    resource=resource,
+                    service_areas_data=verified_data['service_areas'],
+                    user=user
+                )
+                changes_applied += service_area_changes
+                logger.info(f"Applied {service_area_changes} service area changes to resource {resource.id}")
+            except Exception as e:
+                logger.error(f"Failed to apply service area changes: {str(e)}")
+                # Continue with other changes even if service areas fail
+        
         # Save the resource if any changes were made
         if changes_applied > 0:
             # Update verification fields for published resources
@@ -403,6 +471,136 @@ class AIAutoVerificationView(LoginRequiredMixin, APIView):
             logger.info(f"Applied {changes_applied} AI changes to resource {resource.id}")
         
         return changes_applied
+    
+    def _update_resource_service_areas(
+        self, 
+        resource: Resource, 
+        service_areas_data: Dict[str, Any], 
+        user: Any
+    ) -> int:
+        """
+        Update resource service areas based on AI discoveries and recommendations.
+        
+        This method processes the service_areas data from AI verification and
+        applies changes to the resource's coverage areas through the ResourceCoverage
+        through model, maintaining a complete audit trail.
+        
+        Args:
+            resource: The Resource instance to update
+            service_areas_data: Dictionary containing service area data from AI
+            user: The user performing the verification
+            
+        Returns:
+            Number of service area changes applied
+        """
+        from directory.models import CoverageArea, ResourceCoverage
+        
+        changes_applied = 0
+        
+        try:
+            # Get current service areas
+            current_associations = ResourceCoverage.objects.filter(resource=resource)
+            current_area_names = set(assoc.coverage_area.name for assoc in current_associations)
+            
+            # Process discovered areas (new areas to add)
+            discovered_areas = service_areas_data.get('discovered_areas', [])
+            areas_to_add = []
+            
+            for area_data in discovered_areas:
+                if isinstance(area_data, dict):
+                    area_name = area_data.get('area_name')
+                    area_type = area_data.get('area_type', 'COUNTY')
+                    validation_status = area_data.get('validation_status', 'UNKNOWN')
+                    geographic_scope = area_data.get('geographic_scope', 'unknown')
+                    
+                    # Only add areas that are valid and in scope
+                    if (validation_status == 'VALID' and 
+                        geographic_scope == 'in_scope' and 
+                        area_name and 
+                        area_name not in current_area_names):
+                        
+                        # Find or create the coverage area
+                        coverage_area, created = CoverageArea.objects.get_or_create(
+                            name=area_name,
+                            kind=area_type,
+                            defaults={
+                                'ext_ids': {},
+                                'created_by': user,
+                                'updated_by': user
+                            }
+                        )
+                        
+                        # Create the association if it doesn't exist
+                        association, created = ResourceCoverage.objects.get_or_create(
+                            resource=resource,
+                            coverage_area=coverage_area,
+                            defaults={
+                                'created_by': user,
+                                'notes': f'Added via AI auto-verification. Confidence: {area_data.get("confidence_score", "unknown")}'
+                            }
+                        )
+                        
+                        if created:
+                            areas_to_add.append(area_name)
+                            changes_applied += 1
+                            logger.info(f"Added service area '{area_name}' to resource {resource.id}")
+            
+            # Process recommendations (add/remove based on AI suggestions)
+            recommendations = service_areas_data.get('recommendations', [])
+            
+            for rec in recommendations:
+                if isinstance(rec, dict):
+                    action = rec.get('action', '').lower()
+                    area_name = rec.get('area_name')
+                    reason = rec.get('reason', 'AI recommendation')
+                    
+                    if action == 'add' and area_name and area_name not in current_area_names:
+                        # Find or create the coverage area
+                        coverage_area, created = CoverageArea.objects.get_or_create(
+                            name=area_name,
+                            kind=rec.get('area_type', 'COUNTY'),
+                            defaults={
+                                'ext_ids': {},
+                                'created_by': user,
+                                'updated_by': user
+                            }
+                        )
+                        
+                        # Create the association
+                        association, created = ResourceCoverage.objects.get_or_create(
+                            resource=resource,
+                            coverage_area=coverage_area,
+                            defaults={
+                                'created_by': user,
+                                'notes': f'Added via AI recommendation: {reason}'
+                            }
+                        )
+                        
+                        if created:
+                            areas_to_add.append(area_name)
+                            changes_applied += 1
+                            logger.info(f"Added recommended service area '{area_name}' to resource {resource.id}")
+                    
+                    elif action == 'remove' and area_name and area_name in current_area_names:
+                        # Remove the association
+                        removed_count = ResourceCoverage.objects.filter(
+                            resource=resource,
+                            coverage_area__name=area_name
+                        ).delete()[0]
+                        
+                        if removed_count > 0:
+                            changes_applied += 1
+                            logger.info(f"Removed service area '{area_name}' from resource {resource.id}")
+            
+            # Log summary of changes
+            if areas_to_add:
+                logger.info(f"Added {len(areas_to_add)} new service areas to resource {resource.id}: {', '.join(areas_to_add)}")
+            
+            return changes_applied
+            
+        except Exception as e:
+            logger.error(f"Error updating service areas for resource {resource.id}: {str(e)}")
+            return 0
     
     def _create_ai_verification_audit(
         self, 
@@ -424,6 +622,17 @@ class AIAutoVerificationView(LoginRequiredMixin, APIView):
             AuditLog instance or None if creation fails
         """
         try:
+            # Extract service area information for audit trail
+            service_areas_info = {}
+            if 'verified_data' in ai_result and 'service_areas' in ai_result['verified_data']:
+                service_areas_data = ai_result['verified_data']['service_areas']
+                service_areas_info = {
+                    "discovered_areas_count": len(service_areas_data.get('discovered_areas', [])),
+                    "recommendations_count": len(service_areas_data.get('recommendations', [])),
+                    "discovered_areas": service_areas_data.get('discovered_areas', []),
+                    "recommendations": service_areas_data.get('recommendations', [])
+                }
+            
             # Prepare metadata for audit log
             metadata = {
                 "action_type": "ai_auto_verification",
@@ -431,7 +640,8 @@ class AIAutoVerificationView(LoginRequiredMixin, APIView):
                 "confidence_scores": ai_result.get('confidence_scores', {}),
                 "verification_report": ai_result.get('report', ''),
                 "ai_response": ai_result.get('ai_response', ''),
-                "verification_timestamp": timezone.now().isoformat()
+                "verification_timestamp": timezone.now().isoformat(),
+                "service_areas_info": service_areas_info
             }
             
             # Create audit log entry with summary
@@ -478,7 +688,7 @@ class AIAutoVerificationView(LoginRequiredMixin, APIView):
                     confidence_scores=ai_result.get('confidence_scores', {})
                 )
                 
-                # Update the resource notes with the corrected AI verification report
+                # Update the resource notes with the concise AI verification report
                 resource.notes = updated_report
                 resource.save()
                 logger.info(f"Stored corrected AI verification report in notes for resource {resource.id}")

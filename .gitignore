@@ -172,6 +172,14 @@ backups/
 *.lock
 .~lock.*
 
+# Debug and test files
+ai_debug.log
+test_*.py
+cookies.txt
+
+# Screenshot and browser automation files
+.playwright-mcp/
+
 # Coverage and test artifacts
 .coverage
 htmlcov/

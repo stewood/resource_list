@@ -26,7 +26,7 @@ class ReportGenerator:
                                     change_notes: Dict[str, str], confidence_levels: Dict[str, str], 
                                     verification_notes: Dict[str, Any], ai_response: str) -> str:
         """
-        Generate a comprehensive Markdown verification report.
+        Generate a concise Markdown verification report.
         
         Args:
             current_data: Original resource data
@@ -37,7 +37,7 @@ class ReportGenerator:
             ai_response: Full AI response
             
         Returns:
-            Markdown formatted verification report
+            Concise Markdown formatted verification report
         """
         # Get current timestamp
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")
@@ -56,287 +56,87 @@ class ReportGenerator:
         fields_changed = len([k for k, v in change_notes.items() if "updated" in v.lower() or "suggested" in v.lower()])
         fields_failed = len([k for k, v in change_notes.items() if "failed" in v.lower() or "error" in v.lower()])
         
-        # Start building the report
+        # Start building the concise report
         report = []
         
         # Header
-        report.append("# Resource Verification Report")
+        report.append("# AI Verification Report")
+        report.append(f"**{current_data.get('name', 'Unknown Resource')}** - {timestamp}")
         report.append("")
         
-        # Verification Summary
-        report.append("## 📊 Verification Summary")
+        # Quick Summary
+        report.append("## 📊 Summary")
         report.append("")
-        report.append(f"- **Resource**: {current_data.get('name', 'Unknown')} (ID: {current_data.get('id', 'N/A')})")
-        report.append(f"- **Verification Date**: {timestamp}")
-        report.append(f"- **Overall Status**: {'✅ Pass' if fields_failed == 0 else '⚠️ Partial' if fields_failed < 3 else '❌ Fail'}")
-        report.append(f"- **Verification Method**: AI-Assisted")
-        report.append(f"- **AI Model Used**: meta-llama/llama-4-maverick:free")
-        report.append(f"- **Overall Confidence**: {overall_confidence}")
-        report.append("")
-        
-        # Statistics
-        report.append("### 📈 Verification Statistics")
-        report.append("")
+        status_emoji = "✅" if fields_failed == 0 else "⚠️" if fields_failed < 3 else "❌"
+        report.append(f"- **Status**: {status_emoji} {'Pass' if fields_failed == 0 else 'Partial' if fields_failed < 3 else 'Fail'}")
+        report.append(f"- **Confidence**: {overall_confidence}")
         report.append(f"- **Fields Verified**: {fields_verified}/{total_fields}")
         report.append(f"- **Fields Changed**: {fields_changed}")
-        report.append(f"- **Fields Failed**: {fields_failed}")
-        report.append(f"- **High Confidence**: {high_count}")
-        report.append(f"- **Medium Confidence**: {medium_count}")
-        report.append(f"- **Low Confidence**: {low_count}")
         report.append("")
         
-        # Field-by-Field Verification
-        report.append("## 🔍 Field-by-Field Verification")
-        report.append("")
-        
-        # Basic Information
-        report.append("### Basic Information")
-        report.append("")
-        report.append("| Field | Current Value | Verification Status | Confidence | Notes |")
-        report.append("|-------|---------------|-------------------|------------|-------|")
-        
-        basic_fields = ['name', 'description', 'category']
-        for field in basic_fields:
-            current_value = current_data.get(field, '')
-            verified_value = verified_data.get(field, current_value)
-            confidence = confidence_levels.get(f"{field}_confidence", "Medium")
-            change_note = change_notes.get(field, "No changes")
-            
-            # Truncate long values for table
-            current_display = str(current_value)[:50] + "..." if len(str(current_value)) > 50 else str(current_value)
-            verified_display = str(verified_value)[:50] + "..." if len(str(verified_value)) > 50 else str(verified_value)
-            
-            # Determine status based on actual changes and confidence
-            # Compare original value (from current_data) with AI-found value (from verified_data)
-            original_value = current_data.get(field, '')
-            values_different = original_value != verified_value
-            
-            if values_different:
-                status = "⚠️ Needs Update"
-            elif confidence in ["High", "Medium"]:
-                status = "✅ Verified"
-            else:
-                status = "❌ Failed"
-            
-            report.append(f"| {field.title()} | {current_display} | {status} | {confidence} | {change_note[:100]}... |")
-        
-        report.append("")
-        
-        # Contact Information
-        report.append("### Contact Information")
-        report.append("")
-        report.append("| Field | Current Value | Verification Status | Confidence | Notes |")
-        report.append("|-------|---------------|-------------------|------------|-------|")
-        
-        contact_fields = ['phone', 'email', 'website']
-        for field in contact_fields:
-            current_value = current_data.get(field, '')
-            verified_value = verified_data.get(field, current_value)
-            confidence = confidence_levels.get(f"{field}_confidence", "Medium")
-            change_note = change_notes.get(field, "No changes")
-            
-            current_display = str(current_value)[:50] + "..." if len(str(current_value)) > 50 else str(current_value)
-            
-            # Determine status based on actual changes and confidence
-            # Compare original value (from current_data) with AI-found value (from verified_data)
-            original_value = current_data.get(field, '')
-            values_different = original_value != verified_value
-            
-            if values_different:
-                status = "⚠️ Needs Update"
-            elif confidence in ["High", "Medium"]:
-                status = "✅ Verified"
-            else:
-                status = "❌ Failed"
-            
-            report.append(f"| {field.title()} | {current_display} | {status} | {confidence} | {change_note[:100]}... |")
-        
-        report.append("")
-        
-        # Location Information
-        report.append("### Location Information")
-        report.append("")
-        report.append("| Field | Current Value | Verification Status | Confidence | Notes |")
-        report.append("|-------|---------------|-------------------|------------|-------|")
-        
-        location_fields = ['address1', 'address2', 'city', 'state', 'postal_code', 'county']
-        for field in location_fields:
-            current_value = current_data.get(field, '')
-            verified_value = verified_data.get(field, current_value)
-            confidence = confidence_levels.get(f"{field}_confidence", "Medium")
-            change_note = change_notes.get(field, "No changes")
-            
-            current_display = str(current_value)[:50] + "..." if len(str(current_value)) > 50 else str(current_value)
-            
-            # Determine status based on actual changes and confidence
-            # Compare original value (from current_data) with AI-found value (from verified_data)
-            original_value = current_data.get(field, '')
-            values_different = original_value != verified_value
-            
-            if values_different:
-                status = "⚠️ Needs Update"
-            elif confidence in ["High", "Medium"]:
-                status = "✅ Verified"
-            else:
-                status = "❌ Failed"
-            
-            report.append(f"| {field.replace('_', ' ').title()} | {current_display} | {status} | {confidence} | {change_note[:100]}... |")
-        
-        report.append("")
-        
-        # Service Information
-        report.append("### Service Information")
-        report.append("")
-        report.append("| Field | Current Value | Verification Status | Confidence | Notes |")
-        report.append("|-------|---------------|-------------------|------------|-------|")
-        
-        service_fields = ['service_types', 'hours_of_operation', 'eligibility_requirements', 'populations_served', 'cost_information', 'languages_available']
-        for field in service_fields:
-            original_value = current_data.get(field, '')  # This is the original value before AI changes
-            verified_value = verified_data.get(field, original_value)
-            confidence = confidence_levels.get(f"{field}_confidence", "Medium")
-            change_note = change_notes.get(field, "No changes")
-            
-            # Handle list values for display
-            if isinstance(original_value, list):
-                current_display = ", ".join(original_value)[:50] + "..." if len(", ".join(original_value)) > 50 else ", ".join(original_value)
-            else:
-                current_display = str(original_value)[:50] + "..." if len(str(original_value)) > 50 else str(original_value)
-            
-            # Determine status based on actual changes and confidence
-            # Compare original value (from current_data) with AI-found value (from verified_data)
-            original_value = current_data.get(field, '')
-            values_different = original_value != verified_value
-            
-            if values_different:
-                status = "⚠️ Needs Update"
-            elif confidence in ["High", "Medium"]:
-                status = "✅ Verified"
-            else:
-                status = "❌ Failed"
-            
-            report.append(f"| {field.replace('_', ' ').title()} | {current_display} | {status} | {confidence} | {change_note[:100]}... |")
-        
-        report.append("")
-        
-        # Sources Consulted
-        report.append("## 🌐 Sources Consulted")
-        report.append("")
-        
-        website_url = current_data.get('website', '')
-        if website_url:
-            report.append("### Primary Sources")
+        # Key Changes (only show if there are changes)
+        if fields_changed > 0:
+            report.append("## 🔄 Key Changes")
             report.append("")
-            report.append(f"- **Website**: `{website_url}` - ✅ Accessible - Information extracted")
+            # Define valid fields that can be changed
+            valid_fields = {
+                'name', 'description', 'category', 'phone', 'email', 'website',
+                'address1', 'address2', 'city', 'state', 'postal_code', 'county',
+                'service_types', 'hours_of_operation', 'eligibility_requirements',
+                'populations_served', 'cost_information', 'languages_available',
+                'is_emergency_service', 'is_24_hour_service', 'insurance_accepted',
+                'capacity', 'source', 'notes'
+            }
+            
+            for field, note in change_notes.items():
+                if "updated" in note.lower() or "suggested" in note.lower():
+                    # Only show changes for valid fields
+                    if field in valid_fields:
+                        current_value = current_data.get(field, '')
+                        suggested_value = verified_data.get(field, current_value)
+                        if current_value != suggested_value:
+                            report.append(f"- **{field.replace('_', ' ').title()}**: `{str(current_value)[:30]}` → `{str(suggested_value)[:30]}`")
             report.append("")
         
-        # Extract sources from verification notes
-        sources_found = []
-        for field, notes in verification_notes.items():
-            if isinstance(notes, dict) and 'sources' in notes:
-                sources_found.extend(notes['sources'].split(', '))
+        # Service Areas Summary
+        verified_service_areas = verified_data.get('service_areas', {})
+        if verified_service_areas:
+            discovered_areas = verified_service_areas.get('discovered_areas', [])
+            if discovered_areas:
+                report.append("## 🗺️ Service Areas")
+                report.append("")
+                for area in discovered_areas:
+                    if isinstance(area, dict):
+                        area_name = area.get('area_name', 'Unknown')
+                        validation_status = area.get('validation_status', 'UNKNOWN')
+                        confidence_score = area.get('confidence_score', 0)
+                        
+                        if validation_status == 'VALID':
+                            report.append(f"- ✅ **{area_name}** ({confidence_score}% confidence)")
+                        else:
+                            report.append(f"- ❌ **{area_name}** (invalid/out of scope)")
+                report.append("")
         
-        if sources_found:
-            report.append("### Authoritative Sources")
-            report.append("")
-            unique_sources = list(set(sources_found))
-            for source in unique_sources[:10]:  # Limit to 10 sources
-                report.append(f"- **{source}** - Information verified")
-            report.append("")
-        
-        # Tools & Methods Used
-        report.append("## 🛠️ Tools & Methods Used")
-        report.append("")
-        
-        report.append("### AI Verification Tools")
-        report.append("")
-        report.append("- **Web Search**: DuckDuckGo authoritative search")
-        report.append("- **Website Scraping**: BeautifulSoup content extraction")
-        report.append("- **Format Validation**: Regex pattern matching")
-        report.append("- **Content Analysis**: AI-powered content verification")
-        report.append("")
-        
-        # Issues & Challenges
-        report.append("## ⚠️ Issues & Challenges")
-        report.append("")
-        
+        # Issues (only show if there are issues)
         failed_fields = [k for k, v in change_notes.items() if "failed" in v.lower() or "error" in v.lower()]
         if failed_fields:
-            report.append("### Technical Issues")
+            report.append("## ⚠️ Issues")
             report.append("")
-            for field in failed_fields:
-                report.append(f"- **{field.title()}**: {change_notes[field]}")
-            report.append("")
-        else:
-            report.append("No significant issues encountered during verification.")
+            for field in failed_fields[:3]:  # Limit to 3 issues
+                report.append(f"- **{field.replace('_', ' ').title()}**: {change_notes[field][:100]}...")
             report.append("")
         
-        # Suggested Changes
-        report.append("## 🎯 Suggested Changes")
-        report.append("")
-        
-        suggested_changes = [k for k, v in change_notes.items() if "suggested" in v.lower() or "recommended" in v.lower()]
-        if suggested_changes:
-            report.append("### Important Updates")
+        # Sources (simplified)
+        website_url = current_data.get('website', '')
+        if website_url:
+            report.append("## 🌐 Sources")
             report.append("")
-            for field in suggested_changes:
-                current_value = current_data.get(field, '')
-                suggested_value = verified_data.get(field, current_value)
-                change_note = change_notes.get(field, "")
-                
-                report.append(f"- **Field**: {field.replace('_', ' ').title()}")
-                report.append(f"- **Current**: {str(current_value)[:100]}...")
-                report.append(f"- **Suggested**: {str(suggested_value)[:100]}...")
-                report.append(f"- **Reasoning**: {change_note}")
-                report.append("")
-        else:
-            report.append("No suggested changes identified.")
+            report.append(f"- **Primary**: {website_url}")
             report.append("")
         
-        # Confidence Assessment
-        report.append("## 📈 Confidence Assessment")
-        report.append("")
-        
-        report.append(f"### Overall Confidence: {overall_confidence}")
-        report.append("")
-        report.append("- **High (90-100%)**: Multiple authoritative sources confirm")
-        report.append("- **Medium (70-89%)**: Good source but some uncertainty")
-        report.append("- **Low (50-69%)**: Limited sources or conflicting info")
-        report.append("- **Very Low (<50%)**: Unable to verify or unreliable sources")
-        report.append("")
-        
-        # Future Verification Notes
-        report.append("## 🔄 Future Verification Notes")
-        report.append("")
-        
-        report.append("### Re-verification Triggers")
-        report.append("")
-        report.append("- **Time-based**: Re-verify every 6 months")
-        report.append("- **Event-based**: Re-verify if website changes or contact information updates")
-        report.append("- **Data-based**: Re-verify if service offerings change")
-        report.append("")
-        
-        # Metadata
-        report.append("## 📋 Metadata")
-        report.append("")
-        
-        report.append("### System Information")
-        report.append("")
-        report.append("- **Verification System**: AI Review Service v1.0")
-        report.append("- **AI Model**: meta-llama/llama-4-maverick:free")
-        report.append("- **Web Search Tool**: DuckDuckGo")
-        report.append("- **Scraping Tool**: BeautifulSoup")
-        report.append("- **Validation Tools**: Custom regex patterns")
-        report.append("")
-        
-        report.append("### Performance Metrics")
-        report.append("")
-        report.append(f"- **Total Fields**: {total_fields}")
-        report.append(f"- **Fields Verified**: {fields_verified}")
-        report.append(f"- **Fields Changed**: {fields_changed}")
-        report.append(f"- **Confidence Score**: {overall_confidence}")
-        report.append(f"- **Verification Completeness**: {int((fields_verified/total_fields)*100)}%")
-        report.append("")
+        # Footer
+        report.append("---")
+        report.append(f"*Generated by AI Review Service v1.0 using meta-llama/llama-4-maverick:free*")
         
         return "\n".join(report)
     

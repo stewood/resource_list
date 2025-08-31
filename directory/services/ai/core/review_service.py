@@ -32,16 +32,29 @@ Example:
     >>> print(result['verification_report'])
 """
 
-import os
-import requests
-import re
 import logging
-from typing import Dict, Any, Optional, List
+import os
+from typing import List, Optional, Dict, Any
+from datetime import datetime
 from dotenv import load_dotenv
+
+from langchain.agents import AgentExecutor, create_openai_tools_agent
+from langchain_core.language_models import BaseLanguageModel
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.tools import tool
+
+# Import the new tools
+from langchain_community.tools import DuckDuckGoSearchRun
+from langchain_pull_md import PullMdLoader
+
+from directory.models import Resource
+from directory.services.ai.core.base import BaseAIService
+
+# Import the new Pydantic models for structured output
+from ..models.verification_output import (
+    AIVerificationOutput, calculate_confidence_score, calculate_confidence_level, parse_ai_verification_response
+)
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -123,26 +136,226 @@ class AIReviewService:
         self.utilities = AIUtilities()
         self.tools = self._create_tools()
     
-    def _create_tools(self) -> List:
+    def _create_tools(self) -> List[BaseTool]:
         """
-        Create enhanced tools for the AI to use.
+        Create tools for the AI to use.
         
         Returns:
-            List of tool methods that can be used by the AI for verification
-            tasks. These tools include web searches, data validation, and
-            content verification capabilities.
+            List of tools for web search, content extraction, and verification
         """
-        return [
-            self.verification_tools._authoritative_web_search_tool,
-            self.verification_tools._verify_website_tool,
-            self.verification_tools._verify_phone_tool,
-            self.verification_tools._verify_email_tool,
-            self.verification_tools._verify_address_tool,
-            self.verification_tools._verify_location_tool,
-            self.verification_tools._verify_organization_tool,
-            self.verification_tools._discover_services_tool,
-            self.verification_tools._extract_service_details_tool
-        ]
+        tools = []
+        
+        # DuckDuckGo Search Tool - for finding resource information online
+        search_tool = DuckDuckGoSearchRun(
+            name="web_search",
+            description="Search the web for information about community resources, organizations, and services. Use this to find current information about resource names, addresses, phone numbers, websites, and services offered."
+        )
+        tools.append(search_tool)
+        
+        # PullMdLoader Tool - for extracting content from web pages
+        def fetch_webpage_content(url: str) -> str:
+            """
+            Fetch and convert a webpage to markdown format.
+            
+            Args:
+                url: The URL of the webpage to fetch
+                
+            Returns:
+                The webpage content in markdown format
+            """
+            try:
+                loader = PullMdLoader(url=url)
+                documents = loader.load()
+                if documents:
+                    return documents[0].page_content
+                else:
+                    return "No content found on the webpage."
+            except Exception as e:
+                logger.error(f"Error fetching webpage {url}: {str(e)}")
+                return f"Error fetching webpage: {str(e)}"
+        
+        from langchain_core.tools import tool
+        
+        @tool
+        def fetch_webpage_tool(url: str) -> str:
+            """
+            Fetch and convert a webpage to markdown format for analysis.
+            
+            Args:
+                url: The URL of the webpage to fetch and convert
+                
+            Returns:
+                The webpage content in markdown format
+            """
+            return fetch_webpage_content(url)
+        
+        tools.append(fetch_webpage_tool)
+        
+        # Add verification tools from VerificationTools class
+        verification_tools_list = self.verification_tools._create_tools()
+        tools.extend(verification_tools_list)
+        
+        return tools
+    
+    def _create_agent_prompt(self) -> ChatPromptTemplate:
+        """
+        Create a focused, executable prompt for systematic field verification.
+        
+        This streamlined prompt focuses on:
+        - Clear execution instructions
+        - Tool usage requirements
+        - Structured output format
+        - Practical verification approach
+        """
+        return ChatPromptTemplate.from_messages([
+            ("system", """You are an expert data verification specialist. Your mission is to verify resource information using web searches and website content extraction.
+
+## EXECUTION REQUIREMENTS
+1. **USE THE TOOLS**: You MUST use web_search and fetch_webpage_tool to perform actual verification
+2. **COMPLETE THE PROCESS**: Don't just plan - execute the verification
+3. **STRUCTURED OUTPUT**: Return the complete JSON structure below
+
+## VERIFICATION PROCESS
+1. **Search for the organization**: Use web_search with "[organization name] [location]"
+2. **Extract website content**: Use fetch_webpage_tool on the official website
+3. **Verify all fields**: Check each field against found information
+4. **Discover service areas**: Use _validate_service_area_tool to identify and validate geographic service areas
+5. **Provide confidence scores**: 95-100% (official website), 85-94% (authoritative), 70-84% (verified), 50-69% (supporting), <50% (unreliable)
+
+## REQUIRED OUTPUT FORMAT
+Return ONLY a valid JSON object with this exact structure:
+
+{{
+  "resource_name": "Name of the resource",
+  "verification_timestamp": "Current timestamp",
+  "ai_model_used": "meta-llama/llama-4-maverick:free",
+  "basic_information": {{
+    "name": {{
+      "field_name": "name",
+      "original_value": "Original value",
+      "verified_value": "Verified/updated value",
+      "confidence_level": "VERY_HIGH|HIGH|MEDIUM|LOW|VERY_LOW",
+      "confidence_score": 95.0,
+      "status": "VERIFIED|UPDATED|CONFLICTING|NOT_FOUND",
+      "sources": ["https://example.org"],
+      "reasoning": "Explanation of verification",
+      "change_notes": "Notes about changes",
+      "missing_field_recommendations": "Recommendations if NOT_FOUND"
+    }},
+    "description": {{ /* same structure */ }},
+    "category": {{ /* same structure */ }},
+    "service_types": {{ /* same structure */ }}
+  }},
+  "contact_information": {{
+    "phone": {{ /* same structure */ }},
+    "email": {{ /* same structure */ }},
+    "website": {{ /* same structure */ }}
+  }},
+  "address_information": {{
+    "address1": {{ /* same structure */ }},
+    "address2": {{ /* same structure */ }},
+    "city": {{ /* same structure */ }},
+    "state": {{ /* same structure */ }},
+    "county": {{ /* same structure */ }},
+    "postal_code": {{ /* same structure */ }}
+  }},
+  "service_information": {{
+    "hours_of_operation": {{ /* same structure */ }},
+    "is_emergency_service": {{ /* same structure */ }},
+    "is_24_hour_service": {{ /* same structure */ }},
+    "eligibility_requirements": {{ /* same structure */ }},
+    "populations_served": {{ /* same structure */ }},
+    "insurance_accepted": {{ /* same structure */ }},
+    "cost_information": {{ /* same structure */ }},
+    "languages_available": {{ /* same structure */ }},
+    "capacity": {{ /* same structure */ }}
+  }},
+  "service_areas": {{
+    "discovered_areas": [
+      {{
+        "area_name": "Laurel County, KY",
+        "area_type": "COUNTY",
+        "validation_status": "VALID|INVALID|UNKNOWN",
+        "confidence_score": 95.0,
+        "geographic_scope": "in_scope|out_of_scope|unknown",
+        "source": "website_content|description|manual_discovery",
+        "validation_message": "Exact match found: Laurel County (COUNTY)"
+      }}
+    ],
+    "current_areas": [
+      {{
+        "area_name": "Current area name",
+        "area_type": "Current area type",
+        "validation_status": "VALID|INVALID|UNKNOWN"
+      }}
+    ],
+    "recommendations": [
+      {{
+        "action": "ADD|REMOVE|UPDATE",
+        "area_name": "Area name",
+        "reason": "Reason for recommendation",
+        "confidence": 95.0
+      }}
+    ]
+  }},
+  "source_information": {{
+    "source": {{ /* same structure */ }},
+    "notes": {{ /* same structure */ }}
+  }},
+  "summary": {{
+    "total_fields_processed": 23,
+    "verified_fields_count": 18,
+    "updated_fields_count": 3,
+    "conflicting_fields_count": 1,
+    "not_found_fields_count": 1,
+    "average_confidence_score": 87.5,
+    "overall_verification_status": "VERIFIED|PARTIALLY_VERIFIED|NEEDS_REVIEW|NOT_FOUND"
+  }},
+  "sources_used": [
+    {{
+      "url": "https://example.org",
+      "type": "official_website",
+      "reliability": "VERY_HIGH"
+    }}
+  ],
+  "verification_notes": "General notes about the verification process"
+}}
+
+## SERVICE AREA DISCOVERY REQUIREMENTS
+1. **DISCOVER SERVICE AREAS**: Analyze website content and descriptions to identify geographic service areas
+2. **VALIDATE AREAS**: Use _validate_service_area_tool to check if discovered areas exist in the database
+3. **GEOGRAPHIC CONSTRAINTS**: Focus on areas within the system's scope (primarily Kentucky and surrounding regions)
+4. **AREA TYPES**: Look for cities, counties, states, and custom service areas
+5. **VALIDATION PRIORITY**: Prioritize areas that are validated as "in_scope" and "VALID"
+
+## CRITICAL INSTRUCTIONS
+1. **START VERIFICATION NOW**: Begin with web_search for the organization
+2. **EXTRACT WEBSITE CONTENT**: Use fetch_webpage_tool on the official website
+3. **VERIFY EVERY FIELD**: Provide verification for all 23 fields
+4. **DISCOVER SERVICE AREAS**: Use _validate_service_area_tool to identify and validate geographic coverage
+5. **COMPLETE THE JSON**: Return the full structured output including service_areas section
+6. **NO PLANNING**: Execute the verification, don't just plan it
+7. **FINISH THE PROCESS**: Even if searches don't find relevant info, complete the JSON output
+8. **USE AVAILABLE DATA**: If web searches fail, use the original data and mark confidence appropriately
+
+## FIELD-SPECIFIC RULES
+- **PHONE NUMBERS**: Only change if you find the EXACT same number in multiple sources OR if the original number is clearly wrong (e.g., wrong area code). If uncertain, keep the original.
+- **WEBSITES**: If you can't access a website due to SSL errors or other technical issues, KEEP the original URL and mark as "unverified due to access issues" - don't clear the field.
+- **ELIGIBILITY REQUIREMENTS**: Only add if explicitly stated on official sources, not inferred from general knowledge.
+- **CONFIDENCE SCORES**: Use lower confidence (40-60%) for significant changes without strong verification.
+- **SERVICE AREAS**: 
+  - Discover areas from website content, descriptions, and organization information
+  - Use _validate_service_area_tool to validate each discovered area
+  - Include areas with validation_status "VALID" and geographic_scope "in_scope"
+  - Prioritize counties, cities, and states over custom areas
+  - Mark areas as "out_of_scope" if they're clearly outside Kentucky/surrounding regions
+
+Remember: Your verification decisions impact vulnerable populations. Be thorough and decisive. COMPLETE THE FULL VERIFICATION PROCESS AND GENERATE THE COMPLETE JSON OUTPUT.
+
+Remember: Your verification decisions impact vulnerable populations. Be thorough and decisive."""),
+            ("human", "Please verify and improve this resource data: {input}"),
+            MessagesPlaceholder(variable_name="agent_scratchpad"),
+        ])
     
     def _initialize_llm(self):
         """
@@ -206,8 +419,8 @@ class AIReviewService:
         
         This method performs AI-powered verification of resource data including
         basic contact information, service discovery, and detailed service
-        information extraction. It uses a simplified approach without complex
-        agents for better reliability and consistency.
+        information extraction. It uses JSON output parsing for compatibility
+        with all models, including those that don't support structured output.
         
         The verification process includes:
         - Basic information validation (name, address, phone, email, website)
@@ -227,6 +440,7 @@ class AIReviewService:
                 - confidence_scores: Dict with confidence scores for each field
                 - report: String with comprehensive verification report
                 - ai_response: String with raw AI response for debugging
+                - structured_output: AIVerificationOutput object with detailed results
                 
         Raises:
             Exception: If AI verification fails, falls back to manual verification
@@ -248,119 +462,113 @@ class AIReviewService:
             return self._get_fallback_response(current_data)
         
         try:
-            # Enhanced prompt for comprehensive resource verification including service discovery
-            prompt = ChatPromptTemplate.from_template("""
-            You are an expert data verification specialist for a community resource directory. 
-            Your primary focus is to verify and improve BASIC INFORMATION and DISCOVER SERVICES for community resources.
-            
-            Current Resource Data:
-            {current_data}
-            
-            TASK: Focus on verifying and improving these areas:
-            
-            BASIC INFORMATION VERIFICATION:
-            1. Name: Verify organization name and check for current/active status
-            2. Address: Verify address format and validity
-            3. Phone: Verify phone number format and suggest proper formatting
-            4. Email: Verify email format
-            5. Website: Verify website accessibility and proper URL format
-            
-            SERVICE DISCOVERY AND VERIFICATION:
-            6. Services: Discover what services the organization actually offers
-            7. Service Details: Extract eligibility requirements, hours, costs, and other details
-            8. Service Types: Categorize discovered services into standard types
-            9. Hours of Operation: Find current operating hours
-            10. Eligibility Requirements: Extract eligibility criteria for services
-            11. Cost Information: Find cost details for services
-            12. Languages Available: Identify language support
-            13. Populations Served: Determine target populations
-            
-            CRITICAL FORMAT REQUIREMENTS - YOU MUST FOLLOW THESE EXACTLY:
-            
-            For ALL service information, you MUST use ONLY pipe-separated format. NO EXCEPTIONS.
-            
-            REQUIRED PIPE FORMAT (copy this exactly):
-            hours|Monday-Friday 8:00 AM-4:30 PM
-            eligibility|Services available to residents of the Red Bird River Valley area
-            cost|Free medication and supplies for uninsured patients through pharmaceutical company programs
-            population|Residents of Appalachian Kentucky, families, children, adults, seniors, uninsured individuals
-            language|Primarily English
-            service_types|Healthcare,Education,Food Assistance
-            
-            STRICT RULES:
-            1. ALWAYS use the pipe symbol (|) to separate field name from value
-            2. NEVER use line breaks, indentation, or other formatting
-            3. NEVER add explanatory text, confidence levels, or metadata after the pipe
-            4. NEVER use bullet points, dashes, or other formatting
-            5. ALWAYS put the field name first, then pipe, then the value
-            6. STOP immediately after providing the pipe-separated data
-            7. DO NOT add any additional text, explanations, or formatting
-            
-            FORBIDDEN FORMATS (DO NOT USE):
-            ❌ eligibility
-              Services available to residents...
-            ❌ - eligibility: Services available...
-            ❌ **Eligibility**: Services available...
-            ❌ 1. eligibility: Services available...
-            
-            ONLY USE THIS FORMAT:
-            ✅ eligibility|Services available to residents of the Red Bird River Valley area
-            
-            INSTRUCTIONS:
-            - First verify basic contact information
-            - Then use the website to discover and verify services offered
-            - Extract detailed service information including hours, eligibility, costs
-            - Categorize services into standard service types
-            - Provide confidence levels for each verification (High/Medium/Low)
-            - Focus on accuracy and completeness of both contact and service information
-            
-            TOOLS AVAILABLE:
-            - _discover_services_tool: Use this to crawl the organization's website and discover services
-            - _extract_service_details_tool: Use this to get detailed information about specific services
-            - _authoritative_web_search_tool: Use this for additional verification
-            
-            FINAL REMINDER: When you provide service information, you MUST use ONLY the pipe format shown above. 
-            Do not use any other formatting, line breaks, or explanatory text. 
-            Just provide the pipe-separated data and stop.
-            
-            MANDATORY OUTPUT FORMAT - COPY THIS EXACTLY:
-            hours|Monday-Friday 8:00 AM-4:30 PM
-            eligibility|Services available to residents of the Red Bird River Valley area
-            cost|Free medication and supplies for uninsured patients through pharmaceutical company programs
-            population|Residents of Appalachian Kentucky, families, children, adults, seniors, uninsured individuals
-            language|Primarily English
-            service_types|Healthcare,Education,Food Assistance
-            
-            Please provide your analysis in a clear, structured format with both basic information and service discovery results.
-            """)
-            
             # Format current data for the prompt
             formatted_data = self._format_data_for_prompt(current_data)
             
-            # Create a simple chain without complex agents
-            chain = prompt | self.llm | StrOutputParser()
+            # Create agent with tools (without structured output)
+            agent = create_openai_tools_agent(
+                llm=self.llm,
+                tools=self.tools,
+                prompt=self._create_agent_prompt()
+            )
+            
+            # Create agent executor
+            agent_executor = AgentExecutor(
+                agent=agent,
+                tools=self.tools,
+                verbose=True,
+                handle_parsing_errors=True,
+                max_iterations=15,  # Increased from 5 to allow for comprehensive verification
+                max_execution_time=120,  # 2 minutes to allow for web searches and content extraction
+                early_stopping_method="generate"  # Generate final response when limits reached
+            )
             
             # Get AI response
-            ai_response = chain.invoke({"current_data": formatted_data})
+            result = agent_executor.invoke({
+                "input": f"Please verify and improve this resource data: {formatted_data}"
+            })
             
-            # Parse the AI response
-            verified_data, change_notes, confidence_scores = self._parse_ai_response(ai_response, current_data)
+            # Extract AI response
+            ai_response = str(result.get("output", ""))
             
-            # Generate verification report
-            report = self._generate_verification_report(current_data, verified_data, change_notes, confidence_scores)
-            
-            return {
-                'verified_data': verified_data,
-                'change_notes': change_notes,
-                'confidence_scores': confidence_scores,
-                'report': report,
-                'ai_response': ai_response
-            }
+            # Try to parse structured output from the response using enhanced parser
+            try:
+                # Use the new enhanced parser that handles mixed data types
+                verification_output = parse_ai_verification_response(ai_response)
+                
+                if verification_output:
+                    # Generate verification report
+                    report = self._generate_verification_report_from_structured_output(
+                        current_data, verification_output
+                    )
+                    
+                    # Convert verified_data to string format for backward compatibility
+                    verified_data_strings = {}
+                    for field_name, value in verification_output.verified_data.items():
+                        if isinstance(value, list):
+                            verified_data_strings[field_name] = ", ".join(str(item) for item in value)
+                        elif isinstance(value, bool):
+                            verified_data_strings[field_name] = str(value).lower()
+                        elif value is None:
+                            verified_data_strings[field_name] = ""
+                        else:
+                            verified_data_strings[field_name] = str(value)
+                    
+                    # Create change notes from verification statuses
+                    change_notes = {}
+                    for field_name, status in verification_output.verification_statuses.items():
+                        if status in ['UPDATED', 'CONFLICTING']:
+                            change_notes[field_name] = f"Field {status.lower()} during verification"
+                    
+                    return {
+                        'verified_data': verified_data_strings,
+                        'change_notes': change_notes,
+                        'confidence_scores': verification_output.confidence_scores,
+                        'report': report,
+                        'ai_response': ai_response,
+                        'structured_output': verification_output
+                    }
+                else:
+                    raise Exception("Failed to parse AI response")
+                        
+            except Exception as parse_error:
+                logger.warning(f"Failed to parse structured output: {parse_error}")
+                # Fallback to old parsing method
+                verified_data, change_notes, confidence_scores = self._parse_ai_response(ai_response, current_data)
+                
+                # Generate verification report
+                report = self._generate_verification_report(current_data, verified_data, change_notes, confidence_scores)
+                
+                return {
+                    'verified_data': verified_data,
+                    'change_notes': change_notes,
+                    'confidence_scores': confidence_scores,
+                    'report': report,
+                    'ai_response': ai_response
+                }
             
         except Exception as e:
             logger.error(f"Error in AI verification: {str(e)}")
             return self._get_fallback_response(current_data)
     
+    def _handle_website_access_issues(self, url: str, error: str) -> str:
+        """
+        Handle website access issues and provide guidance for the AI.
+        
+        Args:
+            url: The URL that couldn't be accessed
+            error: The error message
+            
+        Returns:
+            Guidance string for the AI
+        """
+        if "SSL" in error or "certificate" in error:
+            return f"Website {url} exists but couldn't be accessed due to SSL certificate issues. Keep the original URL and mark as 'unverified due to technical access issues'."
+        elif "timeout" in error or "connection" in error:
+            return f"Website {url} couldn't be accessed due to connection issues. Keep the original URL and mark as 'unverified due to connection issues'."
+        else:
+            return f"Website {url} couldn't be accessed: {error}. Keep the original URL and mark as 'unverified due to access issues'."
+
     def _format_data_for_prompt(self, data: Dict[str, Any]) -> str:
         """
         Format resource data for the AI prompt.
@@ -421,19 +629,167 @@ class AIReviewService:
         change_notes = parsed_result['change_notes']
         confidence_levels = parsed_result['confidence_levels']
         
+        # Parse service areas from AI response
+        service_areas_data = self._parse_service_areas_from_response(response, current_data)
+        if service_areas_data:
+            verified_data['service_areas'] = service_areas_data
+        
         # Convert confidence levels to scores for backward compatibility
         confidence_scores = {}
         for field, level in confidence_levels.items():
-            if level == "High":
-                confidence_scores[field] = 90.0
-            elif level == "Medium":
-                confidence_scores[field] = 75.0
-            elif level == "Low":
-                confidence_scores[field] = 60.0
-            else:
-                confidence_scores[field] = 50.0
+            # Use the new confidence score calculation
+            confidence_scores[field] = self.response_parser._calculate_confidence_score(level)
         
         return verified_data, change_notes, confidence_scores
+    
+    def _parse_service_areas_from_response(self, response: str, current_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Parse service area information from AI response.
+        
+        Extracts discovered areas, current areas, and recommendations from the
+        AI response's service_areas section. Validates discovered areas and
+        provides structured output for service area management.
+        
+        Args:
+            response: Raw AI response string
+            current_data: Original resource data containing current service areas
+            
+        Returns:
+            Dictionary containing parsed service area data:
+                - discovered_areas: List of newly discovered service areas
+                - current_areas: List of existing service areas
+                - recommendations: List of recommendations for service area changes
+        """
+        import json
+        import re
+        
+        try:
+            # Extract JSON from AI response with better error handling
+            json_match = re.search(r'\{.*\}', response, re.DOTALL)
+            if not json_match:
+                logger.warning("No JSON found in AI response")
+                return {}
+                
+            json_str = json_match.group(0)
+            
+            # Clean the JSON string to handle control characters and truncation
+            json_str = self._clean_json_string(json_str)
+            
+            try:
+                parsed_data = json.loads(json_str)
+            except json.JSONDecodeError as json_error:
+                logger.warning(f"JSON decode error: {json_error}")
+                # Try to extract just the service_areas section
+                service_areas_match = re.search(r'"service_areas"\s*:\s*\{[^}]*\}', json_str, re.DOTALL)
+                if service_areas_match:
+                    service_areas_json = "{" + service_areas_match.group(0) + "}"
+                    try:
+                        parsed_data = json.loads(service_areas_json)
+                    except json.JSONDecodeError:
+                        logger.warning("Failed to parse service_areas section")
+                        return {}
+                else:
+                    return {}
+            
+            # Extract service_areas section
+            service_areas = parsed_data.get('service_areas', {})
+            if not service_areas:
+                # If we couldn't find service_areas in the main structure, 
+                # the parsed_data might be the service_areas object itself
+                if 'discovered_areas' in parsed_data or 'current_areas' in parsed_data:
+                    service_areas = parsed_data
+                else:
+                    logger.warning("No service_areas section found in AI response")
+                    return {}
+            
+            # Extract discovered areas
+            discovered_areas = service_areas.get('discovered_areas', [])
+            
+            # Extract and validate current areas
+            current_areas = service_areas.get('current_areas', [])
+            validated_current_areas = []
+            for area in current_areas:
+                if isinstance(area, dict) and area.get('area_name'):
+                    validated_current_areas.append(area)
+                else:
+                    logger.warning(f"Invalid current area format: {area}")
+            current_areas = validated_current_areas
+            
+            # Extract and validate recommendations
+            recommendations = service_areas.get('recommendations', [])
+            validated_recommendations = []
+            for rec in recommendations:
+                if isinstance(rec, dict) and rec.get('action') and rec.get('area_name'):
+                    validated_recommendations.append(rec)
+                else:
+                    logger.warning(f"Invalid recommendation format: {rec}")
+            recommendations = validated_recommendations
+            
+            # Validate discovered areas using the service area validation tool
+            validated_discovered_areas = []
+            for area in discovered_areas:
+                if isinstance(area, dict):
+                    # Check if area is already validated by AI
+                    validation_status = area.get('validation_status', 'UNKNOWN')
+                    geographic_scope = area.get('geographic_scope', 'unknown')
+                    
+                    # Only include areas that are valid and in scope
+                    if validation_status == 'VALID' and geographic_scope == 'in_scope':
+                        validated_discovered_areas.append(area)
+                    elif validation_status == 'VALID' and geographic_scope == 'unknown':
+                        # If geographic scope is unknown but validation is valid, include with warning
+                        area['geographic_scope'] = 'in_scope'  # Assume in scope if valid
+                        validated_discovered_areas.append(area)
+                    else:
+                        # Log invalid areas for debugging
+                        logger.info(f"Filtered out invalid service area: {area.get('area_name', 'Unknown')} - Status: {validation_status}, Scope: {geographic_scope}")
+            
+            return {
+                'discovered_areas': validated_discovered_areas,
+                'current_areas': current_areas,
+                'recommendations': recommendations
+            }
+            
+        except (json.JSONDecodeError, KeyError, TypeError) as e:
+            logger.warning(f"Error parsing service areas from AI response: {str(e)}")
+            return {}
+    
+    def _clean_json_string(self, json_str: str) -> str:
+        """
+        Clean JSON string to handle control characters and truncation issues.
+        
+        Args:
+            json_str: Raw JSON string that may contain control characters
+            
+        Returns:
+            Cleaned JSON string ready for parsing
+        """
+        import re
+        
+        # Remove control characters except newlines and tabs
+        json_str = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', '', json_str)
+        
+        # Handle truncated JSON by finding the last complete object
+        brace_count = 0
+        cleaned_str = ""
+        
+        for char in json_str:
+            if char == '{':
+                brace_count += 1
+            elif char == '}':
+                brace_count -= 1
+            
+            cleaned_str += char
+            
+            # If we've closed all braces, we have a complete JSON object
+            if brace_count == 0:
+                break
+        
+        # If we still have unclosed braces, try to close them
+        if brace_count > 0:
+            cleaned_str += '}' * brace_count
+        
+        return cleaned_str
     
     def _get_fallback_response(self, current_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -505,6 +861,66 @@ class AIReviewService:
             verification_notes={},  # Empty for now, can be enhanced later
             ai_response=""  # Empty for now, can be enhanced later
         )
+    
+    def _generate_verification_report_from_structured_output(
+        self, current_data: Dict[str, Any], structured_output: AIVerificationOutput
+    ) -> str:
+        """
+        Generate verification report from structured output.
+        
+        Args:
+            current_data: Original resource data
+            structured_output: Structured verification output
+            
+        Returns:
+            Formatted verification report
+        """
+        report_lines = []
+        report_lines.append(f"AI Verification Report for: {structured_output.resource_name}")
+        report_lines.append(f"Timestamp: {datetime.now().isoformat()}")
+        report_lines.append("=" * 60)
+        
+        # Summary
+        report_lines.append(f"Summary:")
+        report_lines.append(f"  Resource: {structured_output.resource_name}")
+        report_lines.append(f"  Fields Verified: {len(structured_output.verified_data)}")
+        report_lines.append(f"  Sources Used: {len(structured_output.sources_used)}")
+        report_lines.append("")
+        
+        # Field details - using the simplified structure
+        report_lines.append("Field Verification Details:")
+        report_lines.append("-" * 40)
+        
+        # Get all field verifications
+        for verification in structured_output.get_all_field_verifications():
+            field_name = verification["field_name"]
+            verified_value = verification["verified_value"]
+            confidence_score = verification["confidence_score"]
+            sources = verification["sources"]
+            
+            # Only show fields that have some verification activity
+            if verified_value or sources:
+                report_lines.append(f"Field: {field_name}")
+                if verified_value:
+                    report_lines.append(f"  Verified: {verified_value}")
+                report_lines.append(f"  Confidence: {confidence_score:.1f}%")
+                if sources:
+                    report_lines.append(f"  Sources: {', '.join(sources)}")
+                report_lines.append("")
+        
+        # Sources used
+        if structured_output.sources_used:
+            report_lines.append("Sources Used:")
+            for source in structured_output.sources_used:
+                report_lines.append(f"  - {source}")
+            report_lines.append("")
+        
+        # Verification notes
+        if structured_output.verification_notes:
+            report_lines.append("Verification Notes:")
+            report_lines.append(structured_output.verification_notes)
+        
+        return "\n".join(report_lines)
     
     def is_available(self) -> bool:
         """

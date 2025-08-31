@@ -51,7 +51,7 @@ from django.utils import timezone
 logger = logging.getLogger(__name__)
 
 from ..models import Resource, ResourceVersion
-from ..utils import compare_versions
+from ..utils import compare_versions, generate_diff_html
 
 
 @login_required
@@ -356,15 +356,24 @@ def published_comparison(request: HttpRequest, resource_pk: int) -> HttpResponse
         
         # Filter out system/metadata fields to focus on meaningful data
         system_fields_to_exclude = {
-            'id', 'category_id', 'created_by_id', 'updated_by_id', 'last_verified_by_id',
+            'id', 'created_by_id', 'updated_by_id', 'last_verified_by_id',
             'created_at', 'updated_at', 'is_deleted', 'last_verified_at', 'source', 'notes'
         }
         
         # Create filtered published snapshot with only meaningful fields
-        filtered_published_snapshot = {
-            key: value for key, value in published_snapshot.items()
-            if key not in system_fields_to_exclude
-        }
+        filtered_published_snapshot = {}
+        for key, value in published_snapshot.items():
+            if key not in system_fields_to_exclude:
+                if key == 'category_id' and value:
+                    # Convert category_id to category name for comparison
+                    try:
+                        from directory.models import TaxonomyCategory
+                        category = TaxonomyCategory.objects.get(id=value)
+                        filtered_published_snapshot['category'] = category.name
+                    except TaxonomyCategory.DoesNotExist:
+                        filtered_published_snapshot['category'] = ""
+                else:
+                    filtered_published_snapshot[key] = value
         
         # Get all differences
         all_differences = compare_versions(filtered_published_snapshot, current_snapshot)
