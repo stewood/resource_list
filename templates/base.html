@@ -117,9 +117,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'directory:dashboard' %}">Dashboard</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'directory:resource_list' %}">Manage Resources</a>
-                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'audit:audit_log_list' %}">Audit Logs</a>
                         </li>
@@ -147,7 +145,7 @@
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'admin:login' %}">Login</a>
+                            <a class="nav-link" href="{% url 'directory:login' %}">Login</a>
                         </li>
                     {% endif %}
                 </ul>

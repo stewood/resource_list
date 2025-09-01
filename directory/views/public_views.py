@@ -194,12 +194,21 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
     Example:
         GET /resources/public/?q=mental+health&category=1&sort=name&page=2
     """
-    # Start with published, non-archived resources
-    queryset = (
-        Resource.objects.filter(status="published", is_deleted=False, is_archived=False)
-        .select_related("category")
-        .prefetch_related("service_types", "coverage_areas")
-    )
+    # Start with published, non-archived resources (or all for authenticated users)
+    if request.user.is_authenticated:
+        # Authenticated users can see all resources including drafts
+        queryset = (
+            Resource.objects.filter(is_deleted=False, is_archived=False)
+            .select_related("category")
+            .prefetch_related("service_types", "coverage_areas")
+        )
+    else:
+        # Public users only see published resources
+        queryset = (
+            Resource.objects.filter(status="published", is_deleted=False, is_archived=False)
+            .select_related("category")
+            .prefetch_related("service_types", "coverage_areas")
+        )
 
     # Search functionality
     search_query = request.GET.get("q", "").strip()
@@ -401,6 +410,14 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
     elif twenty_four_hour_filter == "false":
         queryset = queryset.filter(is_24_hour_service=False)
 
+    # Filter by status (only for authenticated users)
+    status_filter = request.GET.get("status", "")
+    if status_filter and request.user.is_authenticated:
+        queryset = queryset.filter(status=status_filter)
+    elif not request.user.is_authenticated:
+        # Ensure public users only see published resources
+        queryset = queryset.filter(status="published")
+
     # Advanced location filtering
     coverage_area_type_filter = request.GET.get("coverage_area_type", "")
     if coverage_area_type_filter:
@@ -559,6 +576,7 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
         "radius_miles": radius_miles,
         "emergency_filter": emergency_filter,
         "twenty_four_hour_filter": twenty_four_hour_filter,
+        "status_filter": status_filter,
         "coverage_area_type_filter": coverage_area_type_filter,
         "max_distance_filter": max_distance_filter,
         "min_distance_filter": min_distance_filter,
@@ -591,7 +609,8 @@ def public_resource_detail(request: HttpRequest, pk: int) -> HttpResponse:
         - Related resource suggestions
         - Category and service type-based recommendations
         - Deduplication of related resources
-        - Limited to published, non-archived resources
+        - Limited to published, non-archived resources for public users
+        - Full access for authenticated users including drafts
 
     Args:
         request: The HTTP request object
@@ -606,13 +625,22 @@ def public_resource_detail(request: HttpRequest, pk: int) -> HttpResponse:
     Template Context:
         - resource: The published resource object
         - related_resources: List of related resources (up to 5, deduplicated)
+        - user_can_view_notes: Boolean indicating if user can view internal notes
 
     Example:
         GET /resources/public/123/ -> Display published resource 123 with related suggestions
     """
-    resource = get_object_or_404(
-        Resource, pk=pk, status="published", is_deleted=False, is_archived=False
-    )
+    # Get resource - different access levels for authenticated vs public users
+    if request.user.is_authenticated:
+        # Authenticated users can see all resources including drafts
+        resource = get_object_or_404(
+            Resource, pk=pk, is_deleted=False, is_archived=False
+        )
+    else:
+        # Public users only see published resources
+        resource = get_object_or_404(
+            Resource, pk=pk, status="published", is_deleted=False, is_archived=False
+        )
 
     # Get related resources (same category or service types)
     related_resources = Resource.objects.filter(
@@ -635,9 +663,18 @@ def public_resource_detail(request: HttpRequest, pk: int) -> HttpResponse:
     related = list(category_related) + list(service_related)
     related = list({r.pk: r for r in related}.values())[:5]
 
+    # Check if user can view internal notes (Editor+ roles)
+    from ..permissions import user_is_editor, user_is_reviewer, user_is_admin
+    user_can_view_notes = (
+        user_is_editor(request.user) or 
+        user_is_reviewer(request.user) or 
+        user_is_admin(request.user)
+    )
+
     context = {
         "resource": resource,
         "related_resources": related,
+        "user_can_view_notes": user_can_view_notes,
     }
 
     return render(request, "directory/public_resource_detail.html", context)

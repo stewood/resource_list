@@ -3,6 +3,7 @@ URL configuration for directory app.
 """
 
 from django.urls import path
+from django.views.generic import RedirectView
 
 from .views import (
     # Resource views
@@ -32,6 +33,8 @@ from .views import (
     public_resource_list,
     public_resource_detail,
     custom_logout,
+    # Auth views
+    CustomLoginView,
     # API views
     AreaSearchView,
     LocationSearchView,
@@ -51,15 +54,17 @@ urlpatterns = [
     path("", public_home, name="public_home"),
     path("resources/", public_resource_list, name="public_resource_list"),
     path("resources/<int:pk>/", public_resource_detail, name="public_resource_detail"),
+    # Authentication views
+    path("login/", CustomLoginView.as_view(), name="login"),
     # Admin views (authentication required)
     path("manage/dashboard/", dashboard, name="dashboard"),
-    path("manage/resources/", ResourceListView.as_view(), name="resource_list"),
+    path("manage/resources/", RedirectView.as_view(url="/resources/", permanent=True), name="resource_list"),
     path(
         "manage/resources/create/", ResourceCreateView.as_view(), name="resource_create"
     ),
     path(
         "manage/resources/<int:pk>/",
-        ResourceDetailView.as_view(),
+        RedirectView.as_view(pattern_name="directory:public_resource_detail", permanent=True),
         name="resource_detail",
     ),
     path(

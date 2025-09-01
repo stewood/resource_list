@@ -302,6 +302,17 @@
                                     </h2>
                                     <div id="availabilityCollapse" class="accordion-collapse collapse" data-bs-parent="#filterAccordion">
                                         <div class="accordion-body">
+                                            {% if user.is_authenticated %}
+                                            <div class="mb-3">
+                                                <label for="status" class="form-label">Resource Status</label>
+                                                <select class="form-select" id="status" name="status">
+                                                    <option value="">All Statuses</option>
+                                                    <option value="published" {% if status_filter == 'published' %}selected{% endif %}>Published Only</option>
+                                                    <option value="needs_review" {% if status_filter == 'needs_review' %}selected{% endif %}>Needs Review Only</option>
+                                                    <option value="draft" {% if status_filter == 'draft' %}selected{% endif %}>Draft Only</option>
+                                                </select>
+                                            </div>
+                                            {% endif %}
                                             <div class="mb-3">
                                                 <label for="24hour" class="form-label">24-Hour Services</label>
                                                 <select class="form-select" id="24hour" name="24hour">
@@ -373,9 +384,17 @@
                         <p class="text-muted mb-0">Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} resources</p>
                     {% endif %}
                 </div>
-                <a href="{% url 'directory:public_home' %}" class="btn btn-outline-primary">
-                    <i class="fas fa-home me-1"></i>Back to Home
-                </a>
+                <div class="d-flex gap-2">
+                    {% if user.is_authenticated %}
+
+                        <a href="{% url 'directory:resource_create' %}" class="btn btn-success">
+                            <i class="fas fa-plus me-1"></i>Add Resource
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'directory:public_home' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-home me-1"></i>Back to Home
+                    </a>
+                </div>
             </div>
 
             <!-- Resource Grid -->
@@ -392,6 +411,16 @@
                                     </a>
                                 </h5>
                                 <div class="d-flex gap-1">
+                                    {% if user.is_authenticated and resource.status == 'draft' %}
+                                    <span class="badge bg-warning" title="Draft - Not visible to public">
+                                        <i class="fas fa-edit"></i> Draft
+                                    </span>
+                                    {% endif %}
+                                    {% if user.is_authenticated and resource.status == 'needs_review' %}
+                                    <span class="badge bg-info" title="Needs Review - Awaiting approval">
+                                        <i class="fas fa-eye"></i> Needs Review
+                                    </span>
+                                    {% endif %}
                                     {% if resource.is_emergency_service %}
                                     <span class="badge bg-danger" title="Emergency Service">
                                         <i class="fas fa-exclamation-triangle"></i>
@@ -467,9 +496,19 @@
                             {% endif %}
                             
                             <div class="mt-auto">
-                                <a href="{% url 'directory:public_resource_detail' resource.pk %}" class="btn btn-primary btn-sm">
-                                    View Details <i class="fas fa-arrow-right ms-1"></i>
-                                </a>
+                                <div class="d-flex gap-2">
+                                    <a href="{% url 'directory:public_resource_detail' resource.pk %}" class="btn btn-primary btn-sm">
+                                        View Details <i class="fas fa-arrow-right ms-1"></i>
+                                    </a>
+                                    {% if user.is_authenticated %}
+                                        <a href="{% url 'directory:resource_update' resource.pk %}" class="btn btn-outline-secondary btn-sm" title="Edit Resource">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'directory:resource_detail' resource.pk %}" class="btn btn-outline-info btn-sm" title="Manage Resource">
+                                            <i class="fas fa-cog"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -662,6 +701,7 @@
                     addFilterListener('#search');
                     addFilterListener('#city');
                     addFilterListener('#state');
+                    addFilterListener('#status');
         
         // Search with debounce
         const searchInput = document.getElementById('search');

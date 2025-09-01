@@ -34,6 +34,16 @@
                             {% endif %}
                         </div>
                         <div class="d-flex gap-2">
+                            {% if user.is_authenticated and resource.status == 'draft' %}
+                            <span class="badge bg-warning fs-6" title="Draft - Not visible to public">
+                                <i class="fas fa-edit"></i> Draft
+                            </span>
+                            {% endif %}
+                            {% if user.is_authenticated and resource.status == 'needs_review' %}
+                            <span class="badge bg-info fs-6" title="Needs Review - Awaiting approval">
+                                <i class="fas fa-eye"></i> Needs Review
+                            </span>
+                            {% endif %}
                             {% if resource.is_emergency_service %}
                             <span class="badge bg-danger fs-6" title="Emergency Service">
                                 <i class="fas fa-exclamation-triangle"></i> Emergency
@@ -46,6 +56,18 @@
                             {% endif %}
                         </div>
                     </div>
+
+                    <!-- Management Header Actions -->
+                    {% if user.is_authenticated %}
+                    <div class="d-flex gap-2 mb-3">
+                        <a href="{% url 'directory:resource_update' resource.pk %}" class="btn btn-primary">
+                            <i class="fas fa-edit me-1"></i>Edit Resource
+                        </a>
+                        <a href="{% url 'directory:resource_detail' resource.pk %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-cog me-1"></i>Manage Resource
+                        </a>
+                    </div>
+                    {% endif %}
 
                     {% if resource.description %}
                     <div class="mb-4">
@@ -252,6 +274,92 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Management Info (Authenticated Users Only) -->
+            {% if user.is_authenticated %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-cog"></i> Management Info</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Status Information -->
+                    <div class="mb-3">
+                        <h6><i class="fas fa-info-circle text-primary"></i> Status</h6>
+                        <p class="mb-1">
+                            <span class="badge bg-{% if resource.status == 'published' %}success{% elif resource.status == 'needs_review' %}info{% else %}warning{% endif %}">
+                                {{ resource.get_status_display }}
+                            </span>
+                        </p>
+                        {% if resource.status == 'draft' %}
+                        <small class="text-muted">This resource is not visible to public users.</small>
+                        {% elif resource.status == 'needs_review' %}
+                        <small class="text-muted">This resource is awaiting review and approval.</small>
+                        {% endif %}
+                    </div>
+
+                    <!-- Verification Information -->
+                    {% if resource.last_verified_at or resource.verified_by %}
+                    <div class="mb-3">
+                        <h6><i class="fas fa-check-circle text-success"></i> Verification</h6>
+                        {% if resource.last_verified_at %}
+                        <p class="mb-1 small">
+                            <strong>Last Verified:</strong> {{ resource.last_verified_at|date:"M j, Y" }}
+                        </p>
+                        {% endif %}
+                        {% if resource.verified_by %}
+                        <p class="mb-1 small">
+                            <strong>Verified By:</strong> {{ resource.verified_by.username }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Audit Information -->
+                    {% if resource.created_at or resource.updated_at %}
+                    <div class="mb-3">
+                        <h6><i class="fas fa-history text-info"></i> Audit Trail</h6>
+                        {% if resource.created_at %}
+                        <p class="mb-1 small">
+                            <strong>Created:</strong> {{ resource.created_at|date:"M j, Y" }}
+                            {% if resource.created_by %}
+                                by {{ resource.created_by.username }}
+                            {% endif %}
+                        </p>
+                        {% endif %}
+                        {% if resource.updated_at %}
+                        <p class="mb-1 small">
+                            <strong>Last Updated:</strong> {{ resource.updated_at|date:"M j, Y" }}
+                            {% if resource.updated_by %}
+                                by {{ resource.updated_by.username }}
+                            {% endif %}
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Internal Notes (Editor+ Only) -->
+                    {% if user_can_view_notes and resource.notes %}
+                    <div class="mb-3">
+                        <h6><i class="fas fa-sticky-note text-warning"></i> Internal Notes</h6>
+                        <div class="alert alert-warning alert-sm">
+                            <small>{{ resource.notes|linebreaks }}</small>
+                        </div>
+                        <small class="text-muted">
+                            <i class="fas fa-lock"></i> Internal use only - not visible to public
+                        </small>
+                    </div>
+                    {% endif %}
+
+                    <!-- Quick Management Actions -->
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'directory:resource_update' resource.pk %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit me-1"></i>Edit Resource
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+            {% endif %}
 
             <!-- Related Resources -->
             {% if related_resources %}

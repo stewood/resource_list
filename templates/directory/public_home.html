@@ -54,6 +54,9 @@
                             Emergency Help
                         </a>
                     </div>
+                    {% if user.is_authenticated %}
+
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -117,6 +120,20 @@
                 Browse by Location
             </a>
         </div>
+        {% if user.is_authenticated %}
+        <div class="col-md-6">
+            <a href="{% url 'directory:resource_create' %}" class="quick-access-btn success">
+                <i class="fas fa-plus me-3"></i>
+                Add New Resource
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{% url 'directory:public_resource_list' %}?status=needs_review" class="quick-access-btn warning">
+                <i class="fas fa-eye me-3"></i>
+                Review Queue
+            </a>
+        </div>
+        {% endif %}
     </div>
 </div>
 

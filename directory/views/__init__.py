@@ -58,6 +58,9 @@ from .public_views import (
     public_resource_detail,
     custom_logout,
 )
+from .auth_views import (
+    CustomLoginView,
+)
 from .api_views import (
     AreaSearchView,
     LocationSearchView,
@@ -102,6 +105,8 @@ __all__ = [
     "public_resource_list",
     "public_resource_detail",
     "custom_logout",
+    # Auth views
+    "CustomLoginView",
     # API views
     "AreaSearchView",
     "LocationSearchView",
