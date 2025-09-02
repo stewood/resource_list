@@ -6,10 +6,58 @@
 <div class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
             <h1>{{ action }} Resource</h1>
+                <p class="text-muted mb-0">Help people find the services they need by adding information about this organization</p>
+            </div>
             <a href="{% url 'directory:resource_list' %}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left"></i> Back to Resources
             </a>
+        </div>
+    </div>
+</div>
+
+<!-- Progress Bar -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">
+                        <i class="fas fa-tasks me-2"></i>Form Progress
+                    </h6>
+                    <span id="progressPercentage" class="badge bg-primary">0%</span>
+                </div>
+                <div class="progress mb-3" style="height: 8px;">
+                    <div id="progressBar" class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="row text-center">
+                    <div class="col-3">
+                        <div class="section-status" data-section="basic">
+                            <i class="fas fa-info-circle fa-lg text-muted"></i>
+                            <div class="small mt-1">Basic Info</div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="section-status" data-section="contact">
+                            <i class="fas fa-phone fa-lg text-muted"></i>
+                            <div class="small mt-1">Contact</div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="section-status" data-section="services">
+                            <i class="fas fa-cogs fa-lg text-muted"></i>
+                            <div class="small mt-1">Services</div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="section-status" data-section="areas">
+                            <i class="fas fa-map-marked-alt fa-lg text-muted"></i>
+                            <div class="small mt-1">Service Areas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -25,16 +73,23 @@
                     <input type="hidden" id="initialServiceAreasData" value="{{ service_areas_data|default:'[]' }}">
                     
                     <!-- Basic Information -->
-                    <div class="row mb-4">
+                    <div class="row mb-4" data-section="basic">
                         <div class="col-12">
-                            <h5 class="border-bottom pb-2 mb-3">
-                                <i class="fas fa-info-circle"></i> Basic Information
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="border-bottom pb-2 mb-0 flex-grow-1">
+                                    <i class="fas fa-info-circle me-2"></i> Basic Information
                             </h5>
+                                <span class="section-completion-badge badge bg-secondary">Not Started</span>
+                            </div>
+                            <p class="text-muted small mb-3">
+                                <i class="fas fa-lightbulb me-1"></i>
+                                Start with the basic details about this organization or service.
+                            </p>
                         </div>
                         
                         <div class="col-md-8 mb-3">
                             <label for="{{ form.name.id_for_label }}" class="form-label">
-                                Resource Name <span class="text-danger">*</span>
+                                What is the name of this organization or service? <span class="text-danger">*</span>
                             </label>
                             {{ form.name }}
                             {% if form.name.errors %}
@@ -44,10 +99,16 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Use the official name as it appears on their website or business cards.
+                            </div>
                         </div>
                         
                         <div class="col-md-4 mb-3">
-                            <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                            <label for="{{ form.category.id_for_label }}" class="form-label">
+                                What type of organization is this? <span class="text-muted">(Optional)</span>
+                            </label>
                             {{ form.category }}
                             {% if form.category.errors %}
                                 <div class="invalid-feedback d-block">
@@ -56,10 +117,16 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Choose the category that best describes this organization.
+                            </div>
                         </div>
                         
                         <div class="col-md-8 mb-3">
-                            <label for="{{ form.service_types.id_for_label }}" class="form-label">Service Types</label>
+                            <label for="{{ form.service_types.id_for_label }}" class="form-label">
+                                What services does this organization provide? <span class="text-muted">(Optional)</span>
+                            </label>
                             {{ form.service_types }}
                             {% if form.service_types.errors %}
                                 <div class="invalid-feedback d-block">
@@ -69,12 +136,15 @@
                                 </div>
                             {% endif %}
                             <div class="form-text">
-                                Select all service types that apply to this resource.
+                                <i class="fas fa-info-circle me-1"></i>
+                                Select all the services this organization offers. You can choose multiple options.
                             </div>
                         </div>
                         
                         <div class="col-12 mb-3">
-                            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                Tell us about this organization in your own words <span class="text-danger">*</span>
+                            </label>
                             {{ form.description }}
                             {% if form.description.errors %}
                                 <div class="invalid-feedback d-block">
@@ -84,21 +154,34 @@
                                 </div>
                             {% endif %}
                             <div class="form-text">
-                                Minimum 20 characters required for review status.
+                                <i class="fas fa-info-circle me-1"></i>
+                                Describe what this organization does, who they help, and how people can access their services. 
+                                <strong>Minimum 20 characters required.</strong>
+                                <br>
+                                <em>Example: "This food pantry serves families in need every Tuesday and Thursday from 9am-2pm. We provide fresh produce, canned goods, and personal care items."</em>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Contact Information -->
-                    <div class="row mb-4">
+                    <div class="row mb-4" data-section="contact">
                         <div class="col-12">
-                            <h5 class="border-bottom pb-2 mb-3">
-                                <i class="fas fa-phone"></i> Contact Information
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="border-bottom pb-2 mb-0 flex-grow-1">
+                                    <i class="fas fa-phone me-2"></i> Contact Information
                             </h5>
+                                <span class="section-completion-badge badge bg-secondary">Not Started</span>
+                            </div>
+                            <p class="text-muted small mb-3">
+                                <i class="fas fa-lightbulb me-1"></i>
+                                How can people reach this organization? You need at least one way for people to contact them.
+                            </p>
                         </div>
                         
                         <div class="col-md-4 mb-3">
-                            <label for="{{ form.phone.id_for_label }}" class="form-label">Phone</label>
+                            <label for="{{ form.phone.id_for_label }}" class="form-label">
+                                Phone Number <span class="text-muted">(Optional)</span>
+                            </label>
                             {{ form.phone }}
                             {% if form.phone.errors %}
                                 <div class="invalid-feedback d-block">
@@ -107,10 +190,16 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Include area code. Example: (555) 123-4567
+                            </div>
                         </div>
                         
                         <div class="col-md-4 mb-3">
-                            <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                            <label for="{{ form.email.id_for_label }}" class="form-label">
+                                Email Address <span class="text-muted">(Optional)</span>
+                            </label>
                             {{ form.email }}
                             {% if form.email.errors %}
                                 <div class="invalid-feedback d-block">
@@ -119,10 +208,16 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                The organization's main email address for inquiries.
+                            </div>
                         </div>
                         
                         <div class="col-md-4 mb-3">
-                            <label for="{{ form.website.id_for_label }}" class="form-label">Website</label>
+                            <label for="{{ form.website.id_for_label }}" class="form-label">
+                                Website <span class="text-muted">(Optional)</span>
+                            </label>
                             {{ form.website }}
                             {% if form.website.errors %}
                                 <div class="invalid-feedback d-block">
@@ -131,19 +226,39 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Include the full website address (e.g., https://www.example.org)
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Note:</strong> You must provide at least one way for people to contact this organization (phone, email, or website).
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Location -->
-                    <div class="row mb-4">
+                    <div class="row mb-4" data-section="location">
                         <div class="col-12">
-                            <h5 class="border-bottom pb-2 mb-3">
-                                <i class="fas fa-map-marker-alt"></i> Location
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="border-bottom pb-2 mb-0 flex-grow-1">
+                                    <i class="fas fa-map-marker-alt me-2"></i> Location
                             </h5>
+                                <span class="section-completion-badge badge bg-secondary">Not Started</span>
+                            </div>
+                            <p class="text-muted small mb-3">
+                                <i class="fas fa-lightbulb me-1"></i>
+                                Where is this organization located? This helps people find services near them.
+                            </p>
                         </div>
                         
                         <div class="col-12 mb-3">
-                            <label for="{{ form.address1.id_for_label }}" class="form-label">Address Line 1</label>
+                            <label for="{{ form.address1.id_for_label }}" class="form-label">
+                                Street Address <span class="text-muted">(Optional)</span>
+                            </label>
                             {{ form.address1 }}
                             {% if form.address1.errors %}
                                 <div class="invalid-feedback d-block">
@@ -152,10 +267,16 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                The street address where this organization is located.
+                            </div>
                         </div>
                         
                         <div class="col-12 mb-3">
-                            <label for="{{ form.address2.id_for_label }}" class="form-label">Address Line 2</label>
+                            <label for="{{ form.address2.id_for_label }}" class="form-label">
+                                Apartment, Suite, or Unit <span class="text-muted">(Optional)</span>
+                            </label>
                             {{ form.address2 }}
                             {% if form.address2.errors %}
                                 <div class="invalid-feedback d-block">
@@ -164,10 +285,16 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Additional address information if needed (e.g., Suite 200, Floor 3).
+                            </div>
                         </div>
                         
                         <div class="col-md-4 mb-3">
-                            <label for="{{ form.city.id_for_label }}" class="form-label">City</label>
+                            <label for="{{ form.city.id_for_label }}" class="form-label">
+                                City <span class="text-danger">*</span>
+                            </label>
                             {{ form.city }}
                             {% if form.city.errors %}
                                 <div class="invalid-feedback d-block">
@@ -176,10 +303,16 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                The city where this organization is located.
+                            </div>
                         </div>
                         
                         <div class="col-md-4 mb-3">
-                            <label for="{{ form.state.id_for_label }}" class="form-label">State</label>
+                            <label for="{{ form.state.id_for_label }}" class="form-label">
+                                State <span class="text-danger">*</span>
+                            </label>
                             {{ form.state }}
                             {% if form.state.errors %}
                                 <div class="invalid-feedback d-block">
@@ -188,10 +321,16 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Use the 2-letter state code (e.g., KY, TN, OH).
+                            </div>
                         </div>
                         
                         <div class="col-md-4 mb-3">
-                            <label for="{{ form.county.id_for_label }}" class="form-label">County</label>
+                            <label for="{{ form.county.id_for_label }}" class="form-label">
+                                County <span class="text-muted">(Optional)</span>
+                            </label>
                             {{ form.county }}
                             {% if form.county.errors %}
                                 <div class="invalid-feedback d-block">
@@ -200,10 +339,16 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                The county or parish where this organization is located.
+                            </div>
                         </div>
                         
                         <div class="col-md-4 mb-3">
-                            <label for="{{ form.postal_code.id_for_label }}" class="form-label">Postal Code</label>
+                            <label for="{{ form.postal_code.id_for_label }}" class="form-label">
+                                ZIP Code <span class="text-muted">(Optional)</span>
+                            </label>
                             {{ form.postal_code }}
                             {% if form.postal_code.errors %}
                                 <div class="invalid-feedback d-block">
@@ -212,6 +357,10 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                The ZIP or postal code for this location.
+                            </div>
                         </div>
                     </div>
                     
@@ -496,106 +645,142 @@
                     </div>
                     
                     <!-- Service Areas -->
-                    <div class="row mb-4">
+                    <div class="row mb-4" data-section="areas">
                         <div class="col-12">
-                            <h5 class="border-bottom pb-2 mb-3">
-                                <i class="fas fa-map-marked-alt"></i> Service Areas
-                                <span class="badge bg-primary ms-2">Step 4 of 4</span>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="border-bottom pb-2 mb-0 flex-grow-1">
+                                    <i class="fas fa-map-marked-alt me-2"></i> Where Does This Organization Serve?
                             </h5>
+                                <span class="section-completion-badge badge bg-secondary">Not Started</span>
+                            </div>
                             <p class="text-muted small mb-3">
-                                <strong>Important:</strong> Define the geographic areas where this resource provides services. 
-                                This helps people find services in their area and improves search results.
+                                <i class="fas fa-lightbulb me-1"></i>
+                                Help people find this organization by selecting the areas where they provide services. 
+                                This makes it easier for people to find help in their area.
                             </p>
                             
-                            <!-- Service Areas Progress Indicator -->
-                            <div class="alert alert-info mb-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    <div class="flex-grow-1">
-                                        <strong>Service Areas Status:</strong>
-                                        <span id="serviceAreasStatus" class="ms-2">
-                                            <span class="badge bg-warning">Not configured</span>
-                                        </span>
-                                        {% if is_edit %}
-                                        <div class="small text-muted mt-1">
-                                            <i class="fas fa-edit me-1"></i>Edit mode: You can modify existing service areas or add new ones
+                            <!-- Enhanced Service Areas Selection -->
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-lightbulb me-2"></i>
+                                        <strong>Tip:</strong> You can add multiple service areas of different types. For example, you might serve specific counties in Kentucky AND have online services available nationwide.
                                         </div>
-                                        {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Add New Service Area -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="card border-primary">
+                                        <div class="card-header bg-primary text-white">
+                                    <h6 class="mb-0">
+                                                <i class="fas fa-plus me-2"></i>Add Service Area
+                                    </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-4 mb-3">
+                                                    <label class="form-label">
+                                                        <i class="fas fa-tag me-1"></i>Area Type
+                                                    </label>
+                                                    <select class="form-select" id="newAreaType">
+                                                        <option value="">Choose area type...</option>
+                                                        <option value="state">State (e.g., Kentucky, Tennessee)</option>
+                                                        <option value="county">County (e.g., Laurel County, KY)</option>
+                                                        <option value="city">City (e.g., London, KY)</option>
+
+                                                        <option value="national">National (all states)</option>
+                                                        <option value="online">Online Services (available anywhere)</option>
+                                                        <option value="custom">Custom Area (specific neighborhoods, etc.)</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div class="col-md-4 mb-3">
+                                                    <label class="form-label">
+                                                        <i class="fas fa-map me-1"></i>State
+                                                    </label>
+                                                    <select class="form-select" id="newAreaState">
+                                                        <option value="">Select area type first...</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div class="col-md-4 mb-3">
+                                                    <label class="form-label">
+                                                        <i class="fas fa-map-marker-alt me-1"></i>Specific Area
+                                                    </label>
+                                                    <select class="form-select" id="newAreaSpecific" disabled>
+                                                        <option value="">Select area type first...</option>
+                                                    </select>
+                                                    <input type="text" class="form-control mt-2" id="newAreaCustom" placeholder="Enter custom area name..." style="display: none;">
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <button type="button" class="btn btn-primary" id="addServiceAreaBtn" disabled>
+                                                        <i class="fas fa-plus me-1"></i>Add Service Area
+                                        </button>
+                                                    <button type="button" class="btn btn-outline-secondary ms-2" id="clearNewAreaBtn">
+                                                        <i class="fas fa-times me-1"></i>Clear
+                                        </button>
                                     </div>
-                                    <div>
-                                        {% if is_edit %}
-                                        <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#serviceAreaModal">
-                                            <i class="fas fa-edit me-1"></i>Manage Areas
-                                        </button>
-                                        <button type="button" class="btn btn-success btn-sm me-2" id="saveServiceAreasOnlyBtn" onclick="saveServiceAreasOnly()">
-                                            <i class="fas fa-save me-1"></i>Save Service Areas
-                                        </button>
-                                        {% else %}
-                                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#serviceAreaModal">
-                                            <i class="fas fa-plus me-1"></i>Configure Service Areas
-                                        </button>
-                                        {% endif %}
+                                </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <!-- Current Service Areas Display -->
-                            <div id="currentServiceAreas" class="mb-3">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h6 class="mb-0">
+                            <!-- Current Service Areas -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <h6>
                                         <i class="fas fa-list me-1"></i>Current Service Areas
-                                        <span id="serviceAreasCount" class="badge bg-secondary ms-2">0</span>
-                                        {% if is_edit %}
-                                        <span class="badge bg-info ms-1">Editing</span>
-                                        {% endif %}
+                                        <span id="serviceAreasCount" class="badge bg-primary ms-2">0</span>
                                     </h6>
-                                    <div>
-                                        {% if is_edit %}
-                                        <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#serviceAreaModal">
-                                            <i class="fas fa-edit me-1"></i>Edit Areas
-                                        </button>
-                                        {% else %}
-                                        <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#serviceAreaModal">
-                                            <i class="fas fa-plus me-1"></i>Add More
-                                        </button>
-                                        {% endif %}
-                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearAllServiceAreas()">
-                                            <i class="fas fa-trash me-1"></i>Clear All
-                                        </button>
-                                    </div>
-                                </div>
-                                <div id="serviceAreasList" class="list-group">
-                                    <!-- Service areas will be populated by JavaScript -->
+                                    <div id="serviceAreasList" class="list-group mb-3">
                                     <div class="text-muted small p-3 text-center">
                                         <i class="fas fa-map-marker-alt fa-2x mb-2 text-muted"></i>
-                                        <div>No service areas defined yet.</div>
-                                        <div class="small">
-                                            {% if is_edit %}
-                                            Click "Edit Areas" to manage service areas for this resource.
-                                            {% else %}
-                                            Click "Configure Service Areas" to get started.
-                                            {% endif %}
+                                            <div>No service areas added yet.</div>
+                                            <div class="small">Use the form above to add service areas.</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <!-- Service Areas Summary -->
-                            <div class="alert alert-success" id="serviceAreasSummary" style="display: none;">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-check-circle me-2"></i>
-                                    <div class="flex-grow-1">
-                                        <strong>Service Areas Configured!</strong>
-                                        <div class="small">Your resource will now appear in location-based searches for the selected areas.</div>
-                                        <div class="small mt-1">
-                                            <strong>Search Impact:</strong> 
-                                            <span id="searchImpactText">Users searching in these areas will find your resource.</span>
+                            <!-- Quick Add Options -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card border-light">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-bolt me-2"></i>Quick Add Common Areas
+                                            </h6>
                                         </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-2">
+                                                    <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="quickAddArea('state', 'KY', 'Kentucky')">
+                                                        <i class="fas fa-map me-1"></i>All of Kentucky
+                                                    </button>
                                     </div>
-                                    <div class="ms-3">
-                                        <button type="button" class="btn btn-outline-success btn-sm" onclick="showSearchPreview()">
-                                            <i class="fas fa-search me-1"></i>Preview Search
+                                                <div class="col-md-6 mb-2">
+                                                    <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="quickAddArea('online', '', 'Online Services')">
+                                                        <i class="fas fa-globe me-1"></i>Online Services
                                         </button>
+                                    </div>
+                                                <div class="col-md-6 mb-2">
+                                                    <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="quickAddArea('national', '', 'All States')">
+                                                        <i class="fas fa-flag-usa me-1"></i>All States
+                                                    </button>
+                                                </div>
+                                                <div class="col-md-6 mb-2">
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm w-100" onclick="showUnsureOption()">
+                                                        <i class="fas fa-question-circle me-1"></i>Not Sure
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -603,14 +788,13 @@
                             <!-- Service Areas Help -->
                             <div class="alert alert-light">
                                 <h6 class="alert-heading">
-                                    <i class="fas fa-question-circle me-1"></i>Service Areas Help
+                                    <i class="fas fa-question-circle me-1"></i>Why Service Areas Matter
                                 </h6>
-                                <p class="mb-2">Service areas define where your resource operates and help people find services in their area:</p>
+                                <p class="mb-2">When you select service areas, you help people find this organization when they search for help in their area:</p>
                                 <ul class="mb-0 small">
-                                    <li><strong>Administrative Boundaries:</strong> Counties, cities, and states (e.g., "Laurel County, KY")</li>
-                                    <li><strong>Radius Areas:</strong> Custom circular areas around a specific location</li>
-                                    <li><strong>Custom Polygons:</strong> Draw custom shapes for specific service areas</li>
-                                    <li><strong>Upload GeoJSON:</strong> Import complex boundaries from external files</li>
+                                    <li><strong>Better Search Results:</strong> People searching for services in Laurel County will find organizations that serve Laurel County</li>
+                                    <li><strong>Local Connections:</strong> Helps people find services close to where they live</li>
+                                    <li><strong>Complete Information:</strong> Gives people confidence that the organization serves their area</li>
                                 </ul>
                             </div>
                         </div>
@@ -620,14 +804,26 @@
                     <div class="row">
                         <div class="col-12">
                             <hr>
-                            <div class="d-flex justify-content-between">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
                                 <a href="{% url 'directory:resource_list' %}" class="btn btn-outline-secondary">
                                     <i class="fas fa-times"></i> Cancel
                                 </a>
-                                <div>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save"></i> Save Resource
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-primary" id="saveDraftBtn">
+                                        <i class="fas fa-save"></i> Save Draft
                                     </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-check"></i> Save & Submit
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Save Draft:</strong> Save your progress and come back later to finish.
+                                    <strong>Save & Submit:</strong> Complete the form and submit for review.
                                 </div>
                             </div>
                         </div>
@@ -644,6 +840,96 @@
 
 {% block extra_js %}
 <style>
+    /* Progress tracking styles */
+    .section-status {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .section-status.completed {
+        color: #28a745 !important;
+    }
+    
+    .section-status.in-progress {
+        color: #ffc107 !important;
+    }
+    
+    .section-completion-badge {
+        font-size: 0.75em;
+    }
+    
+    .form-section {
+        transition: all 0.3s ease;
+    }
+    
+    .form-section.completed {
+        border-left: 4px solid #28a745;
+        padding-left: 15px;
+    }
+    
+    .form-section.in-progress {
+        border-left: 4px solid #ffc107;
+        padding-left: 15px;
+    }
+    
+    /* Mobile optimization */
+    @media (max-width: 768px) {
+        .section-status {
+            margin-bottom: 1rem;
+        }
+        
+        .section-status i {
+            font-size: 1.2rem !important;
+        }
+        
+        .form-label {
+            font-size: 0.9rem;
+        }
+        
+        .form-text {
+            font-size: 0.8rem;
+        }
+        
+        .btn {
+            font-size: 0.9rem;
+        }
+        
+        .progress {
+            height: 6px !important;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .d-flex.gap-2 {
+            flex-direction: column;
+            gap: 0.5rem !important;
+        }
+        
+        .d-flex.gap-2 .btn {
+            width: 100%;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .col-md-4, .col-md-6, .col-md-8 {
+            margin-bottom: 1rem;
+        }
+        
+        .form-control, .form-select {
+            font-size: 16px; /* Prevents zoom on iOS */
+        }
+        
+        .alert {
+            font-size: 0.85rem;
+        }
+        
+        .badge {
+            font-size: 0.7rem;
+        }
+    }
+    
     /* Custom tooltip styles */
     .custom-tooltip {
         background: rgba(0, 0, 0, 0.8);
@@ -696,10 +982,988 @@
             }
         });
         
+        // Initialize progress tracking
+        initializeProgressTracking();
+        
+        // Initialize save draft functionality
+        initializeSaveDraft();
+        
             // Initialize Service Area Manager
     initializeServiceAreaManager();
     
+        // Initialize simplified service areas
+        initializeSimplifiedServiceAreas();
+        
+        // Initialize real-time validation
+        initializeRealTimeValidation();
     });
+    
+    // Progress Tracking Functions
+    function initializeProgressTracking() {
+        // Define section requirements
+        const sectionRequirements = {
+            'basic': ['name', 'description'],
+            'contact': ['phone', 'email', 'website'],
+            'location': ['city', 'state'],
+            'services': ['hours_of_operation'],
+            'areas': [] // Service areas are handled separately
+        };
+        
+        // Track form changes
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('input', updateProgress);
+            form.addEventListener('change', updateProgress);
+        }
+        
+        // Initial progress update
+        updateProgress();
+    }
+    
+    function updateProgress() {
+        const sectionRequirements = {
+            'basic': ['name', 'description'],
+            'contact': ['phone', 'email', 'website'],
+            'location': ['city', 'state'],
+            'services': ['hours_of_operation'],
+            'areas': []
+        };
+        
+        let totalSections = 0;
+        let completedSections = 0;
+        
+        // Check each section
+        Object.keys(sectionRequirements).forEach(sectionName => {
+            const section = document.querySelector(`[data-section="${sectionName}"]`);
+            if (section) {
+                totalSections++;
+                const requirements = sectionRequirements[sectionName];
+                let sectionCompleted = true;
+                let sectionInProgress = false;
+                
+                if (sectionName === 'contact') {
+                    // Contact section needs at least one of phone, email, or website
+                    const phone = document.querySelector('input[name="phone"]')?.value?.trim();
+                    const email = document.querySelector('input[name="email"]')?.value?.trim();
+                    const website = document.querySelector('input[name="website"]')?.value?.trim();
+                    sectionCompleted = !!(phone || email || website);
+                    sectionInProgress = !!(phone || email || website);
+                } else if (sectionName === 'areas') {
+                    // Check enhanced service areas
+                    sectionCompleted = serviceAreas.length > 0;
+                    sectionInProgress = serviceAreas.length > 0;
+                } else {
+                    // Check required fields
+                    requirements.forEach(fieldName => {
+                        const field = document.querySelector(`input[name="${fieldName}"], select[name="${fieldName}"], textarea[name="${fieldName}"]`);
+                        if (field) {
+                            const value = field.value?.trim();
+                            if (!value) {
+                                sectionCompleted = false;
+                            } else {
+                                sectionInProgress = true;
+                            }
+                        }
+                    });
+                }
+                
+                // Update section status
+                updateSectionStatus(sectionName, sectionCompleted, sectionInProgress);
+                
+                if (sectionCompleted) {
+                    completedSections++;
+                }
+            }
+        });
+        
+        // Update progress bar
+        const progressPercentage = totalSections > 0 ? Math.round((completedSections / totalSections) * 100) : 0;
+        const progressBar = document.getElementById('progressBar');
+        const progressPercentageSpan = document.getElementById('progressPercentage');
+        
+        if (progressBar) {
+            progressBar.style.width = `${progressPercentage}%`;
+            progressBar.setAttribute('aria-valuenow', progressPercentage);
+        }
+        
+        if (progressPercentageSpan) {
+            progressPercentageSpan.textContent = `${progressPercentage}%`;
+            progressPercentageSpan.className = progressPercentage === 100 ? 'badge bg-success' : 'badge bg-primary';
+        }
+    }
+    
+    function updateSectionStatus(sectionName, completed, inProgress) {
+        const section = document.querySelector(`[data-section="${sectionName}"]`);
+        const statusIcon = document.querySelector(`[data-section="${sectionName}"] .section-status`);
+        const completionBadge = document.querySelector(`[data-section="${sectionName}"] .section-completion-badge`);
+        
+        if (section) {
+            section.className = section.className.replace(/form-section-\w+/g, '');
+            if (completed) {
+                section.classList.add('form-section', 'completed');
+            } else if (inProgress) {
+                section.classList.add('form-section', 'in-progress');
+            }
+        }
+        
+        if (statusIcon) {
+            statusIcon.className = statusIcon.className.replace(/completed|in-progress/g, '');
+            if (completed) {
+                statusIcon.classList.add('completed');
+            } else if (inProgress) {
+                statusIcon.classList.add('in-progress');
+            }
+        }
+        
+        if (completionBadge) {
+            if (completed) {
+                completionBadge.textContent = 'Complete';
+                completionBadge.className = 'section-completion-badge badge bg-success';
+            } else if (inProgress) {
+                completionBadge.textContent = 'In Progress';
+                completionBadge.className = 'section-completion-badge badge bg-warning';
+            } else {
+                completionBadge.textContent = 'Not Started';
+                completionBadge.className = 'section-completion-badge badge bg-secondary';
+            }
+        }
+    }
+    
+    // Save Draft Functionality
+    function initializeSaveDraft() {
+        const saveDraftBtn = document.getElementById('saveDraftBtn');
+        if (saveDraftBtn) {
+            saveDraftBtn.addEventListener('click', saveDraft);
+        }
+        
+        // Auto-save every 30 seconds
+        setInterval(autoSave, 30000);
+    }
+    
+    function saveDraft() {
+        const form = document.querySelector('form');
+        if (!form) return;
+        
+        // Show loading state
+        const saveDraftBtn = document.getElementById('saveDraftBtn');
+        const originalText = saveDraftBtn.innerHTML;
+        saveDraftBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        saveDraftBtn.disabled = true;
+        
+        // Create form data
+        const formData = new FormData(form);
+        formData.append('save_draft', 'true');
+        
+        // Submit form as draft
+        fetch(form.action || window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Draft saved successfully!', 'success');
+                // Update last saved time
+                updateLastSavedTime();
+            } else {
+                showToast('Error saving draft: ' + (data.error || 'Unknown error'), 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error saving draft:', error);
+            showToast('Error saving draft. Please try again.', 'error');
+        })
+        .finally(() => {
+            // Restore button state
+            saveDraftBtn.innerHTML = originalText;
+            saveDraftBtn.disabled = false;
+        });
+    }
+    
+    function autoSave() {
+        // Only auto-save if form has been modified
+        const form = document.querySelector('form');
+        if (form && hasFormChanged()) {
+            saveDraft();
+        }
+    }
+    
+    function hasFormChanged() {
+        // Simple check to see if any required fields have values
+        const nameField = document.querySelector('input[name="name"]');
+        const descriptionField = document.querySelector('textarea[name="description"]');
+        
+        return (nameField && nameField.value.trim()) || (descriptionField && descriptionField.value.trim());
+    }
+    
+    function updateLastSavedTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        const saveDraftBtn = document.getElementById('saveDraftBtn');
+        if (saveDraftBtn) {
+            saveDraftBtn.innerHTML = `<i class="fas fa-save"></i> Draft Saved (${timeString})`;
+            setTimeout(() => {
+                saveDraftBtn.innerHTML = '<i class="fas fa-save"></i> Save Draft';
+            }, 3000);
+        }
+    }
+    
+    function showToast(message, type = 'info') {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} border-0`;
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        `;
+        
+        // Add to page
+        let toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toastContainer';
+            toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+            toastContainer.style.zIndex = '9999';
+            document.body.appendChild(toastContainer);
+        }
+        
+        toastContainer.appendChild(toast);
+        
+        // Show toast
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+        
+        // Remove from DOM after hiding
+        toast.addEventListener('hidden.bs.toast', () => {
+            toast.remove();
+        });
+    }
+    
+    // Enhanced Service Areas Functions
+    let serviceAreas = [];
+    
+    function initializeSimplifiedServiceAreas() {
+        // Initialize the new service area form
+        const newAreaType = document.getElementById('newAreaType');
+        const newAreaState = document.getElementById('newAreaState');
+        const newAreaSpecific = document.getElementById('newAreaSpecific');
+        const newAreaCustom = document.getElementById('newAreaCustom');
+        const addServiceAreaBtn = document.getElementById('addServiceAreaBtn');
+        const clearNewAreaBtn = document.getElementById('clearNewAreaBtn');
+        
+        if (newAreaType) {
+            newAreaType.addEventListener('change', handleAreaTypeChange);
+        }
+        
+        if (newAreaState) {
+            newAreaState.addEventListener('change', handleStateChange);
+        }
+        
+        if (newAreaSpecific) {
+            newAreaSpecific.addEventListener('change', validateNewArea);
+        }
+        
+        if (newAreaCustom) {
+            newAreaCustom.addEventListener('input', validateNewArea);
+        }
+        
+        if (addServiceAreaBtn) {
+            addServiceAreaBtn.addEventListener('click', addNewServiceArea);
+        }
+        
+        if (clearNewAreaBtn) {
+            clearNewAreaBtn.addEventListener('click', clearNewAreaForm);
+        }
+        
+        // Load existing service areas if editing
+        loadExistingServiceAreas();
+        
+        // Initial update
+        updateServiceAreasDisplay();
+    }
+    
+    function handleAreaTypeChange() {
+        const newAreaType = document.getElementById('newAreaType');
+        const newAreaState = document.getElementById('newAreaState');
+        const newAreaSpecific = document.getElementById('newAreaSpecific');
+        const newAreaCustom = document.getElementById('newAreaCustom');
+        
+        const areaType = newAreaType.value;
+        
+        // Reset specific area dropdown
+        newAreaSpecific.innerHTML = '<option value="">Select area type first...</option>';
+        newAreaSpecific.disabled = true;
+        newAreaCustom.style.display = 'none';
+        
+        if (areaType === 'state' || areaType === 'national' || areaType === 'online') {
+            // No specific area needed
+            newAreaState.disabled = (areaType === 'national' || areaType === 'online');
+            validateNewArea();
+        } else if (areaType === 'custom') {
+            // Show custom input
+            newAreaCustom.style.display = 'block';
+            newAreaCustom.placeholder = 'Enter custom area name (e.g., Downtown District, Specific Neighborhood)';
+            validateNewArea();
+        } else if (areaType === 'county' || areaType === 'city') {
+            // Enable state selection and specific area dropdown
+            newAreaState.disabled = false;
+            newAreaSpecific.disabled = false;
+            populateAvailableStates(areaType);
+        }
+    }
+    
+    function populateAvailableStates(areaType) {
+        const newAreaState = document.getElementById('newAreaState');
+        
+        newAreaState.innerHTML = '<option value="">Loading...</option>';
+        
+        // Make API call to get states based on area type
+        let apiUrl = '/api/location/states-counties/';
+        
+        if (areaType === 'county') {
+            // For counties, only show states that have county data
+            apiUrl += '?has_counties=true';
+        } else if (areaType === 'city') {
+            // For cities, only show states that have city data
+            apiUrl += '?has_cities=true';
+        }
+        
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                newAreaState.innerHTML = '<option value="">Select state...</option>';
+                
+                if (data.success && data.states) {
+                    data.states.forEach(state => {
+                        const option = document.createElement('option');
+                        option.value = state.ext_ids.state_fips;
+                        option.textContent = state.name;
+                        newAreaState.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading states:', error);
+                newAreaState.innerHTML = '<option value="">Error loading states</option>';
+            });
+    }
+    
+    function populateSpecificAreas(areaType, state = null) {
+        const newAreaSpecific = document.getElementById('newAreaSpecific');
+        const newAreaState = document.getElementById('newAreaState');
+        
+        newAreaSpecific.innerHTML = '<option value="">Loading...</option>';
+        
+        const stateFips = state || newAreaState.value;
+        
+        if (areaType === 'county') {
+            // Get counties for the selected state via API
+            fetch(`/api/location/states-counties/?state_fips=${stateFips}`)
+                .then(response => response.json())
+                .then(data => {
+                    newAreaSpecific.innerHTML = '<option value="">Select specific area...</option>';
+                    
+                    if (data.success && data.counties) {
+                        data.counties.forEach(county => {
+                            const option = document.createElement('option');
+                            option.value = county.id;
+                            option.textContent = county.name;
+                            newAreaSpecific.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading counties:', error);
+                    newAreaSpecific.innerHTML = '<option value="">Error loading counties</option>';
+                });
+        } else if (areaType === 'city') {
+            // Get cities for the selected state via API
+            fetch(`/api/location/states-counties/?state_fips=${stateFips}`)
+                .then(response => response.json())
+                .then(data => {
+                    newAreaSpecific.innerHTML = '<option value="">Select specific area...</option>';
+                    
+                    if (data.success && data.cities) {
+                        data.cities.forEach(city => {
+                            const option = document.createElement('option');
+                            option.value = city.id;
+                            option.textContent = city.name;
+                            newAreaSpecific.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading cities:', error);
+                    newAreaSpecific.innerHTML = '<option value="">Error loading cities</option>';
+                });
+        }
+    }
+    
+    // Geographic data is now fetched from the database via API calls
+    // All geographic data comes from /api/location/states-counties/ endpoint
+    
+    async function getAvailableStates(areaType) {
+        try {
+            let url = '/api/location/states-counties/';
+            
+            if (areaType === 'county') {
+                url += '?has_counties=true';
+            } else if (areaType === 'city') {
+                url += '?has_cities=true';
+            } else {
+                // For other area types, return empty array
+                return [];
+            }
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            if (data.success && data.states) {
+                return data.states.map(state => ({
+                    code: state.ext_ids.state_fips,
+                    name: state.name
+                }));
+            }
+            
+            return [];
+        } catch (error) {
+            console.error('Error fetching available states:', error);
+            return [];
+        }
+    }
+    
+    async function getCountiesForState(state) {
+        try {
+            const response = await fetch(`/api/location/states-counties/?state_fips=${state}`);
+            const data = await response.json();
+            return data.counties || [];
+        } catch (error) {
+            console.error('Error fetching counties for state:', state, error);
+            return [];
+        }
+    }
+    
+    async function getCitiesForState(state) {
+        try {
+            const response = await fetch(`/api/location/states-counties/?state_fips=${state}`);
+            const data = await response.json();
+            return data.cities || [];
+        } catch (error) {
+            console.error('Error fetching cities for state:', state, error);
+            return [];
+        }
+    }
+    
+
+    
+    function handleStateChange() {
+        const newAreaType = document.getElementById('newAreaType');
+        const newAreaState = document.getElementById('newAreaState');
+        
+        const areaType = newAreaType.value;
+        const state = newAreaState.value;
+        
+        if (areaType && state && (areaType === 'county' || areaType === 'city')) {
+            populateSpecificAreas(areaType, state);
+        }
+        
+        validateNewArea();
+    }
+    
+    function validateNewArea() {
+        const newAreaType = document.getElementById('newAreaType');
+        const newAreaState = document.getElementById('newAreaState');
+        const newAreaSpecific = document.getElementById('newAreaSpecific');
+        const newAreaCustom = document.getElementById('newAreaCustom');
+        const addServiceAreaBtn = document.getElementById('addServiceAreaBtn');
+        
+        const areaType = newAreaType.value;
+        const state = newAreaState.value;
+        const specific = newAreaSpecific.value;
+        const custom = newAreaCustom.value.trim();
+        
+        let isValid = false;
+        
+        if (areaType === 'state' && state) {
+            isValid = true;
+        } else if (areaType === 'national' || areaType === 'online') {
+            isValid = true;
+        } else if (areaType === 'custom' && custom) {
+            isValid = true;
+        } else if ((areaType === 'county' || areaType === 'city') && state && specific) {
+            isValid = true;
+        }
+        
+        addServiceAreaBtn.disabled = !isValid;
+    }
+    
+    function addNewServiceArea() {
+        const newAreaType = document.getElementById('newAreaType');
+        const newAreaState = document.getElementById('newAreaState');
+        const newAreaSpecific = document.getElementById('newAreaSpecific');
+        const newAreaCustom = document.getElementById('newAreaCustom');
+        
+        const areaType = newAreaType.value;
+        const state = newAreaState.value;
+        const specific = newAreaSpecific.value;
+        const custom = newAreaCustom.value.trim();
+        
+        let areaName = '';
+        let areaValue = '';
+        
+        if (areaType === 'state' && state) {
+            areaName = newAreaState.options[newAreaState.selectedIndex].text;
+            areaValue = `state:${state}`;
+        } else if (areaType === 'national') {
+            areaName = 'All States';
+            areaValue = 'national:all';
+        } else if (areaType === 'online') {
+            areaName = 'Online Services';
+            areaValue = 'online:anywhere';
+        } else if (areaType === 'custom' && custom) {
+            areaName = custom;
+            areaValue = `custom:${custom}`;
+        } else if ((areaType === 'county' || areaType === 'city') && state && specific) {
+            const stateName = newAreaState.options[newAreaState.selectedIndex].text;
+            const specificName = newAreaSpecific.options[newAreaSpecific.selectedIndex].text;
+            areaName = `${specificName}, ${stateName}`;
+            
+            if (areaType === 'county') {
+                // For counties, use the CoverageArea ID directly
+                areaValue = `county:${specific}`;
+            } else if (areaType === 'city') {
+                // For cities, use the CoverageArea ID directly
+                areaValue = `city:${specific}`;
+            }
+        }
+        
+        if (areaName && areaValue) {
+            // Check if area already exists
+            const exists = serviceAreas.some(area => area.value === areaValue);
+            if (exists) {
+                showToast('This service area has already been added.', 'warning');
+                return;
+            }
+            
+            // Add to service areas array
+            serviceAreas.push({
+                type: areaType,
+                name: areaName,
+                value: areaValue,
+                state: state,
+                specific: specific,
+                custom: custom
+            });
+            
+            // Update display
+            updateServiceAreasDisplay();
+            
+            // Clear form
+            clearNewAreaForm();
+            
+            showToast(`Added service area: ${areaName}`, 'success');
+        }
+    }
+    
+    function clearNewAreaForm() {
+        document.getElementById('newAreaType').value = '';
+        document.getElementById('newAreaState').value = '';
+        document.getElementById('newAreaState').disabled = false;
+        document.getElementById('newAreaSpecific').innerHTML = '<option value="">Select area type first...</option>';
+        document.getElementById('newAreaSpecific').disabled = true;
+        document.getElementById('newAreaCustom').value = '';
+        document.getElementById('newAreaCustom').style.display = 'none';
+        document.getElementById('addServiceAreaBtn').disabled = true;
+    }
+    
+    function updateServiceAreasDisplay() {
+        // Find the current service areas heading and count span
+        const currentAreasHeading = Array.from(document.querySelectorAll('h6')).find(h6 => 
+            h6.textContent.includes('Current Service Areas')
+        );
+        let countSpan = null;
+        let messageDiv = null;
+        
+        if (currentAreasHeading) {
+            // Find the count span within the heading
+            countSpan = currentAreasHeading.querySelector('span');
+            
+            // Find the message div below the heading
+            const nextElement = currentAreasHeading.nextElementSibling;
+            if (nextElement && nextElement.querySelector('.text-muted')) {
+                messageDiv = nextElement;
+            }
+        }
+        
+        if (serviceAreas.length === 0) {
+            // Update count
+            if (countSpan) {
+                countSpan.textContent = '0';
+            }
+            
+            // Update message
+            if (messageDiv) {
+                messageDiv.innerHTML = `
+                    <div class="text-muted small p-3 text-center">
+                        <i class="fas fa-map-marker-alt fa-2x mb-2 text-muted"></i>
+                        <div>No service areas added yet.</div>
+                        <div class="small">Use the form above to add service areas.</div>
+                    </div>
+                `;
+            }
+        } else {
+            // Update count
+            if (countSpan) {
+                countSpan.textContent = serviceAreas.length;
+            }
+            
+            // Update message to show the service areas
+            if (messageDiv) {
+                let areasHtml = '';
+                serviceAreas.forEach((area, index) => {
+                    let icon = 'fas fa-map-marker-alt';
+                    let badgeClass = 'bg-primary';
+                    
+                    switch (area.type) {
+                        case 'state':
+                            icon = 'fas fa-map';
+                            badgeClass = 'bg-info';
+                            break;
+                        case 'county':
+                            icon = 'fas fa-map';
+                            badgeClass = 'bg-success';
+                            break;
+                        case 'city':
+                            icon = 'fas fa-city';
+                            badgeClass = 'bg-warning';
+                            break;
+                        case 'national':
+                            icon = 'fas fa-flag-usa';
+                            badgeClass = 'bg-danger';
+                            break;
+                        case 'online':
+                            icon = 'fas fa-globe';
+                            badgeClass = 'bg-info';
+                            break;
+                        case 'custom':
+                            icon = 'fas fa-map-pin';
+                            badgeClass = 'bg-secondary';
+                            break;
+                    }
+                    
+                    areasHtml += `
+                        <div class="list-group-item d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <i class="${icon} me-2"></i>
+                                ${area.name}
+                            </div>
+                            <div>
+                                <span class="badge ${badgeClass} me-2">${area.type}</span>
+                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeServiceArea(${index})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                messageDiv.innerHTML = `
+                    <div class="list-group">
+                        ${areasHtml}
+                    </div>
+                `;
+            }
+        }
+        
+        // Update progress tracking
+        updateProgress();
+    }
+    
+    function removeServiceArea(index) {
+        const area = serviceAreas[index];
+        serviceAreas.splice(index, 1);
+        updateServiceAreasDisplay();
+        showToast(`Removed service area: ${area.name}`, 'info');
+    }
+    
+    function quickAddArea(type, state, name) {
+        const areaValue = state ? `${type}:${state}` : `${type}:all`;
+        
+        // Check if area already exists
+        const exists = serviceAreas.some(area => area.value === areaValue);
+        if (exists) {
+            showToast('This service area has already been added.', 'warning');
+            return;
+        }
+        
+        serviceAreas.push({
+            type: type,
+            name: name,
+            value: areaValue,
+            state: state,
+            specific: '',
+            custom: ''
+        });
+        
+        updateServiceAreasDisplay();
+        showToast(`Added service area: ${name}`, 'success');
+    }
+    
+    function showUnsureOption() {
+        const exists = serviceAreas.some(area => area.value === 'unsure');
+        if (exists) {
+            showToast('"Not sure" option has already been added.', 'warning');
+            return;
+        }
+        
+        serviceAreas.push({
+            type: 'unsure',
+            name: 'Not sure about service areas',
+            value: 'unsure',
+            state: '',
+            specific: '',
+            custom: ''
+        });
+        
+        updateServiceAreasDisplay();
+        showToast('Added "Not sure" option - we can help you figure this out later.', 'info');
+    }
+    
+    function loadExistingServiceAreas() {
+        // This would load existing service areas if editing an existing resource
+        // For now, we'll start with an empty array
+        serviceAreas = [];
+    }
+    
+    // Real-time Validation Functions
+    function initializeRealTimeValidation() {
+        // Add validation to key fields
+        const nameField = document.querySelector('input[name="name"]');
+        const descriptionField = document.querySelector('textarea[name="description"]');
+        const phoneField = document.querySelector('input[name="phone"]');
+        const emailField = document.querySelector('input[name="email"]');
+        const websiteField = document.querySelector('input[name="website"]');
+        const cityField = document.querySelector('input[name="city"]');
+        const stateField = document.querySelector('input[name="state"]');
+        
+        if (nameField) {
+            nameField.addEventListener('blur', validateName);
+            nameField.addEventListener('input', clearValidationError);
+        }
+        
+        if (descriptionField) {
+            descriptionField.addEventListener('blur', validateDescription);
+            descriptionField.addEventListener('input', clearValidationError);
+        }
+        
+        if (phoneField) {
+            phoneField.addEventListener('blur', validatePhone);
+            phoneField.addEventListener('input', clearValidationError);
+        }
+        
+        if (emailField) {
+            emailField.addEventListener('blur', validateEmail);
+            emailField.addEventListener('input', clearValidationError);
+        }
+        
+        if (websiteField) {
+            websiteField.addEventListener('blur', validateWebsite);
+            websiteField.addEventListener('input', clearValidationError);
+        }
+        
+        if (cityField) {
+            cityField.addEventListener('blur', validateCity);
+            cityField.addEventListener('input', clearValidationError);
+        }
+        
+        if (stateField) {
+            stateField.addEventListener('blur', validateState);
+            stateField.addEventListener('input', clearValidationError);
+        }
+    }
+    
+    function validateName() {
+        const field = document.querySelector('input[name="name"]');
+        const value = field.value.trim();
+        
+        if (!value) {
+            showFieldValidation(field, 'Please enter the name of the organization or service.', 'error');
+            return false;
+        }
+        
+        if (value.length < 2) {
+            showFieldValidation(field, 'The name should be at least 2 characters long.', 'warning');
+            return false;
+        }
+        
+        showFieldValidation(field, 'Great! This name looks good.', 'success');
+        return true;
+    }
+    
+    function validateDescription() {
+        const field = document.querySelector('textarea[name="description"]');
+        const value = field.value.trim();
+        
+        if (!value) {
+            showFieldValidation(field, 'Please describe what this organization does.', 'error');
+            return false;
+        }
+        
+        if (value.length < 20) {
+            showFieldValidation(field, `Description needs to be at least 20 characters (currently ${value.length}). Add more details about what this organization does and who they help.`, 'warning');
+            return false;
+        }
+        
+        showFieldValidation(field, 'Perfect! This description provides good information about the organization.', 'success');
+        return true;
+    }
+    
+    function validatePhone() {
+        const field = document.querySelector('input[name="phone"]');
+        const value = field.value.trim();
+        
+        if (!value) return true; // Optional field
+        
+        const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+        const cleanPhone = value.replace(/[\s\-\(\)\.]/g, '');
+        
+        if (!phoneRegex.test(cleanPhone)) {
+            showFieldValidation(field, 'Please enter a valid phone number (e.g., (555) 123-4567).', 'warning');
+            return false;
+        }
+        
+        showFieldValidation(field, 'Phone number looks good!', 'success');
+        return true;
+    }
+    
+    function validateEmail() {
+        const field = document.querySelector('input[name="email"]');
+        const value = field.value.trim();
+        
+        if (!value) return true; // Optional field
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        if (!emailRegex.test(value)) {
+            showFieldValidation(field, 'Please enter a valid email address (e.g., info@organization.org).', 'warning');
+            return false;
+        }
+        
+        showFieldValidation(field, 'Email address looks good!', 'success');
+        return true;
+    }
+    
+    function validateWebsite() {
+        const field = document.querySelector('input[name="website"]');
+        const value = field.value.trim();
+        
+        if (!value) return true; // Optional field
+        
+        if (!value.startsWith('http://') && !value.startsWith('https://')) {
+            showFieldValidation(field, 'Website should start with http:// or https:// (e.g., https://www.organization.org).', 'warning');
+            return false;
+        }
+        
+        showFieldValidation(field, 'Website URL looks good!', 'success');
+        return true;
+    }
+    
+    function validateCity() {
+        const field = document.querySelector('input[name="city"]');
+        const value = field.value.trim();
+        
+        if (!value) {
+            showFieldValidation(field, 'Please enter the city where this organization is located.', 'error');
+            return false;
+        }
+        
+        if (value.length < 2) {
+            showFieldValidation(field, 'Please enter a valid city name.', 'warning');
+            return false;
+        }
+        
+        showFieldValidation(field, 'City looks good!', 'success');
+        return true;
+    }
+    
+    function validateState() {
+        const field = document.querySelector('input[name="state"]');
+        const value = field.value.trim().toUpperCase();
+        
+        if (!value) {
+            showFieldValidation(field, 'Please enter the state (use 2-letter code like KY, TN, OH).', 'error');
+            return false;
+        }
+        
+        if (value.length !== 2) {
+            showFieldValidation(field, 'Please use the 2-letter state code (e.g., KY for Kentucky).', 'warning');
+            return false;
+        }
+        
+        showFieldValidation(field, 'State code looks good!', 'success');
+        return true;
+    }
+    
+    function showFieldValidation(field, message, type) {
+        // Remove existing validation message
+        const existingMessage = field.parentNode.querySelector('.field-validation-message');
+        if (existingMessage) {
+            existingMessage.remove();
+        }
+        
+        // Create new validation message
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `field-validation-message mt-1 small`;
+        
+        let icon = 'fas fa-info-circle';
+        let textClass = 'text-info';
+        
+        switch (type) {
+            case 'success':
+                icon = 'fas fa-check-circle';
+                textClass = 'text-success';
+                break;
+            case 'warning':
+                icon = 'fas fa-exclamation-triangle';
+                textClass = 'text-warning';
+                break;
+            case 'error':
+                icon = 'fas fa-times-circle';
+                textClass = 'text-danger';
+                break;
+        }
+        
+        messageDiv.innerHTML = `<i class="${icon} me-1"></i><span class="${textClass}">${message}</span>`;
+        
+        // Add message after the field
+        field.parentNode.appendChild(messageDiv);
+        
+        // Auto-remove success messages after 3 seconds
+        if (type === 'success') {
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 3000);
+        }
+    }
+    
+    function clearValidationError(event) {
+        const field = event.target;
+        const existingMessage = field.parentNode.querySelector('.field-validation-message');
+        if (existingMessage) {
+            existingMessage.remove();
+        }
+    }
     
     // Function to save only service areas (defined early so button can call it)
     function saveServiceAreasOnly() {
@@ -840,26 +2104,20 @@
             });
         }
         
-        // Initialize maps when modal is shown
+        // Initialize service area modal
         const serviceAreaModal = document.getElementById('serviceAreaModal');
         if (serviceAreaModal) {
             serviceAreaModal.addEventListener('shown.bs.modal', function() {
-                initializeMaps();
                 loadExistingServiceAreas(); // Load existing areas when modal opens
                 updateModalContext(); // Update modal for edit mode
             });
-            
-            serviceAreaModal.addEventListener('hidden.bs.modal', function() {
-                cleanupMaps();
-            });
         }
         
-        // Tab change event to initialize maps
+        // Tab change event handlers (maps removed)
         const tabButtons = document.querySelectorAll('[data-bs-toggle="tab"]');
         tabButtons.forEach(button => {
             button.addEventListener('shown.bs.tab', function(e) {
-                const targetId = e.target.getAttribute('data-bs-target');
-                initializeMapForTab(targetId);
+                // Map initialization removed - functionality no longer used
             });
         });
         
@@ -1025,75 +2283,11 @@
             });
         }
         
-        // Map initialization functions
-        function initializeMaps() {
-            // Initialize the first tab (boundary) by default
-            initializeMapForTab('#boundary');
-        }
+        // Map functionality removed - no longer used
         
-        function initializeMapForTab(tabId) {
-            switch(tabId) {
-                case '#boundary':
-                    if (!boundaryMap) {
-                        boundaryMap = createMap('boundaryMapPreview', [37.1283, -84.0836], 8);
-                    }
-                    break;
-                case '#radius':
-                    if (!radiusMap) {
-                        radiusMap = createMap('radiusMapPreview', [37.1283, -84.0836], 10);
-                        setupRadiusMap(radiusMap);
-                    }
-                    break;
-                case '#polygon':
-                    if (!polygonMap) {
-                        polygonMap = createMap('polygonMapCanvas', [37.1283, -84.0836], 10);
-                        setupPolygonMap(polygonMap);
-                    }
-                    break;
-                case '#upload':
-                    if (!uploadMap) {
-                        uploadMap = createMap('uploadPreview', [37.1283, -84.0836], 8);
-                    }
-                    break;
-            }
-        }
+        // Map tab initialization removed - functionality no longer used
         
-        function createMap(containerId, center, zoom) {
-            const container = document.getElementById(containerId);
-            if (!container) return null;
-            
-            // Create map instance
-            const map = L.map(containerId, {
-                center: center,
-                zoom: zoom,
-                zoomControl: true,
-                attributionControl: true
-            });
-            
-            // Add OpenStreetMap tile layer
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
-                maxZoom: 19
-            }).addTo(map);
-            
-            // Add interaction hint for boundary map
-            if (containerId === 'boundaryMapPreview') {
-                const hint = L.control({position: 'topleft'});
-                hint.onAdd = function() {
-                    const div = L.DomUtil.create('div', 'map-hint');
-                    div.innerHTML = '<i class="fas fa-info-circle"></i> Click areas to select';
-                    return div;
-                };
-                hint.addTo(map);
-            }
-            
-            // Force map resize after initialization
-            setTimeout(() => {
-                map.invalidateSize();
-            }, 100);
-            
-            return map;
-        }
+        // Map creation function removed - functionality no longer used
         
         function setupRadiusMap(map) {
             let centerMarker = null;
@@ -1955,14 +3149,30 @@
                 try {
                     const initialData = JSON.parse(initialDataInput.value);
                     if (initialData && initialData.length > 0) {
+                        // Populate both arrays to keep them synchronized
                         selectedServiceAreas = initialData;
+                        
+                        // Convert to the format expected by simplified service areas
+                        serviceAreas = initialData.map(area => ({
+                            type: area.type,
+                            name: area.name,
+                            value: `${area.type}:${area.id}`,
+                            state: area.state_fips || '',
+                            specific: '',
+                            custom: ''
+                        }));
+                        
+                        // Update both displays to keep them synchronized
                         updateServiceAreasList();
+                        updateServiceAreasDisplay();
                         
                         // Update the status badge to show configured
                         const statusBadge = document.getElementById('serviceAreasStatus');
                         if (statusBadge) {
                             statusBadge.innerHTML = `<span class="badge bg-success">Configured (${initialData.length})</span>`;
                         }
+                        
+                        console.log(`Loaded ${initialData.length} service areas from Django context`);
                     }
                 } catch (error) {
                     console.error('Error parsing initial service areas data:', error);
@@ -2348,12 +3558,35 @@
                 serviceAreasInput.type = 'hidden';
                 serviceAreasInput.name = 'service_areas';
                 
-                if (selectedServiceAreas.length > 0) {
-                    serviceAreasInput.value = JSON.stringify(selectedServiceAreas.map(area => area.id));
-                } else {
-                    serviceAreasInput.value = '[]'; // Empty array to clear existing associations
+                // Combine both service areas arrays
+                let allServiceAreas = [];
+                
+                // Add selectedServiceAreas (from Service Area Manager modal)
+                if (selectedServiceAreas && selectedServiceAreas.length > 0) {
+                    allServiceAreas = allServiceAreas.concat(selectedServiceAreas.map(area => area.id));
                 }
                 
+                // Add serviceAreas (from simplified form) - convert to CoverageArea IDs
+                if (serviceAreas && serviceAreas.length > 0) {
+                    serviceAreas.forEach(area => {
+                        if (area.type === 'county' && area.value.startsWith('county:')) {
+                            // Extract CoverageArea ID from county value
+                            const coverageAreaId = area.value.replace('county:', '');
+                            if (coverageAreaId && !isNaN(coverageAreaId)) {
+                                allServiceAreas.push(parseInt(coverageAreaId));
+                            }
+                        } else if (area.type === 'city' && area.value.startsWith('city:')) {
+                            // Extract CoverageArea ID from city value
+                            const coverageAreaId = area.value.replace('city:', '');
+                            if (coverageAreaId && !isNaN(coverageAreaId)) {
+                                allServiceAreas.push(parseInt(coverageAreaId));
+                            }
+                        }
+                        // TODO: Handle other area types (state, etc.) when we have proper CoverageArea IDs
+                    });
+                }
+                
+                serviceAreasInput.value = JSON.stringify(allServiceAreas);
                 resourceForm.appendChild(serviceAreasInput);
             });
         }
