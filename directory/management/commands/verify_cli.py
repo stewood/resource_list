@@ -27,12 +27,29 @@ import datetime
 import json
 import subprocess
 import sys
+import os
 from typing import Any, Dict, List, Optional, Union
 from django.db.models import Q
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 
 from directory.models import Resource, CoverageArea
+
+# Add the project root to the path for importing test modules
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+
+# Import the new cursor parser functionality
+try:
+    from test_cursor_parser import parse_cursor_agent_output
+    from rich import print as rprint
+    from rich.json import JSON
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.table import Table
+    from rich.syntax import Syntax
+    RICH_AVAILABLE = True
+except ImportError:
+    RICH_AVAILABLE = False
 
 
 class Command(BaseCommand):
@@ -256,9 +273,27 @@ OUTPUT: JSON with the next resource to verify, complete details, available servi
                 resource_data = self._format_resource_for_verification(resource, verbose)
                 
                 # Step 1: Website Discovery (always runs first)
-                self.stdout.write(f"\n🔍 STEP 1: Starting website discovery for resource: {resource.name}\n")
+                self.stdout.write("\n" + "="*100 + "\n")
+                self.stdout.write(f"🔍 STEP 1: WEBSITE DISCOVERY\n")
+                self.stdout.write(f"Resource: {resource.name}\n")
+                self.stdout.write(f"Category: {resource.category}\n")
+                self.stdout.write(f"Location: {resource.city}, {resource.state}\n")
+                self.stdout.write("="*100 + "\n")
                 website_result = self._discover_websites(resource_data, timeout)
                 resource_data["website_discovery"] = website_result
+                
+                # Check for hard break status
+                if website_result.get("status") == "hard_break":
+                    self.stdout.write("\n🛑 HARD BREAK: Stopping execution as requested\n")
+                    self.stdout.write("="*100 + "\n")
+                    # Return the partial results with hard break status
+                    response_data["resources"].append(resource_data)
+                    response_data["hard_break"] = True
+                    response_data["message"] = "Execution stopped at hard break after website discovery"
+                    self._output_success("Hard break reached - execution stopped", response_data)
+                    return
+                
+                # Continue to next step after website discovery
                 
                 # Step 2: Chunk 1 Verification (Identity & Contact Information)
                 self.stdout.write(f"\n🔍 STEP 2: Starting Chunk 1 verification (Identity & Contact) for resource: {resource.name}\n")
@@ -278,6 +313,7 @@ OUTPUT: JSON with the next resource to verify, complete details, available servi
     def _discover_websites(self, resource_data: Dict[str, Any], timeout_seconds: int = 180) -> Dict[str, Any]:
         """
         Use Cursor Agent to discover websites with information about this resource.
+        Uses the new Rich formatting and cursor parser functionality.
         
         Args:
             resource_data: Formatted resource data
@@ -358,31 +394,147 @@ Use chain of thought to explain your search process, then provide your findings 
 IMPORTANT: Complete the JSON structure above and then print <|END|> to signal completion.
 """
             
-            # Show the prompt being sent
-            self.stdout.write("\nPROMPT BEING SENT TO CURSOR AGENT:\n")
-            self.stdout.write(website_prompt)
-            self.stdout.write("\n")
-            
-            # Use cursor-agent with MCP tools for website discovery
-            result = self._smart_cursor_call(website_prompt, timeout_seconds=60)
-            
-            if result and not result.startswith("Error:"):
-                # Parse the result to extract structured data
-                parsed_result = self._parse_website_discovery_result(result)
+            # Use the new cursor parser with Rich formatting
+            if RICH_AVAILABLE:
+                console = Console()
                 
-                return {
-                    "status": "success",
-                    "response": {"text": result},
-                    "raw_output": result,
-                    "parsed_data": parsed_result,
-                    "timestamp": timezone.now().isoformat()
-                }
+                # Header with Rich styling
+                header_panel = Panel(
+                    f"🔍 Website Discovery for: {resource_data['name']}\n"
+                    f"📍 Location: {resource_data['city']}, {resource_data['state']}\n"
+                    f"⏰ Timeout: {timeout_seconds}s",
+                    title="🌐 Starting website discovery...",
+                    border_style="blue"
+                )
+                console.print(header_panel)
+                
+                # Use the new parse_cursor_agent_output function
+                result = parse_cursor_agent_output(
+                    prompt=website_prompt,
+                    timeout_seconds=timeout_seconds,
+                    verbose=True,
+                    show_tool_calls=True,
+                    show_system_messages=False
+                )
+                
+                # Display results summary
+                if result['success']:
+                    # Create a summary table
+                    summary_table = Table(title="Website Discovery Summary", show_header=True, header_style="bold magenta")
+                    summary_table.add_column("Metric", style="cyan", no_wrap=True)
+                    summary_table.add_column("Value", style="green")
+                    
+                    summary_table.add_row("Success", "✅ Yes")
+                    summary_table.add_row("Duration", f"{result['duration_ms']}ms")
+                    summary_table.add_row("Tool calls", str(len(result['tool_calls'])))
+                    summary_table.add_row("Text length", f"{len(result['full_text'])} characters")
+                    
+                    console.print(summary_table)
+                    
+                    # Try to extract and display the final JSON response
+                    try:
+                        # Look for JSON in the full text
+                        json_start = result['full_text'].find('{')
+                        json_end = result['full_text'].rfind('}') + 1
+                        
+                        if json_start != -1 and json_end > json_start:
+                            json_text = result['full_text'][json_start:json_end]
+                            json_data = json.loads(json_text)
+                            
+                            final_panel = Panel(
+                                JSON.from_data(json_data),
+                                title="🎯 Website Discovery Results",
+                                border_style="bold green"
+                            )
+                            console.print(final_panel)
+                            
+                            # Parse the result to extract structured data
+                            parsed_result = self._parse_website_discovery_result(result['full_text'])
+                            
+                            # HARD BREAK: Stop here after URL discovery but before Chunk 1 verification
+                            self.stdout.write("\n🛑 HARD BREAK: Stopping here after URL discovery with new format\n")
+                            self.stdout.write("="*100 + "\n")
+                            
+                            # Display the discovered URLs in a clean format
+                            if parsed_result and parsed_result.get('urls'):
+                                self.stdout.write("\n📋 DISCOVERED URLs:\n")
+                                for i, url_info in enumerate(parsed_result['urls'], 1):
+                                    self.stdout.write(f"{i:2d}. {url_info.get('url', 'N/A')}\n")
+                                    self.stdout.write(f"    Type: {url_info.get('type', 'N/A')}\n")
+                                    self.stdout.write(f"    Description: {url_info.get('description', 'N/A')[:100]}...\n\n")
+                            else:
+                                self.stdout.write("\n❌ No URLs found in parsed result\n")
+                            
+                            return {
+                                "status": "hard_break",
+                                "message": "Stopped after URL discovery with new Rich formatting",
+                                "urls_found": len(parsed_result.get('urls', [])) if parsed_result else 0,
+                                "discovered_urls": parsed_result.get('urls', []) if parsed_result else [],
+                                "tool_calls_count": len(result.get('tool_calls', [])),
+                                "duration_ms": result['duration_ms'],
+                                "timestamp": timezone.now().isoformat()
+                            }
+                        else:
+                            # No JSON found, return the full text
+                            # HARD BREAK: Stop here after URL discovery but before Chunk 1 verification
+                            self.stdout.write("\n🛑 HARD BREAK: Stopping here after URL discovery with new format (no JSON found)\n")
+                            self.stdout.write("="*100 + "\n")
+                            return {
+                                "status": "hard_break",
+                                "message": "Stopped after URL discovery with new Rich formatting (no JSON found)",
+                                "urls_found": 0,
+                                "tool_calls_count": len(result.get('tool_calls', [])),
+                                "duration_ms": result['duration_ms'],
+                                "timestamp": timezone.now().isoformat()
+                            }
+                            
+                    except json.JSONDecodeError:
+                        # JSON parsing failed, return the full text
+                        # HARD BREAK: Stop here after URL discovery but before Chunk 1 verification
+                        self.stdout.write("\n🛑 HARD BREAK: Stopping here after URL discovery with new format (JSON parse failed)\n")
+                        self.stdout.write("="*100 + "\n")
+                        return {
+                            "status": "hard_break",
+                            "message": "Stopped after URL discovery with new Rich formatting (JSON parse failed)",
+                            "urls_found": 0,
+                            "tool_calls_count": len(result.get('tool_calls', [])),
+                            "duration_ms": result['duration_ms'],
+                            "timestamp": timezone.now().isoformat()
+                        }
+                else:
+                    # Error occurred
+                    error_panel = Panel(
+                        f"Error: {result.get('error', 'Unknown error')}",
+                        title="❌ Website Discovery Failed",
+                        border_style="red"
+                    )
+                    console.print(error_panel)
+                    
+                    return {
+                        "status": "error",
+                        "error": result.get('error', 'Unknown error'),
+                        "timestamp": timezone.now().isoformat()
+                    }
             else:
-                return {
-                    "status": "error",
-                    "error": result,
-                    "timestamp": timezone.now().isoformat()
-                }
+                # Fallback to old method if Rich is not available
+                self.stdout.write("⚠️  Rich formatting not available, using fallback method\n")
+                result = self._smart_cursor_call(website_prompt, timeout_seconds=timeout_seconds)
+                
+                if result and not result.startswith("Error:"):
+                    parsed_result = self._parse_website_discovery_result(result)
+                    return {
+                        "status": "success",
+                        "response": {"text": result},
+                        "raw_output": result,
+                        "parsed_data": parsed_result,
+                        "timestamp": timezone.now().isoformat()
+                    }
+                else:
+                    return {
+                        "status": "error",
+                        "error": result,
+                        "timestamp": timezone.now().isoformat()
+                    }
                 
         except Exception as e:
             return {
@@ -576,14 +728,14 @@ IMPORTANT: Complete the JSON structure above and then print <|END|> to signal co
                 structured_data = {
                     "parse_status": "success",
                     "search_strategy": parsed_json.get("search_strategy", ""),
-                    "urls_found": parsed_json.get("urls_found", []),
+                    "urls": parsed_json.get("urls_found", []),  # The JSON has "urls_found" as the array
                     "total_urls": parsed_json.get("total_urls", 0),
                     "search_notes": parsed_json.get("search_notes", "")
                 }
                 
                 # Add URL statistics by type
                 urls_by_type = {}
-                for url_data in structured_data["urls_found"]:
+                for url_data in structured_data["urls"]:
                     url_type = url_data.get("type", "other")
                     if url_type not in urls_by_type:
                         urls_by_type[url_type] = []
@@ -1063,6 +1215,53 @@ IMPORTANT: Complete the JSON structure above and then print <|END|> to signal co
         else:
             return "No websites discovered in previous step."
 
+    def _extract_and_display_json(self, tool_response: Any) -> None:
+        """
+        Extract JSON from tool response and display it in a readable format.
+        
+        Args:
+            tool_response: The tool response data (can be dict, string, or list)
+        """
+        try:
+            # Handle different response formats
+            if isinstance(tool_response, dict):
+                # If it's a dict with 'text' field, extract that
+                if 'text' in tool_response:
+                    text_content = tool_response['text']
+                else:
+                    # Use the dict directly
+                    text_content = tool_response
+            elif isinstance(tool_response, list):
+                # If it's a list, process each item
+                for item in tool_response:
+                    self._extract_and_display_json(item)
+                return
+            else:
+                # Use the response directly
+                text_content = tool_response
+            
+            # Try to parse as JSON
+            if isinstance(text_content, str):
+                try:
+                    parsed_data = json.loads(text_content)
+                except json.JSONDecodeError:
+                    # If not JSON, display as plain text
+                    self.stdout.write(f"   {text_content}\n")
+                    return
+            else:
+                # Already parsed data
+                parsed_data = text_content
+            
+            # Format and display the JSON nicely
+            formatted_json = json.dumps(parsed_data, indent=2, default=str, ensure_ascii=False)
+            lines = formatted_json.split('\n')
+            for line in lines:
+                self.stdout.write(f"   {line}\n")
+                
+        except Exception as e:
+            # Fallback to string representation
+            self.stdout.write(f"   {str(tool_response)}\n")
+
     def _smart_cursor_call(self, prompt: str, timeout_seconds: int = 180) -> str:
         """
         Smart wrapper that calls Cursor Agent and parses streaming JSON responses.
@@ -1078,7 +1277,7 @@ IMPORTANT: Complete the JSON structure above and then print <|END|> to signal co
             self.stdout.write("🤖 Starting Cursor Agent...\n")
             self.stdout.write(f"⏰ Timeout set to {timeout_seconds} seconds\n")
             self.stdout.write(f"📝 Prompt: {prompt[:100]}{'...' if len(prompt) > 100 else ''}\n")
-            self.stdout.write("=" * 60 + "\n")
+            self.stdout.write("=" * 100 + "\n")
             
             process = subprocess.Popen(
                 ['cursor-agent', '--force', '--print', '-f', '--model', 'auto', prompt],
@@ -1136,7 +1335,7 @@ IMPORTANT: Complete the JSON structure above and then print <|END|> to signal co
                                         
                                         # Display text in chunks to avoid broken words
                                         # Look for natural break points (spaces, punctuation, newlines)
-                                        if len(text_buffer) - last_displayed_length > 20:  # Display every 20 chars
+                                        if len(text_buffer) - last_displayed_length > 50:  # Display every 50 chars for better flow
                                             # Find the last space or punctuation to avoid breaking words
                                             display_end = len(text_buffer)
                                             for i in range(len(text_buffer) - 1, last_displayed_length, -1):
@@ -1160,12 +1359,24 @@ IMPORTANT: Complete the JSON structure above and then print <|END|> to signal co
                                     
                                     self.stdout.write(f"\n🔧 Using tool: {tool_name}\n")
                                     if tool_args:
-                                        for key, value in tool_args.items():
-                                            if isinstance(value, str) and len(value) > 100:
-                                                value = value[:100] + "..."
-                                            elif not isinstance(value, str):
-                                                value = str(value)
-                                            self.stdout.write(f"   📋 {key}: {value}\n")
+                                        self.stdout.write("📋 Tool Arguments:\n")
+                                        try:
+                                            # Pretty print the tool arguments as JSON
+                                            formatted_args = json.dumps(tool_args, indent=2, default=str)
+                                            # Truncate very long values for display
+                                            lines = formatted_args.split('\n')
+                                            for line in lines:
+                                                if len(line) > 120:  # Truncate very long lines
+                                                    line = line[:117] + "..."
+                                                self.stdout.write(f"   {line}\n")
+                                        except Exception:
+                                            # Fallback to simple formatting if JSON fails
+                                            for key, value in tool_args.items():
+                                                if isinstance(value, str) and len(value) > 100:
+                                                    value = value[:100] + "..."
+                                                elif not isinstance(value, str):
+                                                    value = str(value)
+                                                self.stdout.write(f"   📋 {key}: {value}\n")
                                     tool_calls.append(tool_name)
                                 
                                 elif message.get('subtype') == 'completed':
@@ -1180,86 +1391,15 @@ IMPORTANT: Complete the JSON structure above and then print <|END|> to signal co
                                         # Format tool results nicely
                                         if tool_name == 'search':
                                             self.stdout.write("✅ Search completed - Results:\n")
-                                            self.stdout.write("=" * 50 + "\n")
+                                            self.stdout.write("=" * 100 + "\n")
                                             for item in content:
-                                                if isinstance(item, dict) and 'text' in item:
-                                                    try:
-                                                        # Try to parse as JSON to format search results
-                                                        search_data = json.loads(item['text'])
-                                                        if isinstance(search_data, dict) and 'results' in search_data:
-                                                            # Handle search results format with 'results' key
-                                                            results = search_data.get('results', [])
-                                                            for i, result_item in enumerate(results[:3], 1):  # Show top 3
-                                                                title = result_item.get('title', 'No title')
-                                                                url = result_item.get('url', 'No URL')
-                                                                desc = result_item.get('snippet', result_item.get('description', 'No description'))
-                                                                if isinstance(desc, str) and len(desc) > 200:
-                                                                    desc = desc[:200] + "..."
-                                                                elif not isinstance(desc, str):
-                                                                    desc = str(desc)
-                                                                self.stdout.write(f"{i}. {title}\n")
-                                                                self.stdout.write(f"   URL: {url}\n")
-                                                                self.stdout.write(f"   Description: {desc}\n\n")
-                                                        elif isinstance(search_data, list):
-                                                            # Handle direct list format
-                                                            for i, result_item in enumerate(search_data[:3], 1):  # Show top 3
-                                                                title = result_item.get('title', 'No title')
-                                                                url = result_item.get('url', 'No URL')
-                                                                desc = result_item.get('description', 'No description')
-                                                                if isinstance(desc, str) and len(desc) > 200:
-                                                                    desc = desc[:200] + "..."
-                                                                elif not isinstance(desc, str):
-                                                                    desc = str(desc)
-                                                                self.stdout.write(f"{i}. {title}\n")
-                                                                self.stdout.write(f"   URL: {url}\n")
-                                                                self.stdout.write(f"   Description: {desc}\n\n")
-                                                        else:
-                                                            # Show the parsed data in a readable format
-                                                            self.stdout.write(f"   {str(search_data)[:200]}...\n")
-                                                    except json.JSONDecodeError:
-                                                        # If not JSON, just show the text
-                                                        text_content = item['text']
-                                                        if isinstance(text_content, str) and len(text_content) > 200:
-                                                            text_content = text_content[:200] + "..."
-                                                        elif not isinstance(text_content, str):
-                                                            text_content = str(text_content)
-                                                        self.stdout.write(f"   {text_content}\n")
+                                                self._extract_and_display_json(item)
                                         
                                         elif tool_name == 'pull_markdown':
                                             self.stdout.write("✅ Markdown content extracted:\n")
-                                            self.stdout.write("=" * 50 + "\n")
+                                            self.stdout.write("=" * 100 + "\n")
                                             for item in content:
-                                                if isinstance(item, dict) and 'text' in item:
-                                                    text_content = item['text']
-                                                    if isinstance(text_content, str):
-                                                        try:
-                                                            # Try to parse as JSON to extract markdown content
-                                                            markdown_data = json.loads(text_content)
-                                                            if isinstance(markdown_data, dict) and 'markdown_content' in markdown_data:
-                                                                # Extract the actual markdown content
-                                                                markdown_text = markdown_data['markdown_content']
-                                                                # Show first few lines of markdown
-                                                                lines = markdown_text.split('\n')[:10]
-                                                                for line in lines:
-                                                                    self.stdout.write(f"   {line}\n")
-                                                                if len(markdown_text.split('\n')) > 10:
-                                                                    self.stdout.write("   ... (truncated)\n")
-                                                            else:
-                                                                # Show first few lines of the text
-                                                                lines = text_content.split('\n')[:10]
-                                                                for line in lines:
-                                                                    self.stdout.write(f"   {line}\n")
-                                                                if len(text_content.split('\n')) > 10:
-                                                                    self.stdout.write("   ... (truncated)\n")
-                                                        except json.JSONDecodeError:
-                                                            # If not JSON, show first few lines of the text
-                                                            lines = text_content.split('\n')[:10]
-                                                            for line in lines:
-                                                                self.stdout.write(f"   {line}\n")
-                                                            if len(text_content.split('\n')) > 10:
-                                                                self.stdout.write("   ... (truncated)\n")
-                                                    else:
-                                                        self.stdout.write(f"   {str(text_content)[:200]}...\n")
+                                                self._extract_and_display_json(item)
                                         
                                         elif tool_name == 'render_html':
                                             self.stdout.write("✅ HTML rendered in browser\n")
@@ -1267,14 +1407,9 @@ IMPORTANT: Complete the JSON structure above and then print <|END|> to signal co
                                         else:
                                             # Generic tool result
                                             self.stdout.write("✅ Tool call completed\n")
+                                            self.stdout.write("=" * 100 + "\n")
                                             for item in content:
-                                                if isinstance(item, dict) and 'text' in item:
-                                                    text_content = item['text']
-                                                    if isinstance(text_content, str) and len(text_content) > 200:
-                                                        text_content = text_content[:200] + "..."
-                                                    elif not isinstance(text_content, str):
-                                                        text_content = str(text_content)
-                                                    self.stdout.write(f"   {text_content}\n")
+                                                self._extract_and_display_json(item)
                                     
                                     else:
                                         self.stdout.write("❌ Tool call failed\n")
@@ -1314,7 +1449,7 @@ IMPORTANT: Complete the JSON structure above and then print <|END|> to signal co
             except Exception as stream_error:
                 self.stdout.write(f"\n⚠️  Error during streaming: {str(stream_error)}\n")
             
-            self.stdout.write("\n" + "=" * 60 + "\n")
+            self.stdout.write("\n" + "=" * 100 + "\n")
             
             # Wait for process to finish with timeout
             try:
