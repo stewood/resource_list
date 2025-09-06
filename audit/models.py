@@ -87,6 +87,7 @@ class AuditManager:
             "address2": resource.address2,
             "city": resource.city,
             "state": resource.state,
+            "county": resource.county,
             "postal_code": resource.postal_code,
             "status": resource.status,
             "source": resource.source,
@@ -98,6 +99,8 @@ class AuditManager:
             "languages_available": resource.languages_available,
             "is_emergency_service": resource.is_emergency_service,
             "is_24_hour_service": resource.is_24_hour_service,
+            "insurance_accepted": resource.insurance_accepted,
+            "capacity": resource.capacity,
             "last_verified_at": (
                 resource.last_verified_at.isoformat()
                 if resource.last_verified_at
@@ -153,6 +156,7 @@ def handle_resource_save(
             "address2",
             "city",
             "state",
+            "county",
             "postal_code",
             "status",
             "source",
@@ -164,6 +168,8 @@ def handle_resource_save(
             "languages_available",
             "is_emergency_service",
             "is_24_hour_service",
+            "insurance_accepted",
+            "capacity",
             "last_verified_at",
             "last_verified_by",
         ]

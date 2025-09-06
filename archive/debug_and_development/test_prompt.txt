@@ -1,0 +1,51 @@
+Find as many URLs as possible with information about this resource using chain of thought reasoning.
+
+Resource: Tumble Station Child Care
+Category: Child Care
+Description: Gymnastics center and child care facility offering gymnastics, dance, and cheer classes in a safe and fun environment. They provide tumbling classes for all ages and abilities, including tot and me classes and lil ninja classes. They also offer birthday parties on weekends and serve as a child care facility. The business is owned by Tracy Williams who serves as the Allstar Cheer & Dance Director. Their program aims to teach gymnastics, dance and cheer in a safe and fun environment.
+
+Location: London, KY
+
+Think through this step by step:
+1. First, consider what type of organization this is and what search terms would be most effective
+2. Think about where such organizations typically have online presence
+3. Consider both official and unofficial sources that might mention this resource
+4. Plan your search strategy to cover multiple angles
+
+Search for:
+- Official organization website
+- Social media profiles (Facebook, Twitter, LinkedIn, Instagram)
+- Directory listings (Google Business, Yelp, Yellow Pages)
+- News articles or press coverage
+- Government or nonprofit database listings
+- Service provider directories
+- Any other websites mentioning this resource
+
+IMPORTANT: Follow this two-step process:
+1. Use the DuckDuckGo MCP to search for URLs and information about this organization
+2. Use MCP Playwright browser tools to access and verify the discovered websites
+
+CRITICAL: Before launching any MCP tool, explain what you are about to do and why. For example:
+- "I will now use the DuckDuckGo MCP to search for [specific search terms] because [reason]"
+- "I will now use Playwright to navigate to [URL] to verify [specific information]"
+
+This approach avoids rate limiting and provides reliable search results.
+
+Use chain of thought to explain your search process, then provide your findings in this exact JSON format:
+
+{
+  "search_strategy": "Brief description of your search approach",
+  "urls_found": [
+    {
+      "url": "https://example.com",
+      "type": "official_website|social_media|directory|news|other",
+      "description": "Brief description of what this URL contains",
+      "reason": "Why this URL is relevant and useful for verification"
+    }
+  ],
+  "total_urls": 0,
+  "search_notes": "Any additional notes about your search process"
+}
+
+IMPORTANT: Complete the JSON structure above and then print <|END|> to signal completion.
+

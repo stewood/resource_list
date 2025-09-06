@@ -208,6 +208,33 @@ static/                      # Static assets
 - **PostgreSQL Full-Text Search**: Fast, accurate search
 - **Docker Support**: Easy development and deployment
 
+### **Command Line Interface (CLI)**
+- **Resource Management CLI**: Full CRUD operations via command line
+- **JSON Output**: All operations output JSON for easy parsing by AI/scripts
+- **Advanced Search**: FTS5 full-text search with filtering and pagination
+- **Bulk Operations**: Create and update resources from JSON input
+- **Interactive Mode**: Step-by-step resource creation with validation
+- **Comprehensive Help**: Self-documenting with examples and usage instructions
+
+**CLI Usage Examples:**
+```bash
+# List resources with filtering and pagination
+python manage.py resource_cli list --status=published --limit=10
+
+# Search for mental health resources in London
+python manage.py resource_cli search "mental health" --city="London" --status=published
+
+# Create a new resource interactively
+python manage.py resource_cli create
+
+# Update resource status
+python manage.py resource_cli update 123 --status=published
+
+# Get help for any command
+python manage.py resource_cli --help
+python manage.py resource_cli search --help
+```
+
 ## 🔄 Development Workflow
 
 ### **Local Development**
@@ -357,19 +384,21 @@ This project is open source. See LICENSE file for details.
 - **API Documentation**: See `directory/views/api/` (modular structure)
 - **Data Models**: See `directory/models/` (organized by functionality)
 - **Configuration**: See `resource_directory/settings.py`
+- **CLI Tool**: See `directory/management/commands/resource_cli.py` (command-line interface)
 - **Deployment**: See `scripts/deployment/`
 - **Data Management**: See `scripts/data/`
 - **Geographic Data**: See `scripts/geo/`
 - **Troubleshooting**: See `docs/troubleshooting/`
 
 ### **Common Tasks**
-- **Add a new resource**: Use the admin interface or API
+- **Add a new resource**: Use the admin interface, API, or CLI (`python manage.py resource_cli create`)
 - **Modify search**: See `directory/forms/filter_forms.py`
 - **Update coverage areas**: See `scripts/data/manage_service_areas.py`
 - **Manage geographic data**: See `scripts/geo/manager.py`
 - **Deploy changes**: See `scripts/deployment/`
 - **Run tests**: See `scripts/development/run_tests.py`
 - **Analyze dependencies**: See `scripts/development/analyze_dependencies.py`
+- **CLI operations**: See `directory/management/commands/resource_cli.py` for full CLI documentation
 
 ### **Support**
 - **Issues**: Create a GitHub issue

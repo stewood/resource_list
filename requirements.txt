@@ -31,3 +31,6 @@ langchain==0.3.27
 langchain-openai==0.3.32
 langchain-community==0.3.29
 python-dotenv==1.1.1
+
+# MCP Server dependencies
+fastmcp==2.0.0

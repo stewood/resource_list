@@ -48,6 +48,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
+from django.contrib import messages
 
 from ..models import Resource
 from ..permissions import (
@@ -145,7 +146,9 @@ def publish_resource(request: HttpRequest, pk: int) -> HttpResponse:
         resource.last_verified_by = request.user
         resource.full_clean()
         resource.save()
-        return HttpResponse("Resource published successfully")
+        # Add success message and redirect to resources needing review
+        messages.success(request, f"Resource '{resource.name}' published successfully!")
+        return redirect('/resources/?status=needs_review')
     except Exception as e:
         return HttpResponse(f"Validation error: {str(e)}", status=400)
 
@@ -251,8 +254,8 @@ def archive_resource(request: HttpRequest, pk: int) -> HttpResponse:
         resource.archive_reason = archive_reason
         resource.updated_by = request.user
         resource.save()
-        # Redirect back to detail page for UX
-        return redirect("directory:resource_detail", pk=resource.pk)
+        # Redirect to resource list since archived resources aren't visible in public view
+        return redirect("directory:public_resource_list")
     except Exception as e:
         return HttpResponse(f"Error archiving resource: {str(e)}", status=400)
 

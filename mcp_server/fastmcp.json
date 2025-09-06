@@ -1,0 +1,14 @@
+{
+  "$schema": "https://gofastmcp.com/schemas/fastmcp_config/v1.json",
+  "entrypoint": {
+    "file": "server.py",
+    "object": "mcp"
+  },
+  "environment": {
+    "requirements": "../requirements.txt"
+  },
+  "deployment": {
+    "transport": "stdio",
+    "log_level": "INFO"
+  }
+}

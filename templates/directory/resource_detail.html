@@ -376,7 +376,8 @@
                     <button class="btn btn-success w-100 mb-2"
                             hx-post="{% url 'directory:publish_resource' resource.pk %}"
                             hx-confirm="Publish this resource?"
-                            hx-target="#status-message">
+                            hx-target="#status-message"
+                            hx-on::after-request="if(event.detail.xhr.status === 200) { window.location.href = '/resources/?status=needs_review'; }">
                         <i class="fas fa-check-circle"></i> Publish Resource
                     </button>
                 {% endif %}

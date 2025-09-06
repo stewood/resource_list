@@ -1,0 +1,79 @@
+CATEGORIES IN YOUR APP
+=====================
+
+Your app has 21 categories for organizing resources:
+
+1. Animal Care (ID: 23) - Services for Pets and Animals
+2. Child Care (ID: 14) - Child care and family services
+3. Churches (ID: 19) - Religious organizations, churches, and faith-based service providers
+4. Community & Social Services (ID: 22) - Community centers, social services, and advocacy organizations
+5. Education (ID: 11) - Educational programs and services
+6. Emergency Services & Public Safety (ID: 18) - Emergency response services, fire departments, law enforcement, and public safety organizations
+7. Food (ID: 2) - Food banks and meal programs
+8. Food Assistance (ID: 6) - Food banks, pantries, and meal programs
+9. Government & Administrative Services (ID: 20) - Government offices, administrative services, and public programs
+10. Healthcare (ID: 3) - Medical and mental health services
+11. Hotlines (ID: 5) - Emergency and crisis hotlines
+12. Housing (ID: 7) - Shelters, housing assistance, and transitional housing
+13. Legal (ID: 10) - Legal assistance and advocacy
+14. Medical (ID: 9) - Healthcare and medical services
+15. Mental Health (ID: 8) - Mental health and substance abuse services
+16. Mental Health & Healthcare Services (ID: 21) - Mental health providers, healthcare services, and specialized medical programs
+17. Other (ID: 16) - Other services and resources
+18. Shelter (ID: 1) - Emergency and transitional housing
+19. Transportation (ID: 12) - Transportation assistance
+20. Utilities (ID: 13) - Utility assistance programs
+21. Veterans (ID: 15) - Veterans services and support
+
+SERVICE TYPES IN YOUR APP
+=========================
+
+Your app has 36 service types for more granular classification:
+
+1. 24/7 emergency shelter (ID: 33) - Service type for 24/7 emergency shelter
+2. case management services (ID: 39) - Service type for case management services
+3. Child Care (ID: 10) - Child care and family support services
+4. clothing (ID: 38) - Service type for clothing
+5. Counseling (ID: 2) - Mental health and addiction counseling services
+6. Domestic Violence (ID: 12) - Domestic violence prevention and support
+7. Education (ID: 9) - Educational programs and support
+8. Emergency Preparedness (ID: 32) - Service type for Emergency Preparedness
+9. Emergency Services (ID: 14) - Emergency and crisis intervention services
+10. Emergency Shelter (ID: 18) - Emergency and temporary housing
+11. Employment (ID: 7) - Job training and employment services
+12. Financial Assistance (ID: 15) - Financial aid and benefit programs
+13. Food Assistance (ID: 4) - Food banks, meal programs, and nutrition assistance
+14. Food Pantry (ID: 17) - Food assistance and meal programs
+15. Health (ID: 31) - Service type for Health
+16. Healthcare (ID: 6) - Medical and healthcare services
+17. Health Education (ID: 29) - Service type for Health Education
+18. Hotline (ID: 1) - 24/7 crisis and information hotlines
+19. Housing (ID: 3) - Housing assistance and shelter services
+20. Job Training (ID: 24) - Employment and job training services
+21. laundry facilities (ID: 37) - Service type for laundry facilities
+22. Legal Aid (ID: 23) - Legal assistance and representation
+23. Legal Services (ID: 5) - Legal aid and advocacy services
+24. meals (ID: 34) - Service type for meals
+25. Medical Care (ID: 22) - Healthcare and medical services
+26. Mental Health Counseling (ID: 20) - Mental health and counseling services
+27. Mental Health Support (ID: 30) - Service type for Mental Health Support
+28. personal hygiene items (ID: 36) - Service type for personal hygiene items
+29. Pet Care (ID: 28) - (No description provided)
+30. showers (ID: 35) - Service type for showers
+31. Substance Abuse (ID: 13) - Addiction treatment and recovery services
+32. Substance Abuse Treatment (ID: 21) - Addiction recovery and treatment
+33. Transitional Housing (ID: 19) - Long-term transitional housing
+34. Transportation (ID: 8) - Transportation assistance and services
+35. Utility Assistance (ID: 25) - Help with utility bills
+36. Veterans Services (ID: 11) - Services specifically for veterans
+
+SUMMARY
+=======
+
+- Categories: 21 total categories that provide broad classification for resources
+- Service Types: 36 total service types that provide more specific service classifications
+- Resource Counts: The data shows how many resources are currently assigned to each category/service type
+- Most Popular Categories: Food Assistance (36 resources), Mental Health (31 resources), Hotlines (41 resources), Housing (34 resources)
+- Most Popular Service Types: Some service types have resources assigned while others are available but not yet used
+
+This taxonomy system allows for flexible and detailed classification of community resources, making it easier for users to find the specific services they need.

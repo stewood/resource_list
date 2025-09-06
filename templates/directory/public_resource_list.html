@@ -431,12 +431,7 @@
                                         <i class="fas fa-clock"></i>
                                     </span>
                                     {% endif %}
-                                    {% if resource.coverage_areas.exists %}
-                                    <span class="badge bg-info service-area-badge" title="Service Areas Available">
-                                        <i class="fas fa-map-marked-alt"></i>
-                                        {{ resource.coverage_areas.count }}
-                                    </span>
-                                    {% endif %}
+
                                 </div>
                             </div>
                             
@@ -503,9 +498,6 @@
                                     {% if user.is_authenticated %}
                                         <a href="{% url 'directory:resource_update' resource.pk %}" class="btn btn-outline-secondary btn-sm" title="Edit Resource">
                                             <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="{% url 'directory:resource_detail' resource.pk %}" class="btn btn-outline-info btn-sm" title="Manage Resource">
-                                            <i class="fas fa-cog"></i>
                                         </a>
                                     {% endif %}
                                 </div>

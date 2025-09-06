@@ -123,55 +123,55 @@ class ResourceForm(forms.ModelForm):
         ]
         widgets = {
             "name": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Resource name"}
+                attrs={"class": "form-control", "placeholder": "e.g., Community Food Bank, Hope Center, etc."}
             ),
             "category": forms.Select(attrs={"class": "form-control"}),
             "description": forms.Textarea(
                 attrs={
                     "class": "form-control",
                     "rows": 4,
-                    "placeholder": "Description of the resource",
+                    "placeholder": "Describe what this organization does, who they help, and how people can access their services...",
                 }
             ),
             "phone": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Phone number"}
+                attrs={"class": "form-control", "placeholder": "e.g., (555) 123-4567"}
             ),
             "email": forms.EmailInput(
-                attrs={"class": "form-control", "placeholder": "Email address"}
+                attrs={"class": "form-control", "placeholder": "e.g., info@organization.org"}
             ),
             "website": forms.URLInput(
-                attrs={"class": "form-control", "placeholder": "Website URL"}
+                attrs={"class": "form-control", "placeholder": "e.g., https://www.organization.org"}
             ),
             "address1": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Address line 1"}
+                attrs={"class": "form-control", "placeholder": "e.g., 123 Main Street"}
             ),
             "address2": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Address line 2 (optional)",
+                    "placeholder": "e.g., Suite 200, Floor 3 (optional)",
                 }
             ),
             "city": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "City"}
+                attrs={"class": "form-control", "placeholder": "e.g., London, Lexington"}
             ),
             "state": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "State (2-letter code)",
+                    "placeholder": "e.g., KY, TN, OH",
                     "maxlength": 2,
                 }
             ),
             "county": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "County or parish name"}
+                attrs={"class": "form-control", "placeholder": "e.g., Laurel County, Jefferson County"}
             ),
             "postal_code": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Postal code"}
+                attrs={"class": "form-control", "placeholder": "e.g., 40741, 40202"}
             ),
             "hours_of_operation": forms.Textarea(
                 attrs={
                     "class": "form-control",
                     "rows": 3,
-                    "placeholder": "Service hours and availability (e.g., Mon-Fri 9AM-5PM, 24/7)",
+                    "placeholder": "e.g., Monday-Friday 9AM-5PM, 24/7 emergency services, By appointment only",
                 }
             ),
             "is_emergency_service": forms.CheckboxInput(
@@ -184,47 +184,47 @@ class ResourceForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "rows": 3,
-                    "placeholder": "Qualification criteria and requirements",
+                    "placeholder": "e.g., Must be 18+ years old, Income below 200% of poverty level, Must live in service area",
                 }
             ),
             "populations_served": forms.Textarea(
                 attrs={
                     "class": "form-control",
                     "rows": 3,
-                    "placeholder": "Target demographics (e.g., veterans, women, children)",
+                    "placeholder": "e.g., Veterans, Women, Children, Seniors, People with disabilities, Low-income families",
                 }
             ),
             "insurance_accepted": forms.Textarea(
                 attrs={
                     "class": "form-control",
                     "rows": 3,
-                    "placeholder": "Insurance plans accepted for medical services",
+                    "placeholder": "e.g., Medicaid, Medicare, Private insurance, No insurance required, Sliding scale fees",
                 }
             ),
             "cost_information": forms.Textarea(
                 attrs={
                     "class": "form-control",
                     "rows": 3,
-                    "placeholder": "Financial details and cost information",
+                    "placeholder": "e.g., Free services, $25 per visit, Sliding scale based on income, Insurance accepted",
                 }
             ),
             "languages_available": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Languages supported for accessibility",
+                    "placeholder": "e.g., English, Spanish, American Sign Language, Translation services available",
                 }
             ),
             "capacity": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Service capacity information",
+                    "placeholder": "e.g., Serves 50 families per month, 24/7 availability, Limited to 20 clients",
                 }
             ),
             "status": forms.Select(attrs={"class": "form-control"}),
             "source": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Source of this information",
+                    "placeholder": "e.g., Organization website, Phone call, In-person visit, Referral from another organization",
                 }
             ),
             "notes": forms.Textarea(

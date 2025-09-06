@@ -12,83 +12,93 @@
 <!-- Resource Counts -->
 <div class="row mb-4">
     <div class="col-md-3">
-        <div class="card text-white bg-primary">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="card-title">{{ draft_count }}</h4>
-                        <p class="card-text">Draft Resources</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-edit fa-2x"></i>
+        <a href="{% url 'directory:public_resource_list' %}?status=draft" class="dashboard-card">
+            <div class="card text-white bg-primary h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ draft_count }}</h4>
+                            <p class="card-text">Draft Resources</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-edit fa-2x"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     
     <div class="col-md-3">
-        <div class="card text-white bg-warning">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="card-title">{{ review_count }}</h4>
-                        <p class="card-text">Needs Review</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-clock fa-2x"></i>
+        <a href="{% url 'directory:public_resource_list' %}?status=needs_review" class="dashboard-card">
+            <div class="card text-white bg-warning h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ review_count }}</h4>
+                            <p class="card-text">Needs Review</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     
     <div class="col-md-3">
-        <div class="card text-white bg-success">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="card-title">{{ published_count }}</h4>
-                        <p class="card-text">Published</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-check-circle fa-2x"></i>
+        <a href="{% url 'directory:public_resource_list' %}?status=published" class="dashboard-card">
+            <div class="card text-white bg-success h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ published_count }}</h4>
+                            <p class="card-text">Published</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     
     <div class="col-md-3">
-        <div class="card text-white {% if needs_verification > 0 %}bg-danger{% else %}bg-secondary{% endif %}">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="card-title">{{ needs_verification }}</h4>
-                        <p class="card-text">Need Verification</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+        <a href="{% url 'directory:public_resource_list' %}?status=published" class="dashboard-card">
+            <div class="card text-white {% if needs_verification > 0 %}bg-danger{% else %}bg-secondary{% endif %} h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ needs_verification }}</h4>
+                            <p class="card-text">Need Verification</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
     
     <div class="col-md-3">
-        <div class="card text-white bg-dark">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h4 class="card-title">{{ archived_count }}</h4>
-                        <p class="card-text">Archived</p>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-archive fa-2x"></i>
+        <a href="{% url 'directory:archive_list' %}" class="dashboard-card">
+            <div class="card text-white bg-dark h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">{{ archived_count }}</h4>
+                            <p class="card-text">Archived</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-archive fa-2x"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 </div>
 
@@ -220,6 +230,45 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Dashboard card hover effects */
+    .dashboard-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .dashboard-card .card {
+        transition: all 0.3s ease;
+    }
+    
+    .dashboard-card:hover .card {
+        filter: brightness(1.1);
+    }
+    
+    /* Ensure consistent card heights */
+    .dashboard-card .card {
+        height: 100%;
+    }
+    
+    /* Remove text decoration from links */
+    .dashboard-card {
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .dashboard-card:hover {
+        text-decoration: none;
+        color: inherit;
+    }
+</style>
 {% endblock %}
 
 

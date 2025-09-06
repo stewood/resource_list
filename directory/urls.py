@@ -11,9 +11,6 @@ from .views import (
     ResourceDetailView,
     ResourceCreateView,
     ResourceUpdateView,
-    # AI Dashboard views
-    AIDashboardView,
-    AIDashboardAPIView,
     # Workflow views
     submit_for_review,
     publish_resource,
@@ -42,9 +39,6 @@ from .views import (
     ResourceEligibilityView,
     ReverseGeocodingView,
     StateCountyView,
-    # AI API views
-    AIVerificationView,
-    AIAutoVerificationView,
 )
 
 app_name = "directory"
@@ -73,11 +67,6 @@ urlpatterns = [
         name="resource_update",
     ),
 
-    path(
-        "manage/resources/<int:pk>/ai-dashboard/",
-        AIDashboardView.as_view(),
-        name="ai_dashboard",
-    ),
     # Resource actions
     path(
         "manage/resources/<int:pk>/submit-review/",
@@ -165,23 +154,5 @@ urlpatterns = [
         "api/resources/<int:resource_id>/eligibility/",
         ResourceEligibilityView.as_view(),
         name="api_resource_eligibility",
-    ),
-    # AI verification API
-    path(
-        "api/resources/<int:resource_id>/ai-verify/",
-        AIVerificationView.as_view(),
-        name="api_ai_verification",
-    ),
-    # AI Auto Verification API
-    path(
-        "api/resources/<int:resource_id>/ai-auto-verify/",
-        AIAutoVerificationView.as_view(),
-        name="api_ai_auto_verification",
-    ),
-    # AI Dashboard API
-    path(
-        "api/resources/<int:resource_id>/ai-dashboard/",
-        AIDashboardAPIView.as_view(),
-        name="api_ai_dashboard",
     ),
 ]

@@ -491,7 +491,7 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
         ).order_by("-coverage_count", "name")
 
     # Pagination
-    paginator = Paginator(queryset, 20)
+    paginator = Paginator(queryset, 10)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
@@ -664,7 +664,7 @@ def public_resource_detail(request: HttpRequest, pk: int) -> HttpResponse:
     related = list({r.pk: r for r in related}.values())[:5]
 
     # Check if user can view internal notes (Editor+ roles)
-    from ..permissions import user_is_editor, user_is_reviewer, user_is_admin
+    from ..permissions import user_is_editor, user_is_reviewer, user_is_admin, user_can_publish, user_can_hard_delete
     user_can_view_notes = (
         user_is_editor(request.user) or 
         user_is_reviewer(request.user) or 
@@ -675,6 +675,8 @@ def public_resource_detail(request: HttpRequest, pk: int) -> HttpResponse:
         "resource": resource,
         "related_resources": related,
         "user_can_view_notes": user_can_view_notes,
+        "user_can_publish": user_can_publish(request.user),
+        "user_can_archive": user_can_hard_delete(request.user),
     }
 
     return render(request, "directory/public_resource_detail.html", context)

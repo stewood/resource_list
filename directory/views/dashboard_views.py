@@ -52,6 +52,7 @@ logger = logging.getLogger(__name__)
 
 from ..models import Resource, ResourceVersion
 from ..utils import compare_versions, generate_diff_html
+from ..permissions import user_can_publish, user_can_hard_delete
 
 
 @login_required
@@ -186,8 +187,20 @@ def version_comparison(
             "city": resource.city,
             "state": resource.state,
             "postal_code": resource.postal_code,
+            "county": resource.county,
             "status": resource.status,
             "source": resource.source,
+            "hours_of_operation": resource.hours_of_operation,
+            "eligibility_requirements": resource.eligibility_requirements,
+            "populations_served": resource.populations_served,
+            "cost_information": resource.cost_information,
+            "languages_available": resource.languages_available,
+            "is_emergency_service": resource.is_emergency_service,
+            "is_24_hour_service": resource.is_24_hour_service,
+            "insurance_accepted": resource.insurance_accepted,
+            "capacity": resource.capacity,
+            "service_types": ", ".join([st.name for st in resource.service_types.all()]) if resource.service_types.exists() else "",
+            "coverage_areas": ", ".join([ca.name for ca in resource.coverage_areas.all()]) if resource.coverage_areas.exists() else "",
             "last_verified_at": (
                 resource.last_verified_at.isoformat()
                 if resource.last_verified_at
@@ -254,6 +267,9 @@ def version_history(request: HttpRequest, resource_pk: int) -> HttpResponse:
     context = {
         "resource": resource,
         "versions": versions,
+        # Add permission context for buttons
+        "user_can_publish": user_can_publish(request.user),
+        "user_can_archive": user_can_hard_delete(request.user),
     }
 
     return render(request, "directory/version_history.html", context)
@@ -337,14 +353,17 @@ def published_comparison(request: HttpRequest, resource_pk: int) -> HttpResponse
         "languages_available": resource.languages_available,
         "is_emergency_service": resource.is_emergency_service,
         "is_24_hour_service": resource.is_24_hour_service,
+        "insurance_accepted": resource.insurance_accepted,
+        "capacity": resource.capacity,
         
-        # Workflow status
-        "status": resource.status,
-        "last_verified_by": (
-            resource.last_verified_by.get_full_name()
-            if resource.last_verified_by
-            else ""
-        ),
+        # Service types (ManyToManyField - convert to readable string)
+        "service_types": ", ".join([st.name for st in resource.service_types.all()]) if resource.service_types.exists() else "",
+        
+        # Coverage areas (ManyToManyField - convert to readable string)
+        "coverage_areas": ", ".join([ca.name for ca in resource.coverage_areas.all()]) if resource.coverage_areas.exists() else "",
+        
+        # Source (keep this as it represents verification data)
+        "source": resource.source,
     }
     
     was_never_published = False
@@ -355,9 +374,11 @@ def published_comparison(request: HttpRequest, resource_pk: int) -> HttpResponse
         published_snapshot = last_published_version.snapshot
         
         # Filter out system/metadata fields to focus on meaningful data
+        # These fields change every time and don't represent actual content changes
         system_fields_to_exclude = {
             'id', 'created_by_id', 'updated_by_id', 'last_verified_by_id',
-            'created_at', 'updated_at', 'is_deleted', 'last_verified_at', 'source', 'notes'
+            'created_at', 'updated_at', 'is_deleted', 'last_verified_at', 
+            'last_verified_by', 'status', 'notes'  # Exclude workflow fields and notes (shown separately)
         }
         
         # Create filtered published snapshot with only meaningful fields
@@ -378,19 +399,30 @@ def published_comparison(request: HttpRequest, resource_pk: int) -> HttpResponse
         # Get all differences
         all_differences = compare_versions(filtered_published_snapshot, current_snapshot)
         
-        # Filter to only show fields that actually changed (not just added empty fields)
+        # Filter to only show meaningful content changes
         differences = {}
         for field, diff in all_differences.items():
+            # Skip system fields that were excluded from comparison
+            if field in system_fields_to_exclude:
+                continue
+                
             # Only include if there's a meaningful change
             if diff['diff_type'] == 'added' and diff['new_value']:
                 # Include added fields that have actual content
                 differences[field] = diff
-            elif diff['diff_type'] == 'modified':
-                # Include modified fields
+            elif diff['diff_type'] == 'changed':  # Fixed: was 'modified', should be 'changed'
+                # Include modified fields (actual content changes)
                 differences[field] = diff
             elif diff['diff_type'] == 'removed' and diff['old_value']:
                 # Include removed fields that had content
                 differences[field] = diff
+        
+        # Calculate change counts for the template
+        change_counts = {
+            'added': sum(1 for diff in differences.values() if diff['diff_type'] == 'added'),
+            'changed': sum(1 for diff in differences.values() if diff['diff_type'] == 'changed'),
+            'removed': sum(1 for diff in differences.values() if diff['diff_type'] == 'removed'),
+        }
     else:
         was_never_published = True
         # For new resources, show current state as "added" fields
@@ -412,6 +444,10 @@ def published_comparison(request: HttpRequest, resource_pk: int) -> HttpResponse
         "current_snapshot": current_snapshot,
         "published_snapshot": published_snapshot,
         "was_never_published": was_never_published,
+        "change_counts": change_counts if 'change_counts' in locals() else {'added': 0, 'changed': 0, 'removed': 0},
+        # Add permission context for buttons
+        "user_can_publish": user_can_publish(request.user),
+        "user_can_archive": user_can_hard_delete(request.user),
     }
 
     return render(request, "directory/published_comparison.html", context)
