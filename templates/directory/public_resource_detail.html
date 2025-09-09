@@ -998,9 +998,10 @@
                             fetch(`/api/areas/${area.id}/preview/`)
                                 .then(response => response.json())
                                 .then(areaData => {
-                                    if (areaData.geometry) {
+                                    // Check for successful response and geometry data
+                                    if (!areaData.error && areaData.data && areaData.data.geometry) {
                                         // Display actual geometry using GeoJSON
-                                        const geoJsonLayer = L.geoJSON(areaData.geometry, {
+                                        const geoJsonLayer = L.geoJSON(areaData.data.geometry, {
                                             style: {
                                                 color: '#007bff',
                                                 weight: 2,
@@ -1012,24 +1013,24 @@
                                         // Add popup with area details
                                         geoJsonLayer.eachLayer(layer => {
                                             layer.bindPopup(`
-                                                <strong>${area.name}</strong><br>
-                                                Type: ${area.kind}<br>
+                                                <strong>${areaData.data.name}</strong><br>
+                                                Type: ${areaData.data.kind}<br>
                                                 <small class="text-muted">Click to view details</small>
                                             `);
                                         });
                                         
                                         // Add to bounds for map fitting
-                                        if (areaData.bounds) {
+                                        if (areaData.data.bounds) {
                                             bounds.push([
-                                                [areaData.bounds.south, areaData.bounds.west],
-                                                [areaData.bounds.north, areaData.bounds.east]
+                                                [areaData.data.bounds.south, areaData.data.bounds.west],
+                                                [areaData.data.bounds.north, areaData.data.bounds.east]
                                             ]);
                                         }
-                                    } else if (areaData.bounds) {
+                                    } else if (areaData.data && areaData.data.bounds) {
                                         // Use bounds from API response (for national coverage areas)
                                         const rectangle = L.rectangle([
-                                            [areaData.bounds.south, areaData.bounds.west],
-                                            [areaData.bounds.north, areaData.bounds.east]
+                                            [areaData.data.bounds.south, areaData.data.bounds.west],
+                                            [areaData.data.bounds.north, areaData.data.bounds.east]
                                         ], {
                                             color: '#007bff',
                                             weight: 2,

@@ -9,6 +9,7 @@ Created: 2025-08-30
 Version: 2.0.0
 """
 
+import json
 from typing import Dict
 
 from django.conf import settings
@@ -395,14 +396,9 @@ class AreaSearchView(BaseAPIView):
             dict: Simplified GeoJSON geometry
         """
         try:
-            # Simplify geometry based on complexity
-            if geometry.num_coords > 100:
-                # Use tolerance-based simplification for complex geometries
-                tolerance = 0.001  # Adjust based on coordinate system
-                simplified = geometry.simplify(tolerance, preserve_topology=True)
-            else:
-                # Keep original geometry for simple shapes
-                simplified = geometry
+            # For map display, preserve full geometry detail for accurate shapes
+            # Modern browsers can handle the full geometry data
+            simplified = geometry
 
             # Convert to GeoJSON
             geojson = simplified.json
