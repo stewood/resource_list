@@ -238,7 +238,8 @@ async def create_resource_tool(
         ValidationError: If required fields are missing or data format is invalid
         DoesNotExist: If category_id or service_type_ids reference non-existent records
     """
-    return await create_resource(
+    from asgiref.sync import sync_to_async
+    return await sync_to_async(create_resource)(
         name=name, description=description, category_id=category_id,
         service_type_ids=service_type_ids, phone=phone, email=email,
         website=website, address1=address1, address2=address2,
@@ -369,7 +370,8 @@ async def update_resource_tool(
         DoesNotExist: If resource_id does not exist
         ValidationError: If provided data is invalid
     """
-    return await update_resource(
+    from asgiref.sync import sync_to_async
+    return await sync_to_async(update_resource)(
         resource_id=resource_id, name=name, description=description,
         category_id=category_id, service_type_ids=service_type_ids,
         phone=phone, email=email, website=website, address1=address1,
@@ -418,7 +420,8 @@ async def archive_resource_tool(
     Raises:
         DoesNotExist: If resource_id does not exist
     """
-    return await archive_resource(resource_id, archived_by_user_id, reason)
+    from asgiref.sync import sync_to_async
+    return await sync_to_async(archive_resource)(resource_id, archived_by_user_id, reason)
 
 @mcp.tool()
 async def list_resources_tool(
@@ -465,7 +468,8 @@ async def list_resources_tool(
                                    limit, offset, has_more
               None if error
     """
-    return await list_resources(
+    from asgiref.sync import sync_to_async
+    return await sync_to_async(list_resources)(
         status=status, category_id=category_id, service_type_id=service_type_id,
         city=city, state=state, is_emergency_service=is_emergency_service,
         is_24_hour_service=is_24_hour_service, include_archived=include_archived,
@@ -483,6 +487,9 @@ async def list_unverified_resources_tool(
     verification status and frequency settings. It includes resources that have
     never been verified, are overdue for verification, or don't have a
     verification frequency set.
+    
+    Note: Resources with status "needs_review" are excluded as they are already
+    in the review queue and don't need additional verification.
     
     Args:
         limit (int): Maximum number of results to return. Defaults to 50, max 100.
@@ -502,7 +509,8 @@ async def list_unverified_resources_tool(
                     - no_frequency_set (int): Count with no verification frequency
               None if error
     """
-    return await list_resources_needing_verification(limit=limit, offset=offset)
+    from asgiref.sync import sync_to_async
+    return await sync_to_async(list_resources_needing_verification)(limit=limit, offset=offset)
 
 # Search Tools
 @mcp.tool()
@@ -808,6 +816,8 @@ async def get_taxonomy_summary_tool() -> dict:
 async def list_coverage_areas_tool(
     kind: str = None,
     state: str = None,
+    state_fips: str = None,
+    county_fips: str = None,
     limit: int = 50,
     offset: int = 0
 ) -> dict:
@@ -825,9 +835,24 @@ async def list_coverage_areas_tool(
                             - "RADIUS": Radius-based coverage areas
                             - "POLYGON": Custom polygon coverage areas
         state (str, optional): Filter by state for administrative areas (cities/counties).
-                             Use two-letter state abbreviation (e.g., "KY").
+                             Use two-letter state abbreviation (e.g., "KY" for Kentucky).
+                             This will be automatically converted to the appropriate FIPS code.
+        state_fips (str, optional): Filter by state FIPS code (2-digit string, e.g., "21").
+                                   Kentucky's state FIPS code is "21".
+        county_fips (str, optional): Filter by county FIPS code (3-digit string, e.g., "125").
+                                    Laurel County, KY's FIPS code is "125".
         limit (int): Maximum number of results to return. Defaults to 50, max 100.
         offset (int): Number of results to skip for pagination. Defaults to 0.
+    
+    Examples:
+        # Find all Kentucky counties using state abbreviation
+        list_coverage_areas_tool(kind="COUNTY", state="KY")
+        
+        # Find all Kentucky counties using state FIPS code
+        list_coverage_areas_tool(kind="COUNTY", state_fips="21")
+        
+        # Find Laurel County specifically
+        list_coverage_areas_tool(kind="COUNTY", county_fips="125")
     
     Returns:
         dict: A dictionary containing:
@@ -840,7 +865,14 @@ async def list_coverage_areas_tool(
                 - filters_applied (dict): Summary of filters applied
               None if error
     """
-    return await list_coverage_areas(kind=kind, state=state, limit=limit, offset=offset)
+    return await list_coverage_areas(
+        kind=kind, 
+        state=state, 
+        state_fips=state_fips, 
+        county_fips=county_fips, 
+        limit=limit, 
+        offset=offset
+    )
 
 @mcp.tool()
 async def get_coverage_area_tool(coverage_area_id: int) -> dict:

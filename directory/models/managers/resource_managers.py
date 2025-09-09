@@ -350,10 +350,7 @@ class ResourceManager(models.Manager):
 
             # Also include resources with national coverage areas
             national_resources = self.filter(
-                coverage_areas__name__in=[
-                    "National (Lower 48 States)",
-                    "United States (All States and Territories)",
-                ]
+                coverage_areas__id=43273  # United States (All States and Territories)
             ).distinct()
 
             # Combine the results

@@ -15,7 +15,7 @@ Created: 2025-01-15
 Version: 1.0.0
 """
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.utils import timezone
 from directory.models import GeocodingCache
 

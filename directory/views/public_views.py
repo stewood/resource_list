@@ -41,7 +41,6 @@ Usage:
 
 import logging
 
-from django.conf import settings
 from django.contrib.auth import logout
 from django.core.paginator import Paginator
 from django.db import models
@@ -267,11 +266,11 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
         if county_id_filter:
             coverage_filters |= Q(coverage_areas__id=county_id_filter)
 
-        # Include/exclude truly national resources (those with United States coverage area ID: 7855)
+        # Include/exclude truly national resources (those with United States coverage area ID: 43273)
         if include_national:
             # When including national, add resources with national coverage to the filtered results
             national_coverage_filter = Q(
-                coverage_areas__id=7855
+                coverage_areas__id=43273
             )  # United States coverage area
             queryset = queryset.filter(
                 coverage_filters | national_coverage_filter
@@ -280,7 +279,7 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
             # When excluding national, filter only by local coverage and exclude national resources
             queryset = (
                 queryset.filter(coverage_filters)
-                .exclude(coverage_areas__id=7855)
+                .exclude(coverage_areas__id=43273)
                 .distinct()
             )
 
@@ -367,7 +366,7 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
                         else:
                             queryset = Resource.objects.none()
                     except (ValueError, TypeError) as e:
-                        logger.warning(f"Distance filtering failed: {e}")
+                        logger.warning("Distance filtering failed: %s", e)
 
                 # Preserve spatial ordering when proximity-based sorting is requested
                 if request.GET.get("sort") in ["distance", "proximity"]:
@@ -382,7 +381,7 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
                 queryset = Resource.objects.none()
         except (ValueError, TypeError) as e:
             # Fallback to text-based search if spatial filtering fails
-            logger.warning(f"Spatial filtering failed for {address_filter}: {e}")
+            logger.warning("Spatial filtering failed for %s: %s", address_filter, e)
             queryset = queryset.filter(
                 Q(city__icontains=address_filter)
                 | Q(state__icontains=address_filter)
@@ -455,7 +454,7 @@ def public_resource_list(request: HttpRequest) -> HttpResponse:
                 )
 
         except Exception as e:
-            logger.warning(f"Proximity ranking failed: {e}")
+            logger.warning("Proximity ranking failed: %s", e)
             # Fallback to basic coverage specificity sorting
             queryset = queryset.annotate(
                 coverage_count=models.Count("coverage_areas")
@@ -666,8 +665,8 @@ def public_resource_detail(request: HttpRequest, pk: int) -> HttpResponse:
     # Check if user can view internal notes (Editor+ roles)
     from ..permissions import user_is_editor, user_is_reviewer, user_is_admin, user_can_publish, user_can_hard_delete
     user_can_view_notes = (
-        user_is_editor(request.user) or 
-        user_is_reviewer(request.user) or 
+        user_is_editor(request.user) or
+        user_is_reviewer(request.user) or
         user_is_admin(request.user)
     )
 

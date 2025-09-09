@@ -38,7 +38,6 @@ from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskPr
 from rich.table import Table
 from rich.text import Text
 from rich.prompt import Confirm
-from rich.align import Align
 from rich import box
 
 # Import our extracted modules

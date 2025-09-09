@@ -260,7 +260,6 @@ class SearchAnalytics(models.Model):
             date: Date to generate analytics for (defaults to today)
         """
         from django.utils import timezone
-        from datetime import date as date_type
 
         if date is None:
             date = timezone.now().date()

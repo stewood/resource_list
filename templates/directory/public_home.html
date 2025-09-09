@@ -189,10 +189,9 @@
                     {{ category.name }}
                 </h5>
                 <p>{{ category.description|truncatewords:15 }}</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="category-badge">{{ category_counts|get_item:category.id }} resources</span>
-                    <a href="{% url 'directory:public_resource_list' %}?category={{ category.id }}" class="btn btn-outline-primary btn-sm">
-                        View Resources <i class="fas fa-arrow-right ms-1"></i>
+                <div class="d-flex justify-content-center mt-auto">
+                    <a href="{% url 'directory:public_resource_list' %}?category={{ category.id }}" class="category-badge-link">
+                        {{ category_counts|get_item:category.id }} resources <i class="fas fa-arrow-right ms-1"></i>
                     </a>
                 </div>
             </div>
@@ -290,16 +289,6 @@
         overflow: hidden;
     }
     
-    .hero-section::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="compassion-dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23compassion-dots)"/></svg>');
-        pointer-events: none;
-    }
     
     .stats-card {
         backdrop-filter: blur(10px);

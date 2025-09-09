@@ -22,7 +22,6 @@ import time
 import random
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Tuple, Union, Callable, Any
-from urllib.parse import quote
 from functools import wraps
 
 import requests

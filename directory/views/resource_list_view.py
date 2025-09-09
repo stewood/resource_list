@@ -221,7 +221,7 @@ class ResourceListView(LoginRequiredMixin, ListView):
                     queryset = Resource.objects.none()
             except (ValueError, TypeError) as e:
                 # Fallback to text-based search if spatial filtering fails
-                logger.warning(f"Spatial filtering failed for {address_filter}: {e}")
+                logger.warning("Spatial filtering failed for %s: %s", address_filter, e)
                 queryset = queryset.filter(
                     Q(city__icontains=address_filter)
                     | Q(state__icontains=address_filter)
@@ -292,7 +292,7 @@ class ResourceListView(LoginRequiredMixin, ListView):
                     )
 
             except Exception as e:
-                logger.warning(f"Proximity ranking failed: {e}")
+                logger.warning("Proximity ranking failed: %s", e)
                 # Fallback to basic coverage specificity sorting
                 queryset = queryset.annotate(
                     coverage_count=models.Count("coverage_areas")

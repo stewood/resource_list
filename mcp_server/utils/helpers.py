@@ -9,7 +9,7 @@ Created: 2025-01-15
 Version: 1.0.0
 """
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from directory.models import Resource
@@ -253,4 +253,86 @@ def paginate_queryset(queryset, limit: int = 50, offset: int = 0) -> Dict[str, A
             "offset": offset,
             "has_more": offset + limit < total_count
         }
+    }
+
+
+def format_resource_data(
+    resource: Resource,
+    service_types: Optional[List] = None,
+    include_verified_by: bool = True,
+    include_notes: bool = False
+) -> Dict[str, Any]:
+    """Format resource data into a consistent dictionary structure.
+    
+    This function provides a standardized way to format Resource objects
+    into dictionaries for API responses, eliminating code duplication
+    across different modules.
+    
+    Args:
+        resource (Resource): The Resource instance to format
+        service_types (Optional[List]): Pre-fetched service types list.
+                                      If None, will fetch from resource.service_types.all()
+        include_verified_by (bool): Whether to include last_verified_by in metadata
+        include_notes (bool): Whether to include notes in metadata
+        
+    Returns:
+        Dict[str, Any]: Formatted resource data with consistent structure
+    """
+    if service_types is None:
+        service_types = list(resource.service_types.all())
+    
+    # Build metadata dictionary
+    metadata = {
+        "created_at": resource.created_at.isoformat(),
+        "updated_at": resource.updated_at.isoformat(),
+        "last_verified_at": resource.last_verified_at.isoformat() if resource.last_verified_at else None,
+        "verification_frequency_days": resource.verification_frequency_days,
+        "source": resource.source
+    }
+    
+    # Add optional fields based on parameters
+    if include_verified_by:
+        metadata["last_verified_by"] = resource.last_verified_by.username if resource.last_verified_by else None
+    
+    if include_notes:
+        metadata["notes"] = resource.notes
+    
+    return {
+        "id": resource.id,
+        "name": resource.name,
+        "description": resource.description,
+        "category": {
+            "id": resource.category.id if resource.category else None,
+            "name": resource.category.name if resource.category else None
+        },
+        "service_types": [
+            {"id": st.id, "name": st.name}
+            for st in service_types
+        ],
+        "contact": {
+            "phone": resource.phone,
+            "email": resource.email,
+            "website": resource.website
+        },
+        "location": {
+            "address1": resource.address1,
+            "address2": resource.address2,
+            "city": resource.city,
+            "state": resource.state,
+            "county": resource.county,
+            "postal_code": resource.postal_code
+        },
+        "operational": {
+            "status": resource.status,
+            "hours_of_operation": resource.hours_of_operation,
+            "is_emergency_service": resource.is_emergency_service,
+            "is_24_hour_service": resource.is_24_hour_service,
+            "eligibility_requirements": resource.eligibility_requirements,
+            "populations_served": resource.populations_served,
+            "insurance_accepted": resource.insurance_accepted,
+            "cost_information": resource.cost_information,
+            "languages_available": resource.languages_available,
+            "capacity": resource.capacity
+        },
+        "metadata": metadata
     }

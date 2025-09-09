@@ -16,9 +16,39 @@ from asgiref.sync import sync_to_async
 from directory.models import Resource, CoverageArea, ResourceCoverage
 
 
+def _get_state_fips_code(state_abbrev: str) -> Optional[str]:
+    """Convert state abbreviation to FIPS code.
+    
+    Args:
+        state_abbrev: Two-letter state abbreviation (e.g., 'KY')
+        
+    Returns:
+        FIPS code as string (e.g., '21') or None if invalid
+    """
+    # Common state abbreviation to FIPS code mapping
+    state_to_fips = {
+        'AL': '01', 'AK': '02', 'AZ': '04', 'AR': '05', 'CA': '06',
+        'CO': '08', 'CT': '09', 'DE': '10', 'FL': '12', 'GA': '13',
+        'HI': '15', 'ID': '16', 'IL': '17', 'IN': '18', 'IA': '19',
+        'KS': '20', 'KY': '21', 'LA': '22', 'ME': '23', 'MD': '24',
+        'MA': '25', 'MI': '26', 'MN': '27', 'MS': '28', 'MO': '29',
+        'MT': '30', 'NE': '31', 'NV': '32', 'NH': '33', 'NJ': '34',
+        'NM': '35', 'NY': '36', 'NC': '37', 'ND': '38', 'OH': '39',
+        'OK': '40', 'OR': '41', 'PA': '42', 'RI': '44', 'SC': '45',
+        'SD': '46', 'TN': '47', 'TX': '48', 'UT': '49', 'VT': '50',
+        'VA': '51', 'WA': '53', 'WV': '54', 'WI': '55', 'WY': '56',
+        'DC': '11', 'PR': '72', 'VI': '78', 'AS': '60', 'GU': '66',
+        'MP': '69'
+    }
+    
+    return state_to_fips.get(state_abbrev.upper())
+
+
 async def list_coverage_areas(
     kind: Optional[str] = None,
     state: Optional[str] = None,
+    state_fips: Optional[str] = None,
+    county_fips: Optional[str] = None,
     limit: int = 50,
     offset: int = 0
 ) -> Dict[str, Any]:
@@ -36,7 +66,10 @@ async def list_coverage_areas(
                             - "RADIUS": Radius-based coverage areas
                             - "POLYGON": Custom polygon coverage areas
         state (Optional[str]): Filter by state for administrative areas (cities/counties).
-                             Use two-letter state abbreviation (e.g., "KY").
+                             Use two-letter state abbreviation (e.g., "KY" for Kentucky).
+                             This will be automatically converted to the appropriate FIPS code.
+        state_fips (Optional[str]): Filter by state FIPS code (2-digit string, e.g., "21").
+        county_fips (Optional[str]): Filter by county FIPS code (3-digit string, e.g., "125").
         limit (int): Maximum number of results to return. Defaults to 50, max 100.
         offset (int): Number of results to skip for pagination. Defaults to 0.
         
@@ -52,6 +85,23 @@ async def list_coverage_areas(
               None if error
     """
     try:
+        # Validate FIPS code formats
+        if state_fips:
+            if not state_fips.isdigit() or len(state_fips) != 2:
+                return {
+                    "status": "error",
+                    "message": "State FIPS code must be exactly 2 digits (e.g., '21')",
+                    "data": None
+                }
+        
+        if county_fips:
+            if not county_fips.isdigit() or len(county_fips) != 3:
+                return {
+                    "status": "error",
+                    "message": "County FIPS code must be exactly 3 digits (e.g., '125')",
+                    "data": None
+                }
+        
         # Start with base queryset
         queryset = CoverageArea.objects.all().order_by('kind', 'name')
         
@@ -59,8 +109,22 @@ async def list_coverage_areas(
         if kind:
             queryset = queryset.filter(kind=kind)
         if state:
-            # Filter by state in external IDs for administrative areas
-            queryset = queryset.filter(ext_ids__state_fips=state)
+            # Convert state abbreviation to FIPS code if needed
+            state_fips_code = _get_state_fips_code(state)
+            if state_fips_code:
+                queryset = queryset.filter(ext_ids__state_fips=state_fips_code)
+            else:
+                return {
+                    "status": "error",
+                    "message": f"Invalid state abbreviation '{state}'. Use a valid 2-letter state code (e.g., 'KY') or use state_fips parameter with FIPS code (e.g., '21' for Kentucky).",
+                    "data": None
+                }
+        if state_fips:
+            # Filter by state FIPS code
+            queryset = queryset.filter(ext_ids__state_fips=state_fips)
+        if county_fips:
+            # Filter by county FIPS code
+            queryset = queryset.filter(ext_ids__county_fips=county_fips)
         
         # Get total count
         total_count = await sync_to_async(queryset.count)()
@@ -112,7 +176,9 @@ async def list_coverage_areas(
                 },
                 "filters_applied": {
                     "kind": kind,
-                    "state": state
+                    "state": state,
+                    "state_fips": state_fips,
+                    "county_fips": county_fips
                 }
             }
         }
@@ -668,6 +734,11 @@ async def search_resources_by_point(
             # For administrative areas, we'd need proper GIS intersection
             # For now, include all administrative areas as potential matches
             elif area.kind in ["CITY", "COUNTY", "STATE"]:
+                relevant_areas.append(area)
+            # Include national coverage areas (POLYGON kind) - these cover the entire US
+            elif area.kind == "POLYGON" and area.id == 43273:
+                # National coverage areas like "United States (All States and Territories)" 
+                # should be included for all searches within the US
                 relevant_areas.append(area)
         
         # Get resources from relevant coverage areas

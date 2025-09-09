@@ -23,8 +23,6 @@ Version: 1.0.0
 
 import logging
 from typing import List, Optional, Tuple, Union
-from decimal import Decimal
-import math
 
 from django.conf import settings
 

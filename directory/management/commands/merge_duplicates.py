@@ -13,7 +13,7 @@ Usage:
 """
 
 import json
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List
 
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User

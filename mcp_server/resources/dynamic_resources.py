@@ -11,6 +11,7 @@ Version: 1.0.0
 
 from typing import Any, Dict, Optional
 from directory.models import Resource
+from mcp_server.utils.helpers import format_resource_data
 
 
 def get_resource_template(resource_id: int) -> Dict[str, Any]:
@@ -44,51 +45,12 @@ def get_resource_template(resource_id: int) -> Dict[str, Any]:
     try:
         resource = Resource.objects.select_related('category').prefetch_related('service_types').get(id=resource_id)
         
-        resource_data = {
-            "id": resource.id,
-            "name": resource.name,
-            "description": resource.description,
-            "category": {
-                "id": resource.category.id if resource.category else None,
-                "name": resource.category.name if resource.category else None
-            },
-            "service_types": [
-                {"id": st.id, "name": st.name}
-                for st in resource.service_types.all()
-            ],
-            "contact": {
-                "phone": resource.phone,
-                "email": resource.email,
-                "website": resource.website
-            },
-            "location": {
-                "address1": resource.address1,
-                "address2": resource.address2,
-                "city": resource.city,
-                "state": resource.state,
-                "county": resource.county,
-                "postal_code": resource.postal_code
-            },
-            "operational": {
-                "status": resource.status,
-                "hours_of_operation": resource.hours_of_operation,
-                "is_emergency_service": resource.is_emergency_service,
-                "is_24_hour_service": resource.is_24_hour_service,
-                "eligibility_requirements": resource.eligibility_requirements,
-                "populations_served": resource.populations_served,
-                "insurance_accepted": resource.insurance_accepted,
-                "cost_information": resource.cost_information,
-                "languages_available": resource.languages_available,
-                "capacity": resource.capacity
-            },
-            "metadata": {
-                "created_at": resource.created_at.isoformat(),
-                "updated_at": resource.updated_at.isoformat(),
-                "last_verified_at": resource.last_verified_at.isoformat() if resource.last_verified_at else None,
-                "verification_frequency_days": resource.verification_frequency_days,
-                "source": resource.source
-            }
-        }
+        # Use shared formatting function
+        resource_data = format_resource_data(
+            resource=resource,
+            include_verified_by=False,  # This version doesn't include verified_by
+            include_notes=False
+        )
         
         return {
             "status": "success",

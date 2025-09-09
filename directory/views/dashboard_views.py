@@ -40,7 +40,6 @@ Usage:
 
 import logging
 from datetime import timedelta
-from typing import Any, Dict
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -311,7 +310,7 @@ def published_comparison(request: HttpRequest, resource_pk: int) -> HttpResponse
         GET /resources/123/published-comparison/ -> Compare current with last published
     """
     resource = get_object_or_404(Resource, pk=resource_pk, is_deleted=False)
-    
+
     # Find the last published version
     # Look for the last version where the resource status was "published"
     last_published_version = None
@@ -324,19 +323,19 @@ def published_comparison(request: HttpRequest, resource_pk: int) -> HttpResponse
         except (KeyError, TypeError):
             # Skip versions with invalid snapshot data
             continue
-    
+
     # Create current snapshot for comparison (focusing on meaningful data, excluding system metadata)
     current_snapshot = {
         # Basic information
         "name": resource.name,
         "category": resource.category.name if resource.category else "",
         "description": resource.description,
-        
+
         # Contact information
         "phone": resource.phone,
         "email": resource.email,
         "website": resource.website,
-        
+
         # Location information
         "address1": resource.address1,
         "address2": resource.address2,
@@ -344,7 +343,7 @@ def published_comparison(request: HttpRequest, resource_pk: int) -> HttpResponse
         "state": resource.state,
         "postal_code": resource.postal_code,
         "county": resource.county,
-        
+
         # Service information
         "hours_of_operation": resource.hours_of_operation,
         "eligibility_requirements": resource.eligibility_requirements,
@@ -355,32 +354,32 @@ def published_comparison(request: HttpRequest, resource_pk: int) -> HttpResponse
         "is_24_hour_service": resource.is_24_hour_service,
         "insurance_accepted": resource.insurance_accepted,
         "capacity": resource.capacity,
-        
+
         # Service types (ManyToManyField - convert to readable string)
         "service_types": ", ".join([st.name for st in resource.service_types.all()]) if resource.service_types.exists() else "",
-        
+
         # Coverage areas (ManyToManyField - convert to readable string)
         "coverage_areas": ", ".join([ca.name for ca in resource.coverage_areas.all()]) if resource.coverage_areas.exists() else "",
-        
+
         # Source (keep this as it represents verification data)
         "source": resource.source,
     }
-    
+
     was_never_published = False
     published_snapshot = None
     differences = {}
-    
+
     if last_published_version:
         published_snapshot = last_published_version.snapshot
-        
+
         # Filter out system/metadata fields to focus on meaningful data
         # These fields change every time and don't represent actual content changes
         system_fields_to_exclude = {
             'id', 'created_by_id', 'updated_by_id', 'last_verified_by_id',
-            'created_at', 'updated_at', 'is_deleted', 'last_verified_at', 
+            'created_at', 'updated_at', 'is_deleted', 'last_verified_at',
             'last_verified_by', 'status', 'notes'  # Exclude workflow fields and notes (shown separately)
         }
-        
+
         # Create filtered published snapshot with only meaningful fields
         filtered_published_snapshot = {}
         for key, value in published_snapshot.items():
@@ -395,17 +394,17 @@ def published_comparison(request: HttpRequest, resource_pk: int) -> HttpResponse
                         filtered_published_snapshot['category'] = ""
                 else:
                     filtered_published_snapshot[key] = value
-        
+
         # Get all differences
         all_differences = compare_versions(filtered_published_snapshot, current_snapshot)
-        
+
         # Filter to only show meaningful content changes
         differences = {}
         for field, diff in all_differences.items():
             # Skip system fields that were excluded from comparison
             if field in system_fields_to_exclude:
                 continue
-                
+
             # Only include if there's a meaningful change
             if diff['diff_type'] == 'added' and diff['new_value']:
                 # Include added fields that have actual content
@@ -416,7 +415,7 @@ def published_comparison(request: HttpRequest, resource_pk: int) -> HttpResponse
             elif diff['diff_type'] == 'removed' and diff['old_value']:
                 # Include removed fields that had content
                 differences[field] = diff
-        
+
         # Calculate change counts for the template
         change_counts = {
             'added': sum(1 for diff in differences.values() if diff['diff_type'] == 'added'),

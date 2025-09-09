@@ -332,7 +332,54 @@ async def search_by_location(
         if county:
             results = await sync_to_async(lambda: results.filter(county__icontains=county))()
         
-        # Apply category and service type filters
+        # Also include national resources that serve all locations
+        # These are resources assigned to national coverage areas
+        from directory.models import CoverageArea, ResourceCoverage
+        national_coverage_areas = await sync_to_async(list)(
+            CoverageArea.objects.filter(
+                kind="POLYGON",
+                name__icontains="United States"
+            )
+        )
+        
+        national_resource_ids = set()
+        for national_area in national_coverage_areas:
+            assignments = await sync_to_async(list)(
+                ResourceCoverage.objects.filter(
+                    coverage_area=national_area,
+                    resource__status="published"
+                ).values_list('resource_id', flat=True)
+            )
+            national_resource_ids.update(assignments)
+        
+        # Combine location-based results with national resources
+        if national_resource_ids:
+            # Get national resources that match category/service type filters
+            national_results = await sync_to_async(lambda: Resource.objects.filter(
+                id__in=national_resource_ids,
+                status="published"
+            ))()
+            
+            # Apply category and service type filters to national resources
+            if category_id:
+                national_results = await sync_to_async(lambda: national_results.filter(category_id=category_id))()
+            if service_type_id:
+                national_results = await sync_to_async(lambda: national_results.filter(service_types__id=service_type_id))()
+            
+            # Combine the results
+            location_resource_ids = set(await sync_to_async(list)(results.values_list('id', flat=True)))
+            national_resource_ids_filtered = set(await sync_to_async(list)(national_results.values_list('id', flat=True)))
+            
+            # Combine and remove duplicates
+            combined_ids = list(location_resource_ids.union(national_resource_ids_filtered))
+            
+            # Get the combined results
+            results = await sync_to_async(lambda: Resource.objects.filter(
+                id__in=combined_ids,
+                status="published"
+            ))()
+        
+        # Apply category and service type filters to the combined results
         if category_id:
             results = await sync_to_async(lambda: results.filter(category_id=category_id))()
         if service_type_id:

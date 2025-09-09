@@ -19,9 +19,10 @@ from django.utils import timezone
 from asgiref.sync import sync_to_async
 from directory.models import Resource, TaxonomyCategory, ServiceType
 from directory.models.analytics.audit import AuditLog
+from mcp_server.utils.helpers import format_resource_data
 
 
-async def create_resource(
+def create_resource(
     name: str,
     description: str = "",
     category_id: Optional[int] = None,
@@ -112,7 +113,7 @@ async def create_resource(
         category = None
         if category_id:
             try:
-                category = await sync_to_async(TaxonomyCategory.objects.get)(id=category_id)
+                category = TaxonomyCategory.objects.get(id=category_id)
             except TaxonomyCategory.DoesNotExist:
                 return {
                     "status": "error",
@@ -124,7 +125,7 @@ async def create_resource(
         service_types = []
         if service_type_ids:
             try:
-                service_types = await sync_to_async(list)(ServiceType.objects.filter(id__in=service_type_ids))
+                service_types = list(ServiceType.objects.filter(id__in=service_type_ids))
                 if len(service_types) != len(service_type_ids):
                     found_ids = [st.id for st in service_types]
                     missing_ids = [sid for sid in service_type_ids if sid not in found_ids]
@@ -141,7 +142,7 @@ async def create_resource(
                 }
         
         # Create the resource
-        resource = await sync_to_async(Resource.objects.create)(
+        resource = Resource.objects.create(
             name=name,
             description=description,
             category=category,
@@ -171,16 +172,16 @@ async def create_resource(
         
         # Add service types if provided
         if service_types:
-            await sync_to_async(resource.service_types.set)(service_types)
+            resource.service_types.set(service_types)
         
         # Create audit log entry
         from django.contrib.auth.models import User
         try:
-            user = await sync_to_async(User.objects.get)(id=created_by_user_id)
+            user = User.objects.get(id=created_by_user_id)
         except User.DoesNotExist:
-            user = await sync_to_async(User.objects.first)()  # Fallback to first user
+            user = User.objects.first()  # Fallback to first user
         
-        await sync_to_async(AuditLog.objects.create)(
+        AuditLog.objects.create(
             actor=user,
             action="create_resource",
             target_table="resource",
@@ -256,55 +257,18 @@ def get_resource(resource_id: int) -> Dict[str, Any]:
         resource = Resource.objects.select_related('category').prefetch_related('service_types').get(id=resource_id)
         service_types = list(resource.service_types.all())
         
+        # Use shared formatting function
+        resource_data = format_resource_data(
+            resource=resource,
+            service_types=service_types,
+            include_verified_by=True,  # This version includes verified_by
+            include_notes=True
+        )
+        
         return {
             "status": "success",
             "message": f"Resource '{resource.name}' retrieved successfully",
-            "data": {
-                "id": resource.id,
-                "name": resource.name,
-                "description": resource.description,
-                "category": {
-                    "id": resource.category.id if resource.category else None,
-                    "name": resource.category.name if resource.category else None
-                },
-                "service_types": [
-                    {"id": st.id, "name": st.name}
-                    for st in service_types
-                ],
-                "contact": {
-                    "phone": resource.phone,
-                    "email": resource.email,
-                    "website": resource.website
-                },
-                "location": {
-                    "address1": resource.address1,
-                    "address2": resource.address2,
-                    "city": resource.city,
-                    "state": resource.state,
-                    "county": resource.county,
-                    "postal_code": resource.postal_code
-                },
-                "operational": {
-                    "status": resource.status,
-                    "hours_of_operation": resource.hours_of_operation,
-                    "is_emergency_service": resource.is_emergency_service,
-                    "is_24_hour_service": resource.is_24_hour_service,
-                    "eligibility_requirements": resource.eligibility_requirements,
-                    "populations_served": resource.populations_served,
-                    "insurance_accepted": resource.insurance_accepted,
-                    "cost_information": resource.cost_information,
-                    "languages_available": resource.languages_available,
-                    "capacity": resource.capacity
-                },
-                "metadata": {
-                    "created_at": resource.created_at.isoformat(),
-                    "updated_at": resource.updated_at.isoformat(),
-                    "last_verified_at": resource.last_verified_at.isoformat() if resource.last_verified_at else None,
-                    "last_verified_by": resource.last_verified_by.username if resource.last_verified_by else None,
-                    "verification_frequency_days": resource.verification_frequency_days,
-                    "notes": resource.notes
-                }
-            }
+            "data": resource_data
         }
         
     except Resource.DoesNotExist:
@@ -321,7 +285,7 @@ def get_resource(resource_id: int) -> Dict[str, Any]:
         }
 
 
-async def update_resource(
+def update_resource(
     resource_id: int,
     name: Optional[str] = None,
     description: Optional[str] = None,
@@ -404,7 +368,7 @@ async def update_resource(
         ValidationError: If provided data is invalid
     """
     try:
-        resource = await sync_to_async(Resource.objects.get)(id=resource_id)
+        resource = Resource.objects.get(id=resource_id)
         
         # Track changes for audit trail
         changes = []
@@ -425,7 +389,7 @@ async def update_resource(
                     resource.category = None
             else:
                 try:
-                    new_category = await sync_to_async(TaxonomyCategory.objects.get)(id=category_id)
+                    new_category = TaxonomyCategory.objects.get(id=category_id)
                     if resource.category != new_category:
                         changes.append(("category", 
                                        resource.category.name if resource.category else "", 
@@ -481,7 +445,7 @@ async def update_resource(
         if last_verified_by is not None:
             from django.contrib.auth.models import User
             try:
-                verifier = await sync_to_async(User.objects.get)(id=last_verified_by)
+                verifier = User.objects.get(id=last_verified_by)
                 if resource.last_verified_by != verifier:
                     changes.append(("last_verified_by", 
                                    resource.last_verified_by.username if resource.last_verified_by else "", 
@@ -518,7 +482,7 @@ async def update_resource(
         # Update service types if provided
         if service_type_ids is not None:
             try:
-                new_service_types = await sync_to_async(list)(ServiceType.objects.filter(id__in=service_type_ids))
+                new_service_types = list(ServiceType.objects.filter(id__in=service_type_ids))
                 if len(new_service_types) != len(service_type_ids):
                     found_ids = [st.id for st in new_service_types]
                     missing_ids = [sid for sid in service_type_ids if sid not in found_ids]
@@ -528,12 +492,12 @@ async def update_resource(
                         "data": None
                     }
                 
-                old_service_types = await sync_to_async(list)(resource.service_types.all())
+                old_service_types = list(resource.service_types.all())
                 if set(st.id for st in old_service_types) != set(st.id for st in new_service_types):
                     changes.append(("service_types", 
                                    [st.name for st in old_service_types],
                                    [st.name for st in new_service_types]))
-                    await sync_to_async(resource.service_types.set)(new_service_types)
+                    resource.service_types.set(new_service_types)
                     
             except Exception as e:
                 return {
@@ -551,17 +515,17 @@ async def update_resource(
                 changes.append(("status", resource.status, "needs_review"))
                 resource.status = "needs_review"
         
-        await sync_to_async(resource.save)()
+        resource.save()
         
         # Create audit log entries for changes
         from django.contrib.auth.models import User
         try:
-            user = await sync_to_async(User.objects.get)(id=updated_by_user_id)
+            user = User.objects.get(id=updated_by_user_id)
         except User.DoesNotExist:
-            user = await sync_to_async(User.objects.first)()  # Fallback to first user
+            user = User.objects.first()  # Fallback to first user
         
         for field_name, old_value, new_value in changes:
-            await sync_to_async(AuditLog.objects.create)(
+            AuditLog.objects.create(
                 actor=user,
                 action="update_resource",
                 target_table="resource",
@@ -608,7 +572,7 @@ async def update_resource(
         }
 
 
-async def archive_resource(
+def archive_resource(
     resource_id: int,
     archived_by_user_id: int = 1,  # Default to admin user
     reason: str = "Archived via MCP server"
@@ -643,7 +607,7 @@ async def archive_resource(
         DoesNotExist: If resource_id does not exist
     """
     try:
-        resource = await sync_to_async(Resource.objects.get)(id=resource_id)
+        resource = Resource.objects.get(id=resource_id)
         
         if resource.is_deleted:
             return {
@@ -655,16 +619,16 @@ async def archive_resource(
         # Archive the resource
         resource.is_deleted = True
         resource.updated_by_id = archived_by_user_id
-        await sync_to_async(resource.save)()
+        resource.save()
         
         # Create audit log entry
         from django.contrib.auth.models import User
         try:
-            user = await sync_to_async(User.objects.get)(id=archived_by_user_id)
+            user = User.objects.get(id=archived_by_user_id)
         except User.DoesNotExist:
-            user = await sync_to_async(User.objects.first)()  # Fallback to first user
+            user = User.objects.first()  # Fallback to first user
         
-        await sync_to_async(AuditLog.objects.create)(
+        AuditLog.objects.create(
             actor=user,
             action="archive_resource",
             target_table="resource",
@@ -703,7 +667,7 @@ async def archive_resource(
         }
 
 
-async def list_resources(
+def list_resources(
     status: Optional[str] = None,
     category_id: Optional[int] = None,
     service_type_id: Optional[int] = None,
@@ -771,11 +735,11 @@ async def list_resources(
             queryset = queryset.filter(is_24_hour_service=is_24_hour_service)
         
         # Get total count
-        total_count = await sync_to_async(queryset.count)()
+        total_count = queryset.count()
         
         # Apply pagination
         limit = min(limit, 100)  # Cap at 100
-        resources = await sync_to_async(list)(
+        resources = list(
             queryset.select_related('category').prefetch_related('service_types')[
                 offset:offset + limit
             ]
@@ -790,7 +754,7 @@ async def list_resources(
                 "description": resource.description[:200] + "..." if len(resource.description) > 200 else resource.description,
                 "status": resource.status,
                 "category": resource.category.name if resource.category else None,
-                "service_types": [st.name for st in await sync_to_async(list)(resource.service_types.all())],
+                "service_types": [st.name for st in list(resource.service_types.all())],
                 "location": {
                     "city": resource.city,
                     "state": resource.state,
@@ -831,7 +795,7 @@ async def list_resources(
         }
 
 
-async def list_resources_needing_verification(
+def list_resources_needing_verification(
     limit: int = 50,
     offset: int = 0
 ) -> Dict[str, Any]:
@@ -842,6 +806,9 @@ async def list_resources_needing_verification(
     - Resources that have never been verified (last_verified_at is None)
     - Resources that are overdue for verification based on their verification_frequency_days
     - Resources that don't have a verification frequency set
+    
+    Note: Resources with status "needs_review" are excluded as they are already
+    in the review queue and don't need additional verification.
     
     Args:
         limit (int): Maximum number of results to return. Defaults to 50, max 100.
@@ -864,8 +831,8 @@ async def list_resources_needing_verification(
     try:
         now = timezone.now()
         
-        # Get all non-deleted resources
-        queryset = Resource.objects.all()
+        # Get all non-deleted resources, excluding those already in review
+        queryset = Resource.objects.all().exclude(status="needs_review")
         
         # Get all resources and filter in Python to find those needing verification
         def get_all_resources():
@@ -874,7 +841,7 @@ async def list_resources_needing_verification(
                 .order_by('last_verified_at', 'created_at')  # Never verified first, then by creation date
             )
         
-        all_resources = await sync_to_async(get_all_resources)()
+        all_resources = get_all_resources()
         
         # Filter resources that need verification
         resources_needing_verification = []

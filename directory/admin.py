@@ -4,22 +4,16 @@ Admin interface for the directory app.
 
 from django.contrib import admin
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
 
 from .models import AuditLog, Resource, ResourceVersion, ServiceType, TaxonomyCategory
 from .permissions import (
     user_can_hard_delete,
     user_can_manage_taxonomies,
-    user_can_manage_users,
     user_can_publish,
     user_can_submit_for_review,
-    user_can_verify,
     user_is_admin,
-    user_is_editor,
-    user_is_reviewer,
 )
 from .utils import export_resources_to_csv
 
@@ -174,14 +168,23 @@ class ResourceAdmin(admin.ModelAdmin):
             "Source Information",
             {
                 "fields": ("source",),
-                "description": "Public source attribution for this information (e.g., 'Kentucky Cabinet for Health and Family Services', 'Organization Website'). This will be displayed to the public.",
+                "description": (
+                    "Public source attribution for this information "
+                    "(e.g., 'Kentucky Cabinet for Health and Family Services', "
+                    "'Organization Website'). This will be displayed to the public."
+                ),
             },
         ),
         (
             "Verification Notes (Internal)",
             {
                 "fields": ("notes",),
-                "description": "INTERNAL USE ONLY - Verification details, contact information, and audit trail. This field is NOT visible to the public and should only be used by editors for tracking verification sources, contact person details, dates contacted, and verification methods.",
+                "description": (
+                    "INTERNAL USE ONLY - Verification details, contact information, "
+                    "and audit trail. This field is NOT visible to the public and "
+                    "should only be used by editors for tracking verification sources, "
+                    "contact person details, dates contacted, and verification methods."
+                ),
             },
         ),
         ("Contact Information", {"fields": ("phone", "email", "website")}),

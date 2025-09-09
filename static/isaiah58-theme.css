@@ -141,65 +141,35 @@ body {
 
 /* Hero Section Styling */
 .hero-section {
-  background: linear-gradient(rgba(25, 42, 61, 0.7), rgba(25, 42, 61, 0.7)), 
-              url('/static/images/hero/hero-background.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: scroll;
-  color: var(--isaiah-white);
-  padding: 4rem 0;
-  margin-bottom: 3rem;
-  border-radius: var(--isaiah-border-radius);
-  position: relative;
-  overflow: hidden;
-  min-height: 400px;
-  width: 100%;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
-.hero-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, rgba(230, 126, 34, 0.1) 0%, rgba(243, 156, 18, 0.1) 100%);
-  pointer-events: none;
-}
 
-.hero-section .container {
-  position: relative;
-  z-index: 2;
-}
 
 .hero-section h1 {
   font-size: 3rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: var(--isaiah-text-primary);
 }
 
 .hero-section .lead {
   font-size: 1.25rem;
   font-weight: 400;
   margin-bottom: 2rem;
-  opacity: 0.95;
+  color: var(--isaiah-text-secondary);
 }
 
 /* Mission Statement Styling */
 .mission-statement {
-  background: var(--isaiah-gradient-light);
-  padding: 3rem 2rem;
-  border-radius: var(--isaiah-border-radius);
   text-align: center;
-  margin: 3rem 0;
-  box-shadow: var(--isaiah-shadow);
-  border-left: 5px solid var(--isaiah-accent);
+  margin: 2rem 0;
 }
 
 .mission-statement h2 {
-  color: var(--isaiah-primary);
+  color: var(--isaiah-text-primary);
   font-weight: 700;
   margin-bottom: 1rem;
   font-size: 2rem;
@@ -292,6 +262,8 @@ body {
   height: 100%;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .category-card::before {
@@ -319,12 +291,15 @@ body {
   color: var(--isaiah-primary);
   font-weight: 600;
   margin-bottom: 0.75rem;
+  flex-shrink: 0;
 }
 
 .category-card p {
   color: var(--isaiah-text-secondary);
   margin-bottom: 1rem;
   line-height: 1.5;
+  flex-grow: 1;
+  min-height: 3.6rem; /* Ensure consistent height for 2 lines of text */
 }
 
 .category-badge {
@@ -334,6 +309,31 @@ body {
   border-radius: 20px;
   font-weight: 500;
   font-size: 0.875rem;
+}
+
+.category-badge-link {
+  background: var(--isaiah-gradient-warm);
+  color: var(--isaiah-white);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: var(--isaiah-transition);
+  cursor: pointer;
+}
+
+.category-badge-link:hover {
+  transform: translateY(-1px);
+  color: var(--isaiah-white);
+  text-decoration: none;
+  opacity: 0.9;
+}
+
+.category-badge-link:active {
+  transform: translateY(0);
 }
 
 /* Enhanced Button Styling */
@@ -556,19 +556,7 @@ body {
   }
 }
 
-/* Dark Mode Enhancements */
-[data-theme="dark"] .hero-section {
-  background: linear-gradient(rgba(26, 26, 26, 0.8), rgba(45, 45, 45, 0.8)), 
-              url('/static/images/hero/hero-background.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
 
-[data-theme="dark"] .mission-statement {
-  background: linear-gradient(135deg, var(--isaiah-bg-secondary) 0%, var(--isaiah-bg-tertiary) 100%);
-}
 
 [data-theme="dark"] .stats-card {
   background: linear-gradient(135deg, var(--isaiah-bg-secondary) 0%, var(--isaiah-bg-tertiary) 100%);

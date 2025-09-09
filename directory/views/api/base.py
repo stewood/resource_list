@@ -10,41 +10,37 @@ Version: 2.0.0
 """
 
 import json
-from typing import Any, Dict, List, Optional
-
-from django.conf import settings
+from typing import Any, Dict, Optional
 from django.core.paginator import Paginator
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
-from ...models import CoverageArea, Resource
-from ...services.geocoding import GeocodingResult
+from ...models import CoverageArea
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class BaseAPIView(View):
     """Base class for all API views with common functionality.
-    
+
     Provides common methods and utilities used across all API views
     including error handling, response formatting, and pagination.
     """
-    
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.default_page_size = 20
         self.max_page_size = 100
-    
-    def create_error_response(self, message: str, status_code: int = 400, 
+
+    def create_error_response(self, message: str, status_code: int = 400,
                             details: Optional[Dict] = None) -> JsonResponse:
         """Create a standardized error response.
-        
+
         Args:
             message: Error message
             status_code: HTTP status code
             details: Additional error details
-            
+
         Returns:
             JsonResponse with error information
         """
@@ -53,19 +49,19 @@ class BaseAPIView(View):
             'message': message,
             'status_code': status_code
         }
-        
+
         if details:
             response_data['details'] = details
-            
+
         return JsonResponse(response_data, status=status_code)
-    
+
     def create_success_response(self, data: Any, status_code: int = 200) -> JsonResponse:
         """Create a standardized success response.
-        
+
         Args:
             data: Response data
             status_code: HTTP status code
-            
+
         Returns:
             JsonResponse with success data
         """
@@ -73,37 +69,36 @@ class BaseAPIView(View):
             'error': False,
             'data': data
         }, status=status_code)
-    
-    def paginate_results(self, queryset, request: HttpRequest, 
+
+    def paginate_results(self, queryset, request: HttpRequest,
                         page_size: Optional[int] = None) -> Dict:
         """Paginate query results.
-        
+
         Args:
             queryset: Django queryset to paginate
             request: HTTP request object
             page_size: Number of items per page
-            
+
         Returns:
             Dictionary with paginated results and pagination info
         """
         if page_size is None:
             page_size = self.default_page_size
-            
+
         page_size = min(page_size, self.max_page_size)
         page_number = request.GET.get('page', 1)
-        
+
         try:
             page_number = int(page_number)
         except ValueError:
             page_number = 1
-            
+
         paginator = Paginator(queryset, page_size)
-        
+
         try:
             page = paginator.page(page_number)
-        except:
+        except Exception:
             page = paginator.page(1)
-            
         return {
             'results': list(page.object_list),
             'pagination': {
@@ -115,40 +110,40 @@ class BaseAPIView(View):
                 'has_previous': page.has_previous()
             }
         }
-    
+
     def validate_json_request(self, request: HttpRequest) -> Optional[Dict]:
         """Validate and parse JSON request body.
-        
+
         Args:
             request: HTTP request object
-            
+
         Returns:
             Parsed JSON data or None if invalid
         """
         if not request.body:
             return None
-            
+
         try:
             return json.loads(request.body.decode('utf-8'))
         except json.JSONDecodeError:
             return None
-    
+
     def get_coverage_area_bounds(self, coverage_area: CoverageArea) -> Dict:
         """Get coverage area bounds in standardized format.
-        
+
         Args:
             coverage_area: CoverageArea instance
-            
+
         Returns:
             Dictionary with bounds information
         """
         if not coverage_area.geometry:
             return {}
-            
+
         bounds = coverage_area.geometry.extent
         return {
             'north': bounds[3],
-            'south': bounds[1], 
+            'south': bounds[1],
             'east': bounds[2],
             'west': bounds[0]
         }
@@ -156,10 +151,10 @@ class BaseAPIView(View):
 
 def format_coverage_area_response(coverage_area: CoverageArea) -> Dict:
     """Format coverage area for API response.
-    
+
     Args:
         coverage_area: CoverageArea instance
-        
+
     Returns:
         Formatted dictionary for API response
     """
@@ -176,20 +171,20 @@ def format_coverage_area_response(coverage_area: CoverageArea) -> Dict:
 
 def format_coverage_area_bounds(coverage_area: CoverageArea) -> Dict:
     """Format coverage area bounds for API response.
-    
+
     Args:
         coverage_area: CoverageArea instance
-        
+
     Returns:
         Dictionary with bounds information
     """
     if not coverage_area.geometry:
         return {}
-        
+
     bounds = coverage_area.geometry.extent
     return {
         'north': bounds[3],
         'south': bounds[1],
-        'east': bounds[2], 
+        'east': bounds[2],
         'west': bounds[0]
     }

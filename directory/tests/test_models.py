@@ -18,7 +18,6 @@ Version: 1.0.0
 """
 
 from datetime import timedelta
-from decimal import Decimal
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase

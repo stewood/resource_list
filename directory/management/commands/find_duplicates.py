@@ -19,7 +19,7 @@ Usage:
 import csv
 from typing import Any, Dict, List, Tuple
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from directory.models import Resource

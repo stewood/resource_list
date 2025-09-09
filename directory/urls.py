@@ -7,8 +7,6 @@ from django.views.generic import RedirectView
 
 from .views import (
     # Resource views
-    ResourceListView,
-    ResourceDetailView,
     ResourceCreateView,
     ResourceUpdateView,
     # Workflow views
@@ -52,7 +50,11 @@ urlpatterns = [
     path("login/", CustomLoginView.as_view(), name="login"),
     # Admin views (authentication required)
     path("manage/dashboard/", dashboard, name="dashboard"),
-    path("manage/resources/", RedirectView.as_view(url="/resources/", permanent=True), name="resource_list"),
+    path(
+        "manage/resources/",
+        RedirectView.as_view(url="/resources/", permanent=True),
+        name="resource_list"
+    ),
     path(
         "manage/resources/create/", ResourceCreateView.as_view(), name="resource_create"
     ),

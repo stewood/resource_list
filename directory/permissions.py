@@ -70,8 +70,7 @@ Examples:
 
 from typing import List, Callable, Any
 
-from django.contrib.auth.models import Permission, User
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 
 # Custom permission codenames
@@ -220,12 +219,11 @@ def get_user_role(user: User) -> str:
     # Check groups in order of precedence
     if user.groups.filter(name="Admin").exists():
         return "Admin"
-    elif user.groups.filter(name="Reviewer").exists():
+    if user.groups.filter(name="Reviewer").exists():
         return "Reviewer"
-    elif user.groups.filter(name="Editor").exists():
+    if user.groups.filter(name="Editor").exists():
         return "Editor"
-    else:
-        return "User"
+    return "User"
 
 
 def get_role_permissions(role: str) -> List[str]:

@@ -24,12 +24,11 @@ Version: 1.0.0
 import os
 import json
 import logging
-from typing import Any, Dict, List, Optional, Tuple
-from decimal import Decimal
+from typing import Any, Dict, List, Tuple
 
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
-from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
+from django.contrib.gis.geos import GEOSGeometry, MultiPolygon
 from django.conf import settings
 from django.db import transaction
 from django.core.exceptions import ValidationError

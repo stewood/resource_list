@@ -3581,6 +3581,12 @@
                             if (coverageAreaId && !isNaN(coverageAreaId)) {
                                 allServiceAreas.push(parseInt(coverageAreaId));
                             }
+                        } else if (area.type === 'national' && area.value === 'national:all') {
+                            // Map national coverage to the United States coverage area ID
+                            allServiceAreas.push(43273); // United States (All States and Territories)
+                        } else if (area.type === 'online' && area.value === 'online:anywhere') {
+                            // Map online services to the United States coverage area ID
+                            allServiceAreas.push(43273); // United States (All States and Territories)
                         }
                         // TODO: Handle other area types (state, etc.) when we have proper CoverageArea IDs
                     });

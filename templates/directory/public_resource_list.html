@@ -89,11 +89,20 @@
                                     <button type="button" class="btn btn-outline-info quick-filter-btn" data-filter="emergency" data-value="true">
                                         <i class="fas fa-exclamation-triangle me-1"></i>Emergency
                                     </button>
-                                    <button type="button" class="btn btn-outline-secondary quick-filter-btn" data-filter="24hour" data-value="true">
+                                    <button type="button" class="btn btn-outline-success quick-filter-btn" data-filter="24hour" data-value="true">
                                         <i class="fas fa-clock me-1"></i>24-Hour
                                     </button>
                                 </div>
                             </div>
+                            
+                            <!-- Show All Button (only show if filters are active) -->
+                            {% if request.GET.q or request.GET.category or request.GET.service_type or request.GET.city or request.GET.state or request.GET.emergency or request.GET.24hour or request.GET.status or request.GET.sort or request.GET.address or request.GET.state_fips or request.GET.county_id %}
+                            <div class="d-grid mb-3">
+                                <a href="{% url 'directory:public_resource_list' %}" class="btn btn-primary" id="showAllButton">
+                                    <i class="fas fa-list me-1"></i>Show All
+                                </a>
+                            </div>
+                            {% endif %}
                             
                             <!-- National Resources Checkbox -->
                             <div class="mb-3">
@@ -108,13 +117,24 @@
                                 </small>
                             </div>
                             
-                            <!-- More Filters Button -->
-                            <div class="d-grid">
-                                <button type="button" class="btn btn-outline-primary" id="toggleAdvancedFilters">
-                                    <i class="fas fa-sliders-h me-1"></i>More Filters
-                                    <span class="filter-count-badge" id="filterCount">0</span>
-                                </button>
+                            <!-- Badge Legend -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-info-circle me-1"></i>Badge Legend
+                                </label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <span class="badge bg-danger" title="Emergency Services">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>Emergency
+                                    </span>
+                                    <span class="badge bg-success" title="24-Hour Services">
+                                        <i class="fas fa-clock me-1"></i>24/7
+                                    </span>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Emergency services provide crisis support. 24/7 services are available around the clock.
+                                </small>
                             </div>
+                            
                         </div>
 
                         <!-- Advanced Filters (Expandable Accordion) -->
@@ -732,6 +752,7 @@
                 btn.classList.add('btn-' + colorClass);
             }
         });
+        
         
 
         

@@ -24,11 +24,10 @@ Version: 1.0.0
 
 import json
 import logging
-from typing import Any, Dict, List
+from typing import Any, Dict
 from datetime import datetime
 
 from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
 
 from directory.utils.data_quality import comprehensive_quality_check
 

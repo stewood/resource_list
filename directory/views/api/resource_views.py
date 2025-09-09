@@ -9,14 +9,10 @@ Created: 2025-08-30
 Version: 2.0.0
 """
 
-import json
-from typing import Dict
-
 from django.conf import settings
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
 
 from ...models import CoverageArea, Resource, ResourceCoverage
 from .base import BaseAPIView
@@ -25,21 +21,21 @@ from .base import BaseAPIView
 @method_decorator(csrf_exempt, name='dispatch')
 class ResourceAreaManagementView(BaseAPIView):
     """API view for managing resource-coverage area associations.
-    
+
     This view provides a RESTful endpoint for attaching and detaching coverage
     areas to/from resources. It includes proper validation, audit trail, and
     permission controls.
-    
+
     Endpoint: POST /api/resources/{id}/areas/ (requires authentication)
     Endpoint: GET /api/resources/{id}/areas/ (public read access)
-    
+
     Request Body:
         {
             "action": "attach" | "detach",
             "coverage_area_ids": [1, 2, 3],
             "notes": "Optional notes about the association"
         }
-        
+
     Response Format:
         {
             "success": true,
@@ -49,14 +45,13 @@ class ResourceAreaManagementView(BaseAPIView):
             "errors": []
         }
     """
-    
     def post(self, request: HttpRequest, resource_id: int) -> JsonResponse:
         """Handle POST requests for resource area management.
-        
+
         Args:
             request: HTTP request object
             resource_id: ID of the resource to manage areas for
-            
+
         Returns:
             JsonResponse: JSON response with operation results
         """
@@ -66,7 +61,7 @@ class ResourceAreaManagementView(BaseAPIView):
                 {'error': 'Authentication required for this operation'},
                 status=401
             )
-        
+
         try:
             # Get the resource
             try:
@@ -76,34 +71,34 @@ class ResourceAreaManagementView(BaseAPIView):
                     {'error': f'Resource with ID {resource_id} not found'},
                     status=404
                 )
-            
+
             # Parse request data
             data = self.validate_json_request(request)
             if data is None:
                 return JsonResponse({'error': 'Invalid JSON in request body'}, status=400)
-            
+
             action = data.get('action', '').lower()
             coverage_area_ids = data.get('coverage_area_ids', [])
             notes = data.get('notes', '')
-            
+
             # Validate action
             if action not in ['attach', 'detach', 'replace']:
                 return JsonResponse(
                     {'error': 'Action must be "attach", "detach", or "replace"'},
                     status=400
                 )
-            
+
             # Validate coverage area IDs
             if not isinstance(coverage_area_ids, list):
                 return JsonResponse({'error': 'coverage_area_ids must be a list'}, status=400)
-            
+
             # Allow empty list for 'replace' action (to clear all associations)
             if not coverage_area_ids and action != 'replace':
                 return JsonResponse(
                     {'error': 'coverage_area_ids cannot be empty for attach/detach actions'},
                     status=400
                 )
-            
+
             # Get coverage areas (skip for replace with empty list)
             coverage_areas = []
             if coverage_area_ids:
@@ -111,7 +106,7 @@ class ResourceAreaManagementView(BaseAPIView):
                     coverage_areas = CoverageArea.objects.filter(id__in=coverage_area_ids)
                     found_ids = set(coverage_areas.values_list('id', flat=True))
                     missing_ids = set(coverage_area_ids) - found_ids
-                    
+
                     if missing_ids:
                         return JsonResponse(
                             {'error': f'Coverage areas not found: {list(missing_ids)}'},
@@ -122,12 +117,12 @@ class ResourceAreaManagementView(BaseAPIView):
                         {'error': f'Error fetching coverage areas: {str(e)}'},
                         status=400
                     )
-            
+
             # Perform the action
             attached_count = 0
             detached_count = 0
             errors = []
-            
+
             if action == 'attach':
                 for coverage_area in coverage_areas:
                     try:
@@ -145,7 +140,7 @@ class ResourceAreaManagementView(BaseAPIView):
                             errors.append(f'Area {coverage_area.name} is already attached')
                     except Exception as e:
                         errors.append(f'Error attaching {coverage_area.name}: {str(e)}')
-            
+
             elif action == 'detach':
                 for coverage_area in coverage_areas:
                     try:
@@ -154,20 +149,20 @@ class ResourceAreaManagementView(BaseAPIView):
                             resource=resource,
                             coverage_area=coverage_area
                         ).delete()
-                        
+
                         if deleted_count > 0:
                             detached_count += 1
                         else:
                             errors.append(f'Area {coverage_area.name} was not attached')
                     except Exception as e:
                         errors.append(f'Error detaching {coverage_area.name}: {str(e)}')
-            
+
             elif action == 'replace':
                 try:
                     # Clear all existing associations
                     deleted_count, _ = ResourceCoverage.objects.filter(resource=resource).delete()
                     detached_count = deleted_count
-                    
+
                     # Add new associations if any
                     for coverage_area in coverage_areas:
                         try:
@@ -182,7 +177,7 @@ class ResourceAreaManagementView(BaseAPIView):
                             errors.append(f'Error attaching {coverage_area.name}: {str(e)}')
                 except Exception as e:
                     errors.append(f'Error replacing associations: {str(e)}')
-            
+
             # Build response
             response_data = {
                 'success': len(errors) == 0,
@@ -191,22 +186,22 @@ class ResourceAreaManagementView(BaseAPIView):
                 'detached_count': detached_count,
                 'errors': errors
             }
-            
+
             if errors:
                 return JsonResponse(response_data, status=400)
             else:
                 return JsonResponse(response_data)
-                
+
         except Exception as e:
             return JsonResponse({'error': f'Internal server error: {str(e)}'}, status=500)
-    
+
     def get(self, request: HttpRequest, resource_id: int) -> JsonResponse:
         """Handle GET requests to retrieve resource coverage areas.
-        
+
         Args:
             request: HTTP request object
             resource_id: ID of the resource to get areas for
-            
+
         Returns:
             JsonResponse: JSON response with resource coverage areas
         """
@@ -219,7 +214,7 @@ class ResourceAreaManagementView(BaseAPIView):
                     {'error': f'Resource with ID {resource_id} not found'},
                     status=404
                 )
-            
+
             # Get coverage areas with association details
             coverage_areas = []
             for coverage_area in resource.coverage_areas.all():
@@ -238,7 +233,7 @@ class ResourceAreaManagementView(BaseAPIView):
                         'attached_by': association.created_by.username,
                         'notes': association.notes or ''
                     }
-                    
+
                     # Add bounds and center if available
                     if coverage_area.geom and hasattr(settings, 'GIS_ENABLED') and settings.GIS_ENABLED:
                         try:
@@ -249,7 +244,7 @@ class ResourceAreaManagementView(BaseAPIView):
                                 'east': bounds[2],
                                 'north': bounds[3]
                             }
-                            
+
                             # Add center coordinates for map positioning
                             center = coverage_area.geom.centroid
                             area_data['center'] = {
@@ -273,18 +268,18 @@ class ResourceAreaManagementView(BaseAPIView):
                         except Exception:
                             # Skip center if there's any error accessing it
                             pass
-                    
+
                     coverage_areas.append(area_data)
                 except ResourceCoverage.DoesNotExist:
                     # This shouldn't happen, but handle gracefully
                     continue
-            
+
             return JsonResponse({
                 'resource_id': resource_id,
                 'resource_name': resource.name,
                 'coverage_areas': coverage_areas,
                 'total_count': len(coverage_areas)
             })
-            
+
         except Exception as e:
             return JsonResponse({'error': f'Internal server error: {str(e)}'}, status=500)

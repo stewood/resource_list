@@ -1,0 +1,20 @@
+# Verification Script Configuration File
+# Copy this file to verification.conf and modify as needed
+
+[verification]
+# Maximum number of verification iterations (default: 10)
+max_iterations = 10
+
+# Path to cursor-agent executable (default: cursor-agent)
+cursor_agent_path = cursor-agent
+
+# Maximum resources to process per iteration (default: 100)
+limit = 100
+
+# Enable verbose logging (default: false)
+verbose = false
+
+# Dry run mode - show what would be done without executing (default: false)
+dry_run = false
+
+# Note: Timeout is hardcoded to 5 minutes (300 seconds) for safety

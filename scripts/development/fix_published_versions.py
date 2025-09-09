@@ -20,7 +20,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'resource_directory.settings')
 django.setup()
 
 from directory.models import Resource, ResourceVersion
-from audit.models import AuditManager
 import json
 
 
