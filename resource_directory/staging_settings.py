@@ -5,6 +5,10 @@ This configuration is optimized for staging environment on Render.
 
 import os
 from pathlib import Path
+
+# Set GIS_ENABLED BEFORE importing base settings
+os.environ.setdefault('GIS_ENABLED', '1')
+
 from .settings import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,6 +34,10 @@ if os.environ.get('ALLOWED_HOSTS'):
 
 # Enable GIS features for PostGIS support (can be overridden by environment variable)
 GIS_ENABLED = os.environ.get('GIS_ENABLED', '1') == '1'
+
+# Ensure django.contrib.gis is in INSTALLED_APPS when GIS is enabled
+if GIS_ENABLED and "django.contrib.gis" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("django.contrib.gis")
 
 # Database - PostgreSQL with PostGIS on Render
 # Use environment variables for database configuration
