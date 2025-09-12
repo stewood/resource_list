@@ -57,6 +57,10 @@ INSTALLED_APPS = [
     "importer",
 ]
 
+# Add GIS apps when GIS is enabled
+if GIS_ENABLED and "django.contrib.gis" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("django.contrib.gis")
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",

@@ -21,7 +21,15 @@ RUN apt-get update \
         libproj-dev \
         gdal-bin \
         proj-bin \
+        # Additional GIS libraries
+        libspatialite-dev \
+        spatialite-bin \
     && rm -rf /var/lib/apt/lists/*
+
+# Set GDAL environment variables for Python
+ENV GDAL_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/libgdal.so
+ENV GEOS_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/libgeos_c.so
+ENV PROJ_LIB=/usr/share/proj
 
 # Install Python dependencies
 COPY requirements.txt .

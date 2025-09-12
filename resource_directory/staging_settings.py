@@ -28,8 +28,8 @@ ALLOWED_HOSTS = [
 if os.environ.get('ALLOWED_HOSTS'):
     ALLOWED_HOSTS.extend(os.environ.get('ALLOWED_HOSTS').split(','))
 
-# Enable GIS features for PostGIS support
-GIS_ENABLED = True
+# Enable GIS features for PostGIS support (can be overridden by environment variable)
+GIS_ENABLED = os.environ.get('GIS_ENABLED', '1') == '1'
 
 # Database - PostgreSQL with PostGIS on Render
 # Use environment variables for database configuration

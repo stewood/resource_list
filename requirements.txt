@@ -22,6 +22,8 @@ numpy==1.26.4
 shapely==2.0.2
 geopy==2.4.1
 pyproj==3.6.1
+GDAL==3.8.4
+Fiona==1.9.5
 
 # UI improvements
 tqdm==4.66.1
